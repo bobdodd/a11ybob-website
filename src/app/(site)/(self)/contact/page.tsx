@@ -7,7 +7,14 @@ export default function Contact() {
         <div className="stack" style={{ "--space": "var(--s1)" } as CSSProperties}>
           <h1>Contact</h1>
           <p>
-            <a href="mailto:hello@a11ybob.com">hello@a11ybob.com</a>
+            Email is the best way to reach me about consulting work, talks,
+            or anything that needs a considered reply.
+          </p>
+          <p>
+            <a href="mailto:hello@a11ybob.com">hello@a11ybob.com</a>{" "}
+            <em style={{ color: "var(--ink-muted)" }}>
+              <small>(placeholder address — to be replaced)</small>
+            </em>
           </p>
           <ul
             className="cluster"
@@ -18,29 +25,38 @@ export default function Contact() {
             } as CSSProperties}
           >
             <li>
-              <a href="#" rel="me">
+              <a
+                href="https://www.linkedin.com/in/robert-dodd-54981159/"
+                rel="me"
+              >
                 LinkedIn
               </a>
             </li>
             <li>
-              <a href="#" rel="me">
-                Mastodon
+              <a href="https://mastodon.social/@accessBob" rel="me">
+                Mastodon (@accessBob)
               </a>
             </li>
             <li>
-              <a href="#" rel="me">
-                Threads
+              <a href="https://www.threads.net/@a11y_bob" rel="me">
+                Threads (@a11y_bob)
+              </a>
+            </li>
+            <li>
+              <a href="https://github.com/bobdodd" rel="me">
+                GitHub (bobdodd)
               </a>
             </li>
           </ul>
           <p>
             <small>
-              For technical questions about Paradise, GitHub Issues is faster
-              than email.
+              For technical questions about{" "}
+              <a href="/paradise">Paradise</a>, GitHub Issues is faster than
+              email.
             </small>
           </p>
           <p>
-            <small>I read everything; I reply to most things.</small>
+            <small>I read everything. I reply to most things.</small>
           </p>
         </div>
       </div>

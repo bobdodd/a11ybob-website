@@ -2,25 +2,32 @@ import type { CSSProperties } from "react";
 
 const talks = [
   {
+    title: "What Music Knows About Accessibility",
+    venue: "LinkedIn (article)",
+    date: "May 2026",
+    blurb:
+      "A long-form essay on what the music-accessibility literature has worked out, and what the rest of design has been slow to learn from it.",
+  },
+  {
     title: "The $10 Audit",
-    venue: "Internal CNIB session, then various",
-    date: "2024",
+    venue: "a11yTO",
+    date: "2022",
     blurb:
-      "What you can find in ten dollars of practitioner time, and why that matters for procurement.",
+      "Why digital accessibility is so expensive, and how to fix it. Role-specific recommendations for designers, developers, and testers — grounded in the observation that remediation after UAT is the single biggest cost driver.",
   },
   {
-    title: "Accessibility for Developers — A Working Introduction",
+    title: "An Introduction to Accessibility for Developers",
     venue: "YouTube",
-    date: "2023",
+    date: "2022",
     blurb:
-      "The introductory series. Accessible by design, not by retrofit.",
+      "An autobiographical-and-technical introduction. Where the work came from, and what working accessibility-aware engineering looks like day to day.",
   },
   {
-    title: "Carnforth: Adaptive Hypermedia for the Cognitive Edge",
-    venue: "W4A",
-    date: "2010",
+    title: "The Carnforth Model of Accessible Adaptive Hypermedia",
+    venue: "W4A 2010",
+    date: "April 2010",
     blurb:
-      "The W4A paper that came out of the doctoral work at Teesside.",
+      "With Steve Green and Elaine Pearson. Peer-reviewed; in the ACM Digital Library. Rebuilds the Dexter Model of hypertext for an era of script-heavy, AJAX-driven content.",
   },
 ];
 
@@ -29,10 +36,15 @@ export default function Talks() {
     <main id="main" className="site-main" data-zone="writing">
       <div className="center">
         <div className="stack" style={{ "--space": "var(--s2)" } as CSSProperties}>
-          <header>
+          <header
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
             <h1>Talks</h1>
             <p style={{ fontSize: "var(--s1)" }}>
-              Slides and recordings, reverse-chronological.
+              Public talks and writing in talk-shaped form.
+              Reverse-chronological. Older SIGACCESS pieces from the late
+              2000s are not yet listed here.
             </p>
           </header>
 
