@@ -1,49 +1,28 @@
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/*
+ * Entry point for site-wide styles.
+ * Layers ordered from most general to most specific so the cascade
+ * does what we mean: utilities can override layouts, layouts can
+ * override base, base can override axioms.
+ */
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+@layer tokens, axioms, base, layouts, components, utilities;
 
-html {
-  height: 100%;
-}
+@import "../styles/tokens.css" layer(tokens);
+@import "../styles/axioms.css" layer(axioms);
+@import "../styles/base.css"   layer(base);
 
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
+@import "../styles/layouts/stack.css"     layer(layouts);
+@import "../styles/layouts/box.css"       layer(layouts);
+@import "../styles/layouts/center.css"    layer(layouts);
+@import "../styles/layouts/cluster.css"   layer(layouts);
+@import "../styles/layouts/sidebar.css"   layer(layouts);
+@import "../styles/layouts/switcher.css"  layer(layouts);
+@import "../styles/layouts/cover.css"     layer(layouts);
+@import "../styles/layouts/grid.css"      layer(layouts);
+@import "../styles/layouts/frame.css"     layer(layouts);
+@import "../styles/layouts/reel.css"      layer(layouts);
+@import "../styles/layouts/imposter.css"  layer(layouts);
+@import "../styles/layouts/icon.css"      layer(layouts);
+@import "../styles/layouts/container.css" layer(layouts);
 
-body {
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
-}
+@import "../styles/components/chrome.css" layer(components);

@@ -1,0 +1,107 @@
+/*
+ * Universal rules and exceptions.
+ * Following Heydon Pickering & Andy Bell's exception-based approach
+ * (Every Layout, "Axioms"): apply a far-reaching rule, then exempt
+ * the elements that should not be subject to it.
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  border-style: solid;
+  border-width: 0;
+}
+
+/* ===== Measure cap (axiom) =====
+   Every element is capped at the measure so no single line of text
+   can grow beyond a comfortably readable length. Layout containers
+   are explicitly exempted because they need to be wider than the
+   measure to lay other elements out. */
+* {
+  max-inline-size: var(--measure);
+}
+
+html,
+body,
+div,
+header,
+nav,
+main,
+footer,
+section,
+article,
+aside,
+form,
+fieldset,
+table,
+.stack,
+.box,
+.center,
+.cluster,
+.with-sidebar,
+.switcher,
+.cover,
+.grid,
+.frame,
+.reel,
+.imposter,
+.l-container {
+  max-inline-size: none;
+}
+
+/* ===== Reduced motion =====
+   Applied universally and aggressively: motion preferences are not
+   negotiable. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ===== Focus ring =====
+   Dual-tone: solid outline at the focus colour, offset 3px from the
+   element so it cannot be confused with an image border, plus a halo
+   box-shadow in the surface colour so contrast is preserved against
+   any background the focused element sits against.
+   :focus-visible (not :focus) so mouse clicks on buttons don't
+   trigger the ring; keyboard focus does. */
+:focus-visible {
+  outline: var(--border-thick) solid var(--focus-color);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 5px var(--focus-halo);
+  border-radius: 1px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ===== Selection ===== */
+::selection {
+  background: var(--accent);
+  color: var(--surface-1);
+}
+
+/* ===== Skip link (axiom — every page has one) ===== */
+.skip-link {
+  position: absolute;
+  inset-inline-start: var(--s0);
+  inset-block-start: var(--s0);
+  padding: var(--s-1) var(--s0);
+  background: var(--ink);
+  color: var(--surface-1);
+  text-decoration: none;
+  z-index: 100;
+  transform: translateY(-200%);
+  transition: transform 0.15s;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}

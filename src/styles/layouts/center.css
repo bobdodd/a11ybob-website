@@ -1,0 +1,20 @@
+/* Center — horizontally centred column capped at a maximum measure.
+   See Every Layout, "The Center". */
+
+.center {
+  box-sizing: content-box;
+  max-inline-size: var(--max, var(--measure));
+  margin-inline: auto;
+  padding-inline-start: var(--gutter, 0);
+  padding-inline-end:   var(--gutter, 0);
+}
+
+.center--intrinsic {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.center--text {
+  text-align: center;
+}

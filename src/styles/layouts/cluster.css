@@ -1,0 +1,11 @@
+/* Cluster — group of inline-ish elements with consistent gap that
+   wrap together, justified or aligned as needed.
+   See Every Layout, "The Cluster". */
+
+.cluster {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space, var(--s0));
+  justify-content: var(--justify, flex-start);
+  align-items: var(--align, flex-start);
+}

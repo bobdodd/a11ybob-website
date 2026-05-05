@@ -1,0 +1,21 @@
+/* Switcher — switches between a horizontal and vertical layout at
+   a container-relative threshold. No media queries.
+   See Every Layout, "The Switcher". */
+
+.switcher {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gutter, var(--s0));
+}
+
+.switcher > * {
+  flex-grow: 1;
+  flex-basis: calc((var(--threshold, 30rem) - 100%) * 999);
+}
+
+/* Quantity threshold: collapse to one column when there are more
+   than --limit (default 4) items, so they don't get squashed. */
+.switcher > :nth-last-child(n + 5),
+.switcher > :nth-last-child(n + 5) ~ * {
+  flex-basis: 100%;
+}

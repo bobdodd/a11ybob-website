@@ -1,0 +1,29 @@
+/* Stack — vertical spacing between flow elements via context, not per-element margin.
+   See Every Layout, "The Stack". */
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.stack > * {
+  margin-block: 0;
+}
+
+.stack > * + * {
+  margin-block-start: var(--space, var(--s1));
+}
+
+.stack--recursive * + * {
+  margin-block-start: var(--space, var(--s1));
+}
+
+/* Split: when a stack should push later children to the bottom of its
+   space (useful for card components), apply margin-block-end: auto to
+   the chosen child via a one-off selector. CSS custom properties are
+   not valid inside :nth-child(), so this can't be parameterised here. */
+
+.stack:only-child {
+  block-size: 100%;
+}

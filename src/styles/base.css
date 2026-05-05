@@ -1,0 +1,137 @@
+/*
+ * Element defaults — global styles applied via element selectors.
+ * No classes; these are what unattributed HTML produces by default.
+ * The prior Flask site used WYSIWYG-shaped markup, and Markdown
+ * articles will produce raw elements here too — element-level
+ * styling means we don't have to attribute every <h2> and <p>.
+ */
+
+html {
+  color-scheme: light dark;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--surface-1);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--s0);
+  line-height: 1.5;
+  font-feature-settings: "kern", "liga";
+  text-rendering: optimizeLegibility;
+}
+
+/* ===== Headings =====
+   All from the modular scale. h4-h6 share size and differentiate by
+   weight and style — keeps the type budget under the 3:1 cap. */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  line-height: 1.15;
+  font-weight: 600;
+  text-wrap: balance;
+}
+
+h1 { font-size: var(--s4); }
+h2 { font-size: var(--s3); }
+h3 { font-size: var(--s2); }
+h4 { font-size: var(--s1); }
+h5 { font-size: var(--s1); font-weight: 500; }
+h6 { font-size: var(--s1); font-weight: 400; font-style: italic; }
+
+/* ===== Body prose ===== */
+p {
+  text-wrap: pretty;
+  hyphens: auto;
+}
+
+small,
+caption,
+figcaption {
+  font-size: var(--s-1);
+}
+
+strong, b { font-weight: 700; }
+em, i    { font-style: italic; }
+
+/* ===== Links =====
+   Underlined by default — colour is never the only signal.
+   Underline thickens on hover and focus so the affordance is
+   reinforced kinaesthetically as well as visually. */
+a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-skip-ink: auto;
+  text-underline-offset: 0.2em;
+}
+
+a:hover,
+a:focus-visible {
+  text-decoration-thickness: 2px;
+}
+
+/* ===== Code ===== */
+code, pre, kbd, samp {
+  font-family: var(--font-mono);
+  font-size: 0.95em;
+}
+
+pre {
+  background: var(--surface-2);
+  padding: var(--s0);
+  overflow-x: auto;
+  border: var(--border-thin) solid var(--rule);
+}
+
+:not(pre) > code {
+  background: var(--surface-2);
+  padding: 0.1em 0.35em;
+  border-radius: 0.2em;
+}
+
+kbd {
+  background: var(--surface-2);
+  padding: 0.1em 0.35em;
+  border: var(--border-thin) solid var(--rule);
+  border-radius: 0.2em;
+}
+
+/* ===== Lists ===== */
+ul, ol {
+  padding-inline-start: var(--s2);
+}
+
+/* ===== Quotes ===== */
+blockquote {
+  padding-inline-start: var(--s1);
+  border-inline-start: var(--border-thick) solid var(--accent-bright);
+  font-style: italic;
+  color: var(--ink-muted);
+}
+
+/* ===== Rules ===== */
+hr {
+  border-block-start: var(--border-thin) solid var(--rule);
+  margin-block: var(--s2);
+}
+
+/* ===== Forms (minimal — full styling lives in components) ===== */
+input, button, textarea, select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* ===== Images ===== */
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-inline-size: 100%;
+  block-size: auto;
+}

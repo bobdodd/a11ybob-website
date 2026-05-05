@@ -1,0 +1,174 @@
+/*
+ * Design tokens.
+ * Modular scale ratio 1.2 (minor third), capped at 3:1 between the
+ * smallest and largest text sizes used on a page (--s-1 to --s4).
+ * See docs/decisions/0006-type-scale-3to1.md for rationale.
+ *
+ * Surface tokens are declared explicitly per [data-zone] rather than
+ * computed from --hue / --chroma via var() chains. The chained
+ * approach (--surface-1: oklch(95% var(--chroma) var(--hue))) is
+ * defensible CSS but resolves unreliably across browsers (notably
+ * Safari) when the inner vars are overridden in a descendant. Baking
+ * the values per zone is verbose but bulletproof.
+ *
+ * See docs/decisions/0005-zonal-tinting.md.
+ */
+
+:root {
+  /* ===== Modular scale ===== */
+  --ratio: 1.2;
+  --s-2: calc(var(--s-1) / var(--ratio));   /* 0.694rem */
+  --s-1: calc(var(--s0) / var(--ratio));    /* 0.833rem - captions */
+  --s0:  1rem;                              /* body */
+  --s1:  calc(var(--s0) * var(--ratio));    /* 1.2rem   - h4-h6, lede */
+  --s2:  calc(var(--s1) * var(--ratio));    /* 1.44rem  - h3 */
+  --s3:  calc(var(--s2) * var(--ratio));    /* 1.728rem - h2 */
+  --s4:  calc(var(--s3) * var(--ratio));    /* 2.074rem - h1 */
+  --s5:  calc(var(--s4) * var(--ratio));    /* 2.488rem - layout spacing */
+  --s6:  calc(var(--s5) * var(--ratio));    /* 2.986rem - layout spacing */
+
+  font-size: calc(1rem + 0.25vw);
+
+  /* ===== Measure ===== */
+  --measure: 60ch;
+
+  /* ===== Borders ===== */
+  --border-thin: 1px;
+  --border-thick: 2px;
+
+  /* ===== Default surface tokens (self zone, light) ===== */
+  --surface-1: oklch(95% 0.04 85);
+  --surface-2: oklch(90% 0.04 85);
+  --ink:       oklch(20% 0.02 85);
+  --ink-muted: oklch(35% 0.02 85);
+  --rule:      oklch(75% 0.04 85);
+
+  /* ===== Accent (links, focus) — zone-independent ===== */
+  --accent:        oklch(35% 0.18 240);
+  --accent-bright: oklch(55% 0.20 240);
+
+  /* ===== Focus ring ===== */
+  --focus-color: var(--accent-bright);
+  --focus-halo:  var(--surface-1);
+}
+
+/* ===== Zone overrides (light mode) =====
+   Each zone redeclares the surface tokens directly. Same lightness
+   pairings (95% / 90%) across zones; only hue and chroma vary.
+   AAA contrast (~11:1) preserved on every zone. */
+
+[data-zone="self"] {
+  --surface-1: oklch(95% 0.04 85);
+  --surface-2: oklch(90% 0.04 85);
+  --ink:       oklch(20% 0.02 85);
+  --ink-muted: oklch(35% 0.02 85);
+  --rule:      oklch(75% 0.04 85);
+}
+
+[data-zone="writing"] {
+  --surface-1: oklch(95% 0.05 30);
+  --surface-2: oklch(90% 0.05 30);
+  --ink:       oklch(20% 0.02 30);
+  --ink-muted: oklch(35% 0.02 30);
+  --rule:      oklch(75% 0.05 30);
+}
+
+[data-zone="knowledge"] {
+  --surface-1: oklch(95% 0.045 230);
+  --surface-2: oklch(90% 0.045 230);
+  --ink:       oklch(20% 0.02 230);
+  --ink-muted: oklch(35% 0.02 230);
+  --rule:      oklch(75% 0.045 230);
+}
+
+[data-zone="tools"] {
+  --surface-1: oklch(95% 0.015 215);
+  --surface-2: oklch(90% 0.015 215);
+  --ink:       oklch(20% 0.01 215);
+  --ink-muted: oklch(35% 0.01 215);
+  --rule:      oklch(75% 0.015 215);
+}
+
+/* ===== Dark mode ===== */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --surface-1: oklch(20% 0.04 85);
+    --surface-2: oklch(26% 0.04 85);
+    --ink:       oklch(96% 0.02 85);
+    --ink-muted: oklch(75% 0.02 85);
+    --rule:      oklch(40% 0.04 85);
+    --accent:        oklch(75% 0.18 240);
+    --accent-bright: oklch(85% 0.18 240);
+  }
+
+  [data-zone="self"] {
+    --surface-1: oklch(20% 0.04 85);
+    --surface-2: oklch(26% 0.04 85);
+    --ink:       oklch(96% 0.02 85);
+    --ink-muted: oklch(75% 0.02 85);
+    --rule:      oklch(40% 0.04 85);
+  }
+
+  [data-zone="writing"] {
+    --surface-1: oklch(20% 0.05 30);
+    --surface-2: oklch(26% 0.05 30);
+    --ink:       oklch(96% 0.02 30);
+    --ink-muted: oklch(75% 0.02 30);
+    --rule:      oklch(40% 0.05 30);
+  }
+
+  [data-zone="knowledge"] {
+    --surface-1: oklch(20% 0.045 230);
+    --surface-2: oklch(26% 0.045 230);
+    --ink:       oklch(96% 0.02 230);
+    --ink-muted: oklch(75% 0.02 230);
+    --rule:      oklch(40% 0.045 230);
+  }
+
+  [data-zone="tools"] {
+    --surface-1: oklch(20% 0.015 215);
+    --surface-2: oklch(26% 0.015 215);
+    --ink:       oklch(96% 0.01 215);
+    --ink-muted: oklch(75% 0.01 215);
+    --rule:      oklch(40% 0.015 215);
+  }
+}
+
+/* ===== Higher contrast preference ===== */
+@media (prefers-contrast: more) {
+  :root,
+  [data-zone="self"],
+  [data-zone="writing"],
+  [data-zone="knowledge"],
+  [data-zone="tools"] {
+    --surface-1: white;
+    --surface-2: white;
+    --ink:       black;
+    --ink-muted: black;
+    --accent:    black;
+    --rule:      black;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root,
+    [data-zone="self"],
+    [data-zone="writing"],
+    [data-zone="knowledge"],
+    [data-zone="tools"] {
+      --surface-1: black;
+      --surface-2: black;
+      --ink:       white;
+      --ink-muted: white;
+      --accent:    white;
+      --rule:      white;
+    }
+  }
+}
+
+/* ===== Font families =====
+   The next/font CSS variables --font-body-source and
+   --font-heading-source are set on <html> by the root layout. */
+:root {
+  --font-body:    var(--font-body-source, system-ui), system-ui, -apple-system, sans-serif;
+  --font-heading: var(--font-heading-source, Georgia), Georgia, "Iowan Old Style", serif;
+  --font-mono:    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+}

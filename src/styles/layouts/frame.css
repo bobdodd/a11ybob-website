@@ -1,0 +1,17 @@
+/* Frame — fixed-aspect-ratio container that crops its content to fit.
+   See Every Layout, "The Frame". */
+
+.frame {
+  aspect-ratio: var(--frame-n, 16) / var(--frame-d, 9);
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.frame > img,
+.frame > video {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}

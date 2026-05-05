@@ -1,0 +1,32 @@
+/* Reel — horizontally-scrolling row of equal-height items.
+   No JS needed (Heydon's optional ResizeObserver enhancement adds
+   "overflowing" class to control padding-block-end; we'll add that
+   only if the design needs it).
+   See Every Layout, "The Reel". */
+
+.reel {
+  display: flex;
+  block-size: var(--reel-height, auto);
+  overflow-x: auto;
+  overflow-y: hidden;
+  gap: var(--space, var(--s0));
+  scrollbar-color: var(--ink) var(--surface-2);
+}
+
+.reel > * {
+  flex: 0 0 var(--item-width, auto);
+}
+
+.reel > img {
+  block-size: 100%;
+  flex-basis: auto;
+  width: auto;
+}
+
+.reel--no-bar {
+  scrollbar-width: none;
+}
+
+.reel--no-bar::-webkit-scrollbar {
+  display: none;
+}

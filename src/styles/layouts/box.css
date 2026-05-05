@@ -1,0 +1,20 @@
+/* Box — equal padding on all sides; visible by border or background.
+   See Every Layout, "The Box". */
+
+.box {
+  padding: var(--space, var(--s1));
+  border: var(--border-thin) solid var(--rule);
+  /* Transparent outline restores box shape under Windows High Contrast Mode */
+  outline: var(--border-thin) solid transparent;
+  outline-offset: calc(var(--border-thin) * -1);
+  background: var(--surface-2);
+}
+
+.box * {
+  color: inherit;
+}
+
+.box--invert {
+  background: var(--ink);
+  color: var(--surface-1);
+}

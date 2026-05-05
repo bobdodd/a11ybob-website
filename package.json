@@ -1,14 +1,25 @@
 {
-  "name": "a11ybob",
+  "name": "a11ybob-website",
   "version": "0.1.0",
   "private": true,
+  "license": "GPL-3.0-only",
+  "description": "Personal site on digital accessibility — Next.js, OpenSearch, and Heydon Pickering's Every Layout",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bobdodd/a11ybob-website.git"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed": "bash scripts/seed-mongo.sh",
+    "index": "tsx scripts/index-opensearch.ts",
+    "import-articles": "tsx scripts/migrate-articles.ts"
   },
   "dependencies": {
+    "@opensearch-project/opensearch": "^3.6.0",
+    "mongodb": "^7.2.0",
     "next": "16.2.4",
     "react": "19.2.4",
     "react-dom": "19.2.4"
@@ -19,6 +30,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.4",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }

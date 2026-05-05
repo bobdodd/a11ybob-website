@@ -1,0 +1,117 @@
+/* Site chrome — header, nav, footer.
+   The whole shell is wrapped in [data-zone] so header, main, and
+   footer all read tokens from the same zone. The BridgePoint
+   pattern: when you're in the "knowledge" zone, the entire working
+   area carries that zone's tint. Header and footer use surface-2
+   (slightly more emphasised) to band the page; main uses surface-1
+   (the lightest tint) for the body. */
+
+.site-shell {
+  min-block-size: 100vh;
+  background: var(--surface-1);
+  display: flex;
+  flex-direction: column;
+}
+
+.site-shell > main {
+  flex: 1 0 auto;
+}
+
+.site-header {
+  border-block-end: var(--border-thin) solid var(--rule);
+  padding-block: var(--s0);
+  background: var(--surface-2);
+}
+
+.site-footer {
+  border-block-start: var(--border-thin) solid var(--rule);
+  padding-block: var(--s2);
+  margin-block-start: var(--s4);
+  background: var(--surface-2);
+  color: var(--ink-muted);
+}
+
+/* Inner container for chrome — wider than the editorial measure since
+   chrome benefits from spanning the viewport more generously. */
+.site-chrome {
+  --max: 80rem;
+  --gutter: var(--s1);
+}
+
+/* Logo */
+.site-logo {
+  font-family: var(--font-heading);
+  font-size: var(--s1);
+  font-weight: 600;
+  color: var(--ink);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.site-logo:hover,
+.site-logo:focus-visible {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.15em;
+}
+
+/* Nav lists (primary and secondary) */
+.nav-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.nav-list a {
+  color: var(--ink);
+  text-decoration: none;
+  padding-block: var(--s-2);
+  display: inline-block;
+  border-block-end: var(--border-thick) solid transparent;
+}
+
+.nav-list a:hover,
+.nav-list a:focus-visible {
+  border-block-end-color: var(--accent-bright);
+}
+
+.nav-list a[aria-current="page"] {
+  border-block-end-color: var(--ink);
+  font-weight: 600;
+}
+
+/* Page main — content area. No background of its own; the shell's
+   surface-1 shows through, giving the lighter tint between the
+   header and footer bands. */
+.site-main {
+  padding-block: var(--s3);
+}
+
+.site-main > .center {
+  --gutter: var(--s1);
+}
+
+/* Door cards — used on home and elsewhere for grouped CTA tiles */
+.door {
+  display: block;
+  padding: var(--s1);
+  border: var(--border-thin) solid var(--rule);
+  background: var(--surface-2);
+  color: inherit;
+  text-decoration: none;
+}
+
+.door:hover,
+.door:focus-visible {
+  border-color: var(--accent-bright);
+}
+
+.door h2 {
+  margin-block: 0;
+  font-size: var(--s2);
+}
+
+.door p {
+  margin-block: var(--s-1) 0;
+  color: var(--ink-muted);
+}

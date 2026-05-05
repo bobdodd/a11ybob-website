@@ -1,0 +1,16 @@
+/* Container — establishes a containment context for container queries
+   when an intrinsic layout cannot be devised. Reserved for cases
+   where Sidebar/Switcher/Grid/Cluster don't suffice.
+   Class is namespaced .l-container to avoid collision with Bootstrap-
+   shaped container conventions readers may bring with them.
+   See Every Layout, "The Container". */
+
+.l-container {
+  container-type: inline-size;
+}
+
+.l-container--named {
+  /* Set --container-name on the element when used:
+     style="--container-name: my-container" */
+  container: var(--container-name) / inline-size;
+}
