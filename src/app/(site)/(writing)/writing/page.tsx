@@ -6,6 +6,8 @@ import { searchGlossary } from "@/lib/glossary";
 import { buildSearchStatus } from "@/lib/searchStatus";
 import { Pagination } from "@/components/Pagination";
 import { SearchForm } from "@/components/SearchForm";
+import { FilterBar } from "@/components/FilterBar";
+import { PrimarySection } from "@/components/PrimarySection";
 import {
   ArticleResultCard,
   ReviewResultCard,
@@ -112,127 +114,10 @@ export default async function WritingIndex({
             ]}
           />
 
-          {filtering && (
-            <p>
-              <small>
-                {q && (
-                  <>
-                    Searching for <code>{q}</code>
-                    {(domain || tag) && " · "}
-                  </>
-                )}
-                {domain && (
-                  <>
-                    domain <code>{domain}</code>
-                    {tag && " · "}
-                  </>
-                )}
-                {tag && (
-                  <>
-                    tag <code>{tag}</code>
-                  </>
-                )}
-                {" — "}
-                <Link href="/writing">Clear</Link>
-              </small>
-            </p>
-          )}
-
           <div
-            className="with-sidebar"
-            style={
-              {
-                "--side-width": "16rem",
-                "--gutter": "var(--s2)",
-              } as CSSProperties
-            }
+            className="stack"
+            style={{ "--space": "var(--s2)" } as CSSProperties}
           >
-            <aside
-              className="sidebar stack"
-              style={{ "--space": "var(--s1)" } as CSSProperties}
-            >
-              <h2 style={{ fontSize: "var(--s1)" }}>Filter</h2>
-
-              {result.facets.domains.length > 0 && (
-                <section>
-                  <h3 style={{ fontSize: "var(--s0)" }}>Domain</h3>
-                  <ul
-                    className="stack"
-                    style={
-                      {
-                        "--space": "var(--s-2)",
-                        listStyle: "none",
-                        paddingInlineStart: 0,
-                        fontSize: "var(--s-1)",
-                      } as CSSProperties
-                    }
-                  >
-                    {result.facets.domains.map((f) => (
-                      <li key={f.value}>
-                        <Link
-                          href={facetHref(baseUrl, "domain", f.value, domain)}
-                          style={
-                            domain === f.value ? { fontWeight: 600 } : undefined
-                          }
-                        >
-                          {f.value}{" "}
-                          <small style={{ color: "var(--ink-muted)" }}>
-                            ({f.count})
-                          </small>
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </section>
-              )}
-
-              {result.facets.tags.length > 0 && (
-                <section>
-                  <h3 style={{ fontSize: "var(--s0)" }}>Tag</h3>
-                  <ul
-                    className="stack"
-                    style={
-                      {
-                        "--space": "var(--s-2)",
-                        listStyle: "none",
-                        paddingInlineStart: 0,
-                        fontSize: "var(--s-1)",
-                      } as CSSProperties
-                    }
-                  >
-                    {result.facets.tags.slice(0, 30).map((f) => (
-                      <li key={f.value}>
-                        <Link
-                          href={facetHref(baseUrl, "tag", f.value, tag)}
-                          style={
-                            tag === f.value ? { fontWeight: 600 } : undefined
-                          }
-                        >
-                          {f.value}{" "}
-                          <small style={{ color: "var(--ink-muted)" }}>
-                            ({f.count})
-                          </small>
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </section>
-              )}
-
-              {result.facets.domains.length === 0 &&
-                result.facets.tags.length === 0 && (
-                  <p style={{ color: "var(--ink-muted)" }}>
-                    <small>
-                      No tags or domains have been applied to articles yet.
-                    </small>
-                  </p>
-                )}
-            </aside>
-
-            <div
-              className="not-sidebar stack"
-              style={{ "--space": "var(--s2)" } as CSSProperties}
-            >
               <p role="status" style={{ marginBlock: 0 }}>
                 {q
                   ? buildSearchStatus({
@@ -252,48 +137,78 @@ export default async function WritingIndex({
                   : ""}
               </p>
 
-              <Pagination
-                page={result.page}
-                totalPages={result.totalPages}
-                total={result.total}
-                perPage={result.perPage}
-                baseUrl={baseUrl}
-                position="top"
-              />
-
-              {result.hits.length === 0 ? (
-                <p>
-                  {q
-                    ? "No articles match this search."
-                    : filtering
-                      ? "No articles match the current filters."
-                      : "No articles are currently published."}
-                </p>
-              ) : (
-                <ul
-                  className="stack"
-                  style={
+              <PrimarySection
+                wrap={Boolean(reviewsExtra || glossaryExtra)}
+                heading={`Articles · ${result.total === 0 ? "no matches" : `${result.total} match${result.total === 1 ? "" : "es"}`}`}
+              >
+                <FilterBar
+                  baseUrl={baseUrl}
+                  axes={[
                     {
-                      "--space": "var(--s2)",
-                      listStyle: "none",
-                      paddingInlineStart: 0,
-                    } as CSSProperties
-                  }
-                >
-                  {result.hits.map((hit) => (
-                    <ArticleResultCard key={hit._id} hit={hit} q={q} />
-                  ))}
-                </ul>
-              )}
+                      name: "domain",
+                      label: "Domain",
+                      active: domain,
+                      options: result.facets.domains,
+                    },
+                    {
+                      name: "tag",
+                      label: "Tag",
+                      active: tag,
+                      options: result.facets.tags.slice(0, 30),
+                    },
+                  ]}
+                />
 
-              <Pagination
-                page={result.page}
-                totalPages={result.totalPages}
-                total={result.total}
-                perPage={result.perPage}
-                baseUrl={baseUrl}
-                position="bottom"
-              />
+                <Pagination
+                  page={result.page}
+                  totalPages={result.totalPages}
+                  total={result.total}
+                  perPage={result.perPage}
+                  baseUrl={baseUrl}
+                  position="top"
+                />
+
+                {result.hits.length === 0 ? (
+                  <p>
+                    {q
+                      ? "No articles match this search."
+                      : filtering
+                        ? "No articles match the current filters."
+                        : "No articles are currently published."}
+                  </p>
+                ) : (
+                  <ul
+                    className="stack"
+                    style={
+                      {
+                        "--space": "var(--s2)",
+                        listStyle: "none",
+                        paddingInlineStart: 0,
+                      } as CSSProperties
+                    }
+                  >
+                    {result.hits.map((hit) => (
+                      <ArticleResultCard
+                        key={hit._id}
+                        hit={hit}
+                        q={q}
+                        headingLevel={
+                          reviewsExtra || glossaryExtra ? "h3" : "h2"
+                        }
+                      />
+                    ))}
+                  </ul>
+                )}
+
+                <Pagination
+                  page={result.page}
+                  totalPages={result.totalPages}
+                  total={result.total}
+                  perPage={result.perPage}
+                  baseUrl={baseUrl}
+                  position="bottom"
+                />
+              </PrimarySection>
 
               {reviewsExtra && (
                 <ReviewsSection
@@ -310,7 +225,6 @@ export default async function WritingIndex({
                   hits={glossaryExtra.hits}
                 />
               )}
-            </div>
           </div>
         </div>
       </div>
@@ -421,18 +335,3 @@ function toggleHref(baseUrl: string, key: string): string {
   return url.pathname + (url.search || "");
 }
 
-function facetHref(
-  baseUrl: string,
-  key: string,
-  value: string,
-  current: string | undefined,
-): string {
-  const url = new URL(baseUrl, "https://placeholder.example");
-  if (current === value) {
-    url.searchParams.delete(key);
-  } else {
-    url.searchParams.set(key, value);
-  }
-  url.searchParams.delete("page");
-  return url.pathname + (url.search || "");
-}

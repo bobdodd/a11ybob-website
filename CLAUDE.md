@@ -31,3 +31,22 @@ work and deserves intentional decisions, not implicit ones.
 **Mechanic:** when about to make this kind of decision, surface the
 option, name the trade-off, propose a recommendation, then wait. Don't
 ship and ask forgiveness.
+
+## Never set autocomplete="off" on a text input
+
+The HTML default is `autocomplete="on"`, and that's the right default
+here. Text entry is one of the highest-cost activities for users on
+explore-by-touch mobile keyboards, switch access, and eye-gaze input
+— every keystroke autocomplete saves is real cognitive and physical
+effort spared.
+
+- For ordinary text inputs, leave `autocomplete` unset (defaults to
+  on) or set it to a specific token like `name`, `email`,
+  `street-address`, etc. when the field has a known semantic.
+- For passwords (when we eventually add them), use
+  `autocomplete="current-password"` or `"new-password"` — those
+  tokens cooperate with password managers without accumulating
+  plaintext history.
+- Never set `autocomplete="off"` without a specific, named reason
+  that outweighs the typing cost for assistive-input users. "I don't
+  want browser suggestions to look messy" is not such a reason.

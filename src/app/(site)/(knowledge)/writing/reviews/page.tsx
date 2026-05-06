@@ -6,6 +6,8 @@ import { searchGlossary } from "@/lib/glossary";
 import { buildSearchStatus } from "@/lib/searchStatus";
 import { Pagination } from "@/components/Pagination";
 import { SearchForm } from "@/components/SearchForm";
+import { FilterBar } from "@/components/FilterBar";
+import { PrimarySection } from "@/components/PrimarySection";
 import {
   ArticleResultCard,
   ReviewResultCard,
@@ -101,84 +103,7 @@ export default async function Reading({
             ]}
           />
 
-          {(year || tag || q) && (
-            <p>
-              <small>
-                Filtering by:{" "}
-                {q && <code>q={q}</code>}{" "}
-                {year && <code>year={year}</code>}{" "}
-                {tag && <code>tag={tag}</code>}{" "}
-                <Link href="/writing/reviews">Clear all filters</Link>
-              </small>
-            </p>
-          )}
-
-          <div
-            className="with-sidebar"
-            style={
-              {
-                "--side-width": "16rem",
-                "--gutter": "var(--s2)",
-              } as CSSProperties
-            }
-          >
-            <aside className="sidebar stack" style={{ "--space": "var(--s1)" } as CSSProperties}>
-              <h2 style={{ fontSize: "var(--s1)" }}>Filter</h2>
-
-              {result.facets.years.length > 0 && (
-                <section>
-                  <h3 style={{ fontSize: "var(--s0)" }}>Year</h3>
-                  <ul
-                    className="stack"
-                    style={{
-                      "--space": "var(--s-2)",
-                      listStyle: "none",
-                      paddingInlineStart: 0,
-                      fontSize: "var(--s-1)",
-                    } as CSSProperties}
-                  >
-                    {result.facets.years.slice(0, 15).map((f) => (
-                      <li key={f.value}>
-                        <Link
-                          href={facetHref(baseUrl, "year", String(f.value), year)}
-                          style={year === f.value ? { fontWeight: 600 } : undefined}
-                        >
-                          {f.value} <small style={{ color: "var(--ink-muted)" }}>({f.count})</small>
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </section>
-              )}
-
-              {result.facets.tags.length > 0 && (
-                <section>
-                  <h3 style={{ fontSize: "var(--s0)" }}>Tag</h3>
-                  <ul
-                    className="stack"
-                    style={{
-                      "--space": "var(--s-2)",
-                      listStyle: "none",
-                      paddingInlineStart: 0,
-                      fontSize: "var(--s-1)",
-                    } as CSSProperties}
-                  >
-                    {result.facets.tags.slice(0, 25).map((f) => (
-                      <li key={f.value}>
-                        <Link
-                          href={facetHref(baseUrl, "tag", f.value, tag)}
-                          style={tag === f.value ? { fontWeight: 600 } : undefined}
-                        >
-                          {f.value} <small style={{ color: "var(--ink-muted)" }}>({f.count})</small>
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </section>
-              )}
-            </aside>
-
-            <div className="not-sidebar stack" style={{ "--space": "var(--s2)" } as CSSProperties}>
+          <div className="stack" style={{ "--space": "var(--s2)" } as CSSProperties}>
               <p role="status" style={{ marginBlock: 0 }}>
                 {q
                   ? buildSearchStatus({
@@ -198,40 +123,72 @@ export default async function Reading({
                   : ""}
               </p>
 
-              <Pagination
-                page={result.page}
-                totalPages={result.totalPages}
-                total={result.total}
-                perPage={result.perPage}
-                baseUrl={baseUrl}
-                position="top"
-              />
+              <PrimarySection
+                wrap={Boolean(articlesExtra || glossaryExtra)}
+                heading={`Reviews · ${result.total === 0 ? "no matches" : `${result.total} match${result.total === 1 ? "" : "es"}`}`}
+              >
+                <FilterBar
+                  baseUrl={baseUrl}
+                  axes={[
+                    {
+                      name: "year",
+                      label: "Year",
+                      active: year ? String(year) : undefined,
+                      options: result.facets.years.slice(0, 15).map((f) => ({
+                        value: String(f.value),
+                        count: f.count,
+                      })),
+                    },
+                    {
+                      name: "tag",
+                      label: "Tag",
+                      active: tag,
+                      options: result.facets.tags.slice(0, 25),
+                    },
+                  ]}
+                />
 
-              {result.hits.length === 0 ? (
-                <p>No reviews match the current filters.</p>
-              ) : (
-                <ul
-                  className="stack"
-                  style={{
-                    "--space": "var(--s2)",
-                    listStyle: "none",
-                    paddingInlineStart: 0,
-                  } as CSSProperties}
-                >
-                  {result.hits.map((r) => (
-                    <ReviewResultCard key={r._id} hit={r} />
-                  ))}
-                </ul>
-              )}
+                <Pagination
+                  page={result.page}
+                  totalPages={result.totalPages}
+                  total={result.total}
+                  perPage={result.perPage}
+                  baseUrl={baseUrl}
+                  position="top"
+                />
 
-              <Pagination
-                page={result.page}
-                totalPages={result.totalPages}
-                total={result.total}
-                perPage={result.perPage}
-                baseUrl={baseUrl}
-                position="bottom"
-              />
+                {result.hits.length === 0 ? (
+                  <p>No reviews match the current filters.</p>
+                ) : (
+                  <ul
+                    className="stack"
+                    style={{
+                      "--space": "var(--s2)",
+                      listStyle: "none",
+                      paddingInlineStart: 0,
+                    } as CSSProperties}
+                  >
+                    {result.hits.map((r) => (
+                      <ReviewResultCard
+                        key={r._id}
+                        hit={r}
+                        headingLevel={
+                          articlesExtra || glossaryExtra ? "h3" : "h2"
+                        }
+                      />
+                    ))}
+                  </ul>
+                )}
+
+                <Pagination
+                  page={result.page}
+                  totalPages={result.totalPages}
+                  total={result.total}
+                  perPage={result.perPage}
+                  baseUrl={baseUrl}
+                  position="bottom"
+                />
+              </PrimarySection>
 
               {articlesExtra && (
                 <details className="extra-section" open>
@@ -300,7 +257,6 @@ export default async function Reading({
                   )}
                 </details>
               )}
-            </div>
           </div>
         </div>
       </div>
@@ -319,18 +275,3 @@ function toggleHref(baseUrl: string, key: string): string {
   return url.pathname + (url.search || "");
 }
 
-function facetHref(
-  baseUrl: string,
-  key: string,
-  value: string,
-  current: string | number | undefined,
-): string {
-  const url = new URL(baseUrl, "https://placeholder.example");
-  if (String(current) === value) {
-    url.searchParams.delete(key);
-  } else {
-    url.searchParams.set(key, value);
-  }
-  url.searchParams.delete("page");
-  return url.pathname + (url.search || "");
-}

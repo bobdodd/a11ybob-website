@@ -36,6 +36,11 @@ const textWithKeyword = (ignoreAbove: number) => ({
   fields: { keyword: { type: "keyword", ignore_above: ignoreAbove } },
 });
 
+/* Completion (FST-backed) suggester field for type-ahead suggestions.
+ * Populated by the build*() functions with whatever strings should be
+ * type-ahead-matchable against this corpus. */
+const completion = { type: "completion" };
+
 const reviewsMapping = {
   properties: {
     title: textWithKeyword(512),
@@ -51,6 +56,7 @@ const reviewsMapping = {
     rating: { type: "integer" },
     created: dateField,
     updated: dateField,
+    suggest: completion,
   },
 };
 
@@ -64,6 +70,7 @@ const glossaryMapping = {
     sources: { type: "keyword" },
     created: dateField,
     updated: dateField,
+    suggest: completion,
   },
 };
 
@@ -76,6 +83,7 @@ const articlesMapping = {
     content: text(),
     publishedAt: dateField,
     updatedAt: dateField,
+    suggest: completion,
   },
 };
 
@@ -85,7 +93,10 @@ async function buildReviews(db: Db): Promise<IndexDoc[]> {
   const docs = await db.collection("reviews").find({}).toArray();
   return docs.map((doc) => {
     const { _id, ...rest } = doc;
-    return { id: String(_id), source: rest };
+    return {
+      id: String(_id),
+      source: { ...rest, suggest: suggestInputsForReview(rest) },
+    };
   });
 }
 
@@ -93,8 +104,23 @@ async function buildGlossary(db: Db): Promise<IndexDoc[]> {
   const docs = await db.collection("glossary").find({}).toArray();
   return docs.map((doc) => {
     const { _id, ...rest } = doc;
-    return { id: String(_id), source: rest };
+    return {
+      id: String(_id),
+      source: { ...rest, suggest: suggestInputsForGlossary(rest) },
+    };
   });
+}
+
+function suggestInputsForReview(doc: Record<string, unknown>): string[] {
+  return [doc.title].filter((s): s is string => typeof s === "string" && s.length > 0);
+}
+
+function suggestInputsForGlossary(doc: Record<string, unknown>): string[] {
+  const term = typeof doc.term === "string" ? doc.term : null;
+  const aka = Array.isArray(doc.aka)
+    ? doc.aka.filter((s): s is string => typeof s === "string" && s.length > 0)
+    : [];
+  return [term, ...aka].filter((s): s is string => Boolean(s));
 }
 
 // Articles: published only. Joins the current version's content.
@@ -131,6 +157,7 @@ async function buildArticles(db: Db): Promise<IndexDoc[]> {
           domains: a.domains ?? [],
           publishedAt: a.publishedAt ?? a.createdAt,
           updatedAt: a.updatedAt,
+          suggest: typeof v.title === "string" && v.title ? [v.title] : [],
         },
       };
     });

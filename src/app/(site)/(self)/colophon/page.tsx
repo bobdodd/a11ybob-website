@@ -262,6 +262,111 @@ export default function Colophon() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
+            <h2>Type-ahead suggestions across every corpus</h2>
+            <p>
+              The search box offers type-ahead suggestions after two
+              characters, drawn from article and review titles and
+              from glossary terms (including aliases — typing
+              <em> Music Braille</em> finds the entry whose canonical
+              term is <em>Braille Music</em>). Suggestions are
+              grouped by corpus and selecting one quick-jumps to the
+              resource. Pressing Enter without picking a suggestion
+              runs the regular search.
+            </p>
+            <p>
+              The combobox follows the WAI-ARIA 1.2 combobox pattern:
+              the input has{" "}
+              <code>role=&ldquo;combobox&rdquo;</code>, the dropdown
+              has <code>role=&ldquo;listbox&rdquo;</code>, each
+              suggestion is a <code>role=&ldquo;option&rdquo;</code>,
+              and arrow keys / Enter / Escape work as expected.
+              Without JavaScript the form still submits to the
+              server-rendered results page exactly as it always has —
+              suggestions are a strict progressive enhancement.
+            </p>
+            <p>
+              Backed by OpenSearch&rsquo;s completion suggester, an
+              FST-backed prefix matcher; suggestions return in a few
+              milliseconds. Browser autofill of previously-submitted
+              queries is also on (see below) and complementary —
+              browser autofill suggests <em>what you typed last
+              time</em>, the completion suggester suggests <em>what
+              the corpus contains</em>.
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
+            <h2>Autocomplete is on for every input</h2>
+            <p>
+              Every text input on the site has the browser&rsquo;s
+              autocomplete behaviour turned on. The only exception is
+              passwords (none on the site at the moment, but the rule
+              holds): those use the password-specific autocomplete
+              tokens so password managers can fill them, but they
+              don&rsquo;t accumulate plaintext history.
+            </p>
+            <p>
+              Text entry is one of the highest-cost activities on the
+              web for many disabled users. A blind user on an
+              explore-by-touch mobile keyboard, a switch-access user
+              hunting through an on-screen grid, an eye-gaze user
+              dwelling on each letter — for any of them, every
+              keystroke saved is a real reduction in fatigue. The
+              default for input elements should bias hard towards
+              fewer keystrokes; turning autocomplete off should
+              require a specific reason that outweighs that cost.
+            </p>
+            <p>
+              The default for HTML inputs is{" "}
+              <code>autocomplete=&ldquo;on&rdquo;</code>. We were
+              setting <code>autocomplete=&ldquo;off&rdquo;</code> on
+              the search box without thinking. That&rsquo;s the
+              kind of well-meaning default that quietly punishes the
+              users a site like this is built for.
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
+            <h2>Filters live with the results, not in a sidebar</h2>
+            <p>
+              Search-result filters appear at the top of the result
+              column, not in a left sidebar. The currently-applied
+              filters render as removable chips that are always
+              visible; the rest of the filter options live behind a
+              disclosure widget that&rsquo;s closed by default.
+            </p>
+            <p>
+              The sidebar pattern looks tidy on a wide screen, but it
+              fails the users this site is built for. A
+              screen-magnifier user zoomed into the result column
+              never sees a sidebar to its left — the filters are
+              effectively invisible to them. A screen-reader user
+              hits the sidebar before the results in DOM order, with
+              no way to skip past it. On a narrow viewport the
+              sidebar collapses on top of the results, pushing the
+              actual content below the fold whether the user is
+              filtering or not.
+            </p>
+            <p>
+              Putting filters at the top of the column they affect
+              fixes all three: magnifier users see them in the same
+              field of view as the results; screen-reader users
+              encounter them in a sensible reading order;
+              narrow-viewport users see filters and results in their
+              actual priority order without a layout shift.
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
             <h2>Pagination at top and bottom of every result list</h2>
             <p>
               Result lists carry pagination controls both above and

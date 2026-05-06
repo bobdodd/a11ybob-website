@@ -6,6 +6,8 @@ import { searchReviews } from "@/lib/reviews";
 import { buildSearchStatus } from "@/lib/searchStatus";
 import { Pagination } from "@/components/Pagination";
 import { SearchForm } from "@/components/SearchForm";
+import { FilterBar } from "@/components/FilterBar";
+import { PrimarySection } from "@/components/PrimarySection";
 import {
   ArticleResultCard,
   ReviewResultCard,
@@ -128,63 +130,7 @@ export default async function Glossary({
             </nav>
           )}
 
-          {(category || q || letter) && (
-            <p>
-              <small>
-                Filtering by:{" "}
-                {q && <code>q={q}</code>}{" "}
-                {letter && <code>letter={letter}</code>}{" "}
-                {category && <code>category={category}</code>}{" "}
-                <Link href="/writing/glossary">Clear all filters</Link>
-              </small>
-            </p>
-          )}
-
-          <div
-            className="with-sidebar"
-            style={
-              {
-                "--side-width": "16rem",
-                "--gutter": "var(--s2)",
-              } as CSSProperties
-            }
-          >
-            <aside className="sidebar stack" style={{ "--space": "var(--s1)" } as CSSProperties}>
-              <h2 style={{ fontSize: "var(--s1)" }}>Filter</h2>
-
-              {result.facets.categories.length > 0 && (
-                <section>
-                  <h3 style={{ fontSize: "var(--s0)" }}>Category</h3>
-                  <ul
-                    className="stack"
-                    style={{
-                      "--space": "var(--s-2)",
-                      listStyle: "none",
-                      paddingInlineStart: 0,
-                      fontSize: "var(--s-1)",
-                    } as CSSProperties}
-                  >
-                    {result.facets.categories.slice(0, 25).map((f) => (
-                      <li key={f.value}>
-                        <Link
-                          href={facetHref(baseUrl, "category", f.value, category)}
-                          style={
-                            category === f.value ? { fontWeight: 600 } : undefined
-                          }
-                        >
-                          {f.value}{" "}
-                          <small style={{ color: "var(--ink-muted)" }}>
-                            ({f.count})
-                          </small>
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </section>
-              )}
-            </aside>
-
-            <div className="not-sidebar stack" style={{ "--space": "var(--s2)" } as CSSProperties}>
+          <div className="stack" style={{ "--space": "var(--s2)" } as CSSProperties}>
               <p role="status" style={{ marginBlock: 0 }}>
                 {q
                   ? buildSearchStatus({
@@ -204,42 +150,59 @@ export default async function Glossary({
                   : ""}
               </p>
 
-              <Pagination
-                page={result.page}
-                totalPages={result.totalPages}
-                total={result.total}
-                perPage={result.perPage}
-                baseUrl={baseUrl}
-                position="top"
-              />
+              <PrimarySection
+                wrap={Boolean(articlesExtra || reviewsExtra)}
+                heading={`Glossary · ${result.total === 0 ? "no matches" : `${result.total} match${result.total === 1 ? "" : "es"}`}`}
+              >
+                <FilterBar
+                  baseUrl={baseUrl}
+                  axes={[
+                    {
+                      name: "category",
+                      label: "Category",
+                      active: category,
+                      options: result.facets.categories.slice(0, 25),
+                    },
+                  ]}
+                />
 
-              {result.hits.length === 0 ? (
-                <p>No glossary entries match the current filters.</p>
-              ) : (
-                <dl
-                  className="stack"
-                  style={{ "--space": "var(--s1)" } as CSSProperties}
-                >
-                  {result.hits.map((entry) => (
-                    <div
-                      key={entry._id}
-                      className="stack"
-                      style={{ "--space": "var(--s-1)" } as CSSProperties}
-                    >
-                      <GlossaryResultCard entry={entry} />
-                    </div>
-                  ))}
-                </dl>
-              )}
+                <Pagination
+                  page={result.page}
+                  totalPages={result.totalPages}
+                  total={result.total}
+                  perPage={result.perPage}
+                  baseUrl={baseUrl}
+                  position="top"
+                />
 
-              <Pagination
-                page={result.page}
-                totalPages={result.totalPages}
-                total={result.total}
-                perPage={result.perPage}
-                baseUrl={baseUrl}
-                position="bottom"
-              />
+                {result.hits.length === 0 ? (
+                  <p>No glossary entries match the current filters.</p>
+                ) : (
+                  <dl
+                    className="stack"
+                    style={{ "--space": "var(--s1)" } as CSSProperties}
+                  >
+                    {result.hits.map((entry) => (
+                      <div
+                        key={entry._id}
+                        className="stack"
+                        style={{ "--space": "var(--s-1)" } as CSSProperties}
+                      >
+                        <GlossaryResultCard entry={entry} />
+                      </div>
+                    ))}
+                  </dl>
+                )}
+
+                <Pagination
+                  page={result.page}
+                  totalPages={result.totalPages}
+                  total={result.total}
+                  perPage={result.perPage}
+                  baseUrl={baseUrl}
+                  position="bottom"
+                />
+              </PrimarySection>
 
               {articlesExtra && (
                 <details className="extra-section" open>
@@ -304,7 +267,6 @@ export default async function Glossary({
                   )}
                 </details>
               )}
-            </div>
           </div>
         </div>
       </div>
@@ -323,18 +285,3 @@ function toggleHref(baseUrl: string, key: string): string {
   return url.pathname + (url.search || "");
 }
 
-function facetHref(
-  baseUrl: string,
-  key: string,
-  value: string,
-  current: string | undefined,
-): string {
-  const url = new URL(baseUrl, "https://placeholder.example");
-  if (current === value) {
-    url.searchParams.delete(key);
-  } else {
-    url.searchParams.set(key, value);
-  }
-  url.searchParams.delete("page");
-  return url.pathname + (url.search || "");
-}

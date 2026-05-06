@@ -15,6 +15,7 @@
    content (which is unreliably announced). */
 
 import Link from "next/link";
+import { SearchSuggest } from "./SearchSuggest";
 
 type Include = {
   /** Query-param name, e.g. "reviews". Submitted as "?<name>=1". */
@@ -72,34 +73,12 @@ export function SearchForm({
         className="cluster"
         style={{ "--space": "var(--s-1)" } as React.CSSProperties}
       >
-        <label
-          htmlFor="search-input"
-          style={{
-            position: "absolute",
-            width: "1px",
-            height: "1px",
-            overflow: "hidden",
-            clip: "rect(0 0 0 0)",
-          }}
-        >
-          {label}
-        </label>
-        <input
+        <SearchSuggest
           id="search-input"
-          type="search"
           name="q"
           defaultValue={q}
           placeholder={placeholder}
-          autoComplete="off"
-          style={{
-            padding: "var(--s-1) var(--s0)",
-            border: "var(--border-thin) solid var(--rule)",
-            background: "var(--surface-1)",
-            color: "var(--ink)",
-            flex: "1 1 20ch",
-            minInlineSize: "16ch",
-            fontSize: "var(--s0)",
-          }}
+          ariaLabel={label}
         />
         <button
           type="submit"
