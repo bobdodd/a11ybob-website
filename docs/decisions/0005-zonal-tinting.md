@@ -13,7 +13,7 @@ so body-text contrast is preserved everywhere.
 | --- | --- | --- | --- | --- |
 | `self` | `/`, `/now`, `/contact`, `/work` | 85° | 0.04 | warm cream — paper |
 | `writing` | `/writing`, `/writing/[slug]`, `/about`, `/talks` | 30° | 0.05 | warm rose — editorial |
-| `knowledge` | `/writing/reading`, `/writing/glossary`, `/research` | 230° | 0.045 | cool blue — archive |
+| `knowledge` | `/writing/reviews`, `/writing/glossary`, `/research` | 230° | 0.045 | cool blue — archive |
 | `tools` | `/paradise`, `/playground` | 215° | 0.015 | technical neutral |
 
 ## Why

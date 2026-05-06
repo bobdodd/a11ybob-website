@@ -147,7 +147,7 @@ export default function Accessibility() {
                 The <Link href="/writing">writing archive</Link> currently
                 lists 16 articles, but the underlying review database of
                 2,661 papers is not yet wired up to a public browsing
-                surface. Search across writing/reading/glossary will be
+                surface. Search across writing/reviews/glossary will be
                 added in a subsequent release.
               </li>
               <li>

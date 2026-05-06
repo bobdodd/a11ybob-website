@@ -15,7 +15,7 @@ const scale = [
 const zones = [
   ["self", "warm cream — home, about, now, contact"],
   ["writing", "warm rose — articles, talks"],
-  ["knowledge", "cool blue — reading database, glossary, research"],
+  ["knowledge", "cool blue — reviews database, glossary, research"],
   ["tools", "technical neutral — paradise, playground"],
 ] as const;
 
