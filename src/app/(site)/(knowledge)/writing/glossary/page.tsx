@@ -85,7 +85,7 @@ export default async function Glossary({
             q={q}
             action="/writing/glossary"
             preserve={{ category, letter }}
-            placeholder="Search terms, aliases, definitions…"
+            hint="Searches glossary terms, their aliases, and definitions."
             label="Search the glossary"
             includes={[
               {
@@ -165,6 +165,12 @@ export default async function Glossary({
                     },
                   ]}
                 />
+
+                {!(articlesExtra || reviewsExtra) && (
+                  <h2 style={{ fontSize: "var(--s2)", marginBlock: 0 }}>
+                    Search results
+                  </h2>
+                )}
 
                 <Pagination
                   page={result.page}

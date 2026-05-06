@@ -262,6 +262,39 @@ export default function Colophon() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
+            <h2>No placeholder text — hints sit beneath inputs</h2>
+            <p>
+              You won&rsquo;t see grey placeholder text inside any
+              input on this site. Where a field needs guidance, the
+              hint is rendered as a visible{" "}
+              <code>&lt;small&gt;</code> beneath the input and
+              associated via <code>aria-describedby</code> so screen
+              readers announce it together with the field.
+            </p>
+            <p>
+              The site targets WCAG 2.2 AAA, which requires 7:1
+              contrast for body text. Browser-default placeholder
+              colour doesn&rsquo;t reach that — it&rsquo;s
+              deliberately muted to signal &ldquo;not real
+              content&rdquo;, which is exactly the legibility
+              compromise AAA exists to forbid. Placeholder text also
+              vanishes the moment the user starts typing, removing
+              context they may need to re-read; for screen-magnifier
+              users, who navigate by zooming and panning, that
+              vanish-on-type behaviour is particularly disorienting.
+            </p>
+            <p>
+              The cost of putting hints below the input is one
+              extra line of small text. The benefit is that the
+              guidance stays present, stays legible at AAA, and
+              doesn&rsquo;t conflict with the field&rsquo;s value.
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
             <h2>Type-ahead suggestions across every corpus</h2>
             <p>
               The search box offers type-ahead suggestions after two

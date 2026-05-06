@@ -153,7 +153,7 @@ export default function StyleguidePage() {
           <div className="cluster" style={{ "--space": "var(--s1)" } as CSSProperties}>
             <button type="button">Focus me</button>
             <a href="#">…or me</a>
-            <input type="text" placeholder="…or me" aria-label="Sample text input" />
+            <input type="text" aria-label="Sample text input — focus me" />
           </div>
           <p>
             <small>

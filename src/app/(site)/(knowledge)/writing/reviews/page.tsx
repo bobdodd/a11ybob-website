@@ -85,7 +85,7 @@ export default async function Reading({
             q={q}
             action="/writing/reviews"
             preserve={{ year: year ? String(year) : undefined, tag }}
-            placeholder="Search reviews…"
+            hint="Searches review titles, summaries, key findings, authors, and tags."
             label="Search reviews"
             includes={[
               {
@@ -147,6 +147,12 @@ export default async function Reading({
                     },
                   ]}
                 />
+
+                {!(articlesExtra || glossaryExtra) && (
+                  <h2 style={{ fontSize: "var(--s2)", marginBlock: 0 }}>
+                    Search results
+                  </h2>
+                )}
 
                 <Pagination
                   page={result.page}

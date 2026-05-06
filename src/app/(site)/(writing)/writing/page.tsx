@@ -96,7 +96,7 @@ export default async function WritingIndex({
             q={q}
             action="/writing"
             preserve={{ domain, tag }}
-            placeholder="Search article text…"
+            hint="Searches every word of every published article."
             label="Search articles"
             includes={[
               {
@@ -158,6 +158,12 @@ export default async function WritingIndex({
                     },
                   ]}
                 />
+
+                {!(reviewsExtra || glossaryExtra) && (
+                  <h2 style={{ fontSize: "var(--s2)", marginBlock: 0 }}>
+                    Search results
+                  </h2>
+                )}
 
                 <Pagination
                   page={result.page}

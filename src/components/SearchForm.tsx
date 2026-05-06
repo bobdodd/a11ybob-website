@@ -40,7 +40,10 @@ type Props = {
    *  so that submitting the form preserves filters. The "q" and
    *  "page" params are excluded automatically. */
   preserve?: Record<string, string | undefined>;
-  placeholder?: string;
+  /** Visible hint rendered as <small> beneath the input. Replaces
+   *  placeholder text, which fails AAA contrast in every browser's
+   *  default styling. */
+  hint?: string;
   label?: string;
   /** Pill checkboxes rendered beneath the search row. */
   includes?: Include[];
@@ -50,7 +53,7 @@ export function SearchForm({
   q = "",
   action,
   preserve = {},
-  placeholder = "Search…",
+  hint,
   label = "Search this page",
   includes = [],
 }: Props) {
@@ -77,7 +80,7 @@ export function SearchForm({
           id="search-input"
           name="q"
           defaultValue={q}
-          placeholder={placeholder}
+          hint={hint}
           ariaLabel={label}
         />
         <button
@@ -104,10 +107,12 @@ export function SearchForm({
         >
           <legend
             style={{
-              fontSize: "var(--s-1)",
-              color: "var(--ink-muted)",
+              position: "absolute",
+              width: "1px",
+              height: "1px",
+              overflow: "hidden",
+              clip: "rect(0 0 0 0)",
               padding: 0,
-              marginInlineEnd: "var(--s-1)",
             }}
           >
             Also search:

@@ -32,6 +32,33 @@ work and deserves intentional decisions, not implicit ones.
 option, name the trade-off, propose a recommendation, then wait. Don't
 ship and ask forgiveness.
 
+## Never use placeholder text on inputs
+
+The site targets WCAG 2.2 AAA. Placeholder text fails 1.4.6 in every
+browser's default styling — the muted-grey rendering doesn't reach
+the 7:1 contrast ratio AAA requires for text. It also disappears as
+soon as the user types, removing context exactly when they may need
+to refer back to it.
+
+- Don't use `placeholder=...` on `<input>` or `<textarea>`. If a
+  field needs guidance, render a visible `<small>` hint beneath the
+  input and connect it via `aria-describedby`. The SearchForm /
+  SearchSuggest components have a `hint` prop that does this; use
+  it.
+- The label is a separate concern from the hint. Labels say *what
+  field this is*, hints offer additional guidance. Both can be
+  visible.
+- This rule applies to demo inputs in the styleguide too — those
+  examples shouldn't model anti-patterns.
+- Hint text below an input renders at body size (`var(--s0)`), not
+  `<small>` / `var(--s-1)`. Hints are guidance the reader may need
+  at any moment and have to stay at the same legibility floor as
+  body text — the fluid root font-size keeps body comfortable, but
+  `<small>` shrinks below it and can drop under the practical
+  minimum on narrow viewports. Use a `<span style="display:block">`
+  or `<p>` with explicit `font-size: var(--s0)` and a muted colour
+  to de-emphasise visually without shrinking.
+
 ## Never set autocomplete="off" on a text input
 
 The HTML default is `autocomplete="on"`, and that's the right default

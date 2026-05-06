@@ -37,7 +37,10 @@ type Props = {
   id: string;
   name: string;
   defaultValue?: string;
-  placeholder?: string;
+  /** Visible hint rendered as <small> beneath the input, connected
+   *  via aria-describedby. Replaces placeholder text, which fails
+   *  WCAG 1.4.6 (AAA contrast) in every browser's default styling. */
+  hint?: string;
   /** Visually-hidden label content for screen readers. */
   ariaLabel: string;
 };
@@ -49,16 +52,22 @@ export function SearchSuggest({
   id,
   name,
   defaultValue = "",
-  placeholder,
+  hint,
   ariaLabel,
 }: Props) {
   const router = useRouter();
   const listId = useId();
+  const hintId = useId();
 
   const [value, setValue] = useState(defaultValue);
   const [groups, setGroups] = useState<Group[]>([]);
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number>(-1);
+  // Tracked via ref so the in-flight fetch handler reads the latest
+  // value without re-running the effect on every focus toggle. The
+  // dropdown should never open while the input is unfocused —
+  // otherwise a slow response after a blur reopens it from offscreen.
+  const focusedRef = useRef(false);
 
   // Flat list of items used for keyboard nav.
   const flat = useMemo(
@@ -88,7 +97,10 @@ export function SearchSuggest({
         if (!res.ok) return;
         const data = (await res.json()) as { groups: Group[] };
         setGroups(data.groups);
-        setOpen(data.groups.length > 0);
+        // Only open if the input is still focused — a fetch that
+        // completes after the user has tabbed away must not reopen
+        // the dropdown over the page content.
+        setOpen(focusedRef.current && data.groups.length > 0);
         setActiveIndex(-1);
       } catch {
         // Network failure — silently stop offering suggestions; the
@@ -152,20 +164,22 @@ export function SearchSuggest({
         type="search"
         name={name}
         defaultValue={defaultValue}
-        placeholder={placeholder}
         autoComplete="on"
         role="combobox"
         aria-autocomplete="list"
         aria-expanded={open}
         aria-controls={listId}
         aria-activedescendant={activeId}
+        aria-describedby={hint ? hintId : undefined}
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={handleKey}
         onBlur={() => {
+          focusedRef.current = false;
           // Delay so a click on a suggestion can fire first.
           setTimeout(() => setOpen(false), 150);
         }}
         onFocus={() => {
+          focusedRef.current = true;
           if (groups.length > 0) setOpen(true);
         }}
         style={{
@@ -258,6 +272,26 @@ export function SearchSuggest({
           );
         })}
       </ul>
+
+      {hint && (
+        <span
+          id={hintId}
+          style={{
+            display: "block",
+            marginBlockStart: "var(--s-2)",
+            color: "var(--ink-muted)",
+            // Body size, not <small>: hints are guidance the reader
+            // may need at any moment, so they sit at the same
+            // legibility floor as body text. The fluid root font-size
+            // already keeps body text AAA-comfortable; reducing
+            // hints below it would risk dropping under the
+            // legibility minimum at narrower viewports.
+            fontSize: "var(--s0)",
+          }}
+        >
+          {hint}
+        </span>
+      )}
     </div>
   );
 }
