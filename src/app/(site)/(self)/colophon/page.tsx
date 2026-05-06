@@ -262,6 +262,39 @@ export default function Colophon() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
+            <h2>Pagination at top and bottom of every result list</h2>
+            <p>
+              Result lists carry pagination controls both above and
+              below the list, not only below. The two instances are
+              identical in function and labelled distinctly
+              (<em>Pagination, top of results</em> and{" "}
+              <em>Pagination, bottom of results</em>) so a screen
+              reader&rsquo;s landmark navigation can target either.
+            </p>
+            <p>
+              Pagination only at the bottom assumes the reader wants
+              to read every result before moving on. For a
+              screen-reader user, that means tabbing through every
+              result&rsquo;s heading and metadata to reach the
+              page-2 link. For a screen-magnifier user, it means
+              scrolling the visible window through tens of result
+              cards to find the same control. Both costs are real
+              and avoidable. A duplicate set of controls at the top
+              of the list lets either user move between pages from
+              the position they&rsquo;re already in.
+            </p>
+            <p>
+              When there&rsquo;s only one page of results the top
+              instance is suppressed, since the live region above
+              already announces the count and a second &ldquo;N
+              results&rdquo; line would be noise.
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
             <h2>Decision log</h2>
             <p>
               Each load-bearing decision has its own document under{" "}

@@ -204,6 +204,15 @@ export default async function Glossary({
                   : ""}
               </p>
 
+              <Pagination
+                page={result.page}
+                totalPages={result.totalPages}
+                total={result.total}
+                perPage={result.perPage}
+                baseUrl={baseUrl}
+                position="top"
+              />
+
               {result.hits.length === 0 ? (
                 <p>No glossary entries match the current filters.</p>
               ) : (
@@ -229,6 +238,7 @@ export default async function Glossary({
                 total={result.total}
                 perPage={result.perPage}
                 baseUrl={baseUrl}
+                position="bottom"
               />
 
               {articlesExtra && (

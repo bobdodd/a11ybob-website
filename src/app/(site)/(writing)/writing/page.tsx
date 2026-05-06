@@ -252,6 +252,15 @@ export default async function WritingIndex({
                   : ""}
               </p>
 
+              <Pagination
+                page={result.page}
+                totalPages={result.totalPages}
+                total={result.total}
+                perPage={result.perPage}
+                baseUrl={baseUrl}
+                position="top"
+              />
+
               {result.hits.length === 0 ? (
                 <p>
                   {q
@@ -283,6 +292,7 @@ export default async function WritingIndex({
                 total={result.total}
                 perPage={result.perPage}
                 baseUrl={baseUrl}
+                position="bottom"
               />
 
               {reviewsExtra && (

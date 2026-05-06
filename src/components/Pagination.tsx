@@ -13,10 +13,25 @@ type Props = {
    *  "/writing/reviews?q=accessible&year=2024". The page param will
    *  be replaced (or appended). */
   baseUrl: string;
+  /** Whether this instance sits above or below the result list.
+   *  Used to disambiguate the aria-label when both are rendered, so
+   *  a screen reader's landmark navigation can tell them apart. */
+  position?: "top" | "bottom";
 };
 
-export function Pagination({ page, totalPages, total, perPage, baseUrl }: Props) {
+export function Pagination({
+  page,
+  totalPages,
+  total,
+  perPage,
+  baseUrl,
+  position = "bottom",
+}: Props) {
   if (totalPages <= 1) {
+    // No pagination needed. The top instance is suppressed (the live
+    // region already announces the count); the bottom keeps a small
+    // count line so sighted readers see a tally after the list.
+    if (position === "top") return null;
     return (
       <p style={{ color: "var(--ink-muted)" }}>
         <small>{total === 1 ? "1 result" : `${total.toLocaleString()} results`}.</small>
@@ -48,7 +63,10 @@ export function Pagination({ page, totalPages, total, perPage, baseUrl }: Props)
   }
 
   return (
-    <nav aria-label="Pagination" className="pagination">
+    <nav
+      aria-label={`Pagination, ${position} of results`}
+      className="pagination"
+    >
       <p style={{ color: "var(--ink-muted)" }}>
         <small>
           Results {firstShown.toLocaleString()}–{lastShown.toLocaleString()} of{" "}

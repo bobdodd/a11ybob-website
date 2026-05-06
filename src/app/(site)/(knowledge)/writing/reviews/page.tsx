@@ -198,6 +198,15 @@ export default async function Reading({
                   : ""}
               </p>
 
+              <Pagination
+                page={result.page}
+                totalPages={result.totalPages}
+                total={result.total}
+                perPage={result.perPage}
+                baseUrl={baseUrl}
+                position="top"
+              />
+
               {result.hits.length === 0 ? (
                 <p>No reviews match the current filters.</p>
               ) : (
@@ -221,6 +230,7 @@ export default async function Reading({
                 total={result.total}
                 perPage={result.perPage}
                 baseUrl={baseUrl}
+                position="bottom"
               />
 
               {articlesExtra && (
