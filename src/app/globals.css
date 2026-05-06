@@ -25,4 +25,5 @@
 @import "../styles/layouts/icon.css"      layer(layouts);
 @import "../styles/layouts/container.css" layer(layouts);
 
-@import "../styles/components/chrome.css" layer(components);
+@import "../styles/components/chrome.css"     layer(components);
+@import "../styles/components/tier-badge.css" layer(components);

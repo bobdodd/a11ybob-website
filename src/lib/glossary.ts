@@ -1,6 +1,13 @@
 import { ObjectId } from "mongodb";
 import { getDb } from "./mongo";
 import { opensearch } from "./opensearch";
+import { HL_CLOSE, HL_OPEN } from "./searchHighlight";
+import {
+  pickTier,
+  tieredShould,
+  tierMeaningful,
+  type SearchTier,
+} from "./searchTier";
 
 export type GlossaryEntry = {
   _id: string;
@@ -12,6 +19,18 @@ export type GlossaryEntry = {
   sources: string[];
   created?: string;
   updated?: string;
+  /** Which scoring tier matched this hit. Undefined for single-term
+   *  queries and for browse mode. See
+   *  docs/decisions/0007-tiered-article-search.md */
+  tier?: SearchTier;
+  /** Highlight fragments returned by OpenSearch — strings contain the
+   *  raw source text with HL_OPEN/HL_CLOSE placeholder markers. Render
+   *  via renderSnippet() from searchHighlight.ts. */
+  highlights?: {
+    term?: string[];
+    aka?: string[];
+    definition?: string[];
+  };
 };
 
 export type GlossarySearchParams = {
@@ -42,33 +61,48 @@ export async function searchGlossary(
   const perPage = params.perPage ?? DEFAULT_PER_PAGE;
   const from = (page - 1) * perPage;
 
-  const must: Record<string, unknown>[] = [];
-  if (params.q) {
-    must.push({
-      multi_match: {
-        query: params.q,
-        fields: ["term^4", "aka^3", "definition^2"],
-      },
-    });
-  } else if (params.letter) {
-    must.push({
-      prefix: { "term.keyword": params.letter.toUpperCase() },
-    });
-  } else {
-    must.push({ match_all: {} });
-  }
-
   const filter = params.category
     ? [{ term: { category: params.category } }]
     : [];
 
+  const fields = ["term^4", "aka^3", "definition^2"];
+
+  const queryClause = params.q
+    ? {
+        bool: {
+          should: tieredShould(params.q, fields),
+          filter,
+          minimum_should_match: 1,
+        },
+      }
+    : params.letter
+      ? {
+          bool: {
+            must: [{ prefix: { "term.keyword": params.letter.toUpperCase() } }],
+            filter,
+          },
+        }
+      : { bool: { must: [{ match_all: {} }], filter } };
+
   const body = {
     from,
     size: perPage,
-    query: { bool: { must, filter } },
+    query: queryClause,
     sort: params.q
       ? ["_score"]
       : [{ "term.keyword": "asc" as const }],
+    ...(params.q && {
+      highlight: {
+        pre_tags: [HL_OPEN],
+        post_tags: [HL_CLOSE],
+        fields: {
+          term: { number_of_fragments: 0 },
+          aka: { number_of_fragments: 0 },
+          definition: { fragment_size: 220, number_of_fragments: 2, no_match_size: 0 },
+        },
+        require_field_match: false,
+      },
+    }),
     aggs: {
       categories: { terms: { field: "category", size: 30 } },
     },
@@ -79,9 +113,18 @@ export async function searchGlossary(
     ? res.body.hits.total
     : res.body.hits.total.value;
 
+  const showTier = tierMeaningful(params.q);
   const hits = res.body.hits.hits.map(
-    (h: { _id: string; _source: Record<string, unknown> }) =>
-      serialiseHit(h._id, h._source),
+    (h: {
+      _id: string;
+      _source: Record<string, unknown>;
+      matched_queries?: string[];
+      highlight?: Record<string, string[]>;
+    }) => ({
+      ...serialiseHit(h._id, h._source),
+      tier: showTier ? pickTier(h.matched_queries) : undefined,
+      highlights: h.highlight,
+    }),
   );
 
   return {

@@ -1,6 +1,8 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { searchReviews } from "@/lib/reviews";
+import { renderSnippet } from "@/lib/searchHighlight";
+import { tierLabel } from "@/lib/searchTier";
 import { Pagination } from "@/components/Pagination";
 import { SearchForm } from "@/components/SearchForm";
 
@@ -153,37 +155,75 @@ export default async function Reading({
                     paddingInlineStart: 0,
                   } as CSSProperties}
                 >
-                  {result.hits.map((r) => (
-                    <li key={r._id}>
-                      <article
-                        className="stack"
-                        style={{ "--space": "var(--s-1)" } as CSSProperties}
-                      >
-                        <h2 style={{ marginBlock: 0, fontSize: "var(--s1)" }}>
-                          <Link href={`/writing/reviews/${r._id}`}>{r.title}</Link>
-                        </h2>
-                        <p style={{ marginBlock: 0, color: "var(--ink-muted)" }}>
-                          <small>
-                            {r.authors.length > 0 && <>{r.authors.join(", ")} · </>}
-                            {r.year && <>{r.year}</>}
-                            {r.publication && <> · {r.publication}</>}
-                          </small>
-                        </p>
-                        {r.summary && (
+                  {result.hits.map((r) => {
+                    const titleHtml = r.highlights?.title?.[0]
+                      ? renderSnippet(r.highlights.title[0])
+                      : null;
+                    const summaryFrags = r.highlights?.summary ?? [];
+                    const findingsFrags = r.highlights?.key_findings ?? [];
+                    const snippetHtml =
+                      summaryFrags.length > 0
+                        ? summaryFrags.map(renderSnippet).join(" … ")
+                        : findingsFrags.length > 0
+                          ? findingsFrags.map(renderSnippet).join(" … ")
+                          : null;
+                    return (
+                      <li key={r._id}>
+                        <article
+                          className="stack"
+                          style={{ "--space": "var(--s-1)" } as CSSProperties}
+                        >
+                          <h2 style={{ marginBlock: 0, fontSize: "var(--s1)" }}>
+                            <Link href={`/writing/reviews/${r._id}`}>
+                              {titleHtml ? (
+                                <span dangerouslySetInnerHTML={{ __html: titleHtml }} />
+                              ) : (
+                                r.title
+                              )}
+                            </Link>
+                          </h2>
                           <p style={{ marginBlock: 0 }}>
-                            {truncate(r.summary, 280)}
-                          </p>
-                        )}
-                        {r.tags.length > 0 && (
-                          <p style={{ marginBlock: 0 }}>
-                            <small style={{ color: "var(--ink-muted)" }}>
-                              {r.tags.slice(0, 5).join(" · ")}
+                            {r.tier && (
+                              <span className="tier-badge">
+                                {tierLabel(r.tier)}
+                              </span>
+                            )}
+                            <small
+                              style={{
+                                color: "var(--ink-muted)",
+                                marginInlineStart: r.tier ? "var(--s-1)" : 0,
+                              }}
+                            >
+                              {r.authors.length > 0 && (
+                                <>{r.authors.join(", ")} · </>
+                              )}
+                              {r.year && <>{r.year}</>}
+                              {r.publication && <> · {r.publication}</>}
                             </small>
                           </p>
-                        )}
-                      </article>
-                    </li>
-                  ))}
+                          {snippetHtml ? (
+                            <p
+                              style={{ marginBlock: 0 }}
+                              dangerouslySetInnerHTML={{ __html: snippetHtml }}
+                            />
+                          ) : (
+                            r.summary && (
+                              <p style={{ marginBlock: 0 }}>
+                                {truncate(r.summary, 280)}
+                              </p>
+                            )
+                          )}
+                          {r.tags.length > 0 && (
+                            <p style={{ marginBlock: 0 }}>
+                              <small style={{ color: "var(--ink-muted)" }}>
+                                {r.tags.slice(0, 5).join(" · ")}
+                              </small>
+                            </p>
+                          )}
+                        </article>
+                      </li>
+                    );
+                  })}
                 </ul>
               )}
 

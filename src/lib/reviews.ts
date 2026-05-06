@@ -1,6 +1,13 @@
 import { ObjectId } from "mongodb";
 import { getDb } from "./mongo";
 import { opensearch } from "./opensearch";
+import { HL_CLOSE, HL_OPEN } from "./searchHighlight";
+import {
+  pickTier,
+  tieredShould,
+  tierMeaningful,
+  type SearchTier,
+} from "./searchTier";
 
 export type Review = {
   _id: string;
@@ -17,6 +24,18 @@ export type Review = {
   rating: number | null;
   created?: string;
   updated?: string;
+  /** Which scoring tier matched this hit. Undefined for single-term
+   *  queries and for browse mode. See
+   *  docs/decisions/0007-tiered-article-search.md */
+  tier?: SearchTier;
+  /** Highlight fragments returned by OpenSearch — strings contain the
+   *  raw source text with HL_OPEN/HL_CLOSE placeholder markers. Render
+   *  via renderSnippet() from searchHighlight.ts. */
+  highlights?: {
+    title?: string[];
+    summary?: string[];
+    key_findings?: string[];
+  };
 };
 
 export type ReviewSearchParams = {
@@ -48,34 +67,47 @@ export async function searchReviews(
   const perPage = params.perPage ?? DEFAULT_PER_PAGE;
   const from = (page - 1) * perPage;
 
-  const must = params.q
-    ? [
-        {
-          multi_match: {
-            query: params.q,
-            fields: [
-              "title^3",
-              "summary^2",
-              "key_findings^2",
-              "relevance",
-              "tags",
-              "authors",
-            ],
-          },
-        },
-      ]
-    : [{ match_all: {} }];
-
   const filter = [
     ...(params.year ? [{ term: { year: params.year } }] : []),
     ...(params.tag ? [{ term: { tags: params.tag } }] : []),
   ];
 
+  const fields = [
+    "title^3",
+    "summary^2",
+    "key_findings^2",
+    "relevance",
+    "tags",
+    "authors",
+  ];
+
+  const queryClause = params.q
+    ? {
+        bool: {
+          should: tieredShould(params.q, fields),
+          filter,
+          minimum_should_match: 1,
+        },
+      }
+    : { bool: { must: [{ match_all: {} }], filter } };
+
   const body = {
     from,
     size: perPage,
-    query: { bool: { must, filter } },
+    query: queryClause,
     sort: params.q ? ["_score"] : [{ year: "desc" as const }, "_score"],
+    ...(params.q && {
+      highlight: {
+        pre_tags: [HL_OPEN],
+        post_tags: [HL_CLOSE],
+        fields: {
+          title: { number_of_fragments: 0 },
+          summary: { fragment_size: 220, number_of_fragments: 2, no_match_size: 0 },
+          key_findings: { fragment_size: 220, number_of_fragments: 1, no_match_size: 0 },
+        },
+        require_field_match: false,
+      },
+    }),
     aggs: {
       years: { terms: { field: "year", size: 30, order: { _key: "desc" as const } } },
       tags: { terms: { field: "tags", size: 30 } },
@@ -87,9 +119,18 @@ export async function searchReviews(
     ? res.body.hits.total
     : res.body.hits.total.value;
 
+  const showTier = tierMeaningful(params.q);
   const hits = res.body.hits.hits.map(
-    (h: { _id: string; _source: Record<string, unknown> }) =>
-      serialiseHit(h._id, h._source),
+    (h: {
+      _id: string;
+      _source: Record<string, unknown>;
+      matched_queries?: string[];
+      highlight?: Record<string, string[]>;
+    }) => ({
+      ...serialiseHit(h._id, h._source),
+      tier: showTier ? pickTier(h.matched_queries) : undefined,
+      highlights: h.highlight,
+    }),
   );
 
   return {

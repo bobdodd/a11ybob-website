@@ -49,40 +49,6 @@ function extractTitle(md: string): string {
   return m ? m[1].trim() : "(untitled)";
 }
 
-// First non-heading, non-metadata, non-separator paragraph of >=100 chars.
-// Strips boundary markdown emphasis so an italic abstract reads cleanly.
-function extractSummary(md: string): string {
-  const lines = md.split("\n");
-  let i = 0;
-  while (i < lines.length && lines[i].trim() === "") i++;
-  if (lines[i]?.match(/^#\s/)) i++;
-
-  while (i < lines.length) {
-    const line = lines[i].trim();
-    if (
-      line === "" ||
-      line.startsWith("#") ||
-      line.startsWith("---") ||
-      /^\*\*[^*]+:\*\*/.test(line) // metadata like **Author:** Bob
-    ) {
-      i++;
-      continue;
-    }
-    const start = i;
-    while (i < lines.length && lines[i].trim() !== "") i++;
-    const para = lines
-      .slice(start, i)
-      .map((l) => l.trim())
-      .join(" ")
-      .replace(/\s+/g, " ")
-      .trim();
-    if (para.length >= 100) {
-      return para.replace(/^\*+|\*+$/g, "").trim();
-    }
-  }
-  return "";
-}
-
 async function main() {
   const mongo = new MongoClient(MONGODB_URI);
   await mongo.connect();
@@ -113,7 +79,6 @@ async function main() {
       articleId: ObjectId;
       version: number;
       title: string;
-      summary: string;
       content: string;
       sourceFile: string;
       createdAt: Date;
@@ -126,14 +91,12 @@ async function main() {
       const content = await readFile(path, "utf-8");
       const stats = await stat(path);
       const title = extractTitle(content);
-      const summary = extractSummary(content);
 
       versionDocs.push({
         _id: new ObjectId(),
         articleId,
         version: v + 1,
         title,
-        summary,
         content,
         sourceFile: filename,
         createdAt: stats.mtime,
@@ -151,9 +114,7 @@ async function main() {
       _id: articleId,
       slug: imp.slug,
       title: latest.title,
-      summary: latest.summary,
       status: "draft",
-      author: "Bob Dodd",
       tags: [],
       domains: [],
       currentVersionId: latest._id,

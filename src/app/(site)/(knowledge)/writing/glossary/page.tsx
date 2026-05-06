@@ -1,6 +1,8 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { searchGlossary } from "@/lib/glossary";
+import { renderSnippet } from "@/lib/searchHighlight";
+import { tierLabel } from "@/lib/searchTier";
 import { Pagination } from "@/components/Pagination";
 import { SearchForm } from "@/components/SearchForm";
 
@@ -155,34 +157,68 @@ export default async function Glossary({
                   className="stack"
                   style={{ "--space": "var(--s1)" } as CSSProperties}
                 >
-                  {result.hits.map((entry) => (
-                    <div
-                      key={entry._id}
-                      className="stack"
-                      style={{ "--space": "var(--s-1)" } as CSSProperties}
-                    >
-                      <dt style={{ fontSize: "var(--s1)", fontWeight: 600 }}>
-                        <Link href={`/writing/glossary/${entry._id}`}>
-                          {entry.term}
-                        </Link>
-                        {entry.aka.length > 0 && (
-                          <span
-                            style={{
-                              marginInlineStart: "var(--s-1)",
-                              color: "var(--ink-muted)",
-                              fontWeight: 400,
-                              fontSize: "var(--s-1)",
-                            }}
-                          >
-                            (also: {entry.aka.slice(0, 3).join(", ")})
-                          </span>
-                        )}
-                      </dt>
-                      <dd style={{ marginInlineStart: 0 }}>
-                        {truncate(entry.definition, 280)}
-                      </dd>
-                    </div>
-                  ))}
+                  {result.hits.map((entry) => {
+                    const termHtml = entry.highlights?.term?.[0]
+                      ? renderSnippet(entry.highlights.term[0])
+                      : null;
+                    const akaHtml = entry.highlights?.aka?.length
+                      ? entry.highlights.aka.map(renderSnippet).join(", ")
+                      : null;
+                    const defHtml = entry.highlights?.definition?.length
+                      ? entry.highlights.definition.map(renderSnippet).join(" … ")
+                      : null;
+                    return (
+                      <div
+                        key={entry._id}
+                        className="stack"
+                        style={{ "--space": "var(--s-1)" } as CSSProperties}
+                      >
+                        <dt style={{ fontSize: "var(--s1)", fontWeight: 600 }}>
+                          <Link href={`/writing/glossary/${entry._id}`}>
+                            {termHtml ? (
+                              <span dangerouslySetInnerHTML={{ __html: termHtml }} />
+                            ) : (
+                              entry.term
+                            )}
+                          </Link>
+                          {entry.aka.length > 0 && (
+                            <span
+                              style={{
+                                marginInlineStart: "var(--s-1)",
+                                color: "var(--ink-muted)",
+                                fontWeight: 400,
+                                fontSize: "var(--s-1)",
+                              }}
+                            >
+                              {akaHtml ? (
+                                <>
+                                  (also:{" "}
+                                  <span dangerouslySetInnerHTML={{ __html: akaHtml }} />
+                                  )
+                                </>
+                              ) : (
+                                <>(also: {entry.aka.slice(0, 3).join(", ")})</>
+                              )}
+                            </span>
+                          )}
+                        </dt>
+                        <dd style={{ marginInlineStart: 0 }}>
+                          {entry.tier && (
+                            <>
+                              <span className="tier-badge">
+                                {tierLabel(entry.tier)}
+                              </span>{" "}
+                            </>
+                          )}
+                          {defHtml ? (
+                            <span dangerouslySetInnerHTML={{ __html: defHtml }} />
+                          ) : (
+                            truncate(entry.definition, 280)
+                          )}
+                        </dd>
+                      </div>
+                    );
+                  })}
                 </dl>
               )}
 

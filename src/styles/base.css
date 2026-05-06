@@ -96,6 +96,28 @@ kbd {
   border-radius: 0.2em;
 }
 
+/* ===== Highlighted matches in search results ===== */
+mark {
+  background: oklch(88% 0.16 95);     /* warm yellow — recognisable as a highlight */
+  color: oklch(20% 0.04 95);          /* dark warm ink for AAA contrast on the highlight */
+  padding: 0.05em 0.2em;
+  border-radius: 2px;
+}
+
+@media (prefers-color-scheme: dark) {
+  mark {
+    background: oklch(50% 0.18 95);
+    color: oklch(96% 0.02 95);
+  }
+}
+
+@media (prefers-contrast: more) {
+  mark {
+    background: yellow;
+    color: black;
+  }
+}
+
 /* ===== Lists ===== */
 ul, ol {
   padding-inline-start: var(--s2);

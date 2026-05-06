@@ -1,0 +1,30 @@
+/* Pill-shaped badge for the search-result tier label
+ * (Exact phrase / All terms / Some terms). Reverses ink/surface to
+ * make the label visually distinct from the surrounding metadata
+ * line, while keeping the AAA contrast that --ink/--surface-1 already
+ * guarantees in every zone. */
+
+.tier-badge {
+  display: inline-block;
+  background-color: var(--ink);
+  color: var(--surface-1);
+  padding-block: 0.05em;
+  padding-inline: 0.6em;
+  border-radius: 999px;
+  /* Sit slightly below the cap-height of surrounding text so the pill
+   * doesn't shift the line-box height. */
+  font-size: 0.85em;
+  line-height: 1.4;
+  white-space: nowrap;
+  /* Outline rather than fill in forced-colors so it remains legible
+   * when the user has overridden colours. */
+  border: 1px solid transparent;
+}
+
+@media (forced-colors: active) {
+  .tier-badge {
+    background-color: Canvas;
+    color: CanvasText;
+    border-color: CanvasText;
+  }
+}

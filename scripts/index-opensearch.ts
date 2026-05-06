@@ -71,10 +71,8 @@ const articlesMapping = {
   properties: {
     title: textWithKeyword(512),
     slug: { type: "keyword" },
-    author: { type: "keyword" },
     tags: { type: "keyword" },
     domains: { type: "keyword" },
-    summary: text(),
     content: text(),
     publishedAt: dateField,
     updatedAt: dateField,
@@ -128,9 +126,7 @@ async function buildArticles(db: Db): Promise<IndexDoc[]> {
         source: {
           slug: a.slug,
           title: v.title,
-          summary: v.summary,
           content: v.content,
-          author: a.author,
           tags: a.tags ?? [],
           domains: a.domains ?? [],
           publishedAt: a.publishedAt ?? a.createdAt,

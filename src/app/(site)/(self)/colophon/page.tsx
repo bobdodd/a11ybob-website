@@ -194,6 +194,74 @@ export default function Colophon() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
+            <h2>Search-result highlighting carries through to the article</h2>
+            <p>
+              When you click a result on{" "}
+              <a href="/writing">/writing</a>, the matched terms are
+              highlighted (using the semantic <code>&lt;mark&gt;</code>{" "}
+              element) wherever they appear in the article body. The
+              highlights aren&rsquo;t a naive client-side substring match
+              against the URL query — they&rsquo;re computed by re-querying
+              the search index for the specific article with that query
+              and reading back the analyser-faithful matches. So what was
+              marked in the result snippet is exactly what&rsquo;s marked
+              in the body, including stem matches and other things the
+              English analyser handles.
+            </p>
+            <p>
+              This deliberately removes ambiguity between the search
+              result and the article body. For readers using screen
+              magnifiers — who can only see a small portion of the page
+              at any time — and for readers whose attention budget is
+              constrained for any other reason, that ambiguity is a real
+              cognitive load. The cost (one extra search request per
+              article view, only when arriving from search) is trivial in
+              comparison.
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
+            <h2>Why every search result carries a match-strength badge</h2>
+            <p>
+              Each search result on this site shows a small pill labelled
+              <em> Exact phrase</em>, <em> All terms</em>, or
+              <em> Some terms</em>. Three tiers, in descending strength
+              of match.
+            </p>
+            <p>
+              The reason isn&rsquo;t decoration. Highlighted terms in the
+              title and snippet are useful to sighted readers, but a blind
+              screen-reader user hears the result-card content read aloud
+              with no indication that anything is highlighted, and a
+              low-vision user using a screen magnifier may only see one
+              or two words at a time and never catch sight of the
+              highlights at all. Without something more, those users have
+              no way to tell <em>why</em> a particular result was returned
+              — whether the engine matched the exact phrase they typed,
+              or just one word of it.
+            </p>
+            <p>
+              The badge encodes that information as a short label that
+              every assistive technology can convey straightforwardly:
+              read aloud verbatim by a screen reader, magnified together
+              with the title, rendered as plain text by a refreshable
+              braille display. It&rsquo;s the same information the
+              highlights carry, made independent of vision.
+            </p>
+            <p>
+              The badge is suppressed for single-term queries, where the
+              three tiers all match the same documents and the
+              distinction would carry no information.
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
             <h2>Decision log</h2>
             <p>
               Each load-bearing decision has its own document under{" "}
