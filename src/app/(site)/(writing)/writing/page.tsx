@@ -1,17 +1,27 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
-import { renderSnippet, searchArticles, type ArticleHit } from "@/lib/articles";
-import { tierLabel } from "@/lib/searchTier";
+import { searchArticles } from "@/lib/articles";
+import { searchReviews } from "@/lib/reviews";
+import { searchGlossary } from "@/lib/glossary";
 import { Pagination } from "@/components/Pagination";
 import { SearchForm } from "@/components/SearchForm";
+import {
+  ArticleResultCard,
+  ReviewResultCard,
+  GlossaryResultCard,
+} from "@/components/ResultCards";
 
 export const dynamic = "force-dynamic";
+
+const EXTRA_PREVIEW = 5;
 
 type Search = {
   q?: string;
   domain?: string;
   tag?: string;
   page?: string;
+  reviews?: string;
+  glossary?: string;
 };
 
 export default async function WritingIndex({
@@ -24,13 +34,27 @@ export default async function WritingIndex({
   const domain = params.domain?.trim() || undefined;
   const tag = params.tag?.trim() || undefined;
   const page = params.page ? parseInt(params.page, 10) || 1 : 1;
+  const includeReviews = params.reviews === "1";
+  const includeGlossary = params.glossary === "1";
 
-  const result = await searchArticles({ q, domain, tag, page });
+  // Extra-corpus searches only run when the user has opted in AND
+  // there's a query — they're keyed by q, no filters.
+  const [result, reviewsExtra, glossaryExtra] = await Promise.all([
+    searchArticles({ q, domain, tag, page }),
+    q && includeReviews
+      ? searchReviews({ q, perPage: EXTRA_PREVIEW })
+      : null,
+    q && includeGlossary
+      ? searchGlossary({ q, perPage: EXTRA_PREVIEW })
+      : null,
+  ]);
 
   const sp = new URLSearchParams();
   if (q) sp.set("q", q);
   if (domain) sp.set("domain", domain);
   if (tag) sp.set("tag", tag);
+  if (includeReviews) sp.set("reviews", "1");
+  if (includeGlossary) sp.set("glossary", "1");
   const baseUrl = `/writing${sp.toString() ? `?${sp}` : ""}`;
 
   const filtering = Boolean(q || domain || tag);
@@ -71,6 +95,10 @@ export default async function WritingIndex({
             preserve={{ domain, tag }}
             placeholder="Search article text…"
             label="Search articles"
+            includes={[
+              { name: "reviews", label: "+ Reviews", checked: includeReviews },
+              { name: "glossary", label: "+ Glossary", checked: includeGlossary },
+            ]}
           />
 
           {filtering && (
@@ -214,7 +242,7 @@ export default async function WritingIndex({
                   }
                 >
                   {result.hits.map((hit) => (
-                    <ArticleResult key={hit._id} hit={hit} searching={Boolean(q)} q={q} />
+                    <ArticleResultCard key={hit._id} hit={hit} q={q} />
                   ))}
                 </ul>
               )}
@@ -226,6 +254,22 @@ export default async function WritingIndex({
                 perPage={result.perPage}
                 baseUrl={baseUrl}
               />
+
+              {reviewsExtra && (
+                <ReviewsSection
+                  q={q!}
+                  total={reviewsExtra.total}
+                  hits={reviewsExtra.hits}
+                />
+              )}
+
+              {glossaryExtra && (
+                <GlossarySection
+                  q={q!}
+                  total={glossaryExtra.total}
+                  hits={glossaryExtra.hits}
+                />
+              )}
             </div>
           </div>
         </div>
@@ -234,78 +278,95 @@ export default async function WritingIndex({
   );
 }
 
-function ArticleResult({
-  hit,
-  searching,
+function ReviewsSection({
   q,
+  total,
+  hits,
 }: {
-  hit: ArticleHit;
-  searching: boolean;
-  q?: string;
+  q: string;
+  total: number;
+  hits: Awaited<ReturnType<typeof searchReviews>>["hits"];
 }) {
-  const articleHref = q
-    ? `/writing/${hit.slug}?q=${encodeURIComponent(q)}`
-    : `/writing/${hit.slug}`;
-  // Title: prefer highlighted version when searching.
-  const titleHtml = searching && hit.highlights.title?.[0]
-    ? renderSnippet(hit.highlights.title[0])
-    : null;
-
-  // Body snippet only renders when searching — context fragments
-  // around the matched terms. There is no summary field; if no query
-  // is active, the result card shows just the title and metadata.
-  const contentFragments = hit.highlights.content ?? [];
-
   return (
-    <li>
-      <article
-        className="stack"
-        style={{ "--space": "var(--s-1)" } as CSSProperties}
-      >
-        <h2 style={{ marginBlock: 0, fontSize: "var(--s1)" }}>
-          <Link href={articleHref}>
-            {titleHtml ? (
-              <span dangerouslySetInnerHTML={{ __html: titleHtml }} />
-            ) : (
-              hit.title
-            )}
-          </Link>
+    <details className="extra-section" open>
+      <summary>
+        <h2 style={{ display: "inline", fontSize: "var(--s1)", marginBlock: 0 }}>
+          Reviews · {total === 0 ? "no matches" : `${total} match${total === 1 ? "" : "es"}`}
         </h2>
+      </summary>
+      {hits.length > 0 && (
+        <ul
+          className="stack"
+          style={
+            {
+              "--space": "var(--s2)",
+              listStyle: "none",
+              paddingInlineStart: 0,
+              marginBlockStart: "var(--s1)",
+            } as CSSProperties
+          }
+        >
+          {hits.map((hit) => (
+            <ReviewResultCard key={hit._id} hit={hit} headingLevel="h3" />
+          ))}
+        </ul>
+      )}
+      {total > hits.length && (
+        <p style={{ marginBlockStart: "var(--s0)" }}>
+          <Link href={`/writing/reviews?q=${encodeURIComponent(q)}`}>
+            See all {total} matching reviews →
+          </Link>
+        </p>
+      )}
+    </details>
+  );
+}
 
-        {(hit.publishedAt || hit.domains.length > 0 || hit.tier) && (
-          <p style={{ marginBlock: 0 }}>
-            {hit.tier && (
-              <span className="tier-badge">{tierLabel(hit.tier)}</span>
-            )}
-            {(hit.publishedAt || hit.domains.length > 0) && (
-              <small
-                style={{
-                  color: "var(--ink-muted)",
-                  marginInlineStart: hit.tier ? "var(--s-1)" : 0,
-                }}
-              >
-                {[
-                  hit.publishedAt &&
-                    new Date(hit.publishedAt).toISOString().slice(0, 10),
-                  hit.domains.length > 0 && hit.domains.join(" · "),
-                ]
-                  .filter(Boolean)
-                  .join(" · ")}
-              </small>
-            )}
-          </p>
-        )}
-
-        {searching && contentFragments.length > 0 && (
-          <div
-            style={{ marginBlock: 0 }}
-            dangerouslySetInnerHTML={{
-              __html: contentFragments.map(renderSnippet).join(" … "),
-            }}
-          />
-        )}
-      </article>
-    </li>
+function GlossarySection({
+  q,
+  total,
+  hits,
+}: {
+  q: string;
+  total: number;
+  hits: Awaited<ReturnType<typeof searchGlossary>>["hits"];
+}) {
+  return (
+    <details className="extra-section" open>
+      <summary>
+        <h2 style={{ display: "inline", fontSize: "var(--s1)", marginBlock: 0 }}>
+          Glossary · {total === 0 ? "no matches" : `${total} match${total === 1 ? "" : "es"}`}
+        </h2>
+      </summary>
+      {hits.length > 0 && (
+        <dl
+          className="stack"
+          style={
+            {
+              "--space": "var(--s1)",
+              marginBlockStart: "var(--s1)",
+            } as CSSProperties
+          }
+        >
+          {hits.map((entry) => (
+            <div
+              key={entry._id}
+              className="stack"
+              style={{ "--space": "var(--s-1)" } as CSSProperties}
+            >
+              <GlossaryResultCard entry={entry} />
+            </div>
+          ))}
+        </dl>
+      )}
+      {total > hits.length && (
+        <p style={{ marginBlockStart: "var(--s0)" }}>
+          <Link href={`/writing/glossary?q=${encodeURIComponent(q)}`}>
+            See all {total} matching terms →
+          </Link>
+        </p>
+      )}
+    </details>
   );
 }
 

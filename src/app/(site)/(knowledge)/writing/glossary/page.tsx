@@ -1,13 +1,19 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { searchGlossary } from "@/lib/glossary";
-import { renderSnippet } from "@/lib/searchHighlight";
-import { tierLabel } from "@/lib/searchTier";
+import { searchArticles } from "@/lib/articles";
+import { searchReviews } from "@/lib/reviews";
 import { Pagination } from "@/components/Pagination";
 import { SearchForm } from "@/components/SearchForm";
+import {
+  ArticleResultCard,
+  ReviewResultCard,
+  GlossaryResultCard,
+} from "@/components/ResultCards";
 
 export const dynamic = "force-dynamic";
 
+const EXTRA_PREVIEW = 5;
 const ALPHA = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 
 type Search = {
@@ -15,6 +21,8 @@ type Search = {
   letter?: string;
   category?: string;
   page?: string;
+  articles?: string;
+  reviews?: string;
 };
 
 export default async function Glossary({
@@ -27,13 +35,25 @@ export default async function Glossary({
   const letter = params.letter?.trim().toUpperCase() || undefined;
   const category = params.category?.trim() || undefined;
   const page = params.page ? parseInt(params.page, 10) || 1 : 1;
+  const includeArticles = params.articles === "1";
+  const includeReviews = params.reviews === "1";
 
-  const result = await searchGlossary({ q, letter, category, page });
+  const [result, articlesExtra, reviewsExtra] = await Promise.all([
+    searchGlossary({ q, letter, category, page }),
+    q && includeArticles
+      ? searchArticles({ q, perPage: EXTRA_PREVIEW })
+      : null,
+    q && includeReviews
+      ? searchReviews({ q, perPage: EXTRA_PREVIEW })
+      : null,
+  ]);
 
   const sp = new URLSearchParams();
   if (q) sp.set("q", q);
   if (letter) sp.set("letter", letter);
   if (category) sp.set("category", category);
+  if (includeArticles) sp.set("articles", "1");
+  if (includeReviews) sp.set("reviews", "1");
   const baseUrl = `/writing/glossary${sp.toString() ? `?${sp}` : ""}`;
 
   return (
@@ -64,6 +84,10 @@ export default async function Glossary({
             preserve={{ category, letter }}
             placeholder="Search terms, aliases, definitions…"
             label="Search the glossary"
+            includes={[
+              { name: "articles", label: "+ Articles", checked: includeArticles },
+              { name: "reviews", label: "+ Reviews", checked: includeReviews },
+            ]}
           />
 
           {!q && (
@@ -157,68 +181,15 @@ export default async function Glossary({
                   className="stack"
                   style={{ "--space": "var(--s1)" } as CSSProperties}
                 >
-                  {result.hits.map((entry) => {
-                    const termHtml = entry.highlights?.term?.[0]
-                      ? renderSnippet(entry.highlights.term[0])
-                      : null;
-                    const akaHtml = entry.highlights?.aka?.length
-                      ? entry.highlights.aka.map(renderSnippet).join(", ")
-                      : null;
-                    const defHtml = entry.highlights?.definition?.length
-                      ? entry.highlights.definition.map(renderSnippet).join(" … ")
-                      : null;
-                    return (
-                      <div
-                        key={entry._id}
-                        className="stack"
-                        style={{ "--space": "var(--s-1)" } as CSSProperties}
-                      >
-                        <dt style={{ fontSize: "var(--s1)", fontWeight: 600 }}>
-                          <Link href={`/writing/glossary/${entry._id}`}>
-                            {termHtml ? (
-                              <span dangerouslySetInnerHTML={{ __html: termHtml }} />
-                            ) : (
-                              entry.term
-                            )}
-                          </Link>
-                          {entry.aka.length > 0 && (
-                            <span
-                              style={{
-                                marginInlineStart: "var(--s-1)",
-                                color: "var(--ink-muted)",
-                                fontWeight: 400,
-                                fontSize: "var(--s-1)",
-                              }}
-                            >
-                              {akaHtml ? (
-                                <>
-                                  (also:{" "}
-                                  <span dangerouslySetInnerHTML={{ __html: akaHtml }} />
-                                  )
-                                </>
-                              ) : (
-                                <>(also: {entry.aka.slice(0, 3).join(", ")})</>
-                              )}
-                            </span>
-                          )}
-                        </dt>
-                        <dd style={{ marginInlineStart: 0 }}>
-                          {entry.tier && (
-                            <>
-                              <span className="tier-badge">
-                                {tierLabel(entry.tier)}
-                              </span>{" "}
-                            </>
-                          )}
-                          {defHtml ? (
-                            <span dangerouslySetInnerHTML={{ __html: defHtml }} />
-                          ) : (
-                            truncate(entry.definition, 280)
-                          )}
-                        </dd>
-                      </div>
-                    );
-                  })}
+                  {result.hits.map((entry) => (
+                    <div
+                      key={entry._id}
+                      className="stack"
+                      style={{ "--space": "var(--s-1)" } as CSSProperties}
+                    >
+                      <GlossaryResultCard entry={entry} />
+                    </div>
+                  ))}
                 </dl>
               )}
 
@@ -229,6 +200,70 @@ export default async function Glossary({
                 perPage={result.perPage}
                 baseUrl={baseUrl}
               />
+
+              {articlesExtra && (
+                <details className="extra-section" open>
+                  <summary>
+                    <h2 style={{ display: "inline", fontSize: "var(--s1)", marginBlock: 0 }}>
+                      Articles · {articlesExtra.total === 0 ? "no matches" : `${articlesExtra.total} match${articlesExtra.total === 1 ? "" : "es"}`}
+                    </h2>
+                  </summary>
+                  {articlesExtra.hits.length > 0 && (
+                    <ul
+                      className="stack"
+                      style={{
+                        "--space": "var(--s2)",
+                        listStyle: "none",
+                        paddingInlineStart: 0,
+                        marginBlockStart: "var(--s1)",
+                      } as CSSProperties}
+                    >
+                      {articlesExtra.hits.map((hit) => (
+                        <ArticleResultCard key={hit._id} hit={hit} q={q} headingLevel="h3" />
+                      ))}
+                    </ul>
+                  )}
+                  {articlesExtra.total > articlesExtra.hits.length && (
+                    <p style={{ marginBlockStart: "var(--s0)" }}>
+                      <Link href={`/writing?q=${encodeURIComponent(q!)}`}>
+                        See all {articlesExtra.total} matching articles →
+                      </Link>
+                    </p>
+                  )}
+                </details>
+              )}
+
+              {reviewsExtra && (
+                <details className="extra-section" open>
+                  <summary>
+                    <h2 style={{ display: "inline", fontSize: "var(--s1)", marginBlock: 0 }}>
+                      Reviews · {reviewsExtra.total === 0 ? "no matches" : `${reviewsExtra.total} match${reviewsExtra.total === 1 ? "" : "es"}`}
+                    </h2>
+                  </summary>
+                  {reviewsExtra.hits.length > 0 && (
+                    <ul
+                      className="stack"
+                      style={{
+                        "--space": "var(--s2)",
+                        listStyle: "none",
+                        paddingInlineStart: 0,
+                        marginBlockStart: "var(--s1)",
+                      } as CSSProperties}
+                    >
+                      {reviewsExtra.hits.map((hit) => (
+                        <ReviewResultCard key={hit._id} hit={hit} headingLevel="h3" />
+                      ))}
+                    </ul>
+                  )}
+                  {reviewsExtra.total > reviewsExtra.hits.length && (
+                    <p style={{ marginBlockStart: "var(--s0)" }}>
+                      <Link href={`/writing/reviews?q=${encodeURIComponent(q!)}`}>
+                        See all {reviewsExtra.total} matching reviews →
+                      </Link>
+                    </p>
+                  )}
+                </details>
+              )}
             </div>
           </div>
         </div>
@@ -251,9 +286,4 @@ function facetHref(
   }
   url.searchParams.delete("page");
   return url.pathname + (url.search || "");
-}
-
-function truncate(text: string, max: number): string {
-  if (text.length <= max) return text;
-  return text.slice(0, max).replace(/\s+\S*$/, "") + "…";
 }
