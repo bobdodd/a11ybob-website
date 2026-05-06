@@ -85,8 +85,18 @@ export default async function Reading({
             placeholder="Search reviews…"
             label="Search reviews"
             includes={[
-              { name: "articles", label: "+ Articles", checked: includeArticles },
-              { name: "glossary", label: "+ Glossary", checked: includeGlossary },
+              {
+                name: "articles",
+                label: "+ Articles",
+                checked: includeArticles,
+                href: q ? toggleHref(baseUrl, "articles") : undefined,
+              },
+              {
+                name: "glossary",
+                label: "+ Glossary",
+                checked: includeGlossary,
+                href: q ? toggleHref(baseUrl, "glossary") : undefined,
+              },
             ]}
           />
 
@@ -266,6 +276,17 @@ export default async function Reading({
       </div>
     </main>
   );
+}
+
+function toggleHref(baseUrl: string, key: string): string {
+  const url = new URL(baseUrl, "https://placeholder.example");
+  if (url.searchParams.get(key) === "1") {
+    url.searchParams.delete(key);
+  } else {
+    url.searchParams.set(key, "1");
+  }
+  url.searchParams.delete("page");
+  return url.pathname + (url.search || "");
 }
 
 function facetHref(

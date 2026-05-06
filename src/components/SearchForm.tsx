@@ -12,8 +12,13 @@ type Include = {
   name: string;
   /** Visible label, e.g. "+ Reviews". */
   label: string;
-  /** Whether the box is currently checked (derived from URL state). */
+  /** Whether the toggle is currently on (derived from URL state). */
   checked: boolean;
+  /** When provided, the pill is rendered as a link to this URL — used
+   *  once results are showing, so toggling re-runs the search
+   *  immediately rather than waiting for the Search button. The URL
+   *  must already represent the *toggled* state. */
+  href?: string;
 };
 
 type Props = {
@@ -119,20 +124,28 @@ export function SearchForm({
           >
             Also search:
           </legend>
-          {includes.map((inc) => (
-            <label
-              key={inc.name}
-              className="pill-toggle"
-            >
-              <input
-                type="checkbox"
-                name={inc.name}
-                value="1"
-                defaultChecked={inc.checked}
-              />
-              <span>{inc.label}</span>
-            </label>
-          ))}
+          {includes.map((inc) =>
+            inc.href ? (
+              <a
+                key={inc.name}
+                href={inc.href}
+                className="pill"
+                aria-pressed={inc.checked}
+              >
+                {inc.label}
+              </a>
+            ) : (
+              <label key={inc.name} className="pill-toggle">
+                <input
+                  type="checkbox"
+                  name={inc.name}
+                  value="1"
+                  defaultChecked={inc.checked}
+                />
+                <span className="pill">{inc.label}</span>
+              </label>
+            ),
+          )}
         </fieldset>
       )}
     </form>

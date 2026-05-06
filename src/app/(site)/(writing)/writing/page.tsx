@@ -96,8 +96,18 @@ export default async function WritingIndex({
             placeholder="Search article text…"
             label="Search articles"
             includes={[
-              { name: "reviews", label: "+ Reviews", checked: includeReviews },
-              { name: "glossary", label: "+ Glossary", checked: includeGlossary },
+              {
+                name: "reviews",
+                label: "+ Reviews",
+                checked: includeReviews,
+                href: q ? toggleHref(baseUrl, "reviews") : undefined,
+              },
+              {
+                name: "glossary",
+                label: "+ Glossary",
+                checked: includeGlossary,
+                href: q ? toggleHref(baseUrl, "glossary") : undefined,
+              },
             ]}
           />
 
@@ -368,6 +378,17 @@ function GlossarySection({
       )}
     </details>
   );
+}
+
+function toggleHref(baseUrl: string, key: string): string {
+  const url = new URL(baseUrl, "https://placeholder.example");
+  if (url.searchParams.get(key) === "1") {
+    url.searchParams.delete(key);
+  } else {
+    url.searchParams.set(key, "1");
+  }
+  url.searchParams.delete("page");
+  return url.pathname + (url.search || "");
 }
 
 function facetHref(

@@ -85,8 +85,18 @@ export default async function Glossary({
             placeholder="Search terms, aliases, definitions…"
             label="Search the glossary"
             includes={[
-              { name: "articles", label: "+ Articles", checked: includeArticles },
-              { name: "reviews", label: "+ Reviews", checked: includeReviews },
+              {
+                name: "articles",
+                label: "+ Articles",
+                checked: includeArticles,
+                href: q ? toggleHref(baseUrl, "articles") : undefined,
+              },
+              {
+                name: "reviews",
+                label: "+ Reviews",
+                checked: includeReviews,
+                href: q ? toggleHref(baseUrl, "reviews") : undefined,
+              },
             ]}
           />
 
@@ -270,6 +280,17 @@ export default async function Glossary({
       </div>
     </main>
   );
+}
+
+function toggleHref(baseUrl: string, key: string): string {
+  const url = new URL(baseUrl, "https://placeholder.example");
+  if (url.searchParams.get(key) === "1") {
+    url.searchParams.delete(key);
+  } else {
+    url.searchParams.set(key, "1");
+  }
+  url.searchParams.delete("page");
+  return url.pathname + (url.search || "");
 }
 
 function facetHref(
