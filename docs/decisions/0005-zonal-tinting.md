@@ -11,8 +11,8 @@ so body-text contrast is preserved everywhere.
 
 | Zone | Routes | Hue | Chroma | Feel |
 | --- | --- | --- | --- | --- |
-| `self` | `/`, `/about`, `/now`, `/contact`, `/work` | 85° | 0.04 | warm cream — paper |
-| `writing` | `/writing`, `/writing/[slug]`, `/talks` | 30° | 0.05 | warm rose — editorial |
+| `self` | `/`, `/now`, `/contact`, `/work` | 85° | 0.04 | warm cream — paper |
+| `writing` | `/writing`, `/writing/[slug]`, `/about`, `/talks` | 30° | 0.05 | warm rose — editorial |
 | `knowledge` | `/writing/reading`, `/writing/glossary`, `/research` | 230° | 0.045 | cool blue — archive |
 | `tools` | `/paradise`, `/playground` | 215° | 0.015 | technical neutral |
 
