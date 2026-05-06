@@ -5,7 +5,16 @@
 
    The optional `includes` prop renders pill-shaped checkboxes below
    the search row, used to opt other corpora into the current search.
-   Submitting the form passes them as query params. */
+   Submitting the form passes them as query params.
+
+   Once a search has run (an `href` is provided per include), the
+   pill is rendered as a next/link Link so the toggle navigates
+   client-side. That keeps the result-status live region in the DOM
+   across the navigation, allowing the screen reader to announce the
+   updated count as a real change rather than as fresh page load
+   content (which is unreliably announced). */
+
+import Link from "next/link";
 
 type Include = {
   /** Query-param name, e.g. "reviews". Submitted as "?<name>=1". */
@@ -126,14 +135,14 @@ export function SearchForm({
           </legend>
           {includes.map((inc) =>
             inc.href ? (
-              <a
+              <Link
                 key={inc.name}
                 href={inc.href}
                 className="pill"
                 aria-pressed={inc.checked}
               >
                 {inc.label}
-              </a>
+              </Link>
             ) : (
               <label key={inc.name} className="pill-toggle">
                 <input

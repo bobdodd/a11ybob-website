@@ -3,6 +3,7 @@ import type { CSSProperties } from "react";
 import { searchReviews } from "@/lib/reviews";
 import { searchArticles } from "@/lib/articles";
 import { searchGlossary } from "@/lib/glossary";
+import { buildSearchStatus } from "@/lib/searchStatus";
 import { Pagination } from "@/components/Pagination";
 import { SearchForm } from "@/components/SearchForm";
 import {
@@ -178,6 +179,25 @@ export default async function Reading({
             </aside>
 
             <div className="not-sidebar stack" style={{ "--space": "var(--s2)" } as CSSProperties}>
+              <p role="status" style={{ marginBlock: 0 }}>
+                {q
+                  ? buildSearchStatus({
+                      q,
+                      primary: { total: result.total, noun: "review" },
+                      extras: [
+                        articlesExtra && {
+                          total: articlesExtra.total,
+                          noun: "article",
+                        },
+                        glossaryExtra && {
+                          total: glossaryExtra.total,
+                          noun: "glossary term",
+                        },
+                      ],
+                    })
+                  : ""}
+              </p>
+
               {result.hits.length === 0 ? (
                 <p>No reviews match the current filters.</p>
               ) : (

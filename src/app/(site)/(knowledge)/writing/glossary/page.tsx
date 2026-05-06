@@ -3,6 +3,7 @@ import type { CSSProperties } from "react";
 import { searchGlossary } from "@/lib/glossary";
 import { searchArticles } from "@/lib/articles";
 import { searchReviews } from "@/lib/reviews";
+import { buildSearchStatus } from "@/lib/searchStatus";
 import { Pagination } from "@/components/Pagination";
 import { SearchForm } from "@/components/SearchForm";
 import {
@@ -184,6 +185,25 @@ export default async function Glossary({
             </aside>
 
             <div className="not-sidebar stack" style={{ "--space": "var(--s2)" } as CSSProperties}>
+              <p role="status" style={{ marginBlock: 0 }}>
+                {q
+                  ? buildSearchStatus({
+                      q,
+                      primary: { total: result.total, noun: "glossary term" },
+                      extras: [
+                        articlesExtra && {
+                          total: articlesExtra.total,
+                          noun: "article",
+                        },
+                        reviewsExtra && {
+                          total: reviewsExtra.total,
+                          noun: "review",
+                        },
+                      ],
+                    })
+                  : ""}
+              </p>
+
               {result.hits.length === 0 ? (
                 <p>No glossary entries match the current filters.</p>
               ) : (
