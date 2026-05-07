@@ -37,5 +37,7 @@
 @import "../styles/components/pagination.css"        layer(components);
 @import "../styles/components/result-card.css"       layer(components);
 @import "../styles/components/styleguide.css"        layer(components);
+@import "../styles/components/severity-badge.css"    layer(components);
+@import "../styles/components/playground.css"        layer(components);
 
 @import "../styles/utilities/text.css" layer(utilities);

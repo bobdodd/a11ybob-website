@@ -1,0 +1,155 @@
+/* Playground styling — tab list for the language selector and a
+ * frame for the Monaco editor. Tabs follow the WAI-ARIA tabs
+ * pattern: aria-selected drives the visual state. */
+
+.playground-tab {
+  padding-block: var(--s-1);
+  padding-inline: var(--s0);
+  border: var(--border-thin) solid var(--rule);
+  border-block-end: 0;
+  background: var(--surface-1);
+  color: var(--ink);
+  font-size: var(--s0);
+  cursor: pointer;
+}
+
+.playground-tab[aria-selected="true"] {
+  background: var(--ink);
+  color: var(--surface-1);
+}
+
+.playground-editor {
+  border: var(--border-thin) solid var(--rule);
+  /* Monaco renders an absolutely-positioned canvas inside; the
+   * wrapper provides the visible chrome. */
+  background: var(--surface-1);
+}
+
+/* Hide the wrapper completely when its tabpanel is inactive. The
+ * Monaco editor inside ignores tab visibility by itself; pairing
+ * `hidden` (HTML attribute) with this rule is belt and suspenders. */
+.playground-editor[hidden] {
+  display: none;
+}
+
+@media (forced-colors: active) {
+  .playground-tab[aria-selected="true"] {
+    background: Highlight;
+    color: HighlightText;
+    border-color: Highlight;
+  }
+}
+
+/* Issue card — coloured left band by severity, plus the existing
+ * severity badge in the body. The band is a redundant signal for
+ * sighted readers; the badge label is the primary affordance and is
+ * not colour-only. The base styling uses --rule for the band as a
+ * neutral default; severity-specific variants override. */
+.issue-card {
+  border: var(--border-thin) solid var(--rule);
+  border-inline-start-width: 0.4rem;
+  padding: var(--s-1) var(--s0);
+  background: var(--surface-1);
+}
+
+.issue-card[data-severity="error"] {
+  border-inline-start-color: var(--ink);
+}
+
+.issue-card[data-severity="warning"] {
+  border-inline-start-color: var(--ink-muted);
+}
+
+.issue-card[data-severity="info"] {
+  border-inline-start-color: var(--rule);
+}
+
+/* Document-context banner — sits at the top of the result panel and
+ * names the input shape (full / body-only / fragment), the
+ * confidence implications, and (for incomplete inputs) actionable
+ * recommendations. */
+.playground-banner {
+  border: var(--border-thin) solid var(--rule);
+  padding: var(--s0);
+  background: var(--surface-2);
+}
+
+.playground-banner[data-context="fragment"] {
+  /* Subtle ink-shift to mark the fragment case visually. The
+   * meaning still lives in the heading text, not the colour. */
+  background: var(--surface-2);
+  border-inline-start: 0.4rem solid var(--ink-muted);
+}
+
+.playground-banner[data-context="body"] {
+  background: var(--surface-2);
+  border-inline-start: 0.4rem solid var(--rule);
+}
+
+.playground-banner[data-context="full"] {
+  background: var(--surface-2);
+  border-inline-start: 0.4rem solid var(--ink);
+}
+
+.playground-banner h3 {
+  font-size: var(--s1);
+  margin-block: 0;
+}
+
+.playground-banner > details {
+  margin-block-start: var(--s-1);
+}
+
+/* Dialog — Help and Fix modals. Native <dialog> handles focus
+ * trapping and Escape-to-close; the styles here just set the visual
+ * surface. ::backdrop dims the page behind. */
+.playground-dialog {
+  border: var(--border-thin) solid var(--rule);
+  background: var(--surface-1);
+  color: var(--ink);
+  padding: var(--s1);
+  /* Comfortable reading width on a wide screen, capped at the
+   * viewport on narrow ones. Wider than the body-text measure
+   * because the dialog is a working surface, not a reading column —
+   * it carries headings, code blocks, and action buttons that
+   * benefit from horizontal room. */
+  inline-size: min(80ch, calc(100% - var(--s2)));
+  max-block-size: 85vh;
+  overflow-y: auto;
+}
+
+.playground-dialog::backdrop {
+  background: rgb(0 0 0 / 0.4);
+}
+
+/* Dialog body — simple flow layout with vertical spacing between
+ * sections via the owl selector. Using a dedicated class instead of
+ * .stack avoids the .stack:only-child block-size:100% rule that
+ * fights <dialog>'s fit-content sizing and collapses the dialog to
+ * a single line. */
+.playground-dialog-body > * + * {
+  margin-block-start: var(--s1);
+}
+
+.playground-dialog-body section + section,
+.playground-dialog-body section + p {
+  margin-block-start: var(--s1);
+}
+
+.playground-dialog-body section > * + * {
+  margin-block-start: var(--s-1);
+}
+
+@media (forced-colors: active) {
+  .playground-dialog {
+    background: Canvas;
+    color: CanvasText;
+    border-color: CanvasText;
+  }
+}
+
+@media (forced-colors: active) {
+  .issue-card[data-severity="error"] {
+    border-inline-start-color: CanvasText;
+  }
+}

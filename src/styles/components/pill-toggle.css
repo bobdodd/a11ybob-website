@@ -17,10 +17,14 @@
  * defaults on specificity grounds alone, independent of layer
  * ordering. */
 
-/* Shared visual properties — applied via two compound selectors so
+/* Shared visual properties — applied via compound selectors so
  * specificity is high enough to beat unscoped element rules in any
- * layer position. */
+ * layer position. The pill applies to <a> for navigation toggles
+ * (cross-corpus search), to <span> inside .pill-toggle for the
+ * checkbox-driven case, and to <button> for picker UIs (Playground
+ * examples). */
 a.pill,
+button.pill,
 .pill-toggle .pill {
   display: inline-block;
   padding-block: 0.15em;
@@ -37,7 +41,8 @@ a.pill,
   text-decoration: none;
 }
 
-a.pill[aria-pressed="true"] {
+a.pill[aria-pressed="true"],
+button.pill[aria-pressed="true"] {
   background-color: var(--ink);
   color: var(--surface-1);
 }
@@ -64,19 +69,22 @@ a.pill[aria-pressed="true"] {
 }
 
 .pill-toggle > input[type="checkbox"]:focus-visible + .pill,
-a.pill:focus-visible {
+a.pill:focus-visible,
+button.pill:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
 
 @media (forced-colors: active) {
   a.pill,
+  button.pill,
   .pill-toggle .pill {
     border-color: CanvasText;
     color: CanvasText;
     background-color: Canvas;
   }
   a.pill[aria-pressed="true"],
+  button.pill[aria-pressed="true"],
   .pill-toggle > input[type="checkbox"]:checked + .pill {
     background-color: Highlight;
     color: HighlightText;

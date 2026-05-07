@@ -1,0 +1,52 @@
+/* Severity badges on Playground issues — distinguish error / warning
+ * / info using shape and label, not colour alone. The label is
+ * always present (the badge IS the severity name); colour is
+ * supplementary for sighted readers.
+ *
+ * Same pill shape as .tier-badge, in lower-case label form so a
+ * badge row scans as a list of severities rather than as headlines. */
+
+.severity-badge {
+  display: inline-block;
+  padding-block: 0.05em;
+  padding-inline: 0.6em;
+  border-radius: 999px;
+  font-size: 0.85em;
+  line-height: 1.4;
+  white-space: nowrap;
+  border: 1px solid var(--ink);
+  color: var(--surface-1);
+  background-color: var(--ink);
+  text-transform: lowercase;
+}
+
+.severity-error {
+  /* Reuse --ink: highest visual weight. */
+  background-color: var(--ink);
+  color: var(--surface-1);
+}
+
+.severity-warning {
+  /* Reverse for warning: surface fill, ink border. */
+  background-color: var(--surface-1);
+  color: var(--ink);
+}
+
+.severity-info {
+  /* Same shape, muted ink for the lowest priority. */
+  background-color: var(--surface-2);
+  color: var(--ink-muted);
+  border-color: var(--ink-muted);
+}
+
+@media (forced-colors: active) {
+  .severity-badge {
+    background-color: Canvas;
+    color: CanvasText;
+    border-color: CanvasText;
+  }
+  .severity-error {
+    background-color: CanvasText;
+    color: Canvas;
+  }
+}
