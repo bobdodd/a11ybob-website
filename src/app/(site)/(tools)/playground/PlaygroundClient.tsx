@@ -136,16 +136,21 @@ export function PlaygroundClient() {
 
   /* Rename a file. Validation: name must be non-empty after trim
    * and must not collide with another file in the same language.
-   * If the rename is rejected (empty / collision), the rename mode
-   * stays active so the user can correct. Returns true on success. */
-  const renameFile = (lang: Lang, oldName: string, newName: string): boolean => {
+   * On rejection returns a human-readable reason that the rename
+   * input renders as a live alert; on success returns null and the
+   * caller closes rename mode. */
+  const renameFile = (
+    lang: Lang,
+    oldName: string,
+    newName: string,
+  ): string | null => {
     const trimmed = newName.trim();
-    if (!trimmed) return false;
-    if (trimmed === oldName) return true; // no-op, accept
+    if (!trimmed) return "Name is required.";
+    if (trimmed === oldName) return null; // no-op, accept
     const collision = buffers[lang].some(
       (f) => f.name === trimmed && f.name !== oldName,
     );
-    if (collision) return false;
+    if (collision) return `A file named "${trimmed}" already exists.`;
     setBuffers((prev) => ({
       ...prev,
       [lang]: prev[lang].map((f) =>
@@ -155,7 +160,7 @@ export function PlaygroundClient() {
     setActiveFile((af) =>
       af[lang] === oldName ? { ...af, [lang]: trimmed } : af,
     );
-    return true;
+    return null;
   };
 
   /* Remove a file. If it was the active file, switch to the next
@@ -305,9 +310,9 @@ export function PlaygroundClient() {
             renaming={renaming}
             startRename={(lang, name) => setRenaming(`${lang}::${name}`)}
             commitRename={(lang, oldName, newName) => {
-              const ok = renameFile(lang, oldName, newName);
-              if (ok) setRenaming(null);
-              return ok;
+              const err = renameFile(lang, oldName, newName);
+              if (!err) setRenaming(null);
+              return err;
             }}
             cancelRename={() => setRenaming(null)}
             onReset={requestReset}
@@ -328,8 +333,31 @@ export function PlaygroundClient() {
           <section
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
+            aria-labelledby="playground-analysis-heading"
           >
-            <h2>Analysis</h2>
+            <h2 id="playground-analysis-heading">Analysis</h2>
+
+            {/* Live region — assistive tech hears a single concise
+             * summary every time the engine re-runs. The visible
+             * panel below carries the full detail; this region
+             * exists to give screen-reader users a usable
+             * heads-up that something changed without flooding
+             * them with the whole panel each keystroke. */}
+            <p
+              role="status"
+              aria-live="polite"
+              aria-atomic="true"
+              className="visually-hidden"
+            >
+              {error
+                ? `Engine error: ${error}`
+                : !result
+                  ? "Running analysers."
+                  : result.issues.length === 0
+                    ? `Analysis complete. ${result.ranAnalysers} analysers ran. No issues.`
+                    : `Analysis complete. ${result.ranAnalysers} analysers ran. ${result.issues.length} ${result.issues.length === 1 ? "issue" : "issues"} reported.`}
+            </p>
+
             {error && (
               <p role="alert" className="muted">
                 Engine error: {error}
@@ -444,7 +472,7 @@ function EditorPanel({
   removeFile: (lang: Lang, name: string) => void;
   renaming: string | null;
   startRename: (lang: Lang, name: string) => void;
-  commitRename: (lang: Lang, oldName: string, newName: string) => boolean;
+  commitRename: (lang: Lang, oldName: string, newName: string) => string | null;
   cancelRename: () => void;
   onReset: () => void;
   canReset: boolean;
@@ -570,24 +598,50 @@ function EditorPanel({
        * whichever (lang, file) is active. Mounting Monaco once
        * avoids the heavy bundle being instantiated three times. */}
       {currentFile ? (
-        <div className="playground-editor">
-          <MonacoEditor
-            key={`${activeLang}::${currentFile.name}`}
-            height="320px"
-            language={monacoLang}
-            value={currentFile.content}
-            onChange={(v) =>
-              updateFileContent(activeLang, currentFile.name, v ?? "")
-            }
-            options={{
-              minimap: { enabled: false },
-              fontSize: 14,
-              wordWrap: "on",
-              automaticLayout: true,
-              scrollBeyondLastLine: false,
-            }}
-          />
-        </div>
+        <>
+          {/* Keyboard hint — Monaco binds Tab to indent by default,
+           * which traps keyboard-only users inside the editor. The
+           * platform-native escape is Ctrl+M (Cmd+M on Mac), which
+           * toggles Tab between "indent" and "move focus". Stating
+           * it explicitly is more reliable than burying the hint
+           * inside Monaco's accessibility-help dialog (Alt+F1). */}
+          <p
+            id={`${tablistId}-editor-hint`}
+            className="muted"
+          >
+            <small>
+              Press <kbd>Ctrl</kbd>+<kbd>M</kbd> (
+              <kbd>Cmd</kbd>+<kbd>M</kbd> on macOS) to toggle whether
+              <kbd>Tab</kbd> indents inside the editor or moves focus
+              out of it.
+            </small>
+          </p>
+          <div
+            className="playground-editor"
+            aria-describedby={`${tablistId}-editor-hint`}
+          >
+            <MonacoEditor
+              key={`${activeLang}::${currentFile.name}`}
+              height="320px"
+              language={monacoLang}
+              value={currentFile.content}
+              onChange={(v) =>
+                updateFileContent(activeLang, currentFile.name, v ?? "")
+              }
+              options={{
+                minimap: { enabled: false },
+                fontSize: 14,
+                wordWrap: "on",
+                automaticLayout: true,
+                scrollBeyondLastLine: false,
+                // Force the screen-reader-friendly rendering path
+                // rather than letting Monaco probe the environment
+                // and disable AT support if no SR is detected.
+                accessibilitySupport: "on",
+              }}
+            />
+          </div>
+        </>
       ) : (
         <p className="muted">
           <small>
@@ -627,7 +681,7 @@ function FilePanel({
   removeFile: (name: string) => void;
   renaming: string | null;
   startRename: (name: string) => void;
-  commitRename: (oldName: string, newName: string) => boolean;
+  commitRename: (oldName: string, newName: string) => string | null;
   cancelRename: () => void;
 }) {
   const handleFileKey = (e: KeyboardEvent<HTMLButtonElement>) => {
@@ -726,12 +780,13 @@ function RenameInput({
   onCancel,
 }: {
   initialValue: string;
-  onCommit: (newName: string) => boolean;
+  onCommit: (newName: string) => string | null;
   onCancel: () => void;
 }) {
   const [value, setValue] = useState(initialValue);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const ref = useRef<HTMLInputElement>(null);
+  const errorId = useId();
 
   useEffect(() => {
     ref.current?.focus();
@@ -739,39 +794,54 @@ function RenameInput({
   }, []);
 
   const commit = () => {
-    const ok = onCommit(value);
-    if (!ok) {
-      setError(true);
+    const err = onCommit(value);
+    if (err) {
+      setError(err);
       ref.current?.focus();
       ref.current?.select();
     }
   };
 
   return (
-    <input
-      ref={ref}
-      type="text"
-      value={value}
-      onChange={(e) => {
-        setValue(e.target.value);
-        if (error) setError(false);
-      }}
-      onKeyDown={(e) => {
-        if (e.key === "Enter") {
-          e.preventDefault();
-          commit();
-        } else if (e.key === "Escape") {
-          e.preventDefault();
-          onCancel();
-        }
-      }}
-      onBlur={commit}
-      aria-label="Rename file"
-      aria-invalid={error}
-      className="playground-file-tab-input"
-      // Width tracks content so the input doesn't bloat the tab.
-      size={Math.max(8, value.length + 2)}
-    />
+    <>
+      <input
+        ref={ref}
+        type="text"
+        value={value}
+        onChange={(e) => {
+          setValue(e.target.value);
+          if (error) setError(null);
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            commit();
+          } else if (e.key === "Escape") {
+            e.preventDefault();
+            onCancel();
+          }
+        }}
+        onBlur={commit}
+        aria-label="Rename file"
+        aria-invalid={error !== null}
+        aria-describedby={error ? errorId : undefined}
+        className="playground-file-tab-input"
+        // Width tracks content so the input doesn't bloat the tab.
+        size={Math.max(8, value.length + 2)}
+      />
+      {/* Live error region — collision / empty rejection lands here
+       * with role=alert so screen readers hear the reason rather
+       * than only seeing the aria-invalid outline shift. The empty
+       * region is still in the DOM so the announcement fires
+       * reliably on first error. */}
+      <span
+        id={errorId}
+        role="alert"
+        className="playground-file-tab-error"
+      >
+        {error ?? ""}
+      </span>
+    </>
   );
 }
 
@@ -784,8 +854,6 @@ type ConfidenceFilter = "all" | "HIGH" | "MEDIUM" | "LOW";
  * issues from M checks" the way the upstream playground does. */
 const TOTAL_CHECKS = 119;
 
-type DocumentContext = "full" | "body" | "fragment";
-
 function detectContext(html: string): DocumentContext {
   const lower = html.toLowerCase();
   const hasHtml = /<html[\s>]/.test(lower);
@@ -796,12 +864,17 @@ function detectContext(html: string): DocumentContext {
   return "fragment";
 }
 
+type AnalyseReturn = ReturnType<typeof analyse>;
+type AnalyseReturnTyped = Omit<AnalyseReturn, "issues"> & {
+  issues: IssueWithSlug[];
+};
+
 function ResultPanel({
   result,
   html,
   onApplyFix,
 }: {
-  result: ReturnType<typeof analyse>;
+  result: AnalyseReturnTyped;
   html: string;
   onApplyFix: (filename: string, code: string) => void;
 }) {
@@ -1084,7 +1157,7 @@ function IssueCard({
         className="cluster"
         style={{ "--space": "var(--s-1)" } as CSSProperties}
       >
-        <p className="flush" style={{ flex: "1 1 20ch" } as CSSProperties}>
+        <h3 className="issue-card-title cluster-grow">
           <span className={`severity-badge severity-${issue.severity}`}>
             {issue.severity}
           </span>{" "}
@@ -1097,7 +1170,7 @@ function IssueCard({
               {loc.line ? `:${loc.line}` : ""}
             </small>
           )}
-        </p>
+        </h3>
         <div
           className="cluster"
           style={{ "--space": "var(--s-2)" } as CSSProperties}
@@ -1196,7 +1269,7 @@ function HelpDialog({
           className="cluster"
           style={{ "--space": "var(--s0)" } as CSSProperties}
         >
-          <div style={{ flex: "1 1 20ch" } as CSSProperties}>
+          <div className="cluster-grow">
             <h3
               id={`help-${issue.analyserSlug}-title`}
               className="search-results-heading"
@@ -1335,8 +1408,7 @@ function FixDialog({
         >
           <h3
             id={`fix-${issue.analyserSlug}-title`}
-            className="search-results-heading"
-            style={{ flex: "1 1 20ch" } as CSSProperties}
+            className="search-results-heading cluster-grow"
           >
             Fix: {issue.type}
           </h3>
@@ -1368,7 +1440,6 @@ function FixDialog({
           <button
             type="button"
             className="pill"
-            aria-pressed="false"
             onClick={onApply}
           >
             Apply to editor

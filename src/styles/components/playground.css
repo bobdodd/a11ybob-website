@@ -103,6 +103,20 @@
   outline-offset: 0;
 }
 
+/* Inline error message rendered alongside the rename input. Sits
+ * to the right of the input inside the tab pill so the rejection
+ * reason ("name in use" / "name required") is visible as well as
+ * announced via role=alert. Empty content collapses naturally. */
+.playground-file-tab-error {
+  padding-inline: 0.5em;
+  font-size: 0.85em;
+  color: var(--ink);
+}
+
+.playground-file-tab-error:empty {
+  display: none;
+}
+
 .playground-file-tab-add {
   border: 1px dashed var(--rule);
   background: transparent;
@@ -139,6 +153,23 @@
   border-inline-start-width: 0.4rem;
   padding: var(--s-1) var(--s0);
   background: var(--surface-1);
+}
+
+/* Heading-level issue title. Renders a real <h3> so AT users can
+ * navigate the issue list by heading rotor, but visually styled at
+ * the in-card scale rather than h3's default size. */
+.issue-card-title {
+  font-size: var(--s0);
+  font-weight: 600;
+  margin-block: 0;
+}
+
+/* Cluster-child that should grow to fill remaining space. Replaces
+ * the inline `flex: 1 1 20ch` that previously appeared on heading
+ * cells inside .cluster rows. The 20ch basis keeps short titles
+ * from collapsing too narrow before wrapping. */
+.cluster-grow {
+  flex: 1 1 20ch;
 }
 
 .issue-card[data-severity="error"] {
