@@ -37,6 +37,7 @@ import {
   type LangBuffers,
   type SourceFile,
 } from "@/lib/paradise/examples";
+import { PlaygroundPreview } from "./PlaygroundPreview";
 
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
   ssr: false,
@@ -195,6 +196,7 @@ export function PlaygroundClient() {
    * than the browser's native confirm — the native one ignores our
    * type tokens and renders in the OS default face/size. */
   const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
   const requestReset = () => {
     if (cleanExampleSlug === DEFAULT_EXAMPLE_SLUG) return; // already
     setResetConfirmOpen(true);
@@ -326,7 +328,15 @@ export function PlaygroundClient() {
             cancelRename={() => setRenaming(null)}
             onReset={requestReset}
             canReset={cleanExampleSlug !== DEFAULT_EXAMPLE_SLUG}
+            onOpenPreview={() => setPreviewOpen(true)}
           />
+
+          {previewOpen && (
+            <PreviewDialog
+              buffers={buffers}
+              onClose={() => setPreviewOpen(false)}
+            />
+          )}
 
           {resetConfirmOpen && (
             <ConfirmDialog
@@ -485,6 +495,7 @@ function EditorPanel({
   cancelRename,
   onReset,
   canReset,
+  onOpenPreview,
 }: {
   tabs: { lang: Lang; label: string; monaco: string }[];
   buffers: LangBuffers;
@@ -501,6 +512,7 @@ function EditorPanel({
   cancelRename: () => void;
   onReset: () => void;
   canReset: boolean;
+  onOpenPreview: () => void;
 }) {
   const tablistId = useId();
 
@@ -577,14 +589,26 @@ function EditorPanel({
             );
           })}
         </div>
-        <button
-          type="button"
-          className="pill"
-          onClick={onReset}
-          disabled={!canReset}
+        <div
+          className="cluster"
+          style={{ "--space": "var(--s-2)" } as CSSProperties}
         >
-          Reset
-        </button>
+          <button
+            type="button"
+            className="pill"
+            onClick={onOpenPreview}
+          >
+            Preview
+          </button>
+          <button
+            type="button"
+            className="pill"
+            onClick={onReset}
+            disabled={!canReset}
+          >
+            Reset
+          </button>
+        </div>
       </div>
 
       {/* Tabpanel for each language. The inner file-tablist + editor
@@ -1554,6 +1578,63 @@ function ConfirmDialog({
             {cancelLabel}
           </button>
         </div>
+      </div>
+    </dialog>
+  );
+}
+
+/* PreviewDialog — wraps the sandboxed preview iframe in a native
+ * <dialog> so the user can see what their three buffers actually
+ * render to. The Document inside the iframe is also what the
+ * upcoming Screen Reader and Switch Access simulators will walk;
+ * Preview on its own is the standalone "what does this page look
+ * like" surface. */
+function PreviewDialog({
+  buffers,
+  onClose,
+}: {
+  buffers: LangBuffers;
+  onClose: () => void;
+}) {
+  const ref = useRef<HTMLDialogElement>(null);
+  const titleId = useId();
+
+  useEffect(() => {
+    ref.current?.showModal();
+  }, []);
+
+  return (
+    <dialog
+      ref={ref}
+      className="playground-dialog playground-dialog--wide"
+      onClose={onClose}
+      aria-labelledby={titleId}
+    >
+      <div className="playground-dialog-body">
+        <header
+          className="cluster"
+          style={{ "--space": "var(--s0)" } as CSSProperties}
+        >
+          <h3
+            id={titleId}
+            className="search-results-heading cluster-grow"
+          >
+            Preview
+          </h3>
+          <button type="button" className="pill" onClick={onClose}>
+            Close
+          </button>
+        </header>
+        <p className="muted">
+          <small>
+            Sandboxed render of your three buffers as a single
+            document. Scripts run in a srcdoc-isolated context — no
+            network, no parent-page access. JavaScript errors land
+            in a banner at the top of the preview rather than
+            silently failing.
+          </small>
+        </p>
+        <PlaygroundPreview buffers={buffers} />
       </div>
     </dialog>
   );

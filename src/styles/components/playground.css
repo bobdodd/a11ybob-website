@@ -135,6 +135,22 @@
   display: none;
 }
 
+/* Preview iframe — the sandboxed render of the user's three
+ * buffers as one document. Used inside the Preview dialog and as
+ * the substrate the SR / switch simulators walk. The iframe is
+ * given a generous viewport block-size so the user's layout has
+ * room to breathe; horizontal sizing follows the dialog. */
+.playground-preview-iframe {
+  inline-size: 100%;
+  block-size: min(70vh, 60ch);
+  border: var(--border-thin) solid var(--rule);
+  background: white;
+  /* The iframe is its own document with its own background.
+   * Forcing white here means the simulators don't have to deal
+   * with the host site's surface tints leaking through transparent
+   * iframes. */
+}
+
 @media (forced-colors: active) {
   .playground-tab[aria-selected="true"] {
     background: Highlight;
@@ -240,6 +256,16 @@
   max-inline-size: min(80ch, calc(100% - var(--s2)));
   max-block-size: 85vh;
   overflow-y: auto;
+}
+
+/* Wide variant — the Preview dialog (and later the Screen Reader
+ * and Switch simulators) carry an iframe that needs significant
+ * horizontal room. The standard 80ch cap is appropriate for
+ * Help / Fix dialogs full of prose; an iframe rendering a real
+ * web page wants more. */
+.playground-dialog--wide {
+  inline-size: min(120ch, calc(100% - var(--s2)));
+  max-inline-size: min(120ch, calc(100% - var(--s2)));
 }
 
 .playground-dialog::backdrop {
