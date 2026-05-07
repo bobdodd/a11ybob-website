@@ -26,7 +26,6 @@ import {
   useMemo,
   useRef,
   useState,
-  type CSSProperties,
   type KeyboardEvent,
 } from "react";
 
@@ -145,32 +144,8 @@ export function SearchSuggest({
     open && activeIndex >= 0 ? `${listId}-opt-${activeIndex}` : undefined;
 
   return (
-    <div
-      className="search-suggest"
-      style={{
-        position: "relative",
-        flex: "1 1 0",
-        minInlineSize: "16ch",
-        // Match the universal max-inline-size axiom that applies to
-        // the <input> inside (the universal rule is overridden for
-        // <div> in axioms.css). Without this, the wrapper grows
-        // beyond the input's measure-cap, leaving empty space
-        // inside the wrapper between the input's right edge and
-        // the wrapper's right edge — which pushes the adjacent
-        // button visibly away from the input.
-        maxInlineSize: "var(--measure)",
-      }}
-    >
-      <label
-        htmlFor={id}
-        style={{
-          position: "absolute",
-          width: "1px",
-          height: "1px",
-          overflow: "hidden",
-          clip: "rect(0 0 0 0)",
-        }}
-      >
+    <div className="search-suggest">
+      <label htmlFor={id} className="visually-hidden">
         {ariaLabel}
       </label>
       <input
@@ -196,14 +171,6 @@ export function SearchSuggest({
           focusedRef.current = true;
           if (groups.length > 0) setOpen(true);
         }}
-        style={{
-          padding: "var(--s-1) var(--s0)",
-          border: "var(--border-thin) solid var(--rule)",
-          background: "var(--surface-1)",
-          color: "var(--ink)",
-          inlineSize: "100%",
-          fontSize: "var(--s0)",
-        }}
       />
 
       <ul
@@ -212,24 +179,6 @@ export function SearchSuggest({
         aria-label="Suggestions"
         hidden={!open || flat.length === 0}
         className="search-suggest-list"
-        style={
-          {
-            position: "absolute",
-            insetBlockStart: "100%",
-            insetInlineStart: 0,
-            insetInlineEnd: 0,
-            zIndex: 50,
-            margin: 0,
-            padding: 0,
-            listStyle: "none",
-            background: "var(--surface-1)",
-            border: "var(--border-thin) solid var(--rule)",
-            borderBlockStart: 0,
-            maxBlockSize: "60vh",
-            overflowY: "auto",
-            boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
-          } as CSSProperties
-        }
       >
         {groups.map((g, gi) => {
           // Compute the starting flat index of this group so option
@@ -238,22 +187,14 @@ export function SearchSuggest({
             .slice(0, gi)
             .reduce((sum, prev) => sum + prev.items.length, 0);
           return (
-            <li key={g.corpus} role="presentation">
+            <li key={g.corpus} role="presentation" className="search-suggest-group">
               <div
                 role="presentation"
-                style={{
-                  padding: "var(--s-2) var(--s0)",
-                  fontSize: "var(--s-1)",
-                  color: "var(--ink-muted)",
-                  textTransform: "uppercase",
-                  letterSpacing: "0.05em",
-                  borderBlockStart:
-                    gi > 0 ? "var(--border-thin) solid var(--rule)" : "none",
-                }}
+                className="search-suggest-group-label"
               >
                 {g.label}
               </div>
-              <ul role="presentation" style={{ margin: 0, padding: 0, listStyle: "none" }}>
+              <ul role="presentation">
                 {g.items.map((it, i) => {
                   const flatIndex = flatStart + i;
                   const isActive = flatIndex === activeIndex;
@@ -270,11 +211,6 @@ export function SearchSuggest({
                       onClick={() => {
                         setOpen(false);
                         router.push(it.href);
-                      }}
-                      style={{
-                        padding: "var(--s-1) var(--s0)",
-                        cursor: "pointer",
-                        background: isActive ? "var(--surface-2)" : "transparent",
                       }}
                     >
                       {it.text}

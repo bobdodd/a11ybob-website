@@ -1,7 +1,10 @@
 /* Result-card components for each search corpus. Each card renders
  * the same way regardless of whether it appears on its own corpus's
  * primary search page or as a cross-corpus inclusion on another
- * page. The host wraps the cards in the appropriate list element. */
+ * page. The host wraps the cards in the appropriate list element.
+ *
+ * Visual styling lives in components/result-card.css; this file
+ * carries only the structural and content concerns. */
 
 import Link from "next/link";
 import type { CSSProperties } from "react";
@@ -42,10 +45,10 @@ export function ArticleResultCard({
   return (
     <li>
       <article
-        className="stack"
+        className="result-card stack"
         style={{ "--space": "var(--s-1)" } as CSSProperties}
       >
-        <H style={{ marginBlock: 0, fontSize: "var(--s1)" }}>
+        <H className="result-card-heading">
           <Link href={articleHref}>
             {titleHtml ? (
               <span dangerouslySetInnerHTML={{ __html: titleHtml }} />
@@ -56,17 +59,12 @@ export function ArticleResultCard({
         </H>
 
         {(hit.publishedAt || hit.domains.length > 0 || hit.tier) && (
-          <p style={{ marginBlock: 0 }}>
+          <p>
             {hit.tier && (
               <span className="tier-badge">{tierLabel(hit.tier)}</span>
             )}
             {(hit.publishedAt || hit.domains.length > 0) && (
-              <small
-                style={{
-                  color: "var(--ink-muted)",
-                  marginInlineStart: hit.tier ? "var(--s-1)" : 0,
-                }}
-              >
+              <small className="muted">
                 {[
                   hit.publishedAt &&
                     new Date(hit.publishedAt).toISOString().slice(0, 10),
@@ -81,7 +79,7 @@ export function ArticleResultCard({
 
         {searching && contentFragments.length > 0 && (
           <div
-            style={{ marginBlock: 0 }}
+            className="result-card-snippet"
             dangerouslySetInnerHTML={{
               __html: contentFragments.map(renderSnippet).join(" … "),
             }}
@@ -116,10 +114,10 @@ export function ReviewResultCard({
   return (
     <li>
       <article
-        className="stack"
+        className="result-card stack"
         style={{ "--space": "var(--s-1)" } as CSSProperties}
       >
-        <H style={{ marginBlock: 0, fontSize: "var(--s1)" }}>
+        <H className="result-card-heading">
           <Link href={`/writing/reviews/${hit._id}`}>
             {titleHtml ? (
               <span dangerouslySetInnerHTML={{ __html: titleHtml }} />
@@ -128,16 +126,11 @@ export function ReviewResultCard({
             )}
           </Link>
         </H>
-        <p style={{ marginBlock: 0 }}>
+        <p>
           {hit.tier && (
             <span className="tier-badge">{tierLabel(hit.tier)}</span>
           )}
-          <small
-            style={{
-              color: "var(--ink-muted)",
-              marginInlineStart: hit.tier ? "var(--s-1)" : 0,
-            }}
-          >
+          <small className="muted">
             {hit.authors.length > 0 && <>{hit.authors.join(", ")} · </>}
             {hit.year && <>{hit.year}</>}
             {hit.publication && <> · {hit.publication}</>}
@@ -145,19 +138,15 @@ export function ReviewResultCard({
         </p>
         {snippetHtml ? (
           <p
-            style={{ marginBlock: 0 }}
+            className="result-card-snippet"
             dangerouslySetInnerHTML={{ __html: snippetHtml }}
           />
         ) : (
-          hit.summary && (
-            <p style={{ marginBlock: 0 }}>{truncate(hit.summary, 280)}</p>
-          )
+          hit.summary && <p>{truncate(hit.summary, 280)}</p>
         )}
         {hit.tags.length > 0 && (
-          <p style={{ marginBlock: 0 }}>
-            <small style={{ color: "var(--ink-muted)" }}>
-              {hit.tags.slice(0, 5).join(" · ")}
-            </small>
+          <p>
+            <small className="muted">{hit.tags.slice(0, 5).join(" · ")}</small>
           </p>
         )}
       </article>
@@ -181,7 +170,7 @@ export function GlossaryResultCard({ entry }: { entry: GlossaryEntry }) {
 
   return (
     <>
-      <dt style={{ fontSize: "var(--s1)", fontWeight: 600 }}>
+      <dt className="result-card-term">
         <Link href={`/writing/glossary/${entry._id}`}>
           {termHtml ? (
             <span dangerouslySetInnerHTML={{ __html: termHtml }} />
@@ -190,14 +179,7 @@ export function GlossaryResultCard({ entry }: { entry: GlossaryEntry }) {
           )}
         </Link>
         {entry.aka.length > 0 && (
-          <span
-            style={{
-              marginInlineStart: "var(--s-1)",
-              color: "var(--ink-muted)",
-              fontWeight: 400,
-              fontSize: "var(--s-1)",
-            }}
-          >
+          <span className="result-card-aka">
             {akaHtml ? (
               <>
                 (also:{" "}
@@ -209,7 +191,7 @@ export function GlossaryResultCard({ entry }: { entry: GlossaryEntry }) {
           </span>
         )}
       </dt>
-      <dd style={{ marginInlineStart: 0 }}>
+      <dd className="result-card-definition">
         {entry.tier && (
           <>
             <span className="tier-badge">{tierLabel(entry.tier)}</span>{" "}

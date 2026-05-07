@@ -61,7 +61,7 @@ export default async function Article({
           </p>
 
           {q && (
-            <p style={{ color: "var(--ink-muted)" }}>
+            <p className="muted">
               <small>
                 {!highlights || highlights.matchCount === 0 ? (
                   <>
@@ -105,12 +105,12 @@ export default async function Article({
               style={{ "--space": "var(--s0)" } as CSSProperties}
             >
               {article.domains.length > 0 && (
-                <p style={{ marginBlock: 0 }}>
+                <p className="flush">
                   <strong>Domains:</strong> {article.domains.join(" · ")}
                 </p>
               )}
               {article.tags.length > 0 && (
-                <p style={{ marginBlock: 0 }}>
+                <p className="flush">
                   <strong>Tags:</strong> {article.tags.join(" · ")}
                 </p>
               )}

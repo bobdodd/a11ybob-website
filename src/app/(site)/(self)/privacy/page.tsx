@@ -11,12 +11,12 @@ export default function Privacy() {
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
             <h1>Privacy</h1>
-            <p style={{ color: "var(--ink-muted)" }}>
+            <p className="muted">
               <small>Last reviewed: 2026-05-05.</small>
             </p>
           </header>
 
-          <p style={{ fontSize: "var(--s1)" }}>
+          <p className="lede">
             This site does not track you. There is no analytics. There are
             no advertising trackers. There are no third-party scripts that
             phone home with your behaviour.

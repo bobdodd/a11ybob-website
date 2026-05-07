@@ -14,7 +14,7 @@ export default function Home() {
               Systems that respond intelligently to context, and the humans
               within them.
             </h1>
-            <p style={{ fontSize: "var(--s1)", color: "var(--ink-muted)" }}>
+            <p className="lede muted">
               Forty years building them. Twenty in digital accessibility.
             </p>
             <p>

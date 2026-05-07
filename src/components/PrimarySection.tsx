@@ -19,9 +19,7 @@ export function PrimarySection({
   return (
     <details className="extra-section" open>
       <summary>
-        <h2 style={{ display: "inline", fontSize: "var(--s1)", marginBlock: 0 }}>
-          {heading}
-        </h2>
+        <h2>{heading}</h2>
       </summary>
       <div
         className="stack"

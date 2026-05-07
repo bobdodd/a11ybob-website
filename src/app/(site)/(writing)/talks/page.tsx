@@ -41,7 +41,7 @@ export default function Talks() {
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
             <h1>Talks</h1>
-            <p style={{ fontSize: "var(--s1)" }}>
+            <p className="lede">
               Public talks and writing in talk-shaped form.
               Reverse-chronological. Older SIGACCESS pieces from the late
               2000s are not yet listed here.
@@ -49,12 +49,8 @@ export default function Talks() {
           </header>
 
           <ul
-            className="stack"
-            style={{
-              "--space": "var(--s2)",
-              listStyle: "none",
-              paddingInlineStart: 0,
-            } as CSSProperties}
+            className="list-flat stack"
+            style={{ "--space": "var(--s2)" } as CSSProperties}
           >
             {talks.map((t) => (
               <li key={t.title}>
@@ -62,15 +58,13 @@ export default function Talks() {
                   className="stack"
                   style={{ "--space": "var(--s-1)" } as CSSProperties}
                 >
-                  <h2 style={{ marginBlock: 0, fontSize: "var(--s2)" }}>
-                    {t.title}
-                  </h2>
-                  <p style={{ marginBlock: 0, color: "var(--ink-muted)" }}>
+                  <h2 className="search-results-heading">{t.title}</h2>
+                  <p className="flush muted">
                     <small>
                       {t.venue} · {t.date}
                     </small>
                   </p>
-                  <p style={{ marginBlock: 0 }}>{t.blurb}</p>
+                  <p className="flush">{t.blurb}</p>
                 </article>
               </li>
             ))}

@@ -32,8 +32,11 @@ export function Pagination({
     // region already announces the count); the bottom keeps a small
     // count line so sighted readers see a tally after the list.
     if (position === "top") return null;
+    // The single-page count sits outside any .pagination nav, so it
+    // can't rely on the .pagination > p selector. Use the muted +
+    // flush utilities instead.
     return (
-      <p style={{ color: "var(--ink-muted)", marginBlock: 0 }}>
+      <p className="muted flush">
         <small>{total === 1 ? "1 result" : `${total.toLocaleString()} results`}.</small>
       </p>
     );
@@ -67,7 +70,7 @@ export function Pagination({
       aria-label={`Pagination, ${position} of results`}
       className="pagination"
     >
-      <p style={{ color: "var(--ink-muted)", marginBlock: 0 }}>
+      <p>
         <small>
           Results {firstShown.toLocaleString()}–{lastShown.toLocaleString()} of{" "}
           {total.toLocaleString()}
@@ -75,7 +78,7 @@ export function Pagination({
       </p>
       <ul
         className="cluster nav-list"
-        style={{ "--space": "var(--s-1)", marginBlock: "var(--s-1)" } as React.CSSProperties}
+        style={{ "--space": "var(--s-1)" } as React.CSSProperties}
       >
         {page > 1 && (
           <li>
@@ -91,9 +94,7 @@ export function Pagination({
             </li>
           ) : it === page ? (
             <li key={it}>
-              <span aria-current="page" style={{ fontWeight: 600 }}>
-                {it}
-              </span>
+              <span aria-current="page">{it}</span>
             </li>
           ) : (
             <li key={it}>

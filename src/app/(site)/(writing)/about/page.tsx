@@ -11,7 +11,7 @@ export default function About() {
             style={{ "--space": "var(--s1)" } as CSSProperties}
           >
             <h1>About</h1>
-            <p style={{ fontSize: "var(--s1)" }}>
+            <p className="lede">
               <em>
                 Systems that respond intelligently to context, and the humans
                 within them.
@@ -238,7 +238,7 @@ export default function About() {
             </p>
           </section>
 
-          <p style={{ fontSize: "var(--s1)" }}>
+          <p className="lede">
             <em>
               It was always about systems that respond intelligently to
               context. The model railway just had fewer modalities.

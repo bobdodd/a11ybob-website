@@ -32,6 +32,37 @@ work and deserves intentional decisions, not implicit ones.
 option, name the trade-off, propose a recommendation, then wait. Don't
 ship and ask forgiveness.
 
+## Don't use inline styles for declarative styling
+
+Avoid `style={…}` for properties that should live in a CSS class.
+Inline styles are an accessibility regression: they override user
+stylesheets and break every assistive-tech adaptation the user has
+configured — screen-magnifier reflow, high-contrast user stylesheets,
+reader-mode tools, contrast-tuning browser extensions. All of those
+adapt by replacing CSS rules; inline styles win the cascade against
+them without `!important`, which is a war the user shouldn't have to
+fight.
+
+- **Don't** set declarative properties inline — colour, padding,
+  border, font, background, alignment, dimensions. Those go in a
+  CSS class in the right `@layer`: `base` for element-level
+  defaults, `components` for specific component classes,
+  `utilities` for composable one-offs.
+- **Do** set CSS custom properties inline when they configure a
+  class-based primitive — e.g. `style={{"--space": "var(--s2)"}}`
+  on `.stack`, `style={{"--max": "min(80rem, 100%)"}}` on
+  `.center`. The class encodes the behaviour; the inline custom
+  property tunes one instance. This is the Every Layout pattern.
+- **Don't** inline-style as a "belt-and-suspenders" workaround for
+  perceived cascade issues. Trace and fix the cascade; don't paint
+  over it. (This trapped me once with the pill toggle — the right
+  fix was a more specific selector, not inline overrides.)
+- **Don't** inline-style "small" adjustments because it feels
+  proportionate. If a property is being declared, it's a class.
+
+Apply equally to React `style` props, HTML `style` attributes, and
+any equivalent.
+
 ## Never use placeholder text on inputs
 
 The site targets WCAG 2.2 AAA. Placeholder text fails 1.4.6 in every

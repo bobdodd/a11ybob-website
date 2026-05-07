@@ -11,7 +11,7 @@ export default function Research() {
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
             <h1>Research</h1>
-            <p style={{ fontSize: "var(--s1)" }}>
+            <p className="lede">
               Three pieces of original conceptual work, all developed
               during doctoral research at Teesside between 2004 and 2013,
               and one forward-looking framework that needed agentic AI to
@@ -105,7 +105,7 @@ export default function Research() {
               to take this work back up in 2029. Whether the game is
               cooperative or non-cooperative remains an open question.
             </p>
-            <p style={{ color: "var(--ink-muted)" }}>
+            <p className="muted">
               <small>
                 This page is the public roadmap for the 2029 work. Specific
                 framings, prior-art surveys, and any associated

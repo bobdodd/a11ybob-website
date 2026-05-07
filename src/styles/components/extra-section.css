@@ -1,0 +1,35 @@
+/* Extra-section — the disclosure-wrapped section pattern used for
+ * cross-corpus result groups and for the primary corpus when extras
+ * are also showing. Renders as a native <details open> with an <h2>
+ * inside the <summary>. The h2 styling lives here so the markup
+ * doesn't need inline styles to size/inline it.
+ *
+ * Used by ReviewsSection, GlossarySection (in /writing), the parallel
+ * sections in /writing/reviews and /writing/glossary, and
+ * PrimarySection (which wraps the primary corpus's results when
+ * extras are present). */
+
+.extra-section > summary > h2 {
+  display: inline;
+  font-size: var(--s1);
+  margin-block: 0;
+}
+
+/* "Search results" h2 used at the top of single-corpus result lists.
+ * Sized between body and default h2 — large enough to mark the
+ * boundary, small enough not to overpower the result titles. */
+.search-results-heading {
+  font-size: var(--s2);
+  margin-block: 0;
+}
+
+/* Spacing inside the disclosure body — first piece of content (the
+ * result list) sits a little below the summary; the "See all"
+ * paragraph that follows sits a little below that. */
+.extra-section > .list-flat {
+  margin-block-start: var(--s1);
+}
+
+.extra-section > p {
+  margin-block-start: var(--s0);
+}

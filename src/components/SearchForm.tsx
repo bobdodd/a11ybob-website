@@ -83,16 +83,7 @@ export function SearchForm({
           hintId={hint ? "search-hint" : undefined}
           ariaLabel={label}
         />
-        <button
-          type="submit"
-          style={{
-            padding: "var(--s-1) var(--s1)",
-            border: "var(--border-thin) solid var(--rule)",
-            background: "var(--ink)",
-            color: "var(--surface-1)",
-            fontSize: "var(--s0)",
-          }}
-        >
+        <button type="submit" className="search-form-button">
           Search
         </button>
         {passthrough.map(([k, v]) => (
@@ -101,37 +92,18 @@ export function SearchForm({
       </div>
 
       {hint && (
-        <span
-          id="search-hint"
-          style={{
-            color: "var(--ink-muted)",
-            // Body size, not <small>: hints are guidance the reader
-            // may need at any moment and sit at the same legibility
-            // floor as body text. The fluid root font-size keeps
-            // body comfortable; <small> can drop below the
-            // practical minimum on narrow viewports.
-            fontSize: "var(--s0)",
-          }}
-        >
+        // Body size (not <small>) so hints stay at the same legibility
+        // floor as body text — the fluid root font keeps body
+        // comfortable; <small> can drop under the practical minimum on
+        // narrow viewports.
+        <span id="search-hint" className="muted">
           {hint}
         </span>
       )}
 
       {includes.length > 0 && (
-        <fieldset
-          style={{ border: 0, padding: 0, margin: 0 }}
-          className="cluster"
-        >
-          <legend
-            style={{
-              position: "absolute",
-              width: "1px",
-              height: "1px",
-              overflow: "hidden",
-              clip: "rect(0 0 0 0)",
-              padding: 0,
-            }}
-          >
+        <fieldset className="search-form-includes cluster">
+          <legend className="visually-hidden">
             Also search:
           </legend>
           {includes.map((inc) =>

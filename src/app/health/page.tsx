@@ -62,22 +62,26 @@ export default async function HealthPage() {
   const [mongo, os] = await Promise.all([checkMongo(), checkOpenSearch()]);
 
   return (
-    <main style={{ padding: "2rem", fontFamily: "system-ui, sans-serif" }}>
-      <h1>Backend health</h1>
+    <main id="main" className="site-main">
+      <div className="center">
+        <h1>Backend health</h1>
 
-      <h2>MongoDB</h2>
-      <pre>{JSON.stringify(mongo, null, 2)}</pre>
+        <h2>MongoDB</h2>
+        <pre>{JSON.stringify(mongo, null, 2)}</pre>
 
-      <h2>OpenSearch</h2>
-      <pre>{JSON.stringify(os, null, 2)}</pre>
+        <h2>OpenSearch</h2>
+        <pre>{JSON.stringify(os, null, 2)}</pre>
 
-      <p style={{ color: "#666", fontSize: "0.9rem", maxWidth: "60ch" }}>
-        OpenSearch indexes only the current version of articles whose status is{" "}
-        <code>published</code>. While every article is a draft, the{" "}
-        <code>articles</code> index will be empty by design — flip{" "}
-        <code>status</code> to <code>published</code> and re-run{" "}
-        <code>npm run index</code>.
-      </p>
+        <p className="muted">
+          <small>
+            OpenSearch indexes only the current version of articles whose
+            status is <code>published</code>. While every article is a
+            draft, the <code>articles</code> index will be empty by
+            design — flip <code>status</code> to <code>published</code>{" "}
+            and re-run <code>npm run index</code>.
+          </small>
+        </p>
+      </div>
     </main>
   );
 }

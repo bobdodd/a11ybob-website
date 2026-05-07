@@ -1,0 +1,16 @@
+/* Scroll-region — wrap wide content (tables, code blocks, diagrams)
+ * that would otherwise overflow the line measure. Sibling primitive
+ * to Reel, but for a single block of overflowing content rather than
+ * a strip of equal-height items.
+ *
+ * Accessibility: callers should pass role="region", an aria-label,
+ * and tabindex="0" on this element so keyboard users can scroll it
+ * and screen readers announce the region. (We can't apply those in
+ * CSS — they belong on the markup so screen readers see them.) */
+
+.scroll-region {
+  overflow-x: auto;
+  /* Match Reel's scrollbar tinting so wide content scrolls in the
+   * same visual idiom anywhere on the site. */
+  scrollbar-color: var(--ink) var(--surface-2);
+}

@@ -1,0 +1,41 @@
+/* FilterBar — replaces the sidebar facets pattern. Active filters as
+ * removable chips at the top of the result column; the rest behind
+ * a <details> disclosure. The .filter-bar wrapper carries all the
+ * structural CSS so the JSX needs only Stack/Cluster --space inline
+ * customisations. */
+
+/* Lists inside the FilterBar (chip rows, option groups) are unstyled
+ * — the visible chips/pills carry the affordance, not list bullets. */
+.filter-bar ul {
+  list-style: none;
+  padding-inline-start: 0;
+  margin-block: 0;
+}
+
+/* Disclosure summary text — match body size so the affordance is at
+ * the same legibility floor as surrounding content. */
+.filter-bar .filter-disclosure > summary {
+  font-size: var(--s0);
+}
+
+/* Per-axis heading inside the open disclosure. Body size, flush. */
+.filter-bar .filter-disclosure h3 {
+  font-size: var(--s0);
+  margin-block: 0;
+}
+
+/* Disclosure body — small space above content when open. */
+.filter-bar .filter-disclosure > div {
+  margin-block-start: var(--s-1);
+}
+
+/* Per-axis option list — small space above the chip cluster. */
+.filter-bar .filter-disclosure section ul {
+  margin-block-start: var(--s-2);
+}
+
+/* Counts beside each filter option ("Tag (12)"). Slightly faded so
+ * the value is the dominant element, the count is supporting. */
+.filter-bar .pill > small {
+  opacity: 0.75;
+}

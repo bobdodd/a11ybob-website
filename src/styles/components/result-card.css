@@ -1,0 +1,55 @@
+/* Result-card styling shared by ArticleResultCard, ReviewResultCard,
+ * and GlossaryResultCard. Each card is an <article class="stack">
+ * (inside <li>) or a <dt>/<dd> pair (glossary). The cards' visual
+ * conventions live here so the JSX has only structural concerns. */
+
+/* The list of result cards uses .list-flat (utilities) for the
+ * unstyled-list reset. Page-specific spacing for cards inside
+ * extra-section is in extra-section.css. */
+
+/* Card heading — title of the result. Slightly smaller than the
+ * default h2/h3 (var(--s3)/var(--s2)) so titles aren't visually
+ * overpowering inside a list of many results. */
+.result-card-heading {
+  font-size: var(--s1);
+  margin-block: 0;
+}
+
+/* Card paragraphs — flush so each line uses Stack spacing instead
+ * of UA margin. */
+.result-card > p {
+  margin-block: 0;
+}
+
+/* Snippet block (rendered HTML from OpenSearch highlights). Flush
+ * for the same reason as paragraphs. */
+.result-card > div[role="presentation"],
+.result-card-snippet {
+  margin-block: 0;
+}
+
+/* Muted metadata small after a tier badge — small inline gap so the
+ * badge doesn't crash against the metadata. Adjacent-sibling selector
+ * means the gap is only present when both exist. */
+.tier-badge + small {
+  margin-inline-start: var(--s-1);
+}
+
+/* Glossary <dt> — term name in bold, lede size. */
+.result-card-term {
+  font-size: var(--s1);
+  font-weight: 600;
+}
+
+/* Glossary aka list — muted, smaller, normal weight. */
+.result-card-aka {
+  margin-inline-start: var(--s-1);
+  color: var(--ink-muted);
+  font-weight: 400;
+  font-size: var(--s-1);
+}
+
+/* Glossary <dd> — flush left, no UA indent. */
+.result-card-definition {
+  margin-inline-start: 0;
+}

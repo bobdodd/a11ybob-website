@@ -1,0 +1,79 @@
+/* SearchSuggest — type-ahead combobox component.
+ *
+ * The wrapper anchors the absolutely-positioned listbox dropdown.
+ * Its max-inline-size matches the universal axiom that the inner
+ * <input> already gets — without it the wrapper would grow past
+ * the input's measure cap and the adjacent Search button would
+ * float away from the input. */
+
+.search-suggest {
+  position: relative;
+  flex: 1 1 0;
+  min-inline-size: 16ch;
+  max-inline-size: var(--measure);
+}
+
+/* The input fills its wrapper. Element-style border + padding so
+ * user-side overrides (high-contrast tools, reader-mode) can adjust
+ * via class or element selectors. */
+.search-suggest > input[type="search"] {
+  inline-size: 100%;
+  padding: var(--s-1) var(--s0);
+  border: var(--border-thin) solid var(--rule);
+  background: var(--surface-1);
+  color: var(--ink);
+  font-size: var(--s0);
+}
+
+/* Listbox dropdown. Hidden via the [hidden] attribute when closed
+ * — no display:none from CSS so screen readers see the change. */
+.search-suggest-list {
+  position: absolute;
+  inset-block-start: 100%;
+  inset-inline: 0;
+  z-index: 50;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background: var(--surface-1);
+  border: var(--border-thin) solid var(--rule);
+  border-block-start: 0;
+  max-block-size: 60vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.08);
+}
+
+.search-suggest-list ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Group header (e.g. "Articles", "Reviews") inside the listbox.
+ * Borderless above the first group; bordered above subsequent
+ * groups for visual separation. */
+.search-suggest-group-label {
+  padding: var(--s-2) var(--s0);
+  font-size: var(--s-1);
+  color: var(--ink-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.search-suggest-group + li > .search-suggest-group-label {
+  border-block-start: var(--border-thin) solid var(--rule);
+}
+
+/* Option rows. Active state is signalled by aria-selected="true"
+ * (set by JS as the user navigates with arrow keys), so the CSS
+ * selector reads off the aria attribute and doesn't need a parallel
+ * data-attribute. */
+.search-suggest-list [role="option"] {
+  padding: var(--s-1) var(--s0);
+  cursor: pointer;
+  background: transparent;
+}
+
+.search-suggest-list [role="option"][aria-selected="true"] {
+  background: var(--surface-2);
+}

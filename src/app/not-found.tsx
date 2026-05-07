@@ -10,7 +10,7 @@ export default function NotFound() {
           <div className="stack" style={{ "--space": "var(--s2)" } as CSSProperties}>
             <header>
               <h1>Not found</h1>
-              <p style={{ fontSize: "var(--s1)", color: "var(--ink-muted)" }}>
+              <p className="lede muted">
                 The page you asked for does not exist on this site.
               </p>
             </header>

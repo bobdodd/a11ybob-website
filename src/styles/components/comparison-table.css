@@ -1,0 +1,12 @@
+/* Comparison table — element comparison across labelled rows.
+ * Row headers render in muted ink and are reserved a fixed inline
+ * size so the body cells align across rows even with varying labels.
+ * Used on /paradise to compare the three families of accessibility
+ * analysis tools. Generic enough that other comparison tables on
+ * the site can use the same class. */
+
+.comparison-table th[scope="row"] {
+  font-weight: 600;
+  color: var(--ink-muted);
+  inline-size: 16ch;
+}

@@ -66,14 +66,7 @@ export function FilterBar({ baseUrl, axes }: Props) {
         <ul
           className="cluster"
           aria-label="Active filters"
-          style={
-            {
-              "--space": "var(--s-2)",
-              listStyle: "none",
-              paddingInlineStart: 0,
-              marginBlock: 0,
-            } as React.CSSProperties
-          }
+          style={{ "--space": "var(--s-2)" } as React.CSSProperties}
         >
           {activeAxes.map((axis) => (
             <li key={axis.name}>
@@ -100,33 +93,17 @@ export function FilterBar({ baseUrl, axes }: Props) {
 
       {inactiveAxesWithOptions.length > 0 && (
         <details className="filter-disclosure">
-          <summary>
-            <span style={{ fontSize: "var(--s0)" }}>Filter</span>
-          </summary>
+          <summary>Filter</summary>
           <div
             className="stack"
-            style={
-              {
-                "--space": "var(--s0)",
-                marginBlockStart: "var(--s-1)",
-              } as React.CSSProperties
-            }
+            style={{ "--space": "var(--s0)" } as React.CSSProperties}
           >
             {inactiveAxesWithOptions.map((axis) => (
               <section key={axis.name}>
-                <h3 style={{ fontSize: "var(--s0)", marginBlock: 0 }}>
-                  {axis.label}
-                </h3>
+                <h3>{axis.label}</h3>
                 <ul
                   className="cluster"
-                  style={
-                    {
-                      "--space": "var(--s-2)",
-                      listStyle: "none",
-                      paddingInlineStart: 0,
-                      marginBlockStart: "var(--s-2)",
-                    } as React.CSSProperties
-                  }
+                  style={{ "--space": "var(--s-2)" } as React.CSSProperties}
                 >
                   {axis.options.map((opt) => (
                     <li key={opt.value}>
@@ -141,7 +118,7 @@ export function FilterBar({ baseUrl, axes }: Props) {
                         aria-pressed="false"
                       >
                         {opt.label ?? opt.value}{" "}
-                        <small style={{ opacity: 0.75 }}>({opt.count})</small>
+                        <small>({opt.count})</small>
                       </Link>
                     </li>
                   ))}

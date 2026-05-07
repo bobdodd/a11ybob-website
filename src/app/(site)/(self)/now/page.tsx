@@ -7,7 +7,7 @@ export default function Now() {
         <div className="stack" style={{ "--space": "var(--s2)" } as CSSProperties}>
           <header>
             <h1>Now</h1>
-            <p style={{ color: "var(--ink-muted)" }}>
+            <p className="muted">
               <small>
                 A <a href="https://nownownow.com/about">/now page</a>: what
                 I&rsquo;m working on at this moment, updated quarterly.

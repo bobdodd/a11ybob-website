@@ -11,12 +11,12 @@ export default function Accessibility() {
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
             <h1>Accessibility statement</h1>
-            <p style={{ color: "var(--ink-muted)" }}>
+            <p className="muted">
               <small>Last reviewed: 2026-05-05.</small>
             </p>
           </header>
 
-          <p style={{ fontSize: "var(--s1)" }}>
+          <p className="lede">
             This site is itself an accessibility artefact. The standards
             below are the floor, not the ceiling — the goal is for the
             site&rsquo;s own implementation to demonstrate the practices

@@ -21,14 +21,18 @@ const zones = [
 
 function ZonePreview({ zone, label }: { zone: string; label: string }) {
   return (
-    <section data-zone={zone} className="box" style={{ padding: "var(--s1)" }}>
+    <section
+      data-zone={zone}
+      className="box"
+      style={{ "--space": "var(--s1)" } as CSSProperties}
+    >
       <div className="stack" style={{ "--space": "var(--s-1)" } as CSSProperties}>
-        <h3 style={{ marginBlock: 0 }}>Zone: {zone}</h3>
-        <p style={{ marginBlock: 0 }}>{label}</p>
-        <p style={{ marginBlock: 0, color: "var(--ink-muted)" }}>
+        <h3 className="flush">Zone: {zone}</h3>
+        <p className="flush">{label}</p>
+        <p className="flush muted">
           Muted secondary text on this zone&rsquo;s surface.
         </p>
-        <p style={{ marginBlock: 0 }}>
+        <p className="flush">
           A <a href="#">link in this zone</a> sits on the same surface.
         </p>
       </div>
@@ -38,7 +42,7 @@ function ZonePreview({ zone, label }: { zone: string; label: string }) {
 
 export default function StyleguidePage() {
   return (
-    <main id="main" className="center" style={{ padding: "var(--s2)", maxInlineSize: "min(80ch, 100%)" }}>
+    <main id="main" className="center styleguide-main">
       <div className="stack" style={{ "--space": "var(--s3)" } as CSSProperties}>
         <header className="stack" style={{ "--space": "var(--s0)" } as CSSProperties}>
           <h1>Styleguide</h1>
@@ -76,7 +80,12 @@ export default function StyleguidePage() {
                     <code>{value}</code>
                   </td>
                   <td>{use}</td>
-                  <td style={{ fontSize: `var(${token})` }}>The quick brown fox</td>
+                  <td
+                    className="styleguide-token-row"
+                    style={{ "--token-size": `var(${token})` } as CSSProperties}
+                  >
+                    The quick brown fox
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -184,16 +193,16 @@ export default function StyleguidePage() {
           <h3>Cluster</h3>
           <div className="box">
             <div className="cluster">
-              <span className="box" style={{ padding: "var(--s-1) var(--s0)" }}>
+              <span className="box styleguide-tag">
                 tag
               </span>
-              <span className="box" style={{ padding: "var(--s-1) var(--s0)" }}>
+              <span className="box styleguide-tag">
                 another tag
               </span>
-              <span className="box" style={{ padding: "var(--s-1) var(--s0)" }}>
+              <span className="box styleguide-tag">
                 a longer tag
               </span>
-              <span className="box" style={{ padding: "var(--s-1) var(--s0)" }}>
+              <span className="box styleguide-tag">
                 short
               </span>
             </div>
@@ -235,14 +244,8 @@ export default function StyleguidePage() {
           </div>
 
           <h3>Frame (16:9)</h3>
-          <div
-            className="frame"
-            style={{
-              border: "var(--border-thin) solid var(--rule)",
-              background: "var(--surface-2)",
-            }}
-          >
-            <span style={{ color: "var(--ink-muted)" }}>16:9 aspect ratio</span>
+          <div className="frame styleguide-frame-demo">
+            <span className="muted">16:9 aspect ratio</span>
           </div>
         </section>
 

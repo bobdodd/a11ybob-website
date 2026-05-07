@@ -75,7 +75,7 @@ export default async function Glossary({
               </small>
             </p>
             <h1>Glossary</h1>
-            <p style={{ fontSize: "var(--s1)" }}>
+            <p className="lede">
               Terms used in accessibility research and practice. Each entry
               has a definition, common aliases, and category tags.
             </p>
@@ -113,7 +113,7 @@ export default async function Glossary({
                   <li key={l}>
                     <Link
                       href={`/writing/glossary?letter=${l}`}
-                      style={letter === l ? { fontWeight: 600 } : undefined}
+                      aria-current={letter === l ? "page" : undefined}
                     >
                       {l}
                     </Link>
@@ -131,21 +131,7 @@ export default async function Glossary({
           )}
 
           <div className="stack" style={{ "--space": "var(--s2)" } as CSSProperties}>
-              <p
-                role="status"
-                style={
-                  q
-                    ? { marginBlock: 0 }
-                    : {
-                        position: "absolute",
-                        width: "1px",
-                        height: "1px",
-                        overflow: "hidden",
-                        clip: "rect(0 0 0 0)",
-                        margin: 0,
-                      }
-                }
-              >
+              <p role="status" className={q ? "flush" : "visually-hidden flush"}>
                 {q
                   ? buildSearchStatus({
                       q,
@@ -181,9 +167,7 @@ export default async function Glossary({
                 />
 
                 {!(articlesExtra || reviewsExtra) && (
-                  <h2 style={{ fontSize: "var(--s2)", marginBlock: 0 }}>
-                    Search results
-                  </h2>
+                  <h2 className="search-results-heading">Search results</h2>
                 )}
 
                 <Pagination
@@ -199,7 +183,7 @@ export default async function Glossary({
                   <p>No glossary entries match the current filters.</p>
                 ) : (
                   <dl
-                    className="stack"
+                    className="list-flat stack"
                     style={{ "--space": "var(--s1)" } as CSSProperties}
                   >
                     {result.hits.map((entry) => (
@@ -227,19 +211,14 @@ export default async function Glossary({
               {articlesExtra && (
                 <details className="extra-section" open>
                   <summary>
-                    <h2 style={{ display: "inline", fontSize: "var(--s1)", marginBlock: 0 }}>
+                    <h2>
                       Articles · {articlesExtra.total === 0 ? "no matches" : `${articlesExtra.total} match${articlesExtra.total === 1 ? "" : "es"}`}
                     </h2>
                   </summary>
                   {articlesExtra.hits.length > 0 && (
                     <ul
-                      className="stack"
-                      style={{
-                        "--space": "var(--s2)",
-                        listStyle: "none",
-                        paddingInlineStart: 0,
-                        marginBlockStart: "var(--s1)",
-                      } as CSSProperties}
+                      className="list-flat stack"
+                      style={{ "--space": "var(--s2)" } as CSSProperties}
                     >
                       {articlesExtra.hits.map((hit) => (
                         <ArticleResultCard key={hit._id} hit={hit} q={q} headingLevel="h3" />
@@ -247,7 +226,7 @@ export default async function Glossary({
                     </ul>
                   )}
                   {articlesExtra.total > articlesExtra.hits.length && (
-                    <p style={{ marginBlockStart: "var(--s0)" }}>
+                    <p>
                       <Link href={`/writing?q=${encodeURIComponent(q!)}`}>
                         See all {articlesExtra.total} matching articles →
                       </Link>
@@ -259,19 +238,14 @@ export default async function Glossary({
               {reviewsExtra && (
                 <details className="extra-section" open>
                   <summary>
-                    <h2 style={{ display: "inline", fontSize: "var(--s1)", marginBlock: 0 }}>
+                    <h2>
                       Reviews · {reviewsExtra.total === 0 ? "no matches" : `${reviewsExtra.total} match${reviewsExtra.total === 1 ? "" : "es"}`}
                     </h2>
                   </summary>
                   {reviewsExtra.hits.length > 0 && (
                     <ul
-                      className="stack"
-                      style={{
-                        "--space": "var(--s2)",
-                        listStyle: "none",
-                        paddingInlineStart: 0,
-                        marginBlockStart: "var(--s1)",
-                      } as CSSProperties}
+                      className="list-flat stack"
+                      style={{ "--space": "var(--s2)" } as CSSProperties}
                     >
                       {reviewsExtra.hits.map((hit) => (
                         <ReviewResultCard key={hit._id} hit={hit} headingLevel="h3" />
@@ -279,7 +253,7 @@ export default async function Glossary({
                     </ul>
                   )}
                   {reviewsExtra.total > reviewsExtra.hits.length && (
-                    <p style={{ marginBlockStart: "var(--s0)" }}>
+                    <p>
                       <Link href={`/writing/reviews?q=${encodeURIComponent(q!)}`}>
                         See all {reviewsExtra.total} matching reviews →
                       </Link>

@@ -26,7 +26,7 @@ export default async function ReviewPage({
 
           <header className="stack" style={{ "--space": "var(--s0)" } as CSSProperties}>
             <h1>{review.title}</h1>
-            <p style={{ color: "var(--ink-muted)" }}>
+            <p className="muted">
               <small>
                 {review.authors.length > 0 && <>{review.authors.join(", ")} · </>}
                 {review.year}
@@ -43,29 +43,29 @@ export default async function ReviewPage({
 
           {review.summary && (
             <section>
-              <h2 style={{ fontSize: "var(--s2)" }}>Summary</h2>
-              <p style={{ whiteSpace: "pre-wrap" }}>{review.summary}</p>
+              <h2 className="search-results-heading">Summary</h2>
+              <p className="preserve-whitespace">{review.summary}</p>
             </section>
           )}
 
           {review.key_findings && (
             <section>
-              <h2 style={{ fontSize: "var(--s2)" }}>Key findings</h2>
-              <p style={{ whiteSpace: "pre-wrap" }}>{review.key_findings}</p>
+              <h2 className="search-results-heading">Key findings</h2>
+              <p className="preserve-whitespace">{review.key_findings}</p>
             </section>
           )}
 
           {review.relevance && (
             <section>
-              <h2 style={{ fontSize: "var(--s2)" }}>Relevance</h2>
-              <p style={{ whiteSpace: "pre-wrap" }}>{review.relevance}</p>
+              <h2 className="search-results-heading">Relevance</h2>
+              <p className="preserve-whitespace">{review.relevance}</p>
             </section>
           )}
 
           {(review.tags.length > 0 || review.standards_referenced.length > 0) && (
             <section className="stack" style={{ "--space": "var(--s0)" } as CSSProperties}>
               {review.tags.length > 0 && (
-                <p style={{ marginBlock: 0 }}>
+                <p className="flush">
                   <strong>Tags:</strong>{" "}
                   {review.tags.map((t, i) => (
                     <span key={t}>
@@ -78,7 +78,7 @@ export default async function ReviewPage({
                 </p>
               )}
               {review.standards_referenced.length > 0 && (
-                <p style={{ marginBlock: 0 }}>
+                <p className="flush">
                   <strong>Standards referenced:</strong>{" "}
                   {review.standards_referenced.join(" · ")}
                 </p>
@@ -88,7 +88,7 @@ export default async function ReviewPage({
 
           {review.rating !== null && (
             <p>
-              <small style={{ color: "var(--ink-muted)" }}>
+              <small className="muted">
                 Rating: {review.rating} / 5
               </small>
             </p>

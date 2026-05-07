@@ -27,16 +27,16 @@ export default async function GlossaryEntry({
           <header className="stack" style={{ "--space": "var(--s0)" } as CSSProperties}>
             <h1>{entry.term}</h1>
             {entry.aka.length > 0 && (
-              <p style={{ color: "var(--ink-muted)" }}>
+              <p className="muted">
                 Also known as: {entry.aka.join(", ")}
               </p>
             )}
           </header>
 
-          <div style={{ whiteSpace: "pre-wrap" }}>{entry.definition}</div>
+          <div className="preserve-whitespace">{entry.definition}</div>
 
           {entry.category.length > 0 && (
-            <p style={{ marginBlock: 0 }}>
+            <p className="flush">
               <strong>Category:</strong>{" "}
               {entry.category.map((c, i) => (
                 <span key={c}>
@@ -50,14 +50,14 @@ export default async function GlossaryEntry({
           )}
 
           {entry.related_terms.length > 0 && (
-            <p style={{ marginBlock: 0 }}>
+            <p className="flush">
               <strong>Related:</strong> {entry.related_terms.join(" · ")}
             </p>
           )}
 
           {entry.sources.length > 0 && (
             <section>
-              <h2 style={{ fontSize: "var(--s1)" }}>Sources</h2>
+              <h2 className="lede">Sources</h2>
               <ul>
                 {entry.sources.map((s) => (
                   <li key={s}>

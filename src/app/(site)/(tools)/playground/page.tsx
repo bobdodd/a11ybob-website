@@ -11,7 +11,7 @@ export default function Playground() {
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
             <h1>Playground</h1>
-            <p style={{ fontSize: "var(--s1)" }}>
+            <p className="lede">
               An in-browser code editor that runs{" "}
               <Link href="/paradise">Paradise</Link>&rsquo;s analysers on
               your HTML, JavaScript, and CSS as you type.
@@ -29,7 +29,7 @@ export default function Playground() {
               } as CSSProperties
             }
           >
-            <p style={{ color: "var(--ink-muted)" }}>
+            <p className="muted">
               Editor will mount here.
             </p>
           </div>
@@ -53,7 +53,7 @@ export default function Playground() {
             </p>
           </section>
 
-          <p style={{ color: "var(--ink-muted)" }}>
+          <p className="muted">
             <small>
               The Playground is the public face of the Paradise analysers.
               Its construction is its own piece of work and lands after

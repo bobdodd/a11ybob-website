@@ -1,0 +1,21 @@
+/* SearchForm — server-rendered GET form with the type-ahead input
+ * (SearchSuggest) and the Search submit. Style for the submit button
+ * and the fieldset that wraps the cross-corpus pill toggles. */
+
+.search-form-button {
+  padding: var(--s-1) var(--s1);
+  border: var(--border-thin) solid var(--rule);
+  background: var(--ink);
+  color: var(--surface-1);
+  font-size: var(--s0);
+}
+
+/* The pill-checkbox fieldset sits on its own row beneath the search
+ * row. Reset the UA fieldset chrome (border/padding/margin) — the
+ * accessible name comes from the visually-hidden <legend>, the
+ * visible affordance is the chips themselves. */
+.search-form-includes {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}

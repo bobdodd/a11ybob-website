@@ -24,7 +24,18 @@
 @import "../styles/layouts/imposter.css"  layer(layouts);
 @import "../styles/layouts/icon.css"      layer(layouts);
 @import "../styles/layouts/container.css" layer(layouts);
+@import "../styles/layouts/scroll-region.css" layer(layouts);
 
 @import "../styles/components/chrome.css"     layer(components);
 @import "../styles/components/tier-badge.css"  layer(components);
 @import "../styles/components/pill-toggle.css" layer(components);
+@import "../styles/components/comparison-table.css" layer(components);
+@import "../styles/components/extra-section.css"     layer(components);
+@import "../styles/components/search-suggest.css"    layer(components);
+@import "../styles/components/search-form.css"       layer(components);
+@import "../styles/components/filter-bar.css"        layer(components);
+@import "../styles/components/pagination.css"        layer(components);
+@import "../styles/components/result-card.css"       layer(components);
+@import "../styles/components/styleguide.css"        layer(components);
+
+@import "../styles/utilities/text.css" layer(utilities);

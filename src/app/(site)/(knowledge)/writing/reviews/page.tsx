@@ -74,7 +74,7 @@ export default async function Reading({
               </small>
             </p>
             <h1>Reviews</h1>
-            <p style={{ fontSize: "var(--s1)" }}>
+            <p className="lede">
               The literature-review database. Every paper Bob has read with
               accessibility-relevant findings, with a short reviewed summary,
               key findings, and tags. Browse, filter, search.
@@ -104,21 +104,7 @@ export default async function Reading({
           />
 
           <div className="stack" style={{ "--space": "var(--s2)" } as CSSProperties}>
-              <p
-                role="status"
-                style={
-                  q
-                    ? { marginBlock: 0 }
-                    : {
-                        position: "absolute",
-                        width: "1px",
-                        height: "1px",
-                        overflow: "hidden",
-                        clip: "rect(0 0 0 0)",
-                        margin: 0,
-                      }
-                }
-              >
+              <p role="status" className={q ? "flush" : "visually-hidden flush"}>
                 {q
                   ? buildSearchStatus({
                       q,
@@ -163,9 +149,7 @@ export default async function Reading({
                 />
 
                 {!(articlesExtra || glossaryExtra) && (
-                  <h2 style={{ fontSize: "var(--s2)", marginBlock: 0 }}>
-                    Search results
-                  </h2>
+                  <h2 className="search-results-heading">Search results</h2>
                 )}
 
                 <Pagination
@@ -181,12 +165,8 @@ export default async function Reading({
                   <p>No reviews match the current filters.</p>
                 ) : (
                   <ul
-                    className="stack"
-                    style={{
-                      "--space": "var(--s2)",
-                      listStyle: "none",
-                      paddingInlineStart: 0,
-                    } as CSSProperties}
+                    className="list-flat stack"
+                    style={{ "--space": "var(--s2)" } as CSSProperties}
                   >
                     {result.hits.map((r) => (
                       <ReviewResultCard
@@ -213,19 +193,14 @@ export default async function Reading({
               {articlesExtra && (
                 <details className="extra-section" open>
                   <summary>
-                    <h2 style={{ display: "inline", fontSize: "var(--s1)", marginBlock: 0 }}>
+                    <h2>
                       Articles · {articlesExtra.total === 0 ? "no matches" : `${articlesExtra.total} match${articlesExtra.total === 1 ? "" : "es"}`}
                     </h2>
                   </summary>
                   {articlesExtra.hits.length > 0 && (
                     <ul
-                      className="stack"
-                      style={{
-                        "--space": "var(--s2)",
-                        listStyle: "none",
-                        paddingInlineStart: 0,
-                        marginBlockStart: "var(--s1)",
-                      } as CSSProperties}
+                      className="list-flat stack"
+                      style={{ "--space": "var(--s2)" } as CSSProperties}
                     >
                       {articlesExtra.hits.map((hit) => (
                         <ArticleResultCard key={hit._id} hit={hit} q={q} headingLevel="h3" />
@@ -233,7 +208,7 @@ export default async function Reading({
                     </ul>
                   )}
                   {articlesExtra.total > articlesExtra.hits.length && (
-                    <p style={{ marginBlockStart: "var(--s0)" }}>
+                    <p>
                       <Link href={`/writing?q=${encodeURIComponent(q!)}`}>
                         See all {articlesExtra.total} matching articles →
                       </Link>
@@ -245,17 +220,14 @@ export default async function Reading({
               {glossaryExtra && (
                 <details className="extra-section" open>
                   <summary>
-                    <h2 style={{ display: "inline", fontSize: "var(--s1)", marginBlock: 0 }}>
+                    <h2>
                       Glossary · {glossaryExtra.total === 0 ? "no matches" : `${glossaryExtra.total} match${glossaryExtra.total === 1 ? "" : "es"}`}
                     </h2>
                   </summary>
                   {glossaryExtra.hits.length > 0 && (
                     <dl
-                      className="stack"
-                      style={{
-                        "--space": "var(--s1)",
-                        marginBlockStart: "var(--s1)",
-                      } as CSSProperties}
+                      className="list-flat stack"
+                      style={{ "--space": "var(--s1)" } as CSSProperties}
                     >
                       {glossaryExtra.hits.map((entry) => (
                         <div
@@ -269,7 +241,7 @@ export default async function Reading({
                     </dl>
                   )}
                   {glossaryExtra.total > glossaryExtra.hits.length && (
-                    <p style={{ marginBlockStart: "var(--s0)" }}>
+                    <p>
                       <Link href={`/writing/glossary?q=${encodeURIComponent(q!)}`}>
                         See all {glossaryExtra.total} matching terms →
                       </Link>

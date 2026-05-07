@@ -56,7 +56,7 @@ export default function Colophon() {
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
             <h1>Colophon</h1>
-            <p style={{ fontSize: "var(--s1)" }}>
+            <p className="lede">
               How this site was built and why. The site itself is a
               portfolio piece; every meaningful decision is documented in
               writing so that it can be examined.
@@ -440,12 +440,8 @@ export default function Colophon() {
               follow; click through for the full rationale.
             </p>
             <ul
-              className="stack"
-              style={{
-                "--space": "var(--s1)",
-                listStyle: "none",
-                paddingInlineStart: 0,
-              } as CSSProperties}
+              className="list-flat stack"
+              style={{ "--space": "var(--s1)" } as CSSProperties}
             >
               {decisions.map((d) => (
                 <li key={d.id}>
@@ -456,7 +452,7 @@ export default function Colophon() {
                       {d.id} — {d.title}
                     </strong>
                   </a>
-                  <p style={{ marginBlockStart: "var(--s-1)" }}>{d.summary}</p>
+                  <p>{d.summary}</p>
                 </li>
               ))}
             </ul>

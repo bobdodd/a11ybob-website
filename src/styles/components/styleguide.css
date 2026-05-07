@@ -1,0 +1,32 @@
+/* Styleguide-specific demo classes. The /styleguide page demonstrates
+ * tokens, primitives, and patterns; its demos shouldn't model
+ * inline-style anti-patterns. The CSS lives here so the page JSX
+ * can stay class-driven. */
+
+/* Token-size demonstration row. The page passes the size token via
+ * the --token-size custom property; this rule reads it. */
+.styleguide-token-row {
+  font-size: var(--token-size, 1rem);
+}
+
+/* Tag-style box used in the Cluster primitive demo — small inline-
+ * padding chips rather than equal-pad squares. */
+.styleguide-tag {
+  padding-block: var(--s-1);
+  padding-inline: var(--s0);
+}
+
+/* The styleguide page main centres its column. The center primitive
+ * carries the work; this class only provides the page-level padding
+ * and line-measure cap appropriate to a dense reference page. */
+.styleguide-main {
+  padding: var(--s2);
+  max-inline-size: min(80ch, 100%);
+}
+
+/* Frame demo — surface tint and rule border for the demo well that
+ * the 16:9 aspect-ratio child sits in. */
+.styleguide-frame-demo {
+  border: var(--border-thin) solid var(--rule);
+  background: var(--surface-2);
+}

@@ -12,17 +12,13 @@ export default function Contact() {
           </p>
           <p>
             <a href="mailto:hello@a11ybob.com">hello@a11ybob.com</a>{" "}
-            <em style={{ color: "var(--ink-muted)" }}>
+            <em className="muted">
               <small>(placeholder address — to be replaced)</small>
             </em>
           </p>
           <ul
-            className="cluster"
-            style={{
-              "--space": "var(--s1)",
-              listStyle: "none",
-              paddingInlineStart: 0,
-            } as CSSProperties}
+            className="cluster list-flat"
+            style={{ "--space": "var(--s1)" } as CSSProperties}
           >
             <li>
               <a

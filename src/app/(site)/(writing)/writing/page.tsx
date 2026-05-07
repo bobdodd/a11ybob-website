@@ -74,7 +74,7 @@ export default async function WritingIndex({
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
             <h1>Writing</h1>
-            <p style={{ fontSize: "var(--s1)" }}>
+            <p className="lede">
               Long-form synthesis of published accessibility research. Each
               piece is grounded in named papers; each claim points back to
               the underlying evidence.
@@ -118,21 +118,7 @@ export default async function WritingIndex({
             className="stack"
             style={{ "--space": "var(--s2)" } as CSSProperties}
           >
-              <p
-                role="status"
-                style={
-                  q
-                    ? { marginBlock: 0 }
-                    : {
-                        position: "absolute",
-                        width: "1px",
-                        height: "1px",
-                        overflow: "hidden",
-                        clip: "rect(0 0 0 0)",
-                        margin: 0,
-                      }
-                }
-              >
+              <p role="status" className={q ? "flush" : "visually-hidden flush"}>
                 {q
                   ? buildSearchStatus({
                       q,
@@ -174,9 +160,7 @@ export default async function WritingIndex({
                 />
 
                 {!(reviewsExtra || glossaryExtra) && (
-                  <h2 style={{ fontSize: "var(--s2)", marginBlock: 0 }}>
-                    Search results
-                  </h2>
+                  <h2 className="search-results-heading">Search results</h2>
                 )}
 
                 <Pagination
@@ -198,14 +182,8 @@ export default async function WritingIndex({
                   </p>
                 ) : (
                   <ul
-                    className="stack"
-                    style={
-                      {
-                        "--space": "var(--s2)",
-                        listStyle: "none",
-                        paddingInlineStart: 0,
-                      } as CSSProperties
-                    }
+                    className="list-flat stack"
+                    style={{ "--space": "var(--s2)" } as CSSProperties}
                   >
                     {result.hits.map((hit) => (
                       <ArticleResultCard
@@ -264,21 +242,14 @@ function ReviewsSection({
   return (
     <details className="extra-section" open>
       <summary>
-        <h2 style={{ display: "inline", fontSize: "var(--s1)", marginBlock: 0 }}>
+        <h2>
           Reviews · {total === 0 ? "no matches" : `${total} match${total === 1 ? "" : "es"}`}
         </h2>
       </summary>
       {hits.length > 0 && (
         <ul
-          className="stack"
-          style={
-            {
-              "--space": "var(--s2)",
-              listStyle: "none",
-              paddingInlineStart: 0,
-              marginBlockStart: "var(--s1)",
-            } as CSSProperties
-          }
+          className="list-flat stack"
+          style={{ "--space": "var(--s2)" } as CSSProperties}
         >
           {hits.map((hit) => (
             <ReviewResultCard key={hit._id} hit={hit} headingLevel="h3" />
@@ -286,7 +257,7 @@ function ReviewsSection({
         </ul>
       )}
       {total > hits.length && (
-        <p style={{ marginBlockStart: "var(--s0)" }}>
+        <p>
           <Link href={`/writing/reviews?q=${encodeURIComponent(q)}`}>
             See all {total} matching reviews →
           </Link>
@@ -308,19 +279,14 @@ function GlossarySection({
   return (
     <details className="extra-section" open>
       <summary>
-        <h2 style={{ display: "inline", fontSize: "var(--s1)", marginBlock: 0 }}>
+        <h2>
           Glossary · {total === 0 ? "no matches" : `${total} match${total === 1 ? "" : "es"}`}
         </h2>
       </summary>
       {hits.length > 0 && (
         <dl
-          className="stack"
-          style={
-            {
-              "--space": "var(--s1)",
-              marginBlockStart: "var(--s1)",
-            } as CSSProperties
-          }
+          className="list-flat stack"
+          style={{ "--space": "var(--s1)" } as CSSProperties}
         >
           {hits.map((entry) => (
             <div
@@ -334,7 +300,7 @@ function GlossarySection({
         </dl>
       )}
       {total > hits.length && (
-        <p style={{ marginBlockStart: "var(--s0)" }}>
+        <p>
           <Link href={`/writing/glossary?q=${encodeURIComponent(q)}`}>
             See all {total} matching terms →
           </Link>
