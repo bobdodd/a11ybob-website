@@ -80,7 +80,7 @@ export function SearchForm({
           id="search-input"
           name="q"
           defaultValue={q}
-          hint={hint}
+          hintId={hint ? "search-hint" : undefined}
           ariaLabel={label}
         />
         <button
@@ -99,6 +99,23 @@ export function SearchForm({
           <input key={k} type="hidden" name={k} value={String(v)} />
         ))}
       </div>
+
+      {hint && (
+        <span
+          id="search-hint"
+          style={{
+            color: "var(--ink-muted)",
+            // Body size, not <small>: hints are guidance the reader
+            // may need at any moment and sit at the same legibility
+            // floor as body text. The fluid root font-size keeps
+            // body comfortable; <small> can drop below the
+            // practical minimum on narrow viewports.
+            fontSize: "var(--s0)",
+          }}
+        >
+          {hint}
+        </span>
+      )}
 
       {includes.length > 0 && (
         <fieldset

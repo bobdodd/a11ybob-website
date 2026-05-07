@@ -37,10 +37,10 @@ type Props = {
   id: string;
   name: string;
   defaultValue?: string;
-  /** Visible hint rendered as <small> beneath the input, connected
-   *  via aria-describedby. Replaces placeholder text, which fails
-   *  WCAG 1.4.6 (AAA contrast) in every browser's default styling. */
-  hint?: string;
+  /** id of the hint element (rendered by the parent at form level
+   *  so the cluster row keeps the input and button at the same
+   *  height). Used to set aria-describedby on the input. */
+  hintId?: string;
   /** Visually-hidden label content for screen readers. */
   ariaLabel: string;
 };
@@ -52,12 +52,11 @@ export function SearchSuggest({
   id,
   name,
   defaultValue = "",
-  hint,
+  hintId,
   ariaLabel,
 }: Props) {
   const router = useRouter();
   const listId = useId();
-  const hintId = useId();
 
   const [value, setValue] = useState(defaultValue);
   const [groups, setGroups] = useState<Group[]>([]);
@@ -146,7 +145,22 @@ export function SearchSuggest({
     open && activeIndex >= 0 ? `${listId}-opt-${activeIndex}` : undefined;
 
   return (
-    <div className="search-suggest" style={{ position: "relative", flex: "1 1 20ch", minInlineSize: "16ch" }}>
+    <div
+      className="search-suggest"
+      style={{
+        position: "relative",
+        flex: "1 1 0",
+        minInlineSize: "16ch",
+        // Match the universal max-inline-size axiom that applies to
+        // the <input> inside (the universal rule is overridden for
+        // <div> in axioms.css). Without this, the wrapper grows
+        // beyond the input's measure-cap, leaving empty space
+        // inside the wrapper between the input's right edge and
+        // the wrapper's right edge — which pushes the adjacent
+        // button visibly away from the input.
+        maxInlineSize: "var(--measure)",
+      }}
+    >
       <label
         htmlFor={id}
         style={{
@@ -170,7 +184,7 @@ export function SearchSuggest({
         aria-expanded={open}
         aria-controls={listId}
         aria-activedescendant={activeId}
-        aria-describedby={hint ? hintId : undefined}
+        aria-describedby={hintId}
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={handleKey}
         onBlur={() => {
@@ -272,26 +286,6 @@ export function SearchSuggest({
           );
         })}
       </ul>
-
-      {hint && (
-        <span
-          id={hintId}
-          style={{
-            display: "block",
-            marginBlockStart: "var(--s-2)",
-            color: "var(--ink-muted)",
-            // Body size, not <small>: hints are guidance the reader
-            // may need at any moment, so they sit at the same
-            // legibility floor as body text. The fluid root font-size
-            // already keeps body text AAA-comfortable; reducing
-            // hints below it would risk dropping under the
-            // legibility minimum at narrower viewports.
-            fontSize: "var(--s0)",
-          }}
-        >
-          {hint}
-        </span>
-      )}
     </div>
   );
 }

@@ -131,7 +131,21 @@ export default async function Glossary({
           )}
 
           <div className="stack" style={{ "--space": "var(--s2)" } as CSSProperties}>
-              <p role="status" style={{ marginBlock: 0 }}>
+              <p
+                role="status"
+                style={
+                  q
+                    ? { marginBlock: 0 }
+                    : {
+                        position: "absolute",
+                        width: "1px",
+                        height: "1px",
+                        overflow: "hidden",
+                        clip: "rect(0 0 0 0)",
+                        margin: 0,
+                      }
+                }
+              >
                 {q
                   ? buildSearchStatus({
                       q,

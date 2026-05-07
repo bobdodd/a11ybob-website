@@ -33,7 +33,7 @@ export function Pagination({
     // count line so sighted readers see a tally after the list.
     if (position === "top") return null;
     return (
-      <p style={{ color: "var(--ink-muted)" }}>
+      <p style={{ color: "var(--ink-muted)", marginBlock: 0 }}>
         <small>{total === 1 ? "1 result" : `${total.toLocaleString()} results`}.</small>
       </p>
     );
@@ -67,7 +67,7 @@ export function Pagination({
       aria-label={`Pagination, ${position} of results`}
       className="pagination"
     >
-      <p style={{ color: "var(--ink-muted)" }}>
+      <p style={{ color: "var(--ink-muted)", marginBlock: 0 }}>
         <small>
           Results {firstShown.toLocaleString()}–{lastShown.toLocaleString()} of{" "}
           {total.toLocaleString()}
@@ -75,7 +75,7 @@ export function Pagination({
       </p>
       <ul
         className="cluster nav-list"
-        style={{ "--space": "var(--s-1)" } as React.CSSProperties}
+        style={{ "--space": "var(--s-1)", marginBlock: "var(--s-1)" } as React.CSSProperties}
       >
         {page > 1 && (
           <li>
