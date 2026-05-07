@@ -34,6 +34,8 @@ import {
   EXAMPLES,
   DEFAULT_EXAMPLE_SLUG,
   findExample,
+  type LangBuffers,
+  type SourceFile,
 } from "@/lib/paradise/examples";
 
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
@@ -57,11 +59,20 @@ const TABS: { lang: Lang; label: string; monaco: string }[] = [
 
 const DEBOUNCE_MS = 250;
 
+/* Initial active-file picker for an example: the first file in the
+ * language's array, or empty string if the language has no files. */
+function firstFileName(files: SourceFile[]): string {
+  return files[0]?.name ?? "";
+}
+
 export function PlaygroundClient() {
-  const [html, setHtml] = useState(DEFAULT_EXAMPLE.html);
-  const [js, setJs] = useState(DEFAULT_EXAMPLE.javascript);
-  const [css, setCss] = useState(DEFAULT_EXAMPLE.css);
-  const [active, setActive] = useState<Lang>("html");
+  const [buffers, setBuffers] = useState<LangBuffers>(DEFAULT_EXAMPLE.files);
+  const [activeLang, setActiveLang] = useState<Lang>("html");
+  const [activeFile, setActiveFile] = useState<Record<Lang, string>>({
+    html: firstFileName(DEFAULT_EXAMPLE.files.html),
+    javascript: firstFileName(DEFAULT_EXAMPLE.files.javascript),
+    css: firstFileName(DEFAULT_EXAMPLE.files.css),
+  });
   const [exampleSlug, setExampleSlug] = useState<string>(
     DEFAULT_EXAMPLE.slug,
   );
@@ -77,7 +88,7 @@ export function PlaygroundClient() {
     const handle = setTimeout(() => {
       if (myId !== runId.current) return;
       try {
-        const r = analyse({ html, javascript: js, css });
+        const r = analyse(buffers);
         setResult(r);
         setError(null);
       } catch (e) {
@@ -85,37 +96,141 @@ export function PlaygroundClient() {
       }
     }, DEBOUNCE_MS);
     return () => clearTimeout(handle);
-  }, [html, js, css]);
+  }, [buffers]);
 
-  const editorValueFor = (lang: Lang) =>
-    lang === "html" ? html : lang === "javascript" ? js : css;
-  const setEditorValueFor = (lang: Lang, v: string | undefined) => {
-    const next = v ?? "";
-    if (lang === "html") setHtml(next);
-    else if (lang === "javascript") setJs(next);
-    else setCss(next);
+  /* Update the named file inside one language. If the file isn't in
+   * the array (shouldn't happen normally), no-op. */
+  const updateFileContent = (lang: Lang, name: string, content: string) => {
+    setBuffers((prev) => ({
+      ...prev,
+      [lang]: prev[lang].map((f) => (f.name === name ? { ...f, content } : f)),
+    }));
+  };
+
+  /* Track which file is currently being renamed. Only one file
+   * across all languages can be in rename mode at a time. Format:
+   * `${lang}::${currentName}` — null when no rename in flight. */
+  const [renaming, setRenaming] = useState<string | null>(null);
+
+  /* Add a new file in a language. Auto-name with the language's
+   * extension; if the auto-name already exists, append a counter.
+   * The new file is immediately placed in rename mode so the user
+   * can name it without a separate gesture. */
+  const addFile = (lang: Lang) => {
+    const ext = lang === "html" ? "html" : lang === "javascript" ? "js" : "css";
+    const base = lang === "html" ? "page" : lang === "javascript" ? "script" : "styles";
+    setBuffers((prev) => {
+      const existing = new Set(prev[lang].map((f) => f.name));
+      let name = `${base}.${ext}`;
+      let n = 1;
+      while (existing.has(name)) {
+        n += 1;
+        name = `${base}-${n}.${ext}`;
+      }
+      const newFile: SourceFile = { name, content: "" };
+      setActiveFile((af) => ({ ...af, [lang]: name }));
+      setRenaming(`${lang}::${name}`);
+      return { ...prev, [lang]: [...prev[lang], newFile] };
+    });
+  };
+
+  /* Rename a file. Validation: name must be non-empty after trim
+   * and must not collide with another file in the same language.
+   * If the rename is rejected (empty / collision), the rename mode
+   * stays active so the user can correct. Returns true on success. */
+  const renameFile = (lang: Lang, oldName: string, newName: string): boolean => {
+    const trimmed = newName.trim();
+    if (!trimmed) return false;
+    if (trimmed === oldName) return true; // no-op, accept
+    const collision = buffers[lang].some(
+      (f) => f.name === trimmed && f.name !== oldName,
+    );
+    if (collision) return false;
+    setBuffers((prev) => ({
+      ...prev,
+      [lang]: prev[lang].map((f) =>
+        f.name === oldName ? { ...f, name: trimmed } : f,
+      ),
+    }));
+    setActiveFile((af) =>
+      af[lang] === oldName ? { ...af, [lang]: trimmed } : af,
+    );
+    return true;
+  };
+
+  /* Remove a file. If it was the active file, switch to the next
+   * available; if no files remain in the language, active becomes
+   * empty string and the editor disappears. */
+  const removeFile = (lang: Lang, name: string) => {
+    setBuffers((prev) => {
+      const next = prev[lang].filter((f) => f.name !== name);
+      setActiveFile((af) => {
+        if (af[lang] !== name) return af;
+        return { ...af, [lang]: next[0]?.name ?? "" };
+      });
+      return { ...prev, [lang]: next };
+    });
   };
 
   const loadExample = (slug: string) => {
     const ex = findExample(slug);
     if (!ex) return;
-    setHtml(ex.html);
-    setJs(ex.javascript);
-    setCss(ex.css);
+    setBuffers(ex.files);
+    setActiveFile({
+      html: firstFileName(ex.files.html),
+      javascript: firstFileName(ex.files.javascript),
+      css: firstFileName(ex.files.css),
+    });
     setExampleSlug(slug);
+    setRenaming(null);
   };
 
-  /* Append a fix's code to the buffer named in the issue's fix
-   * location. Honest scope: the engine doesn't tell us whether the
-   * fix should be inserted, replaced, or appended — only the code
-   * to apply. Appending lands the fix somewhere safe for the user
-   * to refine; the modal prose names this limitation explicitly. */
+  /* Reset is destructive (discards the user's edits), so it goes
+   * through a confirmation modal styled to match the site rather
+   * than the browser's native confirm — the native one ignores our
+   * type tokens and renders in the OS default face/size. */
+  const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
+  const requestReset = () => {
+    if (cleanExampleSlug === DEFAULT_EXAMPLE_SLUG) return; // already
+    setResetConfirmOpen(true);
+  };
+  const confirmReset = () => {
+    setResetConfirmOpen(false);
+    loadExample(DEFAULT_EXAMPLE_SLUG);
+    setActiveLang("html");
+  };
+
+  /* Append a fix's code to the named file. Match by file name across
+   * all languages; if no match (e.g. the engine reports a generic
+   * "script.js" but our buffer is "handlers.js"), fall back to
+   * appending to the first file of the corresponding language. */
   const applyFixToFile = (filename: string, code: string) => {
     const append = (current: string) =>
       current.endsWith("\n") ? current + code : current + "\n\n" + code;
-    if (filename === "index.html") setHtml((h) => append(h));
-    else if (filename === "script.js") setJs((j) => append(j));
-    else if (filename === "styles.css") setCss((c) => append(c));
+    setBuffers((prev) => {
+      for (const lang of ["html", "javascript", "css"] as Lang[]) {
+        const idx = prev[lang].findIndex((f) => f.name === filename);
+        if (idx >= 0) {
+          const next = [...prev[lang]];
+          next[idx] = { ...next[idx], content: append(next[idx].content) };
+          return { ...prev, [lang]: next };
+        }
+      }
+      // Fallback: append to first file of inferred language by extension.
+      const ext = filename.split(".").pop();
+      const lang: Lang =
+        ext === "html"
+          ? "html"
+          : ext === "css"
+            ? "css"
+            : "javascript";
+      if (prev[lang][0]) {
+        const next = [...prev[lang]];
+        next[0] = { ...next[0], content: append(next[0].content) };
+        return { ...prev, [lang]: next };
+      }
+      return prev;
+    });
   };
 
   // The user is "on" an example only while their buffers match it
@@ -124,13 +239,25 @@ export function PlaygroundClient() {
   const cleanExampleSlug = (() => {
     const ex = findExample(exampleSlug);
     if (!ex) return null;
-    if (ex.html === html && ex.javascript === js && ex.css === css) {
+    const eq = (a: SourceFile[], b: SourceFile[]) =>
+      a.length === b.length &&
+      a.every(
+        (f, i) => f.name === b[i].name && f.content === b[i].content,
+      );
+    if (
+      eq(ex.files.html, buffers.html) &&
+      eq(ex.files.javascript, buffers.javascript) &&
+      eq(ex.files.css, buffers.css)
+    ) {
       return ex.slug;
     }
     return null;
   })();
   const currentExampleDescription =
     cleanExampleSlug && findExample(cleanExampleSlug)?.description;
+
+  // Concatenated HTML for context detection in the result banner.
+  const allHtml = buffers.html.map((f) => f.content).join("\n");
 
   return (
     <main id="main" className="site-main" data-zone="tools">
@@ -165,11 +292,38 @@ export function PlaygroundClient() {
 
           <EditorPanel
             tabs={TABS}
-            active={active}
-            setActive={setActive}
-            getValue={editorValueFor}
-            setValue={setEditorValueFor}
+            buffers={buffers}
+            activeLang={activeLang}
+            setActiveLang={setActiveLang}
+            activeFile={activeFile}
+            setActiveFile={(lang, name) =>
+              setActiveFile((af) => ({ ...af, [lang]: name }))
+            }
+            updateFileContent={updateFileContent}
+            addFile={addFile}
+            removeFile={removeFile}
+            renaming={renaming}
+            startRename={(lang, name) => setRenaming(`${lang}::${name}`)}
+            commitRename={(lang, oldName, newName) => {
+              const ok = renameFile(lang, oldName, newName);
+              if (ok) setRenaming(null);
+              return ok;
+            }}
+            cancelRename={() => setRenaming(null)}
+            onReset={requestReset}
+            canReset={cleanExampleSlug !== DEFAULT_EXAMPLE_SLUG}
           />
+
+          {resetConfirmOpen && (
+            <ConfirmDialog
+              title="Reset the Playground?"
+              message="Your current edits will be discarded and the default example will be loaded."
+              confirmLabel="Reset"
+              cancelLabel="Cancel"
+              onConfirm={confirmReset}
+              onCancel={() => setResetConfirmOpen(false)}
+            />
+          )}
 
           <section
             className="stack"
@@ -187,7 +341,7 @@ export function PlaygroundClient() {
             {result && (
               <ResultPanel
                 result={result}
-                html={html}
+                html={allHtml}
                 onApplyFix={applyFixToFile}
               />
             )}
@@ -253,42 +407,73 @@ function ExamplePicker({
   );
 }
 
-/* WAI-ARIA tabs pattern. Each tab is a button with role="tab"; the
- * active tab carries aria-selected="true" and tabindex=0, the others
- * are tabindex=-1. Arrow keys move focus through the tablist with
- * roving-tabindex. Selecting a tab swaps the visible tabpanel. */
+/* Editor panel — two levels of WAI-ARIA tabs. The outer tablist
+ * picks the language (HTML / JavaScript / CSS), each language tab
+ * showing its file count in parentheses. The inner tablist picks
+ * the active file within the current language; each file tab has a
+ * remove button (×) when the language has more than one file. An
+ * "+ Add file" button at the end of the inner tablist creates a new
+ * empty file in the current language.
+ *
+ * Roving-tabindex on each tablist for arrow-key navigation. */
 function EditorPanel({
   tabs,
-  active,
-  setActive,
-  getValue,
-  setValue,
+  buffers,
+  activeLang,
+  setActiveLang,
+  activeFile,
+  setActiveFile,
+  updateFileContent,
+  addFile,
+  removeFile,
+  renaming,
+  startRename,
+  commitRename,
+  cancelRename,
+  onReset,
+  canReset,
 }: {
   tabs: { lang: Lang; label: string; monaco: string }[];
-  active: Lang;
-  setActive: (l: Lang) => void;
-  getValue: (l: Lang) => string;
-  setValue: (l: Lang, v: string | undefined) => void;
+  buffers: LangBuffers;
+  activeLang: Lang;
+  setActiveLang: (l: Lang) => void;
+  activeFile: Record<Lang, string>;
+  setActiveFile: (lang: Lang, name: string) => void;
+  updateFileContent: (lang: Lang, name: string, content: string) => void;
+  addFile: (lang: Lang) => void;
+  removeFile: (lang: Lang, name: string) => void;
+  renaming: string | null;
+  startRename: (lang: Lang, name: string) => void;
+  commitRename: (lang: Lang, oldName: string, newName: string) => boolean;
+  cancelRename: () => void;
+  onReset: () => void;
+  canReset: boolean;
 }) {
   const tablistId = useId();
 
-  // Keyboard nav between tabs.
-  const handleKeyDown = (e: KeyboardEvent<HTMLButtonElement>) => {
-    const idx = tabs.findIndex((t) => t.lang === active);
+  const handleLangKey = (e: KeyboardEvent<HTMLButtonElement>) => {
+    const idx = tabs.findIndex((t) => t.lang === activeLang);
     if (e.key === "ArrowRight") {
       e.preventDefault();
-      setActive(tabs[(idx + 1) % tabs.length].lang);
+      setActiveLang(tabs[(idx + 1) % tabs.length].lang);
     } else if (e.key === "ArrowLeft") {
       e.preventDefault();
-      setActive(tabs[(idx - 1 + tabs.length) % tabs.length].lang);
+      setActiveLang(tabs[(idx - 1 + tabs.length) % tabs.length].lang);
     } else if (e.key === "Home") {
       e.preventDefault();
-      setActive(tabs[0].lang);
+      setActiveLang(tabs[0].lang);
     } else if (e.key === "End") {
       e.preventDefault();
-      setActive(tabs[tabs.length - 1].lang);
+      setActiveLang(tabs[tabs.length - 1].lang);
     }
   };
+
+  const langFiles = buffers[activeLang];
+  const currentFile = langFiles.find(
+    (f) => f.name === activeFile[activeLang],
+  );
+
+  const monacoLang = tabs.find((t) => t.lang === activeLang)?.monaco ?? "plaintext";
 
   return (
     <section
@@ -297,36 +482,62 @@ function EditorPanel({
     >
       <h2 className="visually-hidden">Source editors</h2>
 
+      {/* Outer tablist row: language selection on the left, Reset
+       * action on the right. The tablist itself stays a single
+       * element for ARIA correctness; the Reset button is a sibling
+       * inside an outer cluster set to space-between. */}
       <div
-        role="tablist"
-        aria-label="Source language"
-        id={tablistId}
-        className="cluster playground-tablist"
-        style={{ "--space": "var(--s-2)" } as CSSProperties}
+        className="cluster"
+        style={
+          {
+            "--space": "var(--s0)",
+            "--justify": "space-between",
+            "--align": "flex-end",
+          } as CSSProperties
+        }
       >
-        {tabs.map((tab) => {
-          const selected = tab.lang === active;
-          return (
-            <button
-              key={tab.lang}
-              role="tab"
-              type="button"
-              aria-selected={selected}
-              aria-controls={`${tablistId}-panel-${tab.lang}`}
-              id={`${tablistId}-tab-${tab.lang}`}
-              tabIndex={selected ? 0 : -1}
-              onClick={() => setActive(tab.lang)}
-              onKeyDown={handleKeyDown}
-              className="playground-tab"
-            >
-              {tab.label}
-            </button>
-          );
-        })}
+        <div
+          role="tablist"
+          aria-label="Source language"
+          id={tablistId}
+          className="cluster playground-tablist"
+          style={{ "--space": "var(--s-2)" } as CSSProperties}
+        >
+          {tabs.map((tab) => {
+            const selected = tab.lang === activeLang;
+            const count = buffers[tab.lang].length;
+            return (
+              <button
+                key={tab.lang}
+                role="tab"
+                type="button"
+                aria-selected={selected}
+                aria-controls={`${tablistId}-panel-${tab.lang}`}
+                id={`${tablistId}-tab-${tab.lang}`}
+                tabIndex={selected ? 0 : -1}
+                onClick={() => setActiveLang(tab.lang)}
+                onKeyDown={handleLangKey}
+                className="playground-tab"
+              >
+                {tab.label} ({count})
+              </button>
+            );
+          })}
+        </div>
+        <button
+          type="button"
+          className="pill"
+          onClick={onReset}
+          disabled={!canReset}
+        >
+          Reset
+        </button>
       </div>
 
+      {/* Tabpanel for each language. The inner file-tablist + editor
+       * are visible only for the active language. */}
       {tabs.map((tab) => {
-        const selected = tab.lang === active;
+        const selected = tab.lang === activeLang;
         return (
           <div
             key={tab.lang}
@@ -334,25 +545,233 @@ function EditorPanel({
             id={`${tablistId}-panel-${tab.lang}`}
             aria-labelledby={`${tablistId}-tab-${tab.lang}`}
             hidden={!selected}
-            className="playground-editor"
           >
-            <MonacoEditor
-              height="320px"
-              language={tab.monaco}
-              value={getValue(tab.lang)}
-              onChange={(v) => setValue(tab.lang, v)}
-              options={{
-                minimap: { enabled: false },
-                fontSize: 14,
-                wordWrap: "on",
-                automaticLayout: true,
-                scrollBeyondLastLine: false,
-              }}
-            />
+            {selected && (
+              <FilePanel
+                lang={tab.lang}
+                files={buffers[tab.lang]}
+                activeFile={activeFile[tab.lang]}
+                setActiveFile={(name) => setActiveFile(tab.lang, name)}
+                addFile={() => addFile(tab.lang)}
+                removeFile={(name) => removeFile(tab.lang, name)}
+                renaming={renaming}
+                startRename={(name) => startRename(tab.lang, name)}
+                commitRename={(oldName, newName) =>
+                  commitRename(tab.lang, oldName, newName)
+                }
+                cancelRename={cancelRename}
+              />
+            )}
           </div>
         );
       })}
+
+      {/* The Monaco editor itself, rendered once and re-bound to
+       * whichever (lang, file) is active. Mounting Monaco once
+       * avoids the heavy bundle being instantiated three times. */}
+      {currentFile ? (
+        <div className="playground-editor">
+          <MonacoEditor
+            key={`${activeLang}::${currentFile.name}`}
+            height="320px"
+            language={monacoLang}
+            value={currentFile.content}
+            onChange={(v) =>
+              updateFileContent(activeLang, currentFile.name, v ?? "")
+            }
+            options={{
+              minimap: { enabled: false },
+              fontSize: 14,
+              wordWrap: "on",
+              automaticLayout: true,
+              scrollBeyondLastLine: false,
+            }}
+          />
+        </div>
+      ) : (
+        <p className="muted">
+          <small>
+            No {tabs.find((t) => t.lang === activeLang)?.label} files in
+            this example. Press <strong>+ Add file</strong> above to
+            create one.
+          </small>
+        </p>
+      )}
     </section>
+  );
+}
+
+/* File sub-tablist for one language. Each file gets a tab with
+ * filename, a Rename button (pencil), and a Remove button (×) when
+ * the language has more than one file. The trailing "+ Add file"
+ * button creates a new empty file in rename mode. Newly-added or
+ * pencil-clicked files swap their label for an inline text input
+ * (Enter / blur commits, Escape cancels). */
+function FilePanel({
+  lang,
+  files,
+  activeFile,
+  setActiveFile,
+  addFile,
+  removeFile,
+  renaming,
+  startRename,
+  commitRename,
+  cancelRename,
+}: {
+  lang: Lang;
+  files: SourceFile[];
+  activeFile: string;
+  setActiveFile: (name: string) => void;
+  addFile: () => void;
+  removeFile: (name: string) => void;
+  renaming: string | null;
+  startRename: (name: string) => void;
+  commitRename: (oldName: string, newName: string) => boolean;
+  cancelRename: () => void;
+}) {
+  const handleFileKey = (e: KeyboardEvent<HTMLButtonElement>) => {
+    if (files.length === 0) return;
+    const idx = files.findIndex((f) => f.name === activeFile);
+    if (e.key === "ArrowRight") {
+      e.preventDefault();
+      setActiveFile(files[(idx + 1) % files.length].name);
+    } else if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      setActiveFile(files[(idx - 1 + files.length) % files.length].name);
+    } else if (e.key === "F2") {
+      e.preventDefault();
+      startRename(activeFile);
+    }
+  };
+
+  return (
+    <div
+      role="tablist"
+      aria-label={`${lang} files`}
+      className="cluster playground-file-tablist"
+      style={{ "--space": "var(--s-2)" } as CSSProperties}
+    >
+      {files.map((f) => {
+        const selected = f.name === activeFile;
+        const isRenaming = renaming === `${lang}::${f.name}`;
+        return (
+          <span
+            key={f.name}
+            className="playground-file-tab"
+            data-selected={selected}
+          >
+            {isRenaming ? (
+              <RenameInput
+                initialValue={f.name}
+                onCommit={(v) => commitRename(f.name, v)}
+                onCancel={cancelRename}
+              />
+            ) : (
+              <button
+                role="tab"
+                type="button"
+                aria-selected={selected}
+                tabIndex={selected ? 0 : -1}
+                onClick={() => setActiveFile(f.name)}
+                onKeyDown={handleFileKey}
+                className="playground-file-tab-label"
+              >
+                {f.name}
+              </button>
+            )}
+            {!isRenaming && (
+              <>
+                <button
+                  type="button"
+                  aria-label={`Rename ${f.name}`}
+                  className="playground-file-tab-rename"
+                  onClick={() => startRename(f.name)}
+                >
+                  <span aria-hidden="true">✎</span>
+                </button>
+                {files.length > 1 && (
+                  <button
+                    type="button"
+                    aria-label={`Remove ${f.name}`}
+                    className="playground-file-tab-remove"
+                    onClick={() => removeFile(f.name)}
+                  >
+                    <span aria-hidden="true">×</span>
+                  </button>
+                )}
+              </>
+            )}
+          </span>
+        );
+      })}
+      <button
+        type="button"
+        className="playground-file-tab-add"
+        onClick={addFile}
+      >
+        + Add file
+      </button>
+    </div>
+  );
+}
+
+/* Inline rename input. Mounts focused with the existing filename
+ * pre-selected so the user can type or edit. Enter commits, Escape
+ * cancels, blur commits. If commit fails (collision / empty), the
+ * input refocuses with current text so the user can correct. */
+function RenameInput({
+  initialValue,
+  onCommit,
+  onCancel,
+}: {
+  initialValue: string;
+  onCommit: (newName: string) => boolean;
+  onCancel: () => void;
+}) {
+  const [value, setValue] = useState(initialValue);
+  const [error, setError] = useState(false);
+  const ref = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    ref.current?.focus();
+    ref.current?.select();
+  }, []);
+
+  const commit = () => {
+    const ok = onCommit(value);
+    if (!ok) {
+      setError(true);
+      ref.current?.focus();
+      ref.current?.select();
+    }
+  };
+
+  return (
+    <input
+      ref={ref}
+      type="text"
+      value={value}
+      onChange={(e) => {
+        setValue(e.target.value);
+        if (error) setError(false);
+      }}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          commit();
+        } else if (e.key === "Escape") {
+          e.preventDefault();
+          onCancel();
+        }
+      }}
+      onBlur={commit}
+      aria-label="Rename file"
+      aria-invalid={error}
+      className="playground-file-tab-input"
+      // Width tracks content so the input doesn't bloat the tab.
+      size={Math.max(8, value.length + 2)}
+    />
   );
 }
 
@@ -956,6 +1375,68 @@ function FixDialog({
           </button>
           <button type="button" className="pill" onClick={copy}>
             Copy code
+          </button>
+        </div>
+      </div>
+    </dialog>
+  );
+}
+
+/* ConfirmDialog — generic confirm modal styled to match the rest of
+ * the Playground. Uses the same native <dialog> + showModal() pattern
+ * as Help / Fix so focus trap, Escape-to-close, and ARIA semantics
+ * come from the platform. The confirm button auto-focuses on mount
+ * so keyboard users can press Enter to proceed. */
+function ConfirmDialog({
+  title,
+  message,
+  confirmLabel,
+  cancelLabel,
+  onConfirm,
+  onCancel,
+}: {
+  title: string;
+  message: string;
+  confirmLabel: string;
+  cancelLabel: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+}) {
+  const ref = useRef<HTMLDialogElement>(null);
+  const confirmRef = useRef<HTMLButtonElement>(null);
+  const titleId = useId();
+
+  useEffect(() => {
+    ref.current?.showModal();
+    confirmRef.current?.focus();
+  }, []);
+
+  return (
+    <dialog
+      ref={ref}
+      className="playground-dialog"
+      onClose={onCancel}
+      aria-labelledby={titleId}
+    >
+      <div className="playground-dialog-body">
+        <h3 id={titleId} className="search-results-heading">
+          {title}
+        </h3>
+        <p className="flush">{message}</p>
+        <div
+          className="cluster"
+          style={{ "--space": "var(--s-1)" } as CSSProperties}
+        >
+          <button
+            ref={confirmRef}
+            type="button"
+            className="pill"
+            onClick={onConfirm}
+          >
+            {confirmLabel}
+          </button>
+          <button type="button" className="pill" onClick={onCancel}>
+            {cancelLabel}
           </button>
         </div>
       </div>

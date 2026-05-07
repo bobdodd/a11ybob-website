@@ -25,6 +25,95 @@
   background: var(--surface-1);
 }
 
+/* File sub-tablist — sits between the language tabs and the editor.
+ * Each file is a labelled tab with an optional remove button. The
+ * "+ Add file" button at the end creates a new empty file in the
+ * active language. */
+.playground-file-tablist {
+  background: var(--surface-2);
+  padding-block: var(--s-2);
+  padding-inline: var(--s-1);
+  border: var(--border-thin) solid var(--rule);
+  border-block-end: 0;
+}
+
+.playground-file-tab {
+  display: inline-flex;
+  align-items: center;
+  border: var(--border-thin) solid var(--rule);
+  background: var(--surface-1);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.playground-file-tab[data-selected="true"] {
+  background: var(--ink);
+}
+
+.playground-file-tab-label {
+  padding-block: 0.1em;
+  padding-inline: 0.7em;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 0.9em;
+  cursor: pointer;
+  font-family: var(--font-mono);
+}
+
+.playground-file-tab[data-selected="true"] .playground-file-tab-label {
+  color: var(--surface-1);
+}
+
+.playground-file-tab-rename,
+.playground-file-tab-remove {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  padding-block: 0.1em;
+  padding-inline: 0.4em;
+  font-size: 1em;
+  line-height: 1;
+}
+
+.playground-file-tab[data-selected="true"] .playground-file-tab-rename,
+.playground-file-tab[data-selected="true"] .playground-file-tab-remove {
+  color: var(--surface-1);
+}
+
+/* Inline rename input — replaces the filename label while the user
+ * is renaming. Sized to its content via the size attribute (set in
+ * JSX) so the tab doesn't bloat. Inherits surrounding tab colour. */
+.playground-file-tab-input {
+  border: 0;
+  padding-block: 0.1em;
+  padding-inline: 0.7em;
+  background: var(--surface-1);
+  color: var(--ink);
+  font-size: 0.9em;
+  font-family: var(--font-mono);
+}
+
+.playground-file-tab-input[aria-invalid="true"] {
+  /* Subtle marker for collision / empty name; the user-facing
+   * affordance is mainly the rejected commit (input refocuses
+   * with the bad value selected, so the user knows). */
+  outline: 2px solid var(--ink);
+  outline-offset: 0;
+}
+
+.playground-file-tab-add {
+  border: 1px dashed var(--rule);
+  background: transparent;
+  color: var(--ink);
+  padding-block: 0.1em;
+  padding-inline: 0.7em;
+  border-radius: 999px;
+  font-size: 0.9em;
+  cursor: pointer;
+}
+
 /* Hide the wrapper completely when its tabpanel is inactive. The
  * Monaco editor inside ignores tab visibility by itself; pairing
  * `hidden` (HTML attribute) with this rule is belt and suspenders. */
@@ -108,12 +197,16 @@
   background: var(--surface-1);
   color: var(--ink);
   padding: var(--s1);
-  /* Comfortable reading width on a wide screen, capped at the
-   * viewport on narrow ones. Wider than the body-text measure
-   * because the dialog is a working surface, not a reading column —
-   * it carries headings, code blocks, and action buttons that
-   * benefit from horizontal room. */
-  inline-size: min(80ch, calc(100% - var(--s2)));
+  /* Width sizes to content (UA dialog default), capped at a
+   * comfortable 80ch and the viewport. Using `inline-size` as an
+   * explicit value stretches the dialog to that width even when
+   * content is short — using `max-inline-size` instead lets short
+   * confirm dialogs stay compact while long Help/Fix dialogs grow
+   * up to the cap. The 80ch cap is wider than the body-text measure
+   * because the dialog is a working surface (headings, code blocks,
+   * action buttons), not a reading column. */
+  inline-size: fit-content;
+  max-inline-size: min(80ch, calc(100% - var(--s2)));
   max-block-size: 85vh;
   overflow-y: auto;
 }

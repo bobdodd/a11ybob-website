@@ -26,10 +26,16 @@ import { HeadingStructureAnalyzer } from "./analyzers/HeadingStructureAnalyzer.j
 
 export type { Issue } from "./analyzers/BaseAnalyzer.js";
 
+export type SourceFile = { name: string; content: string };
+
+/* Multi-file input. Each language can carry zero or more source
+ * files; each file is named so the engine's diagnostics can point
+ * back to the right file. The shape mirrors the upstream
+ * playground's EXAMPLES.files. */
 export type AnalyseInput = {
-  html?: string;
-  javascript?: string;
-  css?: string;
+  html?: SourceFile[];
+  javascript?: SourceFile[];
+  css?: SourceFile[];
 };
 
 export type AnalyseResult = {
@@ -98,15 +104,26 @@ export function analyse(input: AnalyseInput): AnalyseResult & {
 } {
   const errors: AnalyseResult["errors"] = [];
 
-  const dom = input.html
-    ? new HTMLParser().parse(input.html, "index.html")
-    : undefined;
-  const al = input.javascript
-    ? [new JavaScriptParser().parse(input.javascript, "script.js")]
-    : [];
-  const css = input.css
-    ? [new CSSParser().parse(input.css, "styles.css")]
-    : [];
+  // Each parser produces one model per file; DocumentModel takes
+  // arrays for each language and merges across all of them.
+  const htmlFiles = input.html?.filter((f) => f.content.trim()) ?? [];
+  const jsFiles = input.javascript?.filter((f) => f.content.trim()) ?? [];
+  const cssFiles = input.css?.filter((f) => f.content.trim()) ?? [];
+
+  const dom =
+    htmlFiles.length === 1
+      ? new HTMLParser().parse(htmlFiles[0].content, htmlFiles[0].name)
+      : htmlFiles.length > 1
+        ? htmlFiles.map((f) =>
+            new HTMLParser().parse(f.content, f.name),
+          )
+        : undefined;
+  const al = jsFiles.map((f) =>
+    new JavaScriptParser().parse(f.content, f.name),
+  );
+  const css = cssFiles.map((f) =>
+    new CSSParser().parse(f.content, f.name),
+  );
 
   const model = new DocumentModel({
     scope: "page",
