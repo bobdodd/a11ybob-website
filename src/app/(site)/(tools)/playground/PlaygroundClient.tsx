@@ -440,11 +440,21 @@ function ExamplePicker({
           </li>
         ))}
       </ul>
-      {currentDescription && (
-        <p className="muted">
-          <small>{currentDescription}</small>
-        </p>
-      )}
+      {/* Polite live region — when the user picks a different
+       * example, the description below the buttons changes
+       * silently for sighted users (visually clear, the buttons
+       * also signal which is active via aria-pressed). Screen-
+       * reader users only hear the button label they pressed; the
+       * description that explains the example never reaches them
+       * unless we announce it. aria-atomic so the whole new
+       * description is read on each change rather than a diff. */}
+      <p
+        className="muted"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        {currentDescription ? <small>{currentDescription}</small> : ""}
+      </p>
     </section>
   );
 }
