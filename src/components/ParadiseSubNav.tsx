@@ -16,8 +16,13 @@ import type { CSSProperties } from "react";
 const SUB_PAGES = [
   { href: "/paradise", label: "Paradise" },
   { href: "/paradise/lineage", label: "Lineage" },
-  // Architecture, ActionLanguage, Analysers, Patterns, Evidence,
-  // Plugin, Cite — added as each ships.
+  { href: "/paradise/architecture", label: "Architecture" },
+  { href: "/paradise/action-language", label: "ActionLanguage" },
+  { href: "/paradise/analysers", label: "Analysers" },
+  { href: "/paradise/widget-patterns", label: "Widget patterns" },
+  { href: "/paradise/evidence", label: "Evidence" },
+  { href: "/paradise/vscode-extension", label: "VS Code plugin" },
+  { href: "/paradise/cite", label: "Cite" },
 ] as const;
 
 export function ParadiseSubNav() {

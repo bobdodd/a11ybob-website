@@ -230,18 +230,51 @@ export default function Paradise() {
                 autoA11y.
               </li>
               <li>
+                <Link href="/paradise/architecture">Architecture</Link>{" "}
+                — the multi-model approach in detail, with a worked
+                example of cross-file analysis.
+              </li>
+              <li>
+                <Link href="/paradise/action-language">
+                  ActionLanguage IR
+                </Link>{" "}
+                — the form of the tree, the model entities, and a
+                worked JS-to-IR translation.
+              </li>
+              <li>
+                <Link href="/paradise/analysers">Analysers</Link> — the
+                fourteen accessibility analysers that ship with Paradise,
+                grouped by family, each with its own page.
+              </li>
+              <li>
+                <Link href="/paradise/widget-patterns">
+                  Widget patterns
+                </Link>{" "}
+                — the twenty-one canonical WAI-ARIA widget patterns, with
+                expected roles, states, and keyboard interactions for each.
+              </li>
+              <li>
+                <Link href="/paradise/evidence">Evidence</Link> — the
+                88% number, the corpus and methodology behind it, and
+                where Paradise still misses.
+              </li>
+              <li>
+                <Link href="/paradise/vscode-extension">
+                  VS Code plugin
+                </Link>{" "}
+                — install, configure, use; current release status and
+                the planned browser plugin.
+              </li>
+              <li>
+                <Link href="/paradise/cite">Cite</Link> — suggested
+                citation, BibTeX entries for Paradise and the W4A 2010
+                paper.
+              </li>
+              <li>
                 <Link href="/playground">Playground</Link> — the
                 in-browser surface running Paradise&rsquo;s analysers.
               </li>
             </ul>
-            <p className="muted">
-              <small>
-                The other sub-pages of <code>/paradise</code> —
-                architecture, ActionLanguage IR, analysers, widget
-                patterns, evidence, VS Code plugin, citation — are
-                being drafted. As each ships, it joins the list above.
-              </small>
-            </p>
           </section>
         </div>
       </div>
