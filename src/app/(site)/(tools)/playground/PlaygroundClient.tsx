@@ -266,6 +266,15 @@ export function PlaygroundClient() {
 
   return (
     <main id="main" className="site-main" data-zone="tools">
+      {/* In-page skip link — invisible until focused, then jumps
+       * keyboard / screen-reader users straight past the examples
+       * picker, the editor tablists, and the filter row to the
+       * Analysis section. The global skip link (in the page header)
+       * lands on #main; this one moves further into the page to a
+       * destination that only the Playground exposes. */}
+      <a href="#playground-analysis-heading" className="skip-link">
+        Skip to analysis results
+      </a>
       <div className="center">
         <div
           className="stack"
@@ -335,7 +344,12 @@ export function PlaygroundClient() {
             style={{ "--space": "var(--s0)" } as CSSProperties}
             aria-labelledby="playground-analysis-heading"
           >
-            <h2 id="playground-analysis-heading">Analysis</h2>
+            <h2
+              id="playground-analysis-heading"
+              tabIndex={-1}
+            >
+              Analysis
+            </h2>
 
             {/* Live region — assistive tech hears a single concise
              * summary every time the engine re-runs. The visible
