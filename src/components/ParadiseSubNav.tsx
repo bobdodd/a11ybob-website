@@ -1,0 +1,48 @@
+"use client";
+
+/* Sub-navigation for the Paradise section. Shows only sub-pages that
+ * are live; new pages join the list as they ship. The current page is
+ * announced via aria-current="page", which the existing
+ * `.nav-list a[aria-current="page"]` selector already styles to mark
+ * it visually as the current location.
+ *
+ * Built as a client component to read the current pathname directly,
+ * mirroring the primary site Nav. */
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import type { CSSProperties } from "react";
+
+const SUB_PAGES = [
+  { href: "/paradise", label: "Paradise" },
+  { href: "/paradise/lineage", label: "Lineage" },
+  // Architecture, ActionLanguage, Analysers, Patterns, Evidence,
+  // Plugin, Cite — added as each ships.
+] as const;
+
+export function ParadiseSubNav() {
+  const pathname = usePathname();
+
+  return (
+    <nav aria-label="Paradise sections">
+      <ul
+        className="nav-list cluster"
+        style={{ "--space": "var(--s0)" } as CSSProperties}
+      >
+        {SUB_PAGES.map(({ href, label }) => {
+          const active = pathname === href;
+          return (
+            <li key={href}>
+              <Link
+                href={href}
+                aria-current={active ? "page" : undefined}
+              >
+                {label}
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+    </nav>
+  );
+}

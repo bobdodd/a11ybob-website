@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
+import { ParadiseSubNav } from "@/components/ParadiseSubNav";
 
 export default function Paradise() {
   return (
@@ -9,6 +10,7 @@ export default function Paradise() {
           className="stack"
           style={{ "--space": "var(--s3)" } as CSSProperties}
         >
+          <ParadiseSubNav />
           <header
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
@@ -220,12 +222,24 @@ export default function Paradise() {
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
             <h2>More</h2>
+            <ul>
+              <li>
+                <Link href="/paradise/lineage">Lineage</Link> — the
+                PhD-era work, the W4A 2010 Carnforth Model paper, where
+                ActionLanguage came from, and the relationship with
+                autoA11y.
+              </li>
+              <li>
+                <Link href="/playground">Playground</Link> — the
+                in-browser surface running Paradise&rsquo;s analysers.
+              </li>
+            </ul>
             <p className="muted">
               <small>
-                The sub-pages of <code>/paradise</code> are being
-                drafted. As each one ships, it joins this list. For
-                now the only live surface is the in-browser{" "}
-                <Link href="/playground">Playground</Link>.
+                The other sub-pages of <code>/paradise</code> —
+                architecture, ActionLanguage IR, analysers, widget
+                patterns, evidence, VS Code plugin, citation — are
+                being drafted. As each ships, it joins the list above.
               </small>
             </p>
           </section>
