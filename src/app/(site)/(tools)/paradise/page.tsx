@@ -158,6 +158,24 @@ export default function Paradise() {
                 listed above. Detail page in progress.
               </li>
               <li>
+                <strong>Confidence-weighted findings.</strong> Every
+                issue carries a HIGH / MEDIUM / LOW level and a short
+                reason, exposed as a percentage in the surfaces.
+                Confidence is engine certainty given the source it
+                has, not severity. See{" "}
+                <Link href="/paradise/architecture">Architecture</Link>{" "}
+                for how the level resolves and why.
+              </li>
+              <li>
+                <strong>Suggested fixes.</strong> For many findings
+                the engine emits a corrective code suggestion
+                alongside the diagnostic. Surfaces apply
+                best-effort: the Playground&rsquo;s Fix dialog, the
+                VS Code plugin&rsquo;s Quick Fixes (Code Actions),
+                and CI consumers iterating <code>issue.fix</code>{" "}
+                programmatically.
+              </li>
+              <li>
                 <strong>VS Code plugin</strong> in active development.
                 Available as a <code>.vsix</code> from the source repo;
                 not yet on the Marketplace.

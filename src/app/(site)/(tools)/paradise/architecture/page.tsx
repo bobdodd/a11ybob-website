@@ -296,6 +296,110 @@ export default function ParadiseArchitecture() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
+            <h2>Confidence is a first-class concept</h2>
+            <p>
+              Every issue Paradise reports carries a{" "}
+              <strong>confidence level</strong> alongside its severity:
+              one of <code>HIGH</code>, <code>MEDIUM</code>, or{" "}
+              <code>LOW</code>, plus a short human-readable reason
+              (&ldquo;all three sources present&rdquo;,
+              &ldquo;handler resolution depends on dynamically-bound{" "}
+              <code>this</code>&rdquo;, &ldquo;CSS rule applies through
+              a selector that may be outscored at runtime&rdquo;).
+              Confidence reflects the engine&rsquo;s certainty given
+              the source it actually has — not the severity of the
+              underlying issue. A HIGH-confidence{" "}
+              <em>info</em> finding is often more actionable than a
+              LOW-confidence <em>error</em>, because the engine is
+              telling you it&rsquo;s sure about the smaller thing and
+              guessing about the larger one.
+            </p>
+            <p>
+              The level resolves to a numeric percentage that surfaces
+              expose to users: in the{" "}
+              <Link href="/playground">Playground</Link>, every issue
+              card shows a confidence percentage; in the VS Code
+              plugin, the hover popup carries the same number. The
+              percentage is derived from the level <em>and</em> the
+              document context the analyser had available — a finding
+              that runs over a complete HTML document gets a higher
+              percentage than the same finding over a body-only
+              fragment, which gets a higher percentage than the same
+              finding over a bare fragment with no{" "}
+              <code>&lt;body&gt;</code>. A full document at HIGH is
+              100%; a fragment at LOW is 40%. The mapping is
+              calibrated against the engine&rsquo;s evaluation corpus
+              so the numbers carry information rather than reading as
+              decoration.
+            </p>
+            <p>
+              Most accessibility tools suppress uncertainty: a finding
+              is either reported or it isn&rsquo;t, with no signal of
+              how sure the tool was. The hidden cost is that
+              everything reported reads as equally weighted, so users
+              triage by severity alone — and the noisiest analysers
+              (low-precision rules with high recall) drown out the
+              signals. By exposing confidence as a first-class field,
+              Paradise lets users sort, filter, and judge findings the
+              way the engine actually saw them. Filter to
+              HIGH-confidence-only on a triage pass; sweep through
+              LOW-confidence findings as a separate audit; never see
+              the two collapsed into one undifferentiated stream.
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
+            <h2>Suggested fixes alongside diagnostics</h2>
+            <p>
+              For many issues, the engine emits a{" "}
+              <strong>suggested fix</strong> alongside the diagnostic
+              — a short description of the change, a code suggestion,
+              and (when known) the file the suggestion belongs in.
+              Fixes are engine-emitted, surface-applied: the{" "}
+              <Link href="/playground">Playground</Link> renders them
+              in a Fix dialog with Apply-to-editor and Copy buttons;
+              the VS Code plugin exposes them as Quick Fixes via the
+              standard Code Actions / lightbulb affordance; a CI
+              consumer can iterate over <code>issue.fix</code>{" "}
+              programmatically and apply in batch.
+            </p>
+            <p>
+              The fix payload is a starting point, not a guaranteed
+              correction. Paradise reports what to write but
+              doesn&rsquo;t always know <em>where</em> to write it:
+              the engine emits the corrective code and the file it
+              probably belongs in, but it doesn&rsquo;t indicate
+              whether to insert, replace, or append at a specific
+              line. Surfaces apply best-effort (the Playground
+              currently appends to the named file) and surface that
+              limitation in the UI prose so users review before
+              committing. Fixes are most reliable for self-contained
+              changes — an{" "}
+              <code>aria-label</code> to add to a button, a{" "}
+              <code>keydown</code> handler to mirror an existing{" "}
+              <code>click</code>, a CSS rule to delete. They are less
+              reliable when the correction depends on surrounding
+              context the engine can&rsquo;t resolve from source
+              alone.
+            </p>
+            <p>
+              Honest framing matters here. A &ldquo;one-click
+              autofix&rdquo; promise that lands the wrong code in the
+              wrong place is worse than no autofix — it amplifies
+              user mistakes rather than reducing them. Paradise
+              reports the fix it knows, names the limitation in the
+              same UI element, and lets the user choose whether to
+              accept it.
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
             <h2>What&rsquo;s hard, what&rsquo;s deferred</h2>
             <p>
               The architecture has limits, and the honest framing is

@@ -70,17 +70,35 @@ export default function ParadiseVSCodeExtension() {
               </li>
               <li>
                 <strong>Hover popups</strong> with the analyser&rsquo;s
-                reasoning, the WCAG criterion it&rsquo;s engaged, and
-                a link into the matching{" "}
+                reasoning, the WCAG criterion it&rsquo;s engaged, the
+                engine&rsquo;s confidence level and percentage for
+                this finding, and a link into the matching{" "}
                 <Link href="/paradise/analysers">
                   /paradise/analysers
                 </Link>{" "}
-                page.
+                page. The confidence reason — why the engine is
+                more or less sure — is part of the popup, so the
+                signal is visible at the point of reading the issue.
+              </li>
+              <li>
+                <strong>Quick Fixes</strong> (the standard VS Code
+                Code Actions / lightbulb affordance) for any issue
+                that carries a fix payload. Activate the lightbulb,
+                preview the suggested change, accept or dismiss.
+                Fixes are best-effort: Paradise emits the corrective
+                code and the file it belongs in, but the placement
+                within the file is the surface&rsquo;s responsibility,
+                so review the result before committing. See{" "}
+                <Link href="/paradise/architecture">Architecture</Link>{" "}
+                for the framing.
               </li>
               <li>
                 <strong>Problems panel</strong> entries for every
                 issue, with file and line jump-targets — works the
                 same way the TypeScript and ESLint extensions do.
+                The panel is sortable by confidence as well as
+                severity, so a triage pass over HIGH-confidence
+                findings only is one click away.
               </li>
               <li>
                 <strong>Status bar indicator</strong> showing the
