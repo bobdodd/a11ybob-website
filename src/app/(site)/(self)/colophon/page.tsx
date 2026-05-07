@@ -433,6 +433,116 @@ export default function Colophon() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
+            <h2>Modals are native <code>&lt;dialog&gt;</code>, not a custom widget</h2>
+            <p>
+              Every modal on this site — the Playground&rsquo;s Help,
+              Fix, and Reset confirmations — is a native HTML{" "}
+              <code>&lt;dialog&gt;</code> opened with{" "}
+              <code>showModal()</code>. The browser handles focus
+              trapping, Escape-to-close, backdrop rendering, and the
+              correct AT role; nothing is reimplemented in JavaScript.
+            </p>
+            <p>
+              The custom-modal route — a <code>div</code> overlay with
+              a <code>role=&ldquo;dialog&rdquo;</code> and a manual
+              focus-trap loop — is the more common choice in modern
+              frameworks. It also goes wrong constantly. Focus traps
+              miss edge cases (iframes, shadow DOM, dynamically-added
+              focusables); Escape handling collides with other
+              keybinds; restoring focus to the trigger on close is
+              forgotten; the backdrop click leaks through to the page
+              underneath. Each of those failures is a real
+              accessibility regression for keyboard and screen-reader
+              users, and each is solved for free by the browser&rsquo;s{" "}
+              <code>&lt;dialog&gt;</code> element.
+            </p>
+            <p>
+              The cost was small and bounded: the universal
+              max-inline-size axiom needed{" "}
+              <code>dialog</code> on its exception list, and the
+              dialog&rsquo;s sizing rule had to use{" "}
+              <code>fit-content</code> capped at 80ch rather than an
+              explicit width so short confirm dialogs render compact
+              instead of stretching. Two CSS lines, against an entire
+              category of accessibility bugs the platform now handles.
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
+            <h2>Weight, not colour, marks the destructive action</h2>
+            <p>
+              The site palette is monochrome — ink, surface, rule, a
+              single accent. There is no red. So when a confirm dialog
+              needs to distinguish a destructive button (Reset,
+              discard, delete) from a safe one (Cancel), the
+              conventional red-versus-grey treatment isn&rsquo;t
+              available. The destructive button is solid ink fill with
+              a heavier border; the safe button is the standard
+              outlined pill. The destructive action carries more
+              visual mass, which is the same signal red-versus-grey
+              encodes — &ldquo;this one has consequences&rdquo; —
+              translated into the dimension the palette actually
+              offers.
+            </p>
+            <p>
+              This isn&rsquo;t only a stylistic concession. Colour
+              alone fails WCAG 1.4.1 (Use of Colour) for users with
+              colour-vision deficiencies, who may not see a
+              red-versus-grey distinction at all. Forcing the design
+              to encode emphasis non-chromatically from the start
+              produces the same affordance for everyone, rather than
+              a primary signal that fails for some users plus a
+              redundant fallback nobody notices.
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
+            <h2>Destructive confirm dialogs focus Cancel, not Confirm</h2>
+            <p>
+              When the Playground&rsquo;s Reset confirmation opens,
+              the initial keyboard focus lands on Cancel — not on the
+              Reset button that would discard the user&rsquo;s edits.
+              This is the opposite of what{" "}
+              <code>window.confirm()</code> does and the opposite of
+              the default for &ldquo;OK / Cancel&rdquo; dialogs in
+              most operating systems.
+            </p>
+            <p>
+              The reason is the cost of an accidental Enter for users
+              of switch access, eye-gaze input, and other assistive
+              input methods. Those interaction modes inherently dwell
+              on a key longer than intentional typing does; a
+              destructive action one-keystroke-away from focus on
+              dialog open is a real risk of lost work. The user has
+              already pressed the Reset button to <em>open</em> the
+              dialog; requiring a second deliberate motion to confirm
+              isn&rsquo;t friction, it&rsquo;s the safety margin.
+              Non-destructive confirms still focus the affirmative
+              action, where Enter-to-accept matches user expectation
+              and the cost of a stray Enter is recoverable.
+            </p>
+            <p>
+              The same reasoning underpins the choice to add{" "}
+              <code>tabindex=&ldquo;-1&rdquo;</code> targets and skip
+              links inside long tool surfaces: anywhere a keyboard
+              user&rsquo;s next intentional action is many tab stops
+              away from their current position, that&rsquo;s a
+              measurable cost we can erase by giving them a
+              shortcut, and dialogs are the case where the cost of
+              <em> not</em> doing it is highest.
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
             <h2>Decision log</h2>
             <p>
               Each load-bearing decision has its own document under{" "}
