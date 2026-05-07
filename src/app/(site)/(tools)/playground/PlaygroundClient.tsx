@@ -334,6 +334,7 @@ export function PlaygroundClient() {
               message="Your current edits will be discarded and the default example will be loaded."
               confirmLabel="Reset"
               cancelLabel="Cancel"
+              confirmTone="danger"
               onConfirm={confirmReset}
               onCancel={() => setResetConfirmOpen(false)}
             />
@@ -1487,6 +1488,7 @@ function ConfirmDialog({
   message,
   confirmLabel,
   cancelLabel,
+  confirmTone = "default",
   onConfirm,
   onCancel,
 }: {
@@ -1494,17 +1496,28 @@ function ConfirmDialog({
   message: string;
   confirmLabel: string;
   cancelLabel: string;
+  /* "danger" applies the heavier .pill--danger style to the
+   * confirm button and shifts initial focus to Cancel — a stray
+   * Enter shouldn't lose the user's work. "default" focuses
+   * Confirm so Enter accepts (matches the native confirm() idiom
+   * for non-destructive prompts). */
+  confirmTone?: "default" | "danger";
   onConfirm: () => void;
   onCancel: () => void;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   const confirmRef = useRef<HTMLButtonElement>(null);
+  const cancelRef = useRef<HTMLButtonElement>(null);
   const titleId = useId();
 
   useEffect(() => {
     ref.current?.showModal();
-    confirmRef.current?.focus();
-  }, []);
+    if (confirmTone === "danger") {
+      cancelRef.current?.focus();
+    } else {
+      confirmRef.current?.focus();
+    }
+  }, [confirmTone]);
 
   return (
     <dialog
@@ -1525,12 +1538,19 @@ function ConfirmDialog({
           <button
             ref={confirmRef}
             type="button"
-            className="pill"
+            className={
+              confirmTone === "danger" ? "pill pill--danger" : "pill"
+            }
             onClick={onConfirm}
           >
             {confirmLabel}
           </button>
-          <button type="button" className="pill" onClick={onCancel}>
+          <button
+            ref={cancelRef}
+            type="button"
+            className="pill"
+            onClick={onCancel}
+          >
             {cancelLabel}
           </button>
         </div>

@@ -47,6 +47,41 @@ button.pill[aria-pressed="true"] {
   color: var(--surface-1);
 }
 
+/* Danger variant — solid ink fill on rest, signalling that the
+ * action is destructive (loses work, deletes state). The
+ * monochrome palette has no red, so weight does the work that
+ * colour does on conventional sites: the consequential button is
+ * the heavy one, cancel is the light one. Used in confirm dialogs
+ * for destructive actions like Reset. */
+button.pill--danger,
+a.pill--danger {
+  background-color: var(--ink);
+  color: var(--surface-1);
+  /* Heavier border so the weight reads even when the surrounding
+   * surface is also dark in some themes. */
+  border-width: 2px;
+}
+
+button.pill--danger:hover,
+a.pill--danger:hover {
+  /* Inverse on hover — the button "lifts" by becoming the lighter
+   * version of itself, which is the same visual idiom as the
+   * standard pill (fills on hover). Keeps the destructive button's
+   * hover feedback consistent with other pills' direction without
+   * losing its rest-state weight. */
+  background-color: var(--surface-1);
+  color: var(--ink);
+}
+
+@media (forced-colors: active) {
+  button.pill--danger,
+  a.pill--danger {
+    background-color: CanvasText;
+    color: Canvas;
+    border-color: CanvasText;
+  }
+}
+
 .pill-toggle {
   position: relative;
   display: inline-block;
