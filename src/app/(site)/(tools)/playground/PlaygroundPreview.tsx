@@ -30,13 +30,28 @@ interface PlaygroundPreviewProps {
    * srcdoc. The Document is live for as long as the iframe is
    * mounted; the simulators store a ref to it. */
   onDomReady?: (iframeDoc: Document) => void;
+  /* The element inside the iframe that the simulator wants to
+   * outline (current SR cursor or current switch-scan element).
+   * The element belongs to the iframe's document, not the
+   * parent's — this is the same HTMLElement reference the
+   * AccessibilityTreeBuilder produced. */
+  highlightedElement?: HTMLElement | null;
+  /* Visual treatment for the highlight. "screen-reader" is a
+   * static outline; "switch" pulses to convey scanning. The
+   * actual styling lives in a stylesheet injected into the
+   * iframe's document — we can't reach our parent CSS tokens
+   * from inside the iframe, but we can inject a known class. */
+  highlightMode?: "screen-reader" | "switch" | null;
 }
 
 export function PlaygroundPreview({
   buffers,
   onDomReady,
+  highlightedElement,
+  highlightMode,
 }: PlaygroundPreviewProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const previousHighlightRef = useRef<HTMLElement | null>(null);
 
   /* Concatenate the user's buffers into a single document.
    * We strip <link>, <style>, and <script> tags from the HTML
@@ -74,6 +89,57 @@ export function PlaygroundPreview({
     iframe.addEventListener("load", handleLoad);
     return () => iframe.removeEventListener("load", handleLoad);
   }, [buffers, onDomReady]);
+
+  /* Apply / remove a highlight class on the requested element.
+   * The class is defined in the stylesheet that buildIframeDocument
+   * injects into the iframe — see the .__sr-highlight rules in the
+   * template below. We apply class names rather than setting
+   * element.style.* directly so we don't violate the
+   * no-inline-styles rule and so the user's own styles can still
+   * coexist via the cascade. */
+  useEffect(() => {
+    const previous = previousHighlightRef.current;
+    if (previous) {
+      previous.classList.remove(
+        "__sr-highlight",
+        "__sr-highlight--switch",
+      );
+      previousHighlightRef.current = null;
+    }
+
+    if (!highlightedElement || !highlightMode) return;
+
+    highlightedElement.classList.add("__sr-highlight");
+    if (highlightMode === "switch") {
+      highlightedElement.classList.add("__sr-highlight--switch");
+    }
+    previousHighlightRef.current = highlightedElement;
+
+    /* Scroll the iframe (only the iframe — not the parent page)
+     * so the highlighted element is visible. */
+    const iframe = iframeRef.current;
+    const iframeDoc = iframe?.contentDocument;
+    const iframeWin = iframe?.contentWindow;
+    if (iframeDoc && iframeWin) {
+      const rect = highlightedElement.getBoundingClientRect();
+      const targetTop =
+        rect.top +
+        iframeDoc.documentElement.scrollTop -
+        iframeWin.innerHeight / 2 +
+        rect.height / 2;
+      iframeDoc.documentElement.scrollTo({
+        top: Math.max(0, targetTop),
+        behavior: "smooth",
+      });
+    }
+
+    return () => {
+      highlightedElement.classList.remove(
+        "__sr-highlight",
+        "__sr-highlight--switch",
+      );
+    };
+  }, [highlightedElement, highlightMode]);
 
   return (
     <iframe
@@ -119,6 +185,21 @@ function buildIframeDocument({
     *, *::before, *::after { box-sizing: border-box; }
     body { margin: 0; padding: 1rem; line-height: 1.5; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     .__preview-error { position: fixed; inset-block-start: 0; inset-inline: 0; padding: 0.75rem 1rem; background: #fee; color: #800; border-block-end: 2px solid #800; font-family: ui-monospace, monospace; font-size: 0.85rem; z-index: 99999; }
+    /* Highlight rules used by the SR / switch simulators. The
+       outline is heavy enough to read against arbitrary user
+       backgrounds; the box-shadow provides a halo so contrast
+       against patterned backgrounds is preserved too. The
+       --switch variant adds a slow pulse to convey scanning. */
+    .__sr-highlight { outline: 4px solid #d62828 !important; outline-offset: 2px !important; box-shadow: 0 0 0 4px rgba(214, 40, 40, 0.25), 0 0 16px rgba(214, 40, 40, 0.5) !important; transition: outline 0.15s ease-in-out !important; }
+    .__sr-highlight--switch { animation: __sr-pulse 0.8s ease-in-out infinite !important; }
+    @keyframes __sr-pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .__sr-highlight--switch { animation: none !important; }
+      .__sr-highlight { transition: none !important; }
+    }
     ${css}
   </style>
 </head>

@@ -268,6 +268,134 @@
   max-inline-size: min(120ch, calc(100% - var(--s2)));
 }
 
+/* Screen reader simulator — the cursor-position display sits at
+ * the top of the right-hand panel; the transcript is scrollable;
+ * each message carries a left-band tinted by message type so
+ * navigation, announcements, state changes, and errors are
+ * distinguishable at a glance for sighted users without leaning
+ * on colour alone. */
+.sr-cursor {
+  border: var(--border-thin) solid var(--rule);
+  padding: var(--s-1) var(--s0);
+  background: var(--surface-2);
+}
+
+.sr-rate {
+  border: var(--border-thin) solid var(--rule);
+  background: var(--surface-1);
+  color: var(--ink);
+  padding-block: 0.1em;
+  padding-inline: 0.4em;
+  font-size: 0.9em;
+}
+
+.sr-rate:disabled {
+  opacity: 0.5;
+}
+
+.sr-transcript {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border: var(--border-thin) solid var(--rule);
+  background: var(--surface-1);
+  block-size: min(50vh, 40ch);
+  overflow-y: auto;
+}
+
+.sr-transcript-empty {
+  padding: var(--s0);
+  text-align: center;
+}
+
+.sr-transcript-entry {
+  padding: var(--s-1) var(--s0);
+  border-block-end: var(--border-thin) solid var(--rule);
+  border-inline-start: 0.4rem solid var(--rule);
+}
+
+.sr-transcript-entry:last-child {
+  border-block-end: 0;
+}
+
+.sr-transcript-entry[data-type="page-load"] {
+  border-inline-start-color: var(--ink);
+  background: var(--surface-2);
+}
+
+.sr-transcript-entry[data-type="navigation"] {
+  border-inline-start-color: var(--rule);
+}
+
+.sr-transcript-entry[data-type="announcement"] {
+  border-inline-start-color: var(--ink-muted);
+}
+
+.sr-transcript-entry[data-type="state-change"] {
+  border-inline-start-color: var(--ink-muted);
+  background: var(--surface-2);
+}
+
+.sr-transcript-entry[data-type="error"] {
+  border-inline-start-color: var(--ink);
+  background: var(--surface-2);
+}
+
+.sr-keyhelp summary {
+  cursor: pointer;
+}
+
+.sr-keyhelp-list {
+  list-style: none;
+  padding: 0;
+  margin-block-start: var(--s-1);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(28ch, 1fr));
+  gap: var(--s-2);
+}
+
+.sr-keyhelp-list kbd {
+  display: inline-block;
+  min-inline-size: 7ch;
+  padding-block: 0.1em;
+  padding-inline: 0.4em;
+  border: var(--border-thin) solid var(--rule);
+  background: var(--surface-2);
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  text-align: center;
+  margin-inline-end: 0.5em;
+}
+
+/* Switch simulator settings — fieldset visual treatment so the
+ * group of controls reads as a unit. The legend stands above the
+ * border, the controls inside stack with the standard owl
+ * spacing. */
+.switch-fieldset {
+  border: var(--border-thin) solid var(--rule);
+  padding: var(--s-1) var(--s0);
+  background: var(--surface-2);
+}
+
+.switch-fieldset legend {
+  padding-inline: 0.5em;
+}
+
+.switch-speed {
+  inline-size: 100%;
+}
+
+.switch-speed:disabled {
+  opacity: 0.5;
+}
+
+/* Action log shares the SR transcript styling but caps the
+ * height tighter — the switch log is informational, not the
+ * primary surface; the highlighted element in the iframe is. */
+.switch-log {
+  block-size: min(35vh, 25ch);
+}
+
 .playground-dialog::backdrop {
   background: rgb(0 0 0 / 0.4);
 }

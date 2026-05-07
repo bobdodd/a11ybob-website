@@ -18,6 +18,7 @@ import {
   useId,
   useRef,
   useState,
+  type ChangeEvent,
   type CSSProperties,
   type KeyboardEvent,
 } from "react";
@@ -38,6 +39,10 @@ import {
   type SourceFile,
 } from "@/lib/paradise/examples";
 import { PlaygroundPreview } from "./PlaygroundPreview";
+import { ScreenReaderSimulator } from "./ScreenReaderSimulator";
+import { SwitchSimulatorPanel } from "./SwitchSimulatorPanel";
+import { SessionReplayDialog } from "./SessionReplayDialog";
+import type { Session } from "@/lib/at-simulator/SessionRecorder";
 
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
   ssr: false,
@@ -197,6 +202,39 @@ export function PlaygroundClient() {
    * type tokens and renders in the OS default face/size. */
   const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [srOpen, setSrOpen] = useState(false);
+  const [switchOpen, setSwitchOpen] = useState(false);
+  const [replaySession, setReplaySession] = useState<Session | null>(
+    null,
+  );
+  const replayFileRef = useRef<HTMLInputElement>(null);
+
+  const openReplayPicker = () => {
+    replayFileRef.current?.click();
+  };
+
+  const handleReplayFile = async (
+    e: ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // allow re-picking same file later
+    if (!file) return;
+    try {
+      const text = await file.text();
+      const parsed = JSON.parse(text) as Session;
+      if (!parsed.events || !parsed.htmlContent) {
+        throw new Error("File does not look like a recorded session.");
+      }
+      setReplaySession(parsed);
+    } catch (err) {
+      // Show as an alert via a state update — but for now,
+      // fall back to a window.alert since this is a parse-error
+      // path and not a frequent UX. (Future: a toast surface.)
+      window.alert(
+        "Could not load session: " + (err as Error).message,
+      );
+    }
+  };
   const requestReset = () => {
     if (cleanExampleSlug === DEFAULT_EXAMPLE_SLUG) return; // already
     setResetConfirmOpen(true);
@@ -329,12 +367,49 @@ export function PlaygroundClient() {
             onReset={requestReset}
             canReset={cleanExampleSlug !== DEFAULT_EXAMPLE_SLUG}
             onOpenPreview={() => setPreviewOpen(true)}
+            onOpenScreenReader={() => setSrOpen(true)}
+            onOpenSwitch={() => setSwitchOpen(true)}
+            onOpenReplay={openReplayPicker}
+          />
+
+          {/* Hidden file picker for session replay. Mounted once
+            * at the playground root so the picker can be triggered
+            * from the toolbar without a per-toolbar input. */}
+          <input
+            ref={replayFileRef}
+            type="file"
+            accept="application/json,.json"
+            onChange={handleReplayFile}
+            className="visually-hidden"
+            aria-hidden="true"
+            tabIndex={-1}
           />
 
           {previewOpen && (
             <PreviewDialog
               buffers={buffers}
               onClose={() => setPreviewOpen(false)}
+            />
+          )}
+
+          {srOpen && (
+            <ScreenReaderSimulator
+              buffers={buffers}
+              onClose={() => setSrOpen(false)}
+            />
+          )}
+
+          {switchOpen && (
+            <SwitchSimulatorPanel
+              buffers={buffers}
+              onClose={() => setSwitchOpen(false)}
+            />
+          )}
+
+          {replaySession && (
+            <SessionReplayDialog
+              session={replaySession}
+              onClose={() => setReplaySession(null)}
             />
           )}
 
@@ -496,6 +571,9 @@ function EditorPanel({
   onReset,
   canReset,
   onOpenPreview,
+  onOpenScreenReader,
+  onOpenSwitch,
+  onOpenReplay,
 }: {
   tabs: { lang: Lang; label: string; monaco: string }[];
   buffers: LangBuffers;
@@ -513,6 +591,9 @@ function EditorPanel({
   onReset: () => void;
   canReset: boolean;
   onOpenPreview: () => void;
+  onOpenScreenReader: () => void;
+  onOpenSwitch: () => void;
+  onOpenReplay: () => void;
 }) {
   const tablistId = useId();
 
@@ -599,6 +680,28 @@ function EditorPanel({
             onClick={onOpenPreview}
           >
             Preview
+          </button>
+          <button
+            type="button"
+            className="pill"
+            onClick={onOpenScreenReader}
+          >
+            Screen reader
+          </button>
+          <button
+            type="button"
+            className="pill"
+            onClick={onOpenSwitch}
+          >
+            Switch access
+          </button>
+          <button
+            type="button"
+            className="pill"
+            onClick={onOpenReplay}
+            aria-label="Open a recorded screen-reader session for replay"
+          >
+            Replay session
           </button>
           <button
             type="button"
