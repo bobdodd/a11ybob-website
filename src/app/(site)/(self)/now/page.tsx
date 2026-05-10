@@ -85,7 +85,7 @@ export default function Now() {
           >
             <h2>Where I&rsquo;ve been recently</h2>
             <p>
-              Plantagenet, Ontario. The site rebuild has been a
+              Buckhorn, Ontario. The site rebuild has been a
               working quarter at home, not a travelling one. I
               expect to return to conference circuits later in the
               year.

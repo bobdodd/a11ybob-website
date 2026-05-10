@@ -32,6 +32,18 @@ export default function MeasureOfAccessibilityIndex() {
               </Link>
               .
             </p>
+            <blockquote>
+              <p>
+                <em>
+                  Accessibility is the outcome of the encounter
+                  between an entity&rsquo;s capacity to interact and
+                  its users&rsquo; physical and cognitive
+                  capabilities, with capacity, capability, and
+                  accessibility all expressed as measurable and
+                  quantitative properties.
+                </em>
+              </p>
+            </blockquote>
           </header>
 
           <MeasureSubNav />
