@@ -1,0 +1,108 @@
+/* Action Language playground — four-pane layout: XML source on
+ * the upper-left, Action tree on the upper-right, Execution trace
+ * on the lower-left, Output on the lower-right. On narrow
+ * viewports the panes stack vertically.
+ *
+ * Each pane is a section with a heading; CodeMirror lives inside
+ * the editor pane. Tree, trace, and output panes are scrollable
+ * within their own block-size cap so the page itself doesn't
+ * grow indefinitely with long execution traces. */
+
+.al-playground {
+  /* Container for the four-pane grid + the run/reset toolbar. */
+}
+
+.al-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--s0);
+}
+
+@media (min-width: 60em) {
+  .al-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.al-pane {
+  border: var(--border-thin) solid var(--rule);
+  padding: var(--s-1) var(--s0);
+  background: var(--surface-1);
+  min-block-size: 20ch;
+}
+
+.al-editor {
+  border: var(--border-thin) solid var(--rule);
+  background: var(--surface-1);
+  block-size: min(50vh, 30ch);
+  overflow: auto;
+}
+
+.al-editor .cm-editor {
+  block-size: 100%;
+}
+
+.al-editor .cm-focused {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+/* Tree, trace, output: each scrollable inside the pane. */
+.al-tree,
+.al-trace,
+.al-output {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  block-size: min(40vh, 25ch);
+  overflow: auto;
+}
+
+.al-tree ul {
+  list-style: none;
+  padding-inline-start: var(--s0);
+  margin: 0;
+}
+
+.al-tree li {
+  padding-block: 0.1em;
+}
+
+.al-trace-entry {
+  /* Indent by depth so the structural enter/exit pairs make scope
+   * visible at a glance. The custom property is set inline by the
+   * trace renderer; CSS multiplies it by a fixed step. */
+  padding-block: 0.05em;
+  padding-inline-start: calc(var(--depth, 0) * 1.2em);
+}
+
+.al-trace-entry[data-kind="enter"] code,
+.al-trace-entry[data-kind="exit"] code {
+  font-weight: 600;
+}
+
+.al-trace-entry[data-kind="evaluate"] code {
+  color: var(--ink);
+}
+
+.al-trace-entry[data-kind="assign"] code {
+  color: var(--ink);
+}
+
+.al-trace-entry[data-kind="print"] {
+  background: var(--surface-2);
+  font-weight: 600;
+}
+
+.al-output li {
+  padding-block: 0.1em;
+}
+
+@media (forced-colors: active) {
+  .al-pane,
+  .al-editor {
+    border-color: CanvasText;
+  }
+}
