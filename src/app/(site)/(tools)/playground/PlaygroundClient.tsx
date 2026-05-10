@@ -1,15 +1,17 @@
 "use client";
 
-/* Phase 3: Monaco editor with debounced re-analysis on every
- * keystroke. Three language buffers (HTML / JavaScript / CSS) live
- * in component state; a tab interface (WAI-ARIA tabs pattern)
- * surfaces one at a time. Each edit triggers a 250ms-debounced
- * re-run of the Paradise engine.
+/* The Playground client component. CodeMirror 6 editor with
+ * debounced re-analysis on every keystroke. Three language
+ * buffers (HTML / JavaScript / CSS) live in component state; a
+ * tab interface (WAI-ARIA tabs pattern) surfaces one at a time.
+ * Each edit triggers a 250ms-debounced re-run of the Paradise
+ * engine.
  *
- * Monaco is loaded via dynamic import with ssr:false because it
- * relies on web-only APIs. The page falls back to a plain textarea
- * if Monaco fails to load (offline, restricted CSP, etc.) — the
- * Playground works without the editor's polish, just less prettily. */
+ * The editor uses the same CodeMirror 6 stack as the Action
+ * Language playground at /research/action-language. The colophon
+ * explains the choice — accessibility defaults that meet WCAG
+ * 2.2 AAA out of the box (Tab moves focus, no keyboard trap,
+ * cleanly themeable). */
 
 import Link from "next/link";
 import dynamic from "next/dynamic";
@@ -44,23 +46,30 @@ import { SwitchSimulatorPanel } from "./SwitchSimulatorPanel";
 import { SessionReplayDialog } from "./SessionReplayDialog";
 import type { Session } from "@/lib/at-simulator/SessionRecorder";
 
-const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
-  ssr: false,
-  loading: () => (
-    <div className="muted">
-      <small>Loading editor…</small>
-    </div>
-  ),
-});
+/* Dynamic load with ssr:false: CodeMirror modules don't access
+ * window at import time, but the dynamic boundary keeps the
+ * editor out of any future server-render path and stops the
+ * editor bundle from being part of the initial server payload. */
+const PlaygroundEditor = dynamic(
+  () => import("./PlaygroundEditor").then((m) => m.PlaygroundEditor),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="muted">
+        <small>Loading editor…</small>
+      </div>
+    ),
+  },
+);
 
 const DEFAULT_EXAMPLE = findExample(DEFAULT_EXAMPLE_SLUG)!;
 
 type Lang = "html" | "javascript" | "css";
 
-const TABS: { lang: Lang; label: string; monaco: string }[] = [
-  { lang: "html", label: "HTML", monaco: "html" },
-  { lang: "javascript", label: "JavaScript", monaco: "javascript" },
-  { lang: "css", label: "CSS", monaco: "css" },
+const TABS: { lang: Lang; label: string }[] = [
+  { lang: "html", label: "HTML" },
+  { lang: "javascript", label: "JavaScript" },
+  { lang: "css", label: "CSS" },
 ];
 
 const DEBOUNCE_MS = 250;
@@ -575,7 +584,7 @@ function EditorPanel({
   onOpenSwitch,
   onOpenReplay,
 }: {
-  tabs: { lang: Lang; label: string; monaco: string }[];
+  tabs: { lang: Lang; label: string }[];
   buffers: LangBuffers;
   activeLang: Lang;
   setActiveLang: (l: Lang) => void;
@@ -618,8 +627,6 @@ function EditorPanel({
   const currentFile = langFiles.find(
     (f) => f.name === activeFile[activeLang],
   );
-
-  const monacoLang = tabs.find((t) => t.lang === activeLang)?.monaco ?? "plaintext";
 
   return (
     <section
@@ -746,54 +753,25 @@ function EditorPanel({
         );
       })}
 
-      {/* The Monaco editor itself, rendered once and re-bound to
-       * whichever (lang, file) is active. Mounting Monaco once
-       * avoids the heavy bundle being instantiated three times. */}
+      {/* The CodeMirror 6 editor. A unique React key per
+       * (lang, file) tuple remounts the editor when the user
+       * switches between files; that handles initial-value sync
+       * without an extra reconciliation prop. */}
       {currentFile ? (
-        <>
-          {/* Keyboard hint — Monaco binds Tab to indent by default,
-           * which traps keyboard-only users inside the editor. The
-           * platform-native escape is Ctrl+M (Cmd+M on Mac), which
-           * toggles Tab between "indent" and "move focus". Stating
-           * it explicitly is more reliable than burying the hint
-           * inside Monaco's accessibility-help dialog (Alt+F1). */}
-          <p
-            id={`${tablistId}-editor-hint`}
-            className="muted"
-          >
-            <small>
-              Press <kbd>Ctrl</kbd>+<kbd>M</kbd> (
-              <kbd>Cmd</kbd>+<kbd>M</kbd> on macOS) to toggle whether
-              <kbd>Tab</kbd> indents inside the editor or moves focus
-              out of it.
-            </small>
-          </p>
-          <div
-            className="playground-editor"
-            aria-describedby={`${tablistId}-editor-hint`}
-          >
-            <MonacoEditor
-              key={`${activeLang}::${currentFile.name}`}
-              height="320px"
-              language={monacoLang}
-              value={currentFile.content}
-              onChange={(v) =>
-                updateFileContent(activeLang, currentFile.name, v ?? "")
-              }
-              options={{
-                minimap: { enabled: false },
-                fontSize: 14,
-                wordWrap: "on",
-                automaticLayout: true,
-                scrollBeyondLastLine: false,
-                // Force the screen-reader-friendly rendering path
-                // rather than letting Monaco probe the environment
-                // and disable AT support if no SR is detected.
-                accessibilitySupport: "on",
-              }}
-            />
-          </div>
-        </>
+        <div
+          className="playground-editor"
+          aria-labelledby={`${tablistId}-tab-${activeLang}`}
+        >
+          <PlaygroundEditor
+            key={`${activeLang}::${currentFile.name}`}
+            language={activeLang}
+            initialValue={currentFile.content}
+            onChange={(v) =>
+              updateFileContent(activeLang, currentFile.name, v)
+            }
+            ariaLabelledBy={`${tablistId}-tab-${activeLang}`}
+          />
+        </div>
       ) : (
         <p className="muted">
           <small>

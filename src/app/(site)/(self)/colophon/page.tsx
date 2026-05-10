@@ -674,6 +674,71 @@ export default function Colophon() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
+            <h2>CodeMirror 6 across both code-editor surfaces</h2>
+            <p>
+              The site has two code-editor surfaces: the analyser
+              Playground at <a href="/playground">/playground</a>{" "}
+              with HTML, JavaScript, and CSS buffers, and the
+              Action Language playground at{" "}
+              <a href="/research/action-language">
+                /research/action-language
+              </a>{" "}
+              with XML. Both use{" "}
+              <a href="https://codemirror.net">CodeMirror 6</a>.
+            </p>
+            <p>
+              The analyser Playground was originally built on
+              Monaco, the editor that powers VS Code. Monaco is an
+              extraordinary piece of engineering &mdash; multi-
+              cursor editing, IntelliSense, deep semantic
+              tokenisation, language-server protocol support &mdash;
+              and on most accessibility metrics it is fine. On
+              several criteria the site targets, it is not. Monaco
+              binds <kbd>Tab</kbd> to indent by default, which
+              traps keyboard-only users inside the editor; the
+              escape is <kbd>Ctrl</kbd>+<kbd>M</kbd>, which the
+              user must know in advance. WCAG 2.1.2 (No Keyboard
+              Trap) is hard to claim under that condition. Monaco&rsquo;s
+              built-in themes cap at AA contrast (4.5:1 for normal
+              text) rather than the 7:1 the site targets across
+              the board, and the editor controls its own internal
+              styling deeply enough that user stylesheet overrides
+              for foreground and background &mdash; which AAA
+              criterion 1.4.8 requires &mdash; cannot reliably take
+              effect.
+            </p>
+            <p>
+              CodeMirror 6 is smaller, more modular, and
+              accessibility-friendly by default.{" "}
+              <kbd>Tab</kbd> moves focus out of the editor without
+              special configuration; the surface is themeable via
+              ordinary CSS rather than internal class systems;
+              the bundle is small enough to ship without code-
+              splitting acrobatics. The trade is loss of Monaco&rsquo;s
+              richer language-aware features &mdash; no IntelliSense
+              suggestions, no multi-cursor, simpler tokenisation.
+              For a Playground whose purpose is to{" "}
+              <em>demonstrate</em> accessibility analysis rather
+              than to be a production editor, that trade is
+              clean.
+            </p>
+            <p>
+              The migration happened in one pass after the second
+              editor surface (the Action Language playground)
+              shipped on CodeMirror 6 and the asymmetry became
+              load-bearing in the colophon. Better to consolidate
+              before the next interactive surface lands than after.
+              The site now ships one editor library across both
+              code-editing surfaces, and both surfaces meet
+              AAA across the criteria a code editor can plausibly
+              meet.
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
             <h2>Depth split across navigable surfaces</h2>
             <p>
               The single deepest piece of writing on the site is

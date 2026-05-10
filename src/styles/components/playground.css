@@ -128,11 +128,28 @@
   cursor: pointer;
 }
 
-/* Hide the wrapper completely when its tabpanel is inactive. The
- * Monaco editor inside ignores tab visibility by itself; pairing
- * `hidden` (HTML attribute) with this rule is belt and suspenders. */
+/* Hide the wrapper completely when its tabpanel is inactive. */
 .playground-editor[hidden] {
   display: none;
+}
+
+/* CodeMirror 6 editor surface. The editor instance owns its own
+ * internal layout; we just give the wrapper a fixed block-size
+ * and let CM6 fill it. The ".cm-focused" outline matches our
+ * site's focus ring. Same accessibility-first defaults as the
+ * Action Language playground at /research/action-language. */
+.playground-cm-editor {
+  block-size: 320px;
+  background: var(--surface-1);
+}
+
+.playground-cm-editor .cm-editor {
+  block-size: 100%;
+}
+
+.playground-cm-editor .cm-focused {
+  outline: var(--border-thick) solid var(--focus-color);
+  outline-offset: 0;
 }
 
 /* Preview iframe — the sandboxed render of the user's three
