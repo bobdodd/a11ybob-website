@@ -29,6 +29,29 @@ const talks = [
     blurb:
       "With Steve Green and Elaine Pearson. Peer-reviewed; in the ACM Digital Library. Rebuilds the Dexter Model of hypertext for an era of script-heavy, AJAX-driven content.",
   },
+  {
+    title: "User Capability in an Adaptive World",
+    venue: "Adaptive Hypermedia conference / journal piece",
+    date: "2009",
+    blurb:
+      "With Steve Green and Elaine Pearson. The four-model architecture (Capability, Capacity, Preference, Requirement) that operationalises intrinsic accessibility. Discloses the author's own mild deuteranomalia as one of the named users the framework was tested against.",
+  },
+  {
+    title:
+      "20 Years On: the Dexter Model of Hypertext and its impact on web accessibility",
+    venue: "ACM SIGACCESS Newsletter",
+    date: "2008",
+    blurb:
+      "Critiques the Dexter Reference Model and its descendant HTML for being structured around the printer's view of a book rather than the author's or the reader's. Proposes the five-layer alternative that became the Carnforth Model two years later.",
+  },
+  {
+    title:
+      "The Effectiveness of Self-Adapting User Interfaces as Assistive Technology for Handheld Mobile Devices",
+    venue: "Short paper, conference proceedings",
+    date: "2006",
+    blurb:
+      "The seed of the 2029 framework, in print. Argues for intrinsic accessibility (built into the underlying interface) over functional accessibility (bolt-on assistive tech grafted onto a standard interface). Names the formal next step: a definition of intrinsic accessibility using formal methods and game theory.",
+  },
 ];
 
 export default function Talks() {
@@ -42,9 +65,8 @@ export default function Talks() {
           >
             <h1>Talks</h1>
             <p className="lede">
-              Public talks and writing in talk-shaped form.
-              Reverse-chronological. Older SIGACCESS pieces from the late
-              2000s are not yet listed here.
+              Public talks and peer-reviewed writing in talk-shaped
+              form. Reverse-chronological.
             </p>
           </header>
 

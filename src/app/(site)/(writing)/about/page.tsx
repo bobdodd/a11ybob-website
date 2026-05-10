@@ -46,6 +46,17 @@ export default function About() {
               Spectrum Forth — a stack-oriented language that ran close to
               the metal because the metal was all you had.
             </p>
+            <p>
+              The model railway returns explicitly in the doctoral
+              work twenty-five years later. The thesis chapter on
+              haptic design names it: <em>the inspiration for this
+              model of haptics is relay logic. I was using relays in
+              the 1970s for my O-level Engineering project to
+              control a model railway.</em> Same model railway,
+              same relay logic, becoming the foundation for a
+              formal model of haptic interaction. Not a metaphor;
+              a direct acknowledged inspiration.
+            </p>
           </section>
 
           <section
@@ -119,6 +130,18 @@ export default function About() {
               of the era: Shlaer-Mellor, Executable UML, SDL.
             </p>
             <p>
+              The mid-1990s also covered a period in Singapore, with
+              connections to the gay Deaf community there. Out of a
+              challenge over drinks at the bar Tantric on a Friday
+              night came{" "}
+              <Link href="/research/spotlight/sign16">Sign16</Link>{" "}
+              — a sign-writing system that fit on the 16-key keypad
+              of a feature phone. The price of solving the problem
+              was a beer. The story is the first of three on the{" "}
+              <Link href="/research/spotlight">Spotlight projects</Link>{" "}
+              page.
+            </p>
+            <p>
               Then in 1996, building the Control Data mail hub that bridged
               the pre-SMTP fragmentation of corporate email — Microsoft
               Mail, Lotus, IBM systems, X.400 — converting between formats
@@ -145,12 +168,35 @@ export default function About() {
           >
             <h2>The shift to accessibility</h2>
             <p>
-              In the early 2000s, a cousin&rsquo;s diagnosis with multiple
-              sclerosis became the family motivation that turned the
-              technical work toward accessibility. Bob enrolled at Teesside
-              one day a week for an MSc in Multimedia Applications; the
-              thesis was on mobile accessibility for people with MS. The
-              MSc became a PhD candidacy.
+              In the early 2000s, three family motivations layered.
+              Bob&rsquo;s cousin had been diagnosed with multiple
+              sclerosis and his progression became the technical
+              focus of much of the doctoral work — see{" "}
+              <Link href="/research/spotlight/tup">TUP</Link>, the
+              first of the tools built specifically for him.
+              Bob&rsquo;s mother has arthritis, and her experience
+              of typing on mobile devices informed the input-
+              reduction direction of the same tool. Then, late in
+              the period, Bob&rsquo;s father&rsquo;s final illness
+              put the family in an ICU where picture-board AAC
+              proved inadequate for a man trying to participate in
+              his own treatment decisions. None of these alone is
+              the formal cause of the research focus; together they
+              turned the technical work toward accessibility, and
+              they kept it concrete &mdash; built for specific
+              people, not for an abstract user category.
+            </p>
+            <p>
+              Bob enrolled at Teesside one day a week for an MSc in
+              Multimedia Applications; the thesis was on mobile
+              accessibility for people with MS. The MSc became a
+              PhD candidacy. There is also a third named user the
+              framework was built for and tested against:{" "}
+              <em>the author himself</em>, who has mild deuteranomalia,
+              disclosed in the 2009{" "}
+              <em>User Capability in an Adaptive World</em> paper.
+              The researcher is inside the design space he is
+              modelling.
             </p>
             <p>
               The doctoral research at Teesside ran from 2004 to 2013, on
@@ -162,18 +208,53 @@ export default function About() {
               (with Steve Green and Elaine Pearson). The viva was never
               taken — largely because CNIB and CELA happened. Three pieces
               of original conceptual work survived from the period and are
-              still load-bearing for current writing: the Carnforth Model
-              itself; Polymorphic Task Deconstruction, a way of describing
-              multiple manipulations of the same data so a capability model
-              can choose between them; and Tetris as accessibility
-              testbed, which turned out to be the most teachable artefact
-              of the entire period.
+              still load-bearing for current writing: the{" "}
+              <Link href="/research/carnforth-model">Carnforth Model</Link>{" "}
+              itself;{" "}
+              <Link href="/research/polymorphic-task-deconstruction">
+                Polymorphic Task Deconstruction
+              </Link>
+              , a way of describing multiple manipulations of the
+              same data so a capability model can choose between
+              them; and{" "}
+              <Link href="/research/tetris-testbed">
+                Tetris as accessibility testbed
+              </Link>
+              , which turned out to be the most teachable artefact
+              of the entire period — and produced an{" "}
+              <Link href="/research/spotlight/tetris-audio">
+                audio rendering
+              </Link>{" "}
+              that re-framed the modality question itself. Beneath
+              all three, the{" "}
+              <Link href="/research/the-measure-of-accessibility">
+                Measure of Accessibility
+              </Link>{" "}
+              collection &mdash; six pages from the{" "}
+              <em>Defining Accessibility</em> chapter &mdash; gives
+              the formal-and-political theory.
             </p>
             <p>
-              In 2008 Bob and his husband moved from the UK to Canada when
-              the latter joined BlackBerry in Waterloo. The PhD candidacy
-              continued formally for another five years; the centre of
-              gravity shifted.
+              A period in Beijing around 2004 sits inside the
+              doctoral years. Bob&rsquo;s husband, Taodi, finished
+              his Masters and joined Nokia in Beijing; the route to
+              a same-sex partner visa ran through Tsinghua
+              University, where Bob spent two semesters studying
+              Mandarin so he could live in China while Taodi
+              worked. The bus journey to Tsinghua at 6am produced
+              the{" "}
+              <em>User Interface as an Evolving Community of Practice</em>{" "}
+              chapter &mdash; one of the more biographically rooted
+              pieces of the corpus, written largely on the bus.
+              The Communities of Practice framing went on to become
+              the substrate for the 2029 framework on{" "}
+              <Link href="/research/2029-framework">that page</Link>.
+            </p>
+            <p>
+              In 2008 Bob and Taodi moved from the UK to Canada when
+              Taodi joined BlackBerry in Waterloo. The PhD candidacy
+              continued formally for another five years; the centre
+              of gravity shifted.
             </p>
           </section>
 
@@ -213,7 +294,15 @@ export default function About() {
               accessibility analyser whose technical contribution is the
               ActionLanguage intermediate representation, a
               JavaScript-to-semantic-tree transcoder that lets analysis
-              reason about runtime behaviour at the source level.
+              reason about runtime behaviour at the source level. The
+              ActionLanguage IR carries forward the Forth-style threaded-
+              interpreter execution model from{" "}
+              <Link href="/research/action-language">
+                the doctoral Action Language
+              </Link>
+              , which carried it forward from PolyForth at Metal
+              Box in 1984. Same execution model, four problem
+              domains, four decades.
             </p>
           </section>
 
@@ -231,10 +320,26 @@ export default function About() {
               constraints, user capability, user preference, and the
               available UI resources and modalities. The framework
               requires agency for each factor — each must be able to
-              advocate, negotiate, and respond. In 2006 the theory was
-              understood but the compute was not there. With practical
-              agentic AI, the implementation tools have caught up. The
-              plan is to take this work back up in 2029.
+              advocate, negotiate, and respond.
+            </p>
+            <p>
+              The work was not abandoned in 2013; it was paused.
+              The 2013 thesis conclusion explicitly named the next
+              research step:{" "}
+              <em>
+                that competition would be best considered through
+                the use of game theory, with the mathematical
+                formalism likely to be found in models of autonomous
+                agents.
+              </em>{" "}
+              In 2006 the theory was understood but the compute was
+              not there. In 2013 the formalism was clearer but
+              autonomous-agent implementations remained academic
+              toys. With practical agentic AI now available, the
+              implementation tools have caught up. The 2029 project
+              is the resumption of named research, not a hobby
+              waiting for retirement.{" "}
+              <Link href="/research/2029-framework">Read on.</Link>
             </p>
           </section>
 
