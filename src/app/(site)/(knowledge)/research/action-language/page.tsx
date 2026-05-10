@@ -1,25 +1,13 @@
 import Link from "next/link";
-import dynamic from "next/dynamic";
 import type { CSSProperties } from "react";
 import { ResearchSubNav } from "@/components/ResearchSubNav";
-import { FIBONACCI_XML } from "./examples";
-
-/* The four-pane playground is a client component (CodeMirror 6
- * and the engine are browser-only). Loaded with ssr:false so the
- * server-render of the page doesn't try to mount CodeMirror. The
- * fallback is a code block showing the same source so anyone with
- * JS off can still read the canonical example. */
-const ALPlayground = dynamic(
-  () => import("./ALPlayground").then((m) => m.ALPlayground),
-  {
-    ssr: false,
-    loading: () => (
-      <p className="muted">
-        <small>Loading the Action Language playground&hellip;</small>
-      </p>
-    ),
-  },
-);
+import {
+  ADAPTATION_XML,
+  CONDITIONAL_CONTENT_XML,
+  FIBONACCI_XML,
+  STATE_MIGRATION_XML,
+} from "./examples";
+import { ALPlaygroundLoader } from "./ALPlaygroundLoader";
 
 export default function ActionLanguageResearch() {
   return (
@@ -144,24 +132,90 @@ export default function ActionLanguageResearch() {
               or replacing the recursive definition with an iterative
               one to compare the trace shapes.
             </p>
-            <ALPlayground initialSource={FIBONACCI_XML} />
+            <ALPlaygroundLoader initialSource={FIBONACCI_XML} />
           </section>
 
           <section
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
-            <h2>The other three examples</h2>
-            <p className="muted">
-              In progress. The next three worked examples will
-              demonstrate conditional content selection (an
-              accessibility-shaped if-then-else), Shlaer-Mellor-
-              style OOP with state migration (the notification
-              lifecycle), and an adaptation example (a button
-              rollover from the CISNA Adaptation Model notes that
-              changes its inventory-to-semantics mapping for visual
-              vs sonic user profiles).
+            <h2>Example 2: Conditional content selection</h2>
+            <p>
+              The accessibility-shaped if-then-else: pick a
+              presentation metaphor based on a user-capability
+              variable. The point of the example is not the if-then-
+              else itself (mechanically straightforward) but the way
+              <em> the polymorphism lives in the data, not at the
+              call site</em>. The same{" "}
+              <code>present(modality)</code> call runs in both
+              cases; the metaphor selection is internal. That is the
+              shape of intrinsic accessibility&rsquo;s polymorphic
+              task deconstruction in microcosm.
             </p>
+            <p>
+              Try changing one of the modality strings to
+              <code> &quot;haptic&quot;</code> — neither branch
+              matches, the fallback fires.
+            </p>
+            <ALPlaygroundLoader initialSource={CONDITIONAL_CONTENT_XML} />
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
+            <h2>Example 3: SM-style state migration</h2>
+            <p>
+              The notification lifecycle from the doctoral
+              framework&rsquo;s Methodology chapter:{" "}
+              <em>Announcing</em> &rarr; <em>Dwelling</em> &rarr;{" "}
+              <em>Expiring</em> &rarr; <em>Gone</em>. The
+              notification is the same instance through the
+              transitions; what changes is its subtype, and each
+              subtype renders differently.
+            </p>
+            <p>
+              In a real Shlaer-Mellor implementation this would use
+              disjoint-complete subtyping with formal role
+              migration. The minimal version here models the state
+              with a string variable and the per-state rendering
+              with an if-cascade — the iteration shape and the
+              behavioural sequence are the same; only the
+              type-system formalism differs. The execution trace
+              shows the migration explicitly: render, advance,
+              render, advance, until the role reaches Gone and the
+              loop terminates.
+            </p>
+            <ALPlaygroundLoader initialSource={STATE_MIGRATION_XML} />
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
+            <h2>Example 4: Adaptation across user profiles</h2>
+            <p>
+              A button rollover that adapts its inventory-to-
+              semantics mapping for visual vs sonic user profiles.
+              The same event &mdash; <em>USER ENTERS PROXIMITY OF
+              NODE</em> &mdash; triggers different concrete
+              realisations through the bridge function{" "}
+              <code>on-proximity</code>; the abstract semantic
+              outcome (the button is hover-active) is the same in
+              both cases.
+            </p>
+            <p>
+              This is the structure the CISNA Adaptation Model is
+              for: an event in the underlying interface gets
+              bridged through to different inventory selections per
+              user-platform, and a single source of truth produces
+              different output. The trace makes the shared
+              semantics visible — both branches return{" "}
+              <code>&quot;hover-active&quot;</code> as the abstract
+              result, regardless of which inventory items were
+              selected to produce it.
+            </p>
+            <ALPlaygroundLoader initialSource={ADAPTATION_XML} />
           </section>
 
           <section

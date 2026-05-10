@@ -254,6 +254,77 @@ export class IfThenElseAction extends Action {
   }
 }
 
+/** While loop. Mirrors SMWhileDo: condition expression evaluated
+ *  before each iteration; body executes while it's true. Iteration
+ *  cap shares the same call budget so a runaway loop can't lock
+ *  the tab any more than runaway recursion can. */
+export class WhileDoAction extends Action {
+  readonly name = "WHILE";
+  constructor(
+    public readonly condition: Expression,
+    public readonly body: Action,
+  ) {
+    super();
+  }
+  override children(): Action[] {
+    return [this.condition, this.body];
+  }
+  execute(scope: Scope, ctx: ExecutionContext): null {
+    trace(ctx, { kind: "enter", action: "WHILE" });
+    ctx.depth += 1;
+    try {
+      while (true) {
+        ctx.budget.calls -= 1;
+        checkBudget(ctx);
+        const cond = this.condition.execute(scope, ctx);
+        if (typeof cond !== "boolean") {
+          throw new Error(
+            `WHILE condition must evaluate to boolean, got ${typeof cond}.`,
+          );
+        }
+        if (!cond) break;
+        this.body.execute(scope, ctx);
+      }
+    } finally {
+      ctx.depth -= 1;
+      trace(ctx, { kind: "exit", action: "WHILE" });
+    }
+    return null;
+  }
+}
+
+/** A sequence whose value is the value of its final child. Mirrors
+ *  SMSeqWithReturn in the Java reference. Useful as a function
+ *  body when the function needs side effects (prints, assigns)
+ *  followed by a returned value. Like Seq, runs in a child scope. */
+export class SeqWithReturnExpr extends Expression {
+  readonly name = "SEQ_RETURN";
+  constructor(public readonly actions: Action[]) {
+    super();
+  }
+  override children(): Action[] {
+    return this.actions;
+  }
+  execute(scope: Scope, ctx: ExecutionContext): ALValue | null {
+    if (this.actions.length === 0) {
+      throw new Error("SEQ_RETURN requires at least one child action.");
+    }
+    const inner = childScope(scope);
+    trace(ctx, { kind: "enter", action: "SEQ_RETURN" });
+    ctx.depth += 1;
+    let last: ALValue | null = null;
+    try {
+      for (const action of this.actions) {
+        last = action.execute(inner, ctx);
+      }
+    } finally {
+      ctx.depth -= 1;
+      trace(ctx, { kind: "exit", action: "SEQ_RETURN" });
+    }
+    return last;
+  }
+}
+
 /* -------- Expressions: Literal / Add / Subtract / Lt / Eq -------- */
 
 export class LiteralExpr extends Expression {

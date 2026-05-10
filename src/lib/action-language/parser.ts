@@ -28,7 +28,9 @@ import {
   ReadConstantExpr,
   ReadVariableExpr,
   SeqAction,
+  SeqWithReturnExpr,
   SubtractExpr,
+  WhileDoAction,
 } from "./actions";
 import type { ALType, ALValue } from "./types";
 
@@ -162,6 +164,18 @@ function parseAction(el: Element, registry: FunctionRegistry): Action {
         children[2] ? parseAction(children[2], registry) : null,
       );
     }
+    case "while": {
+      const children = elementChildren(el);
+      if (children.length !== 2) {
+        throw new Error(
+          `<while> expects exactly two children (condition, body).`,
+        );
+      }
+      return new WhileDoAction(
+        parseExpression(children[0], registry),
+        parseAction(children[1], registry),
+      );
+    }
     default:
       // If the element name isn't a recognised statement, try
       // treating it as an expression — useful at the top level
@@ -201,6 +215,20 @@ function parseExpression(
         parseExpression(c, registry),
       );
       return new CallExpr(name, args, registry);
+    }
+    case "seq-return": {
+      // A sequence whose value is the value of its final child.
+      // Useful as a function body when the function needs side
+      // effects followed by a returned value. Parse children as
+      // actions; the final child often is itself an expression
+      // (parsed via parseAction's expression-fallback branch).
+      const children = elementChildren(el);
+      if (children.length === 0) {
+        throw new Error(`<seq-return> requires at least one child.`);
+      }
+      return new SeqWithReturnExpr(
+        children.map((c) => parseAction(c, registry)),
+      );
     }
     case "if-then-else": {
       // Allow if-then-else as an expression too — its branches
