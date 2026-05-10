@@ -38,6 +38,8 @@
     "rehype-raw": "^7.0.0"
   },
   "devDependencies": {
+    "@types/babel__traverse": "^7.28.0",
+    "@types/css-tree": "^2.3.11",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

@@ -7,24 +7,24 @@
 // The engine ships as compiled CJS .js files with .d.ts declarations.
 // Importing the .js paths directly avoids pulling in a TS rebuild
 // step; the .d.ts files give us types for free.
-import { HTMLParser } from "./parsers/HTMLParser.js";
-import { JavaScriptParser } from "./parsers/JavaScriptParser.js";
-import { CSSParser } from "./parsers/CSSParser.js";
-import { DocumentModel } from "./models/DocumentModel.js";
-import { BaseAnalyzer, type Issue } from "./analyzers/BaseAnalyzer.js";
+import { HTMLParser } from "./parsers/HTMLParser";
+import { JavaScriptParser } from "./parsers/JavaScriptParser";
+import { CSSParser } from "./parsers/CSSParser";
+import { DocumentModel } from "./models/DocumentModel";
+import { BaseAnalyzer, type Issue } from "./analyzers/BaseAnalyzer";
 
-import { MouseOnlyClickAnalyzer } from "./analyzers/MouseOnlyClickAnalyzer.js";
-import { OrphanedEventHandlerAnalyzer } from "./analyzers/OrphanedEventHandlerAnalyzer.js";
-import { MissingAriaConnectionAnalyzer } from "./analyzers/MissingAriaConnectionAnalyzer.js";
-import { VisibilityFocusConflictAnalyzer } from "./analyzers/VisibilityFocusConflictAnalyzer.js";
-import { FocusOrderConflictAnalyzer } from "./analyzers/FocusOrderConflictAnalyzer.js";
-import { KeyboardNavigationAnalyzer } from "./analyzers/KeyboardNavigationAnalyzer.js";
-import { ARIASemanticAnalyzer } from "./analyzers/ARIASemanticAnalyzer.js";
-import { WidgetPatternAnalyzer } from "./analyzers/WidgetPatternAnalyzer.js";
-import { FocusManagementAnalyzer } from "./analyzers/FocusManagementAnalyzer.js";
-import { HeadingStructureAnalyzer } from "./analyzers/HeadingStructureAnalyzer.js";
+import { MouseOnlyClickAnalyzer } from "./analyzers/MouseOnlyClickAnalyzer";
+import { OrphanedEventHandlerAnalyzer } from "./analyzers/OrphanedEventHandlerAnalyzer";
+import { MissingAriaConnectionAnalyzer } from "./analyzers/MissingAriaConnectionAnalyzer";
+import { VisibilityFocusConflictAnalyzer } from "./analyzers/VisibilityFocusConflictAnalyzer";
+import { FocusOrderConflictAnalyzer } from "./analyzers/FocusOrderConflictAnalyzer";
+import { KeyboardNavigationAnalyzer } from "./analyzers/KeyboardNavigationAnalyzer";
+import { ARIASemanticAnalyzer } from "./analyzers/ARIASemanticAnalyzer";
+import { WidgetPatternAnalyzer } from "./analyzers/WidgetPatternAnalyzer";
+import { FocusManagementAnalyzer } from "./analyzers/FocusManagementAnalyzer";
+import { HeadingStructureAnalyzer } from "./analyzers/HeadingStructureAnalyzer";
 
-export type { Issue } from "./analyzers/BaseAnalyzer.js";
+export type { Issue } from "./analyzers/BaseAnalyzer";
 
 export type SourceFile = { name: string; content: string };
 
