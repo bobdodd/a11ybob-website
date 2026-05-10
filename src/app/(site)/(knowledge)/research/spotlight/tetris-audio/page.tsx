@@ -38,16 +38,15 @@ export default function SpotlightTetrisAudio() {
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
             <p className="muted">
-              Substantive draft pending (Track 3). Source material
-              exists in <em>The Story of Bob</em>: the seven specific
-              audio metaphors (Aside, Musical sonar, Dancing margins,
-              Talking scrollbar, Direction-as-direction, Gravity as
-              waterfall, Braided audio), the modality-shift
-              observation, and the closure with David Furness&rsquo;s
-              persona in the Personas appendix &mdash; the very game
-              chosen as the framework&rsquo;s hardest test fails for
-              the colour-blind user, in a way the framework exists
-              to handle.
+              Substantive draft pending. The page will cover the
+              seven specific audio metaphors (Aside, Musical sonar,
+              Dancing margins, Talking scrollbar, Direction-as-
+              direction, Gravity as waterfall, Braided audio), the
+              modality-shift observation, and the closure in the
+              Personas appendix &mdash; the very game chosen as the
+              framework&rsquo;s hardest test fails for the
+              colour-blind user, in a way the framework exists to
+              handle.
             </p>
           </section>
 

@@ -54,9 +54,8 @@ export default function TetrisTestbed() {
           >
             <h2>Tetris as falsification test</h2>
             <p>
-              The thesis case-study chapter chose Tetris not as a
-              teaching example but as the framework&rsquo;s hardest
-              test. From the chapter:
+              Tetris was chosen not as a teaching example but as
+              the framework&rsquo;s deliberate hardest test:
             </p>
             <blockquote>
               <p>

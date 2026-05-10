@@ -42,25 +42,23 @@ export default function ShlaerMellorLensInDepth() {
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
             <p className="muted">
-              Substantive draft pending. This page will give the
+              Substantive draft pending. The page will give the
               in-depth treatment of recursive design as the structure
               of accessibility — domain charts, bridges, model
-              compilation, the four-decade engineering lineage from
-              Forth at Metal Box through Shlaer-Mellor and CISNA to
-              Paradise&rsquo;s ActionLanguage IR. Source:
-              the <em>Methodology</em> thesis chapter and the{" "}
-              <em>Action Model Execution Engine</em> appendix.
+              compilation, and the four-decade engineering lineage
+              from Forth at Metal Box through Shlaer-Mellor and CISNA
+              to Paradise&rsquo;s ActionLanguage IR.
             </p>
             <p>
               The standalone summary lives at{" "}
               <Link href="/research/shlaer-mellor-lens">
                 /research/shlaer-mellor-lens
               </Link>
-              . This page expands the same material with the formal
-              specifics — domain charts, bridges, assigner state
-              models for resource competition, subtyping with role
-              migration, action specification languages — and grounds
-              them in the running code at{" "}
+              . The page here expands the same material with the
+              formal specifics — domain charts, bridges, assigner
+              state models for resource competition, subtyping with
+              role migration, action specification languages — and
+              grounds them in the running code at{" "}
               <Link href="/research/action-language">
                 /research/action-language
               </Link>

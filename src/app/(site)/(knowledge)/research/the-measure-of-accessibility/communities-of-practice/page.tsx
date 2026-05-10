@@ -41,18 +41,15 @@ export default function CommunitiesOfPractice() {
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
             <p className="muted">
-              Substantive draft pending. This page will treat the
+              Substantive draft pending. The page will treat the
               user interface as a community of practice at two levels
               — the UI itself (nine entities playing roles in a
               shared enterprise) and user populations (memetic
               evolution of profiles in disability-related peer
               groups) — and reframe inaccessibility as community
-              dysfunction. The page also opens onto the multi-agent
-              and 2029 territory and surfaces the critique of
-              competition-only agentic-AI framings. Source: the{" "}
-              <em>User Interface as an Evolving Community of Practice</em>{" "}
-              thesis chapter, written largely on the bus to Tsinghua
-              at 6am around 2004.
+              dysfunction. It will also open onto the multi-agent
+              and 2029 territory and surface the critique of
+              competition-only agentic-AI framings.
             </p>
           </section>
 

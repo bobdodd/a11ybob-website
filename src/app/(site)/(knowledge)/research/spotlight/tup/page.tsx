@@ -41,19 +41,19 @@ export default function SpotlightTUP() {
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
             <p className="muted">
-              Substantive draft pending (Track 3). Source material
-              exists in <em>The Story of Bob</em>: the design problem
-              (cousin Paul, with progressing MS, and the input
-              failures of tremor and sliding touch); the
+              Substantive draft pending. The page will cover the
+              design problem (cousin Paul, with progressing MS, and
+              the input failures of tremor and sliding touch); the
               counterintuitive insight (don&rsquo;t make the user
               reach for the predicted character &mdash; adapt the
               wheel so the predicted character is already under the
               finger); the engineering (FSM modelling
               woodpecker-and-sliding, adaptive wheel display, large
               on-screen letter for low vision); and the long-arc
-              connection &mdash; TUP&rsquo;s ad-hoc engineering
+              connection &mdash; the ad-hoc engineering of TUP
               became the formal haptic capability template years
-              before the framework existed.
+              later, with the same input properties named formally
+              in the framework.
             </p>
           </section>
         </div>

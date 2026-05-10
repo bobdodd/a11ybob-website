@@ -19,15 +19,18 @@ export default function MeasureOfAccessibilityIndex() {
           >
             <h1>The Measure of Accessibility</h1>
             <p className="lede">
-              A six-page treatment of the accessibility theory that
-              emerged from the <em>Defining Accessibility</em> thesis
-              chapter. The political framing of what accessibility
-              actually is, the formal distinction between functional
-              and intrinsic accessibility, the rejection of
-              utilitarianism, the methodological substrate, and the
-              communities-of-practice framing that opens onto the
-              2029 framework. The deepest single intellectual
-              contribution in the corpus.
+              A six-page treatment of what accessibility is, how to
+              measure it, and why the answer matters. The political
+              framing of the question; the formal distinction
+              between functional and intrinsic accessibility; the
+              rejection of utilitarianism; the methodological
+              substrate that lets the formal definitions be built
+              rather than just stated; and the communities-of-
+              practice framing that opens onto the{" "}
+              <Link href="/research/2029-framework">
+                2029 framework
+              </Link>
+              .
             </p>
           </header>
 

@@ -42,14 +42,13 @@ export default function EquivalentExperience() {
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
             <p className="muted">
-              Substantive draft pending. This page will treat the
+              Substantive draft pending. The page will treat the
               timing dimension of equivalent experience, the equality
               argument, and the explicit rejection of utilitarianism
               in accessibility — why &ldquo;the greatest good of the
               greatest number&rdquo; is the wrong frame for a domain
               where the question is fundamentally one of rights, not
-              utility maximisation. Source:{" "}
-              <em>Defining Accessibility</em> thesis chapter.
+              utility maximisation.
             </p>
           </section>
 

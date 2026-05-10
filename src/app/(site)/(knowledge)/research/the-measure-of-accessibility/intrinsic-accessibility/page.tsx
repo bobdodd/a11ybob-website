@@ -39,7 +39,7 @@ export default function IntrinsicAccessibility() {
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
             <p className="muted">
-              Substantive draft pending. This page will give the
+              Substantive draft pending. The page will give the
               formal definition with the pseudo-user formalism
               (S<sub>PU</sub>, N<sub>PU</sub>, N<sub>IB</sub>), the
               proof of an optimal pseudo-user set independent of
@@ -47,8 +47,7 @@ export default function IntrinsicAccessibility() {
               accessibility generalises where functional doesn&rsquo;t
               — and why bolt-on assistive tech is structurally a
               functional-accessibility solution to a problem that
-              wants intrinsic-accessibility. Source:{" "}
-              <em>Defining Accessibility</em> thesis chapter.
+              wants intrinsic-accessibility.
             </p>
           </section>
 

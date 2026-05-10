@@ -40,14 +40,13 @@ export default function FunctionalAccessibility() {
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
             <p className="muted">
-              Substantive draft pending. This page will give the
+              Substantive draft pending. The page will give the
               formal definition of Functional Accessibility with
               notation, the negotiation framing between user and
               provider, the multi-medium robustness condition (an
               interface is functionally accessible if at least one
               medium-and-protocol path succeeds), and the legal-
-              rights scoping with its limits. Source:{" "}
-              <em>Defining Accessibility</em> thesis chapter.
+              rights scoping with its limits.
             </p>
           </section>
 

@@ -38,13 +38,13 @@ export default function SpotlightSign16() {
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
             <p className="muted">
-              Substantive draft pending (Track 3 of the site update
-              plan). Source material exists in the May 2026 expansion
-              of <em>The Story of Bob</em>: the structure (person,
-              constraint, insight, artefact, teaching, coda), the
-              16-keys-as-body-parts encoding, the Tantric anecdote,
-              and the closing line about the friends continuing to
-              sign on their phones &ldquo;like it never happened.&rdquo;
+              Substantive draft pending. The page will run the
+              full Spotlight structure &mdash; the person, the
+              constraint, the insight, the artefact, the teaching,
+              the coda &mdash; with the 16-keys-as-body-parts
+              encoding, the Tantric anecdote, and the closing line
+              about the friends continuing to sign on their phones
+              &ldquo;like it never happened.&rdquo;
             </p>
           </section>
         </div>
