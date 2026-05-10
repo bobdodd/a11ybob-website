@@ -739,6 +739,49 @@ export default function Colophon() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
+            <h2>Syntax highlighting by weight and italic, not by colour</h2>
+            <p>
+              Both code editors render syntax highlighting in
+              monochrome. Keywords, function names, type names,
+              numbers, and HTML tag names are bold. Strings,
+              attribute values, regular expressions, and comments
+              are italic. Comments and operators take the muted ink
+              colour; everything else takes the standard ink. No
+              rainbow.
+            </p>
+            <p>
+              This follows the same logic as the destructive-button
+              variant earlier in the colophon: the site palette is
+              monochrome, so weight and italic do what colour does
+              in conventional sites &mdash; convey a token&rsquo;s
+              syntactic role through a non-chromatic dimension. A
+              user with red-green or blue-yellow colour-vision
+              deficiency reads the highlighted code at the same
+              fidelity as anyone else; a user reading on a high-
+              contrast user stylesheet does not lose the structural
+              cue when the conventional palette is overridden;
+              every token resolves to <code>var(--ink)</code> or{" "}
+              <code>var(--ink-muted)</code> over the editor
+              surface, both of which sit at AAA contrast.
+            </p>
+            <p>
+              The cost is one specific loss compared to a
+              conventional rainbow theme: the eye-catching{" "}
+              <em>distinct hue per token category</em> that
+              experienced developers learn to scan against. The
+              gain is that the highlighting is universal &mdash;
+              works for everyone, in every theme override, on every
+              user stylesheet, without any further intervention.
+              Same trade as everywhere else on the site where
+              colour was tempting but weight earned its place
+              instead.
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
             <h2>Depth split across navigable surfaces</h2>
             <p>
               The single deepest piece of writing on the site is

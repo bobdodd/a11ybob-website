@@ -12,7 +12,7 @@ export default function Accessibility() {
           >
             <h1>Accessibility statement</h1>
             <p className="muted">
-              <small>Last reviewed: 2026-05-05.</small>
+              <small>Last reviewed: 2026-05-10.</small>
             </p>
           </header>
 
@@ -111,7 +111,43 @@ export default function Accessibility() {
                 Site content renders server-side and works without
                 JavaScript; client-side interactivity is layered on top
                 only where it provides genuine benefit (search, the
-                Playground).
+                Playground, the Action Language playground).
+              </li>
+              <li>
+                <strong>
+                  Code editors that meet AAA out of the box.
+                </strong>{" "}
+                Both code-editor surfaces &mdash; the analyser
+                Playground at <Link href="/playground">/playground</Link>{" "}
+                and the Action Language playground at{" "}
+                <Link href="/research/action-language">
+                  /research/action-language
+                </Link>{" "}
+                &mdash; use{" "}
+                <a href="https://codemirror.net">CodeMirror 6</a>.
+                Tab moves focus out of the editor (no keyboard
+                trap), themes are ordinary CSS (foreground and
+                background overridable per WCAG 1.4.8), and contrast
+                meets the 7:1 floor through the same monochrome
+                tokens the rest of the site uses. Syntax
+                highlighting is rendered with weight and italic
+                rather than colour &mdash; the structural cue is
+                non-chromatic by design, so colour-vision
+                deficiencies and high-contrast user stylesheets
+                preserve full information density. The colophon
+                explains the choice in detail.
+              </li>
+              <li>
+                <strong>
+                  Playground simulators for visceral testing.
+                </strong>{" "}
+                The Playground includes a virtual screen reader, a
+                switch-access simulator (single-switch and dual-
+                switch modes with configurable scan speed), and a
+                session recorder that captures a screen-reader walk
+                for replay later. They are deliberately accurate
+                enough to teach and not so accurate as to be a
+                substitute for the real assistive technology.
               </li>
             </ul>
           </section>
@@ -137,23 +173,35 @@ export default function Accessibility() {
             <h2>Known limitations</h2>
             <ul>
               <li>
-                The <Link href="/playground">Playground</Link> is not yet
-                built. When it ships, the in-browser editor will have its
-                own accessibility behaviour to document — keyboard
-                interaction, screen-reader announcement of analyser
-                findings, focus management between editor and results.
+                <strong>Iframe preview content.</strong> The
+                Playground&rsquo;s preview pane and the simulators
+                that walk it render the visitor&rsquo;s own HTML /
+                JavaScript / CSS in a sandboxed iframe. The
+                accessibility of what the visitor writes is the
+                visitor&rsquo;s responsibility &mdash; the
+                Playground&rsquo;s job is to{" "}
+                <em>show</em> the accessibility properties of that
+                code, not to fix them. The iframe itself uses
+                appropriate sandbox attributes and the highlight
+                styles injected for the screen-reader and switch
+                simulators honour <code>prefers-reduced-motion</code>.
               </li>
               <li>
-                The <Link href="/writing">writing archive</Link> currently
-                lists 16 articles, but the underlying review database of
-                2,661 papers is not yet wired up to a public browsing
-                surface. Search across writing/reviews/glossary will be
-                added in a subsequent release.
+                <strong>Long-form drafts.</strong> A small number
+                of long-form drafts in the writing archive
+                contain inconsistencies from being early synthesis
+                attempts on a smaller research corpus. These are
+                being revised in the ordinary writing workflow.
               </li>
               <li>
-                A small number of long-form drafts contain inconsistencies
-                from being early synthesis attempts on a smaller research
-                corpus. These are being revised.
+                <strong>Speech-synthesis quality.</strong> The
+                virtual screen reader can speak announcements
+                aloud via the browser&rsquo;s Web Speech API. The
+                exact voices, accents, and prosody available are
+                determined by the visitor&rsquo;s operating
+                system; the simulator surfaces what the platform
+                offers and cannot improve on it. Speech is opt-in
+                for that reason, defaulting to off.
               </li>
             </ul>
           </section>

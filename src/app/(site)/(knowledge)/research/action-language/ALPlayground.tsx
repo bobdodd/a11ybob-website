@@ -24,6 +24,7 @@ import { EditorState } from "@codemirror/state";
 import { EditorView, keymap, lineNumbers } from "@codemirror/view";
 import { defaultKeymap, history, historyKeymap } from "@codemirror/commands";
 import { xml } from "@codemirror/lang-xml";
+import { monochromeSyntaxHighlighting } from "@/lib/codemirror/highlight";
 
 import {
   parseActionLanguage,
@@ -62,6 +63,7 @@ export function ALPlayground({ initialSource }: ALPlaygroundProps) {
           history(),
           keymap.of([...defaultKeymap, ...historyKeymap]),
           xml(),
+          monochromeSyntaxHighlighting,
           // Parse on every change so the AST pane updates live.
           // The engine isn't run on every change — that needs
           // Run pressed explicitly.

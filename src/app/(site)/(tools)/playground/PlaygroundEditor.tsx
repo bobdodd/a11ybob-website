@@ -18,6 +18,7 @@ import { defaultKeymap, history, historyKeymap } from "@codemirror/commands";
 import { html } from "@codemirror/lang-html";
 import { javascript } from "@codemirror/lang-javascript";
 import { css } from "@codemirror/lang-css";
+import { monochromeSyntaxHighlighting } from "@/lib/codemirror/highlight";
 
 type Lang = "html" | "javascript" | "css";
 
@@ -70,6 +71,7 @@ export function PlaygroundEditor({
            * ships out of the box. */
           keymap.of([...defaultKeymap, ...historyKeymap]),
           langExt(language),
+          monochromeSyntaxHighlighting,
           EditorView.lineWrapping,
           EditorView.updateListener.of((update) => {
             if (update.docChanged) {
