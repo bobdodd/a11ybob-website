@@ -543,6 +543,250 @@ export default function Colophon() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
+            <h2>All my code as readable source, not as compiled libraries</h2>
+            <p>
+              The site ships several substantial pieces of working
+              code: the{" "}
+              <a href="/paradise">Paradise</a> multi-model
+              accessibility analyser engine that powers the{" "}
+              <a href="/playground">Playground</a>; a virtual screen
+              reader, switch-access simulator, and session
+              recorder/replayer also in the Playground; and a
+              TypeScript port of the original PhD-era Action Language
+              execution engine that runs the worked examples on{" "}
+              <a href="/research/action-language">
+                /research/action-language
+              </a>
+              . All of that is in the repository as readable
+              TypeScript source, not as compiled <code>.js</code>{" "}
+              and <code>.d.ts</code> snapshots.
+            </p>
+            <p>
+              The lib-snapshot pattern is convenient. It keeps the
+              site repository small; it lets a single canonical
+              source be consumed elsewhere; it sidesteps strict-
+              compilation drift between projects. It is also opaque.
+              A reader who clicks &ldquo;view source&rdquo; on the
+              analyser engine, or who pulls the repo to learn from
+              what was built, gets a wall of emitted JavaScript that
+              is technically correct and humanly unreadable. The
+              site is meant to be evidence; opaque evidence is not
+              evidence.
+            </p>
+            <p>
+              The cost of carrying source instead of libs is one
+              re-port pass per engine when it changes upstream, plus
+              the occasional fix when stricter TypeScript settings
+              surface an error the upstream tolerated. Both costs
+              have been paid; both turn out to be small. The
+              benefit is that everything load-bearing on the site is
+              code anyone can read, run, modify, and learn from.
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
+            <h2>The Playground includes simulators, not just diagnostics</h2>
+            <p>
+              The natural shape for an accessibility tool is{" "}
+              <em>finds bugs and lists them</em>. The Playground does
+              that &mdash; the Paradise analysers report what they
+              detect, with confidence levels, suggested fixes, and
+              links into the analyser documentation. But the
+              Playground also includes three things that are not
+              diagnostic at all: a virtual screen reader that walks
+              the rendered page the way NVDA, JAWS, or VoiceOver
+              would; a switch-access simulator with single-switch
+              auto-scan and dual-switch step-scan modes; and a
+              session recorder/replayer that captures a screen-reader
+              walk for replay later.
+            </p>
+            <p>
+              Those are present because diagnosing a bug from a list
+              entry tells a sighted developer{" "}
+              <em>that something is wrong</em>; it does not tell them
+              what the experience of using the page is actually like.
+              A switch-access user navigating thirty stops to reach
+              an action a mouse user takes in one click is paying a
+              real cost; the analyser&rsquo;s warning about
+              keyboard-trap depth does not convey that cost. The
+              simulator does. Sliding the scan-speed slider down to
+              match a real user&rsquo;s speed makes the cost
+              visible &mdash; visceral, even &mdash; in a way no
+              diagnostic message can match.
+            </p>
+            <p>
+              The simulators are deliberately accurate enough to
+              teach and not so accurate as to be a substitute for the
+              real assistive technology. They are scaffolding for
+              empathy and for design judgement, not test
+              instrumentation.
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
+            <h2>Living code, not screenshots</h2>
+            <p>
+              Everywhere on the site that running code would teach
+              better than a static description, the running code is
+              what landed.{" "}
+              <a href="/research/action-language">
+                /research/action-language
+              </a>{" "}
+              has four worked examples that execute in the browser
+              against an in-page TypeScript port of the original
+              doctoral Action Language execution engine; visitors
+              can edit the XML and re-run, watch the action tree
+              re-parse live, and step through the structured
+              execution trace.{" "}
+              <a href="/playground">/playground</a> runs the
+              Paradise analyser engine in-browser and re-analyses
+              the visitor&rsquo;s code on every keystroke. The
+              simulators referenced above operate against a
+              sandboxed render of the user&rsquo;s own buffers.
+            </p>
+            <p>
+              The cost of running code is real: a heavier JavaScript
+              bundle, a need to handle the failure modes that code
+              carries, accessibility care over interactive surfaces
+              that prose pages do not require. The benefit is that
+              the artefacts demonstrate themselves. The reader does
+              not have to take the page&rsquo;s word for what the
+              engine does; they can run it and see.
+            </p>
+            <p>
+              The boundary is honest. Where the site explains a
+              decision or articulates a position, prose does the
+              work and code is referenced from text. Where the
+              site demonstrates a working artefact, the artefact
+              is the thing on the page. Decision pages are not
+              dressed up as code playgrounds; code playgrounds are
+              not buried under decision prose.
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
+            <h2>Depth split across navigable surfaces</h2>
+            <p>
+              The single deepest piece of writing on the site is
+              <em> The Measure of Accessibility</em>, treating
+              what accessibility is, how to measure it, and why
+              the answer matters. It runs to roughly nine thousand
+              words. It is not a single page.
+            </p>
+            <p>
+              The collection is six pages plus an index. Each page
+              stands alone &mdash; The Question, Functional
+              Accessibility, Intrinsic Accessibility, Equivalent
+              Experience, the Shlaer-Mellor lens, Communities of
+              Practice. A reader who wants only the political framing
+              can stop after page 1; a reader who wants the formal
+              definition can stop after page 3; a reader who wants
+              the whole position reads all six. The same approach
+              shapes the{" "}
+              <a href="/research/spotlight">Spotlight projects</a>:
+              three pages with a shared six-part structure (person,
+              constraint, insight, artefact, teaching, coda) so each
+              project is its own short essay rather than a section
+              of a longer one.
+            </p>
+            <p>
+              The single-page alternative is briefly tempting: one
+              monolithic chapter that reads end-to-end without
+              navigation. The cost is that the reader cannot enter
+              the position partway through, cannot share a specific
+              argument as a link, and cannot read the formal
+              treatment without committing to the whole arc.
+              Splitting into navigable surfaces preserves the
+              linear read for those who want it and gives every
+              other reader a meaningful entry point.
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
+            <h2>Family privacy: relational nouns by default</h2>
+            <p>
+              Several of the technical projects on the site were
+              built for specific named family members &mdash; cousin,
+              mother, father &mdash; whose stories are part of the
+              record. On the public surfaces those people are
+              referred to with relational nouns only:{" "}
+              <em>my cousin</em>, <em>my mother</em>, <em>my
+              father</em>. They are not named.
+            </p>
+            <p>
+              The convention is deliberate. The story of who the
+              tools were for is part of why the tools exist; that
+              is worth telling. Each named person is a separate
+              consent question, and consent for being mentioned in
+              a private telling is not consent for being on a public
+              website indefinitely. Defaulting to relational nouns
+              tells the story without making the call on someone
+              else&rsquo;s behalf.
+            </p>
+            <p>
+              The husband, Taodi, is named freely because he is
+              already public elsewhere. Friends in Singapore appear
+              as a community rather than as individuals for the
+              same reason: the story is theirs as much as the
+              writer&rsquo;s. If a named individual signs off on
+              public mention, the relevant page can be updated; the
+              default is silence.
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
+            <h2>Voice: direct, present tense, no provenance scaffolding</h2>
+            <p>
+              The research-and-position writing on this site is
+              written to the reader, in the present tense, without
+              the scaffolding that long-arc personal research
+              typically accumulates. There is no
+              <em>&ldquo;in my doctoral work I argued&hellip;&rdquo;</em>{" "}
+              and no <em>&ldquo;the chapter on X says&hellip;&rdquo;</em>
+              {" "}weighing down the prose. The position is stated; the
+              argument is made; the reader is the audience.
+            </p>
+            <p>
+              The convention emerged during the drafting of{" "}
+              <em>The Measure of Accessibility</em>. The early
+              drafts referred back constantly &mdash; <em>the
+              opening line of the chapter is</em>, <em>this
+              page expands the same material as</em>. The reader
+              already knows whose research the writing is from; the
+              site says so once at the entry points and trusts that
+              once is enough. Saying it on every page is noise.
+            </p>
+            <p>
+              The exception is verbatim quotation. Where a passage
+              from an original chapter or a published paper carries
+              the prose better than a paraphrase would, it is
+              quoted as a quote &mdash; without the&nbsp;
+              <em>&ldquo;from the chapter:&rdquo;</em> setup line
+              that pretends the reader needs to be told it is a
+              quotation. The italics and the blockquote markup do
+              that work; the prose carries the substance.
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
             <h2>Decision log</h2>
             <p>
               Each load-bearing decision has its own document under{" "}
