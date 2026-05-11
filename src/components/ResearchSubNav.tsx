@@ -21,6 +21,10 @@ const SUB_PAGES = [
   { href: "/research/shlaer-mellor-lens", label: "Shlaer-Mellor lens" },
   { href: "/research/2029-framework", label: "2029 framework" },
   {
+    href: "/research/accessibility-of-dialogue",
+    label: "Accessibility of dialogue",
+  },
+  {
     href: "/research/the-measure-of-accessibility",
     label: "The Measure of Accessibility",
   },

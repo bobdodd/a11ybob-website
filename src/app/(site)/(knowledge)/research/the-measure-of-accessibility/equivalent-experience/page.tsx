@@ -331,6 +331,16 @@ export default function EquivalentExperience() {
                 Next: 5. The Shlaer-Mellor lens &rarr;
               </Link>
             </p>
+            <p>
+              See also{" "}
+              <Link href="/research/accessibility-of-dialogue">
+                Accessibility as a property of the dialogue, not
+                the device
+              </Link>{" "}
+              &mdash; a complementary 2006 reframing, with the
+              coverage-set formulation and the commercial-and-
+              legal version of the equality argument.
+            </p>
           </section>
         </div>
       </div>
