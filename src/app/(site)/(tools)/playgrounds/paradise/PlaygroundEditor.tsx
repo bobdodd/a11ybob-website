@@ -3,7 +3,7 @@
 /* PlaygroundEditor — CodeMirror 6 editor for the analyser
  * Playground. The whole site uses CodeMirror 6 across both code-
  * editing surfaces (this and the Action Language playground at
- * /research/action-language); the colophon explains the choice.
+ * /playgrounds/action-language); the colophon explains the choice.
  *
  * The component is parented by an aria-labelled wrapper from
  * PlaygroundClient. Each (language, file) pair gets its own

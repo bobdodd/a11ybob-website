@@ -150,7 +150,7 @@ export default function CarnforthModel() {
             <p>
               The Carnforth XML notation and Java execution engine
               live on as{" "}
-              <Link href="/research/action-language">
+              <Link href="/playgrounds/action-language">
                 Action Language
               </Link>
               , which now ships as a TypeScript port running in the
@@ -173,7 +173,7 @@ export default function CarnforthModel() {
             <h2>Reading on</h2>
             <ul>
               <li>
-                <Link href="/research/action-language">
+                <Link href="/playgrounds/action-language">
                   Action Language
                 </Link>{" "}
                 — the running code beneath Carnforth, with worked

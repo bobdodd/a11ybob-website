@@ -337,7 +337,7 @@ export default function CommunitiesOfPractice() {
               ; the practical work that flows from it lives in{" "}
               <Link href="/paradise">Paradise</Link>; the
               substrate that makes both possible runs in code at{" "}
-              <Link href="/research/action-language">
+              <Link href="/playgrounds/action-language">
                 Action Language
               </Link>
               .

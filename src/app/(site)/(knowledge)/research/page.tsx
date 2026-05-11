@@ -117,7 +117,7 @@ export default function Research() {
               Metal Box in the mid-1980s.
             </p>
             <p>
-              <Link href="/research/action-language">
+              <Link href="/playgrounds/action-language">
                 Open the Action Language page &rarr;
               </Link>
             </p>

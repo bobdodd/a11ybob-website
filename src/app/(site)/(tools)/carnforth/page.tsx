@@ -85,8 +85,8 @@ export default function Carnforth() {
                 <strong>Carnforth-Java / CISNA</strong> &mdash;
                 the doctoral implementation, with Action Language
                 XML. See{" "}
-                <Link href="/research/action-language">
-                  /research/action-language
+                <Link href="/playgrounds/action-language">
+                  /playgrounds/action-language
                 </Link>{" "}
                 for the in-browser worked examples.
               </li>

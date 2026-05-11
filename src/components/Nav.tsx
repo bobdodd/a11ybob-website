@@ -9,7 +9,7 @@
  *  - Tools  → /tools, and also /carnforth, /a11yauto,
  *             /lived-testing as siblings in spirit.
  *  - Playgrounds → /playgrounds, /playground (the analyser
- *             playground), and /research/action-language (the
+ *             playground), and /playgrounds/action-language (the
  *             Action Language playground).
  *
  * Per-item matchers replace the previous startsWith convention so
@@ -35,13 +35,7 @@ const items: NavItem[] = [
   {
     href: "/research",
     label: "Research",
-    /* Research owns everything under /research EXCEPT the
-     * action-language playground, which is claimed by the
-     * Playgrounds nav entry below — that's its primary
-     * intent. */
-    isActive: (p) =>
-      (p === "/research" || p.startsWith("/research/")) &&
-      !p.startsWith("/research/action-language"),
+    isActive: (p) => p === "/research" || p.startsWith("/research/"),
   },
   {
     href: "/paradise",
@@ -65,15 +59,12 @@ const items: NavItem[] = [
   {
     href: "/playgrounds",
     label: "Playgrounds",
-    /* The Playgrounds index plus all sub-pages plus the Action
-     * Language playground that lives inside Research for
-     * research-content reasons. The legacy /playground URL
-     * redirects to /playgrounds/paradise via next.config; the
-     * matcher targets the post-redirect pathname. */
+    /* The Playgrounds index plus every sub-page. The legacy
+     * /playground and /research/action-language URLs both
+     * redirect to /playgrounds/* via next.config; the matcher
+     * targets the post-redirect pathnames. */
     isActive: (p) =>
-      p === "/playgrounds" ||
-      p.startsWith("/playgrounds/") ||
-      p.startsWith("/research/action-language"),
+      p === "/playgrounds" || p.startsWith("/playgrounds/"),
   },
   {
     href: "/maps",

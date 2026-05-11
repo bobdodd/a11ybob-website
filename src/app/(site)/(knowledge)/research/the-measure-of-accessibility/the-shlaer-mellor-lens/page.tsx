@@ -295,7 +295,7 @@ export default function ShlaerMellorLensInDepth() {
                 <dt>
                   <strong>Action Specification Language</strong>{" "}
                   &rarr;{" "}
-                  <Link href="/research/action-language">
+                  <Link href="/playgrounds/action-language">
                     Action Language
                   </Link>
                 </dt>
@@ -406,8 +406,8 @@ export default function ShlaerMellorLensInDepth() {
                 Language XML notation, with four worked examples
                 that execute in the browser via a TypeScript port of
                 the Java reference engine &mdash; lives at{" "}
-                <Link href="/research/action-language">
-                  /research/action-language
+                <Link href="/playgrounds/action-language">
+                  /playgrounds/action-language
                 </Link>
                 .
               </li>

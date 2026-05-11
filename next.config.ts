@@ -24,6 +24,20 @@ const nextConfig: NextConfig = {
         destination: "/playgrounds/paradise/:path*",
         permanent: true,
       },
+      // The Action Language playground moved out of /research and
+      // into /playgrounds/action-language alongside the Paradise
+      // playground. Same reason: it's a playground, not research
+      // content. Inbound links continue to resolve via 308.
+      {
+        source: "/research/action-language",
+        destination: "/playgrounds/action-language",
+        permanent: true,
+      },
+      {
+        source: "/research/action-language/:path*",
+        destination: "/playgrounds/action-language/:path*",
+        permanent: true,
+      },
     ];
   },
 };

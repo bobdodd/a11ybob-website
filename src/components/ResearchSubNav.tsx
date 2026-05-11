@@ -28,7 +28,6 @@ const SUB_PAGES = [
     href: "/research/the-measure-of-accessibility",
     label: "The Measure of Accessibility",
   },
-  { href: "/research/action-language", label: "Action Language" },
   { href: "/research/spotlight", label: "Spotlight projects" },
 ] as const;
 

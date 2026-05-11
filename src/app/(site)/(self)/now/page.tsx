@@ -29,7 +29,7 @@ export default function Now() {
               with the simulator suite (virtual screen reader,
               switch-access scanner, session recorder/replayer),
               the in-browser{" "}
-              <Link href="/research/action-language">
+              <Link href="/playgrounds/action-language">
                 Action Language playground
               </Link>{" "}
               with four worked examples, the{" "}

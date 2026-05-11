@@ -1,6 +1,5 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
-import { ResearchSubNav } from "@/components/ResearchSubNav";
 import {
   ADAPTATION_XML,
   CONDITIONAL_CONTENT_XML,
@@ -9,21 +8,19 @@ import {
 } from "./examples";
 import { ALPlaygroundLoader } from "./ALPlaygroundLoader";
 
-export default function ActionLanguageResearch() {
+export default function ActionLanguagePlayground() {
   return (
-    <main id="main" className="site-main" data-zone="knowledge">
+    <main id="main" className="site-main" data-zone="tools">
       <div className="center">
         <div
           className="stack"
           style={{ "--space": "var(--s3)" } as CSSProperties}
         >
-          <ResearchSubNav />
-
           <header
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
-            <h1>Action Language</h1>
+            <h1>Action Language playground</h1>
             <p className="lede">
               The original XML notation and execution engine from
               the doctoral framework, ported to TypeScript and

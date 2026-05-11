@@ -8,7 +8,7 @@
  * engine.
  *
  * The editor uses the same CodeMirror 6 stack as the Action
- * Language playground at /research/action-language. The colophon
+ * Language playground at /playgrounds/action-language. The colophon
  * explains the choice — accessibility defaults that meet WCAG
  * 2.2 AAA out of the box (Tab moves focus, no keyboard trap,
  * cleanly themeable). */

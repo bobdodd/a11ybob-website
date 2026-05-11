@@ -137,7 +137,7 @@
  * internal layout; we just give the wrapper a fixed block-size
  * and let CM6 fill it. The ".cm-focused" outline matches our
  * site's focus ring. Same accessibility-first defaults as the
- * Action Language playground at /research/action-language. */
+ * Action Language playground at /playgrounds/action-language. */
 .playground-cm-editor {
   block-size: 320px;
   background: var(--surface-1);

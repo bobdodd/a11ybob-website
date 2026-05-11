@@ -74,7 +74,7 @@ export default function Playgrounds() {
               style={{ "--space": "var(--s0)" } as CSSProperties}
             >
               <h2>
-                <Link href="/research/action-language">
+                <Link href="/playgrounds/action-language">
                   Action Language playground
                 </Link>
               </h2>

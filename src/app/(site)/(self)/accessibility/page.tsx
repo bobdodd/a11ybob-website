@@ -120,8 +120,8 @@ export default function Accessibility() {
                 Both code-editor surfaces &mdash; the analyser
                 Playground at <Link href="/playgrounds/paradise">/playgrounds/paradise</Link>{" "}
                 and the Action Language playground at{" "}
-                <Link href="/research/action-language">
-                  /research/action-language
+                <Link href="/playgrounds/action-language">
+                  /playgrounds/action-language
                 </Link>{" "}
                 &mdash; use{" "}
                 <a href="https://codemirror.net">CodeMirror 6</a>.

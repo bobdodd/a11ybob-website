@@ -554,8 +554,8 @@ export default function Colophon() {
               recorder/replayer also in the Playground; and a
               TypeScript port of the original PhD-era Action Language
               execution engine that runs the worked examples on{" "}
-              <a href="/research/action-language">
-                /research/action-language
+              <a href="/playgrounds/action-language">
+                /playgrounds/action-language
               </a>
               . All of that is in the repository as readable
               TypeScript source, not as compiled <code>.js</code>{" "}
@@ -635,8 +635,8 @@ export default function Colophon() {
               Everywhere on the site that running code would teach
               better than a static description, the running code is
               what landed.{" "}
-              <a href="/research/action-language">
-                /research/action-language
+              <a href="/playgrounds/action-language">
+                /playgrounds/action-language
               </a>{" "}
               has four worked examples that execute in the browser
               against an in-page TypeScript port of the original
@@ -680,8 +680,8 @@ export default function Colophon() {
               Playground at <a href="/playgrounds/paradise">/playgrounds/paradise</a>{" "}
               with HTML, JavaScript, and CSS buffers, and the
               Action Language playground at{" "}
-              <a href="/research/action-language">
-                /research/action-language
+              <a href="/playgrounds/action-language">
+                /playgrounds/action-language
               </a>{" "}
               with XML. Both use{" "}
               <a href="https://codemirror.net">CodeMirror 6</a>.

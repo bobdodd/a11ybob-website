@@ -176,7 +176,7 @@ export default function ShlaerMellorLens() {
               <li>
                 <strong>Action Specification Language</strong> &rarr;
                 the{" "}
-                <Link href="/research/action-language">
+                <Link href="/playgrounds/action-language">
                   Action Language
                 </Link>{" "}
                 XML notation, with Forth-style threaded-interpreter
@@ -200,7 +200,7 @@ export default function ShlaerMellorLens() {
                 Measure sub-collection.
               </li>
               <li>
-                <Link href="/research/action-language">
+                <Link href="/playgrounds/action-language">
                   Action Language
                 </Link>{" "}
                 — running code, with the in-browser TypeScript port

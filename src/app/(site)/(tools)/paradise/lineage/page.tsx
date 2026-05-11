@@ -172,8 +172,8 @@ export default function ParadiseLineage() {
                 doctoral implementation, with the Action Language
                 XML notation and a Forth-style threaded-interpreter
                 execution engine. See{" "}
-                <Link href="/research/action-language">
-                  /research/action-language
+                <Link href="/playgrounds/action-language">
+                  /playgrounds/action-language
                 </Link>{" "}
                 for the in-browser worked examples ported to
                 TypeScript.

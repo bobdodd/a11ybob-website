@@ -363,7 +363,7 @@ export default function About() {
               The ActionLanguage IR in Paradise today carries
               forward the Forth-style threaded-interpreter execution
               model from{" "}
-              <Link href="/research/action-language">
+              <Link href="/playgrounds/action-language">
                 the doctoral Action Language
               </Link>
               , which carried it forward from PolyForth at Metal
