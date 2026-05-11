@@ -12,7 +12,7 @@ export default function Now() {
               <small>
                 A <a href="https://nownownow.com/about">/now page</a>: what
                 I&rsquo;m working on at this moment, updated quarterly.
-                Last updated 2026-05-10.
+                Last updated 2026-05-11.
               </small>
             </p>
           </header>
@@ -23,25 +23,33 @@ export default function Now() {
           >
             <h2>What I&rsquo;m working on</h2>
             <p>
-              Building this site. The architecture, design system,
-              and tooling are in place. The most recent additions:
+              Building this site. The current pass brought the
+              full tooling portfolio onto the site: the{" "}
+              <Link href="/playground">analyser Playground</Link>{" "}
+              with the simulator suite (virtual screen reader,
+              switch-access scanner, session recorder/replayer),
               the in-browser{" "}
-              <Link href="/playground">Playground</Link> with the
-              Paradise analyser engine plus a virtual screen reader,
-              switch-access simulator, and session
-              recorder/replayer; the in-browser{" "}
               <Link href="/research/action-language">
                 Action Language playground
               </Link>{" "}
-              with four worked examples running on a TypeScript port
-              of the Carnforth engine; and a substantial new{" "}
+              with four worked examples, the{" "}
+              <Link href="/maps">accessible-maps</Link>{" "}
+              four-page section with the seven-year body of work
+              and the polar-coordinate finding, the{" "}
+              <Link href="/a11yauto">a11yAuto</Link> AI-PoC
+              demonstrations, the{" "}
+              <Link href="/carnforth">Carnforth GPL</Link>{" "}
+              Chrome extension page, and the{" "}
+              <Link href="/lived-testing">lived-testing</Link>{" "}
+              description for the production Dictaphone tool. The{" "}
               <Link href="/research/the-measure-of-accessibility">
                 Measure of Accessibility
               </Link>{" "}
-              collection bringing the formal-and-political theory
-              from the doctoral framework into one coherent
-              six-page surface. At CNIB, autoA11y development for
-              the Revenue Quebec RFI continues in parallel.
+              six-page collection landed earlier in the quarter
+              and reads end-to-end now. At CNIB Access Labs,
+              autoA11y development for the Revenue Quebec RFI
+              continues; the next-version work integrates pdfMax
+              into the audit pipeline.
             </p>
           </section>
 
@@ -66,16 +74,30 @@ export default function Now() {
           >
             <h2>What I&rsquo;m thinking about</h2>
             <p>
-              The 2029 framework. Accessibility as an equilibrium
-              between agents in a community of practice — competition
-              for resources <em>and</em> shared enterprise, not
-              competition alone. The agentic-AI substrate now exists;
-              the open question is what testable predictions the
-              framework makes that practical work could falsify. Less
-              &ldquo;build the theory&rdquo; than &ldquo;design the
-              experiments.&rdquo; The community-of-practice page in
-              the new collection is where the current thinking on
-              this lives.
+              Two things layered. First, the 2029 framework:
+              accessibility as an equilibrium between agents in a
+              community of practice &mdash; competition for
+              resources <em>and</em> shared enterprise, not
+              competition alone. The agentic-AI substrate now
+              exists; the open question is what testable
+              predictions the framework makes that practical work
+              could falsify. Less &ldquo;build the theory&rdquo;
+              than &ldquo;design the experiments.&rdquo;
+            </p>
+            <p>
+              Second, writing up the polar-coordinate finding from
+              the maps work. Spatial cognition under modality
+              conversion: the maps work has been demonstrating
+              the claim verbally for seven years and has never
+              been written up as a paper. Working title:{" "}
+              <em>
+                Maps need CISNA: applying capability modelling
+                and multi-agent communities of practice to
+                accessible cartography
+              </em>
+              . Same intellectual lineage as the 2029 framework;
+              concrete worked-example shape. The runway through
+              2029 should include this.
             </p>
           </section>
 

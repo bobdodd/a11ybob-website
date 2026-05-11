@@ -148,38 +148,106 @@ export default function ParadiseLineage() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
-            <h2>autoA11y — an early branch, still in use</h2>
+            <h2>The tools lineage, end to end</h2>
             <p>
-              <em>autoA11y</em> is a runtime accessibility-testing tool
-              with an unusually layered history. The earliest versions
-              I wrote during my academic research as a way to drive the
-              empirical work behind the PhD — a way to measure
-              accessibility behaviours that only manifested at runtime.
-              I kept developing it personally through my early years at
-              CNIB, where it became part of how I did my own audit work.
-              When CNIB Access Labs needed a runtime tool the team could
-              build on, I gifted that lineage to them — the open-source
-              originals are still public; CNIB&rsquo;s subsequent
-              development took its own path.
+              The naming lineage now reads as one continuous engineering
+              project across two complementary branches &mdash; the
+              runtime/AI branch and the source-level static-analysis
+              branch &mdash; both descending from the same theoretical
+              starting point and converging again at present-day
+              practice.
+            </p>
+            <ul>
+              <li>
+                <strong>Carnforth Model</strong> &mdash; theory. W4A
+                2010, with Steve Green and Elaine Pearson. The
+                five-layer model of accessible adaptive hypermedia. See{" "}
+                <Link href="/research/carnforth-model">
+                  /research/carnforth-model
+                </Link>
+                .
+              </li>
+              <li>
+                <strong>Carnforth-Java / CISNA</strong> &mdash; the
+                doctoral implementation, with the Action Language
+                XML notation and a Forth-style threaded-interpreter
+                execution engine. See{" "}
+                <Link href="/research/action-language">
+                  /research/action-language
+                </Link>{" "}
+                for the in-browser worked examples ported to
+                TypeScript.
+              </li>
+              <li>
+                <strong>
+                  <Link href="/carnforth">Carnforth GPL</Link>
+                </strong>{" "}
+                &mdash; 2024 Chrome DevTools extension; runtime DOM
+                testing focused on WCAG 4.1.2 (Name, Role, Value).
+                Bob-owned, GPL-3.0. The first surfacing of the
+                Carnforth name in a shipping runtime tool.
+              </li>
+              <li>
+                <strong>
+                  <Link href="/a11yauto">a11yAuto</Link>
+                </strong>{" "}
+                &mdash; Bob-owned GPL repository of AI-driven
+                accessibility-testing demonstrations. The original
+                name; the repository preserves it. Five PoCs covering
+                classes of issue commercial tools cannot reach.
+              </li>
+              <li>
+                <strong>autoA11y</strong> &mdash; CNIB&rsquo;s much
+                more complete production rebrand and continuation of
+                a11yAuto. CNIB-owned. The current commercial
+                platform sold by CNIB Access Labs; in active
+                development; integrated with{" "}
+                <Link href="/lived-testing">Dictaphone</Link> for
+                lived-experience analysis.
+              </li>
+              <li>
+                <strong>Paradise (this section)</strong> &mdash;
+                source-level multi-model static analysis in
+                TypeScript. Bob-owned; the modern Forth-loop closure
+                on the same execution model that started in
+                PolyForth at Metal Box in 1984.
+              </li>
+            </ul>
+            <p>
+              <em>
+                One name across twenty years. Three Bob-owned
+                open-source tools across three different testing
+                approaches; one CNIB-owned production platform
+                between them.
+              </em>
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
+            <h2>The boundary between Paradise and autoA11y</h2>
+            <p>
+              The runtime/AI branch and the source-level branch are
+              complementary, not competitive. autoA11y operates at
+              runtime: it observes the real DOM, real focus order,
+              real dynamic content. Paradise operates on source: it
+              reads the HTML, JavaScript, and CSS before the page
+              renders. The two answer different questions, and an
+              honest accessibility practice uses both.
+              Paradise&rsquo;s repository carries an integration plan
+              (<code>AUTO_A11Y_INTEGRATION_PLAN.md</code>) that names
+              the boundary explicitly.
             </p>
             <p>
-              The current CNIB version is a Claude-assisted rewrite that
-              consolidated three earlier variants into a single
-              commercial tool. It is in active development and in use at
-              CNIB today. That version is CNIB&rsquo;s; the
-              earlier-lineage open-source codebases are mine and remain
-              public.
-            </p>
-            <p>
-              The relationship to Paradise is complementary, not
-              competitive. autoA11y operates at runtime: it observes the
-              real DOM, real focus order, real dynamic content. Paradise
-              operates on source: it reads the HTML, JavaScript, and CSS
-              before the page renders. The two answer different
-              questions, and an honest accessibility practice uses both.
-              Paradise&rsquo;s repo carries an integration plan
-              (<code>AUTO_A11Y_INTEGRATION_PLAN.md</code>) that names the
-              boundary explicitly.
+              The boundary line: <em>if Bob left CNIB tomorrow,
+              would this artefact go with him?</em> Carnforth GPL,
+              a11yAuto, and Paradise all answer yes. autoA11y and
+              Dictaphone answer no. The first three are mine; the
+              last two are CNIB&rsquo;s. The site treats each at
+              its appropriate framing &mdash; portfolio for the
+              Bob-owned tools, practice for the CNIB-owned tools.
             </p>
           </section>
 

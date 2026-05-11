@@ -286,17 +286,83 @@ export default function About() {
             <p>
               The current role, Head of Accessibility at CNIB Access Labs,
               is the strategic technical seat at CNIB&rsquo;s commercial
-              accessibility arm. Active consulting projects in flight,
-              development of autoA11y for the Revenue Quebec RFI, ongoing
-              audit, lived user testing, and remediation work. In parallel,
-              and on personal time,{" "}
-              <Link href="/paradise">Paradise</Link> — a multi-model
-              accessibility analyser whose technical contribution is the
-              ActionLanguage intermediate representation, a
-              JavaScript-to-semantic-tree transcoder that lets analysis
-              reason about runtime behaviour at the source level. The
-              ActionLanguage IR carries forward the Forth-style threaded-
-              interpreter execution model from{" "}
+              accessibility arm and the methodology-owner position
+              for the practice as a whole. Three production tools
+              are in active use at Access Labs:{" "}
+              <em>autoA11y</em> (the commercial accessibility-testing
+              platform);{" "}
+              <Link href="/lived-testing">Dictaphone</Link> (audio-and-
+              video accessibility analysis from lived-experience and
+              audit recordings, AI-assisted, in production for over
+              two years); and <em>pdfMax</em> (PDF accessibility
+              platform, testing every document against 122 distinct
+              accessibility standards spanning PDF/UA, WCAG 2.2, the
+              Matterhorn Protocol, and PDF/UA-1). The Three Pillars
+              the public deck names &mdash; automated testing, manual
+              inspection, lived experience &mdash; integrate through
+              those tools into a single audit pipeline. All three
+              are CNIB-owned and are mentioned here as practice, not
+              portfolio.
+            </p>
+            <p>
+              In parallel, and on personal time, three Bob-owned
+              open-source tools:{" "}
+              <Link href="/paradise">Paradise</Link> &mdash; a
+              multi-model accessibility analyser whose technical
+              contribution is the ActionLanguage intermediate
+              representation, a JavaScript-to-semantic-tree
+              transcoder that lets analysis reason about runtime
+              behaviour at the source level;{" "}
+              <Link href="/carnforth">Carnforth GPL</Link> &mdash;
+              a Chrome DevTools extension testing the accessible-
+              name computation algorithm in depth, the runtime
+              counterpart to Paradise&rsquo;s source-level work;
+              and <Link href="/a11yauto">a11yAuto</Link> &mdash;
+              five AI-driven PoCs targeting classes of issue
+              commercial scanners cannot reach. A fourth open-
+              source line is in development: vision-AI analysis of
+              think-aloud recordings using the open-weights
+              Qwen 3.5 model, intended as a values-significant
+              self-hostable alternative to the Claude-based
+              production stack.
+            </p>
+            <p>
+              A seven-year sustained body of work, separate from
+              the testing tools, on{" "}
+              <Link href="/maps">accessible maps</Link>: three
+              working demos across building, subdivision, and
+              city-neighbourhood scales, sharing one SVG-tile
+              architecture, with a paper-shaped theoretical
+              contribution &mdash;{" "}
+              <em>
+                spatial cognition under modality conversion
+              </em>{" "}
+              &mdash; that names the polar-coordinate finding the
+              maps work produced.
+            </p>
+            <p>
+              The pattern across these is one Bob describes
+              directly:{" "}
+              <em>
+                &ldquo;I play at home, and some of that work makes
+                its way through to CNIB. They&rsquo;re my employer,
+                and a charity I believe in, and I love gifting them
+                apps and code.&rdquo;
+              </em>{" "}
+              Carnforth GPL became autoA11y; the home audio-analysis
+              PoC became Dictaphone; pdfMax, by contrast, originated
+              entirely within Access Labs &mdash; the first
+              substantive tool the practice produced without a home
+              predecessor. The home/CNIB asymmetry isn&rsquo;t
+              policy; it&rsquo;s preference. Hobby code is the
+              right shape for theoretical exploration; production
+              code is the right shape for institutional users
+              with conformance obligations. Both keep happening.
+            </p>
+            <p>
+              The ActionLanguage IR in Paradise today carries
+              forward the Forth-style threaded-interpreter execution
+              model from{" "}
               <Link href="/research/action-language">
                 the doctoral Action Language
               </Link>
