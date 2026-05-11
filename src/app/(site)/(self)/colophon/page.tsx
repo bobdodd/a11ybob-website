@@ -549,7 +549,7 @@ export default function Colophon() {
               code: the{" "}
               <a href="/paradise">Paradise</a> multi-model
               accessibility analyser engine that powers the{" "}
-              <a href="/playground">Playground</a>; a virtual screen
+              <a href="/playgrounds/paradise">Playground</a>; a virtual screen
               reader, switch-access simulator, and session
               recorder/replayer also in the Playground; and a
               TypeScript port of the original PhD-era Action Language
@@ -644,7 +644,7 @@ export default function Colophon() {
               can edit the XML and re-run, watch the action tree
               re-parse live, and step through the structured
               execution trace.{" "}
-              <a href="/playground">/playground</a> runs the
+              <a href="/playgrounds/paradise">/playgrounds/paradise</a> runs the
               Paradise analyser engine in-browser and re-analyses
               the visitor&rsquo;s code on every keystroke. The
               simulators referenced above operate against a
@@ -677,7 +677,7 @@ export default function Colophon() {
             <h2>CodeMirror 6 across both code-editor surfaces</h2>
             <p>
               The site has two code-editor surfaces: the analyser
-              Playground at <a href="/playground">/playground</a>{" "}
+              Playground at <a href="/playgrounds/paradise">/playgrounds/paradise</a>{" "}
               with HTML, JavaScript, and CSS buffers, and the
               Action Language playground at{" "}
               <a href="/research/action-language">

@@ -40,7 +40,7 @@ export default function Playgrounds() {
               style={{ "--space": "var(--s0)" } as CSSProperties}
             >
               <h2>
-                <Link href="/playground">Paradise playground</Link>
+                <Link href="/playgrounds/paradise">Paradise playground</Link>
               </h2>
               <p>
                 Edit HTML, JavaScript, and CSS across multiple

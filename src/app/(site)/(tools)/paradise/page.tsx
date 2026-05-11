@@ -40,7 +40,7 @@ export default function Paradise() {
               plugin is in active development and not yet released on the
               Marketplace; a browser plugin version is planned. A working
               in-browser{" "}
-              <Link href="/playground">Playground</Link> demonstrates what
+              <Link href="/playgrounds/paradise">Playground</Link> demonstrates what
               the analysers detect and serves as a template for anyone
               wanting to build their own analysis surface. MIT-licensed.
               Source on GitHub.
@@ -289,7 +289,7 @@ export default function Paradise() {
                 paper.
               </li>
               <li>
-                <Link href="/playground">Playground</Link> — the
+                <Link href="/playgrounds/paradise">Playground</Link> — the
                 in-browser surface running Paradise&rsquo;s analysers.
               </li>
             </ul>

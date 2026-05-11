@@ -317,7 +317,7 @@ export default function ParadiseArchitecture() {
             <p>
               The level resolves to a numeric percentage that surfaces
               expose to users: in the{" "}
-              <Link href="/playground">Playground</Link>, every issue
+              <Link href="/playgrounds/paradise">Playground</Link>, every issue
               card shows a confidence percentage; in the VS Code
               plugin, the hover popup carries the same number. The
               percentage is derived from the level <em>and</em> the
@@ -359,7 +359,7 @@ export default function ParadiseArchitecture() {
               — a short description of the change, a code suggestion,
               and (when known) the file the suggestion belongs in.
               Fixes are engine-emitted, surface-applied: the{" "}
-              <Link href="/playground">Playground</Link> renders them
+              <Link href="/playgrounds/paradise">Playground</Link> renders them
               in a Fix dialog with Apply-to-editor and Copy buttons;
               the VS Code plugin exposes them as Quick Fixes via the
               standard Code Actions / lightbulb affordance; a CI

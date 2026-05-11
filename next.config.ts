@@ -8,6 +8,24 @@ const nextConfig: NextConfig = {
   // visual review of pages. Build/runtime errors still surface
   // through the regular Next overlay.
   devIndicators: false,
+  // The Paradise playground moved from /playground to
+  // /playgrounds/paradise when the Playgrounds parent nav was
+  // introduced. The redirect preserves any inbound link to the
+  // old URL. Permanent (308) so search engines update.
+  async redirects() {
+    return [
+      {
+        source: "/playground",
+        destination: "/playgrounds/paradise",
+        permanent: true,
+      },
+      {
+        source: "/playground/:path*",
+        destination: "/playgrounds/paradise/:path*",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

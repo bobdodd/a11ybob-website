@@ -22,7 +22,7 @@ export default function ParadiseVSCodeExtension() {
               the analyser&rsquo;s reasoning; project-wide problems
               panel. The plugin runs the same analyser engine as the
               Node API and the in-browser{" "}
-              <Link href="/playground">Playground</Link> — three
+              <Link href="/playgrounds/paradise">Playground</Link> — three
               surfaces, one analysis pipeline.
             </p>
             <p className="muted">
@@ -226,7 +226,7 @@ export default function ParadiseVSCodeExtension() {
                 hood.
               </li>
               <li>
-                <Link href="/playground">Playground</Link> — the
+                <Link href="/playgrounds/paradise">Playground</Link> — the
                 in-browser sibling surface; same engine, pasted code
                 instead of an editor session.
               </li>

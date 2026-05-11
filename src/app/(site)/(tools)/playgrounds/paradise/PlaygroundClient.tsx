@@ -333,7 +333,7 @@ export function PlaygroundClient() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
-            <h1>Playground</h1>
+            <h1>Paradise playground</h1>
             <p className="lede">
               In-browser{" "}
               <Link href="/paradise">Paradise</Link> analysers running

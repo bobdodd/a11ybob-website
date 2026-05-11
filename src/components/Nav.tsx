@@ -65,14 +65,14 @@ const items: NavItem[] = [
   {
     href: "/playgrounds",
     label: "Playgrounds",
-    /* The Playgrounds index plus the analyser playground at
-     * /playground (legacy URL preserved) plus the Action
-     * Language playground that lives under /research. */
+    /* The Playgrounds index plus all sub-pages plus the Action
+     * Language playground that lives inside Research for
+     * research-content reasons. The legacy /playground URL
+     * redirects to /playgrounds/paradise via next.config; the
+     * matcher targets the post-redirect pathname. */
     isActive: (p) =>
       p === "/playgrounds" ||
       p.startsWith("/playgrounds/") ||
-      p === "/playground" ||
-      p.startsWith("/playground/") ||
       p.startsWith("/research/action-language"),
   },
   {

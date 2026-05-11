@@ -118,7 +118,7 @@ export default function Accessibility() {
                   Code editors that meet AAA out of the box.
                 </strong>{" "}
                 Both code-editor surfaces &mdash; the analyser
-                Playground at <Link href="/playground">/playground</Link>{" "}
+                Playground at <Link href="/playgrounds/paradise">/playgrounds/paradise</Link>{" "}
                 and the Action Language playground at{" "}
                 <Link href="/research/action-language">
                   /research/action-language

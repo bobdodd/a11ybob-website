@@ -25,7 +25,7 @@ export default function Now() {
             <p>
               Building this site. The current pass brought the
               full tooling portfolio onto the site: the{" "}
-              <Link href="/playground">analyser Playground</Link>{" "}
+              <Link href="/playgrounds/paradise">analyser Playground</Link>{" "}
               with the simulator suite (virtual screen reader,
               switch-access scanner, session recorder/replayer),
               the in-browser{" "}
