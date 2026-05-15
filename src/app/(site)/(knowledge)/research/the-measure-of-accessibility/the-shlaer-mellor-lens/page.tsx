@@ -182,8 +182,8 @@ export default function ShlaerMellorLensInDepth() {
               <div>
                 <dt>
                   <strong>Domain charts</strong> &rarr; the{" "}
-                  <Link href="/research/carnforth-model">
-                    Carnforth five-layer model
+                  <Link href="/research/cisna-model">
+                    CISNA five-layer model
                   </Link>
                 </dt>
                 <dd>
@@ -210,7 +210,7 @@ export default function ShlaerMellorLensInDepth() {
                 <dd>
                   Inventory&#x2194;Semantics and
                   Semantics&#x2194;Navigation are the named bridges
-                  in the Carnforth analysis. The bridges express
+                  in the CISNA analysis. The bridges express
                   how meaning composes upward from raw content
                   (the leaf inventory items) to adapted
                   presentation (what the user actually receives).
@@ -363,7 +363,7 @@ export default function ShlaerMellorLensInDepth() {
                 capability, with a single underlying analysis.
               </li>
               <li>
-                <strong>The Carnforth/CISNA work (2004&ndash;13).</strong>{" "}
+                <strong>The CISNA work (2004&ndash;13).</strong>{" "}
                 Shlaer-Mellor applied explicitly to accessibility,
                 with the bridge-composition extension and the
                 Forth-style threaded-interpreter Action Language
@@ -412,11 +412,11 @@ export default function ShlaerMellorLensInDepth() {
                 .
               </li>
               <li>
-                The Carnforth five-layer model, which is the
+                The CISNA five-layer model, which is the
                 accessibility domain chart this page assumes, has
                 its own page at{" "}
-                <Link href="/research/carnforth-model">
-                  /research/carnforth-model
+                <Link href="/research/cisna-model">
+                  /research/cisna-model
                 </Link>
                 .
               </li>

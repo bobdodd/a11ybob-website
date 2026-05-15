@@ -133,7 +133,7 @@ export default function Tools() {
                   Paradise &mdash; lineage
                 </Link>{" "}
                 &mdash; the end-to-end tools lineage from the
-                Carnforth Model (2010) through to today.
+                CISNA Model (2008) through to today.
               </li>
             </ul>
           </section>

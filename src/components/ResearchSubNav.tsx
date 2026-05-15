@@ -12,7 +12,7 @@ import type { CSSProperties } from "react";
 
 const SUB_PAGES = [
   { href: "/research", label: "Research" },
-  { href: "/research/carnforth-model", label: "Carnforth Model" },
+  { href: "/research/cisna-model", label: "CISNA Model" },
   {
     href: "/research/polymorphic-task-deconstruction",
     label: "Polymorphic Task Deconstruction",

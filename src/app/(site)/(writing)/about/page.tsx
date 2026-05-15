@@ -203,13 +203,13 @@ export default function About() {
               the effectiveness of self-adapting user interfaces as
               assistive technology in hand-held mobile devices. Most of the
               writing was completed and several peer-reviewed papers
-              published from the work, including the W4A 2010 paper{" "}
-              <em>The Carnforth Model of Accessible Adaptive Hypermedia</em>{" "}
+              published from the work, including the W4A 2008 paper{" "}
+              <em>The CISNA Model of Accessible Adaptive Hypermedia</em>{" "}
               (with Steve Green and Elaine Pearson). The viva was never
               taken — largely because CNIB and CELA happened. Three pieces
               of original conceptual work survived from the period and are
               still load-bearing for current writing: the{" "}
-              <Link href="/research/carnforth-model">Carnforth Model</Link>{" "}
+              <Link href="/research/cisna-model">CISNA Model</Link>{" "}
               itself;{" "}
               <Link href="/research/polymorphic-task-deconstruction">
                 Polymorphic Task Deconstruction

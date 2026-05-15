@@ -20,7 +20,7 @@ export default function ParadiseLineage() {
               Paradise is the practical realisation of an idea I parked in
               2010 when I left academia for CNIB. The route from there to
               here passes through real-time systems, Shlaer-Mellor
-              executable UML, the W4A Carnforth Model paper, twenty-five
+              executable UML, the W4A 2008 CISNA Model paper, twenty-five
               years of practitioner work at CNIB, and a long detour into
               tools that didn&rsquo;t quite reach what the framework
               wanted. ActionLanguage, the intermediate representation at
@@ -86,13 +86,13 @@ export default function ParadiseLineage() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
-            <h2>The Carnforth Model — W4A 2010</h2>
+            <h2>The CISNA Model — W4A 2008</h2>
             <p>
               While the PhD was active, Steve Green, Elaine Pearson, and I
-              published <em>The Carnforth Model of Accessible Adaptive
-              Hypermedia</em> at W4A 2010 (
-              <a href="https://dl.acm.org/doi/10.1145/1805986.1806008">
-                ACM Digital Library
+              published <em>The CISNA Model of Accessible Adaptive
+              Hypermedia</em> at W4A 2008 (
+              <a href="https://doi.org/10.1145/1368044.1368052">
+                doi:10.1145/1368044.1368052
               </a>
               ). The paper extends the classical Dexter Model of
               hypertext for an era of script-heavy, AJAX-driven content,
@@ -126,7 +126,7 @@ export default function ParadiseLineage() {
               of presupposed a level of source-level analysis that the
               tools of the day couldn&rsquo;t deliver — eslint-style AST
               checkers couldn&rsquo;t see across files, and rendered-DOM
-              scanners couldn&rsquo;t see source intent. The Carnforth
+              scanners couldn&rsquo;t see source intent. The CISNA
               Model&rsquo;s adaptation layer was conceptually right but
               practically empty.
             </p>
@@ -159,19 +159,23 @@ export default function ParadiseLineage() {
             </p>
             <ul>
               <li>
-                <strong>Carnforth Model</strong> &mdash; theory. W4A
-                2010, with Steve Green and Elaine Pearson. The
-                five-layer model of accessible adaptive hypermedia. See{" "}
-                <Link href="/research/carnforth-model">
-                  /research/carnforth-model
+                <strong>CISNA Model</strong> &mdash; theory. W4A
+                2008, with Steve Green and Elaine Pearson (
+                <a href="https://doi.org/10.1145/1368044.1368052">
+                  doi:10.1145/1368044.1368052
+                </a>
+                ). The five-layer model of accessible adaptive
+                hypermedia. See{" "}
+                <Link href="/research/cisna-model">
+                  /research/cisna-model
                 </Link>
                 .
               </li>
               <li>
-                <strong>Carnforth-Java / CISNA</strong> &mdash; the
-                doctoral implementation, with the Action Language
-                XML notation and a Forth-style threaded-interpreter
-                execution engine. See{" "}
+                <strong>Carnforth-Java</strong> &mdash; the doctoral
+                Java implementation of CISNA, with the Action
+                Language XML notation and a Forth-style threaded-
+                interpreter execution engine. See{" "}
                 <Link href="/playgrounds/action-language">
                   /playgrounds/action-language
                 </Link>{" "}
@@ -289,7 +293,7 @@ export default function ParadiseLineage() {
               Paradise is a platform, not a finished product. Through
               2029 I&rsquo;ll continue developing it as a vehicle for
               testing the more theoretical ideas the PhD-era framework
-              gestured at — the adaptation layer of the Carnforth Model
+              gestured at — the adaptation layer of the CISNA Model
               put into actual practice; semantic analysis of behaviours
               hidden in complex client-side JavaScript; perhaps the
               full Adaptation Model resurrected for runtime UI variation
@@ -317,9 +321,9 @@ export default function ParadiseLineage() {
                 — a worked example of the tree (in progress).
               </li>
               <li>
-                <a href="https://dl.acm.org/doi/10.1145/1805986.1806008">
+                <a href="https://doi.org/10.1145/1368044.1368052">
                   Dodd, Green &amp; Pearson —{" "}
-                  <em>The Carnforth Model of Accessible Adaptive
+                  <em>The CISNA Model of Accessible Adaptive
                   Hypermedia</em>
                 </a>
                 .

@@ -80,8 +80,8 @@ export default function MapsGuelph() {
               <li>Offline-capable after initial cache</li>
             </ul>
             <p>
-              The architecture is a four-layer Carnforth/CISNA
-              instantiation in cartographic form &mdash; Adaptation
+              The architecture is a four-layer CISNA instantiation
+              in cartographic form &mdash; Adaptation
               (which features to show this user), Navigation (how
               to move between them), Semantics (what each feature
               means and how it relates to nearby features), and
@@ -188,8 +188,8 @@ export default function MapsGuelph() {
                 2019 Guelph webinar slides land here when added.
               </li>
               <li>
-                <Link href="/research/carnforth-model">
-                  The Carnforth Model
+                <Link href="/research/cisna-model">
+                  The CISNA Model
                 </Link>{" "}
                 &mdash; the four-layer architecture this tile
                 pipeline is an instantiation of.

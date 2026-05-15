@@ -25,12 +25,13 @@ export default function Paradise() {
             </p>
             <p>
               The intermediate representation it builds,{" "}
-              <strong>ActionLanguage</strong>, descends from work I started
-              in 2010 on adaptive user interfaces — published in the W4A
-              Carnforth Model paper, parked when I left academia for CNIB,
-              and finished, fifteen years later, when source-level
-              reasoning about JavaScript turned out to be exactly the
-              missing piece for honest accessibility analysis.
+              <strong>ActionLanguage</strong>, descends from doctoral
+              work on adaptive user interfaces — published in the W4A
+              2008 CISNA Model paper, parked when I left academia for
+              CNIB, and finished, fifteen years later, when source-
+              level reasoning about JavaScript turned out to be
+              exactly the missing piece for honest accessibility
+              analysis.
             </p>
             <p className="muted">
               Paradise is a <em>platform</em> I continue to develop, not a
@@ -226,9 +227,9 @@ export default function Paradise() {
               <em>a11ybob.com</em>.
             </p>
             <p>
-              The W4A 2010 paper underlying the ActionLanguage tree shape:{" "}
-              <a href="https://dl.acm.org/doi/10.1145/1805986.1806008">
-                Dodd, Green &amp; Pearson — <em>The Carnforth Model of
+              The W4A 2008 paper underlying the ActionLanguage tree shape:{" "}
+              <a href="https://doi.org/10.1145/1368044.1368052">
+                Dodd, Green &amp; Pearson — <em>The CISNA Model of
                 Accessible Adaptive Hypermedia</em>
               </a>
               .
@@ -243,7 +244,7 @@ export default function Paradise() {
             <ul>
               <li>
                 <Link href="/paradise/lineage">Lineage</Link> — the
-                PhD-era work, the W4A 2010 Carnforth Model paper, where
+                PhD-era work, the W4A 2008 CISNA Model paper, where
                 ActionLanguage came from, and the relationship with
                 autoA11y.
               </li>
@@ -285,7 +286,7 @@ export default function Paradise() {
               </li>
               <li>
                 <Link href="/paradise/cite">Cite</Link> — suggested
-                citation, BibTeX entries for Paradise and the W4A 2010
+                citation, BibTeX entries for Paradise and the W4A 2008
                 paper.
               </li>
               <li>

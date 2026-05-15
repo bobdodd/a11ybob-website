@@ -230,8 +230,8 @@ export default function ActionLanguagePlayground() {
                 concrete.
               </li>
               <li>
-                <Link href="/research/carnforth-model">
-                  The Carnforth Model
+                <Link href="/research/cisna-model">
+                  The CISNA Model
                 </Link>{" "}
                 — the five-layer architecture that Action Language
                 operates inside.

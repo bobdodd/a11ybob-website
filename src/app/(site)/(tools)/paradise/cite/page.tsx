@@ -20,7 +20,7 @@ export default function ParadiseCite() {
               How to cite Paradise in academic writing, in tooling
               comparisons, or in any context where the source-level
               accessibility analysis claim needs an attribution. Both
-              Paradise itself and the underlying W4A 2010 paper that
+              Paradise itself and the underlying W4A 2008 paper that
               the ActionLanguage IR descends from have suggested
               citations.
             </p>
@@ -57,24 +57,24 @@ export default function ParadiseCite() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
-            <h2>Citing the W4A 2010 paper</h2>
+            <h2>Citing the W4A 2008 paper</h2>
             <p>
               For the theoretical foundation that the ActionLanguage
-              IR descends from, cite the W4A 2010 paper directly:
+              IR descends from, cite the W4A 2008 paper directly:
             </p>
             <blockquote>
-              Dodd, R., Green, S., &amp; Pearson, E. (2010).{" "}
-              <em>The Carnforth Model of Accessible Adaptive
-              Hypermedia</em>. In <em>Proceedings of the 2010
-              International Cross Disciplinary Conference on Web
+              Dodd, R., Green, S., &amp; Pearson, E. (2008).{" "}
+              <em>The CISNA Model of Accessible Adaptive
+              Hypermedia</em>. In <em>Proceedings of the 2008
+              International Cross-Disciplinary Conference on Web
               Accessibility (W4A)</em>. ACM.{" "}
-              <a href="https://doi.org/10.1145/1805986.1806008">
-                https://doi.org/10.1145/1805986.1806008
+              <a href="https://doi.org/10.1145/1368044.1368052">
+                https://doi.org/10.1145/1368044.1368052
               </a>
             </blockquote>
             <p>BibTeX:</p>
             <pre>
-              <code>{BIBTEX_CARNFORTH}</code>
+              <code>{BIBTEX_CISNA}</code>
             </pre>
           </section>
 
@@ -91,10 +91,10 @@ export default function ParadiseCite() {
               </li>
               <li>
                 <strong>Citing the theoretical contribution</strong>{" "}
-                — the multi-layer Carnforth Model, the adaptation
-                layer, source-level accessibility analysis as a
-                concept: cite the W4A 2010 paper as well as Paradise.
-                The paper is the primary source for the framework;
+                — the multi-layer CISNA Model, the adaptation layer,
+                source-level accessibility analysis as a concept:
+                cite the W4A 2008 paper as well as Paradise. The
+                paper is the primary source for the framework;
                 Paradise is the practical realisation.
               </li>
               <li>
@@ -125,7 +125,7 @@ export default function ParadiseCite() {
             <ul>
               <li>
                 <Link href="/paradise/lineage">Lineage</Link> — the
-                research arc from the W4A paper to Paradise.
+                research arc from the W4A 2008 paper to Paradise.
               </li>
               <li>
                 <Link href="/paradise/action-language">
@@ -152,12 +152,12 @@ const BIBTEX_PARADISE = `@software{dodd_paradise,
   note   = {Open-source software, MIT licence}
 }`;
 
-const BIBTEX_CARNFORTH = `@inproceedings{dodd2010carnforth,
+const BIBTEX_CISNA = `@inproceedings{dodd2008cisna,
   author    = {Dodd, Robert and Green, Steve and Pearson, Elaine},
-  title     = {The Carnforth Model of Accessible Adaptive Hypermedia},
-  booktitle = {Proceedings of the 2010 International Cross Disciplinary
+  title     = {The {CISNA} Model of Accessible Adaptive Hypermedia},
+  booktitle = {Proceedings of the 2008 International Cross-Disciplinary
                Conference on Web Accessibility (W4A)},
-  year      = {2010},
+  year      = {2008},
   publisher = {ACM},
-  doi       = {10.1145/1805986.1806008}
+  doi       = {10.1145/1368044.1368052}
 }`;

@@ -23,11 +23,11 @@ const talks = [
       "An autobiographical-and-technical introduction. Where the work came from, and what working accessibility-aware engineering looks like day to day.",
   },
   {
-    title: "The Carnforth Model of Accessible Adaptive Hypermedia",
-    venue: "W4A 2010",
-    date: "April 2010",
+    title: "The CISNA Model of Accessible Adaptive Hypermedia",
+    venue: "W4A 2008",
+    date: "April 2008",
     blurb:
-      "With Steve Green and Elaine Pearson. Peer-reviewed; in the ACM Digital Library. Rebuilds the Dexter Model of hypertext for an era of script-heavy, AJAX-driven content.",
+      "With Steve Green and Elaine Pearson. Peer-reviewed; in the ACM Digital Library (doi:10.1145/1368044.1368052). Rebuilds the Dexter Model of hypertext for an era of script-heavy, AJAX-driven content.",
   },
   {
     title: "User Capability in an Adaptive World",
@@ -42,7 +42,7 @@ const talks = [
     venue: "ACM SIGACCESS Newsletter",
     date: "2008",
     blurb:
-      "Critiques the Dexter Reference Model and its descendant HTML for being structured around the printer's view of a book rather than the author's or the reader's. Proposes the five-layer alternative that became the Carnforth Model two years later.",
+      "Critiques the Dexter Reference Model and its descendant HTML for being structured around the printer's view of a book rather than the author's or the reader's. Proposes the five-layer alternative that became the CISNA Model.",
   },
   {
     title:

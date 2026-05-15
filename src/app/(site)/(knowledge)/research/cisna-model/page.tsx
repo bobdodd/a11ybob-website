@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { CSSProperties } from "react";
 import { ResearchSubNav } from "@/components/ResearchSubNav";
 
-export default function CarnforthModel() {
+export default function CisnaModel() {
   return (
     <main id="main" className="site-main" data-zone="knowledge">
       <div className="center">
@@ -16,12 +16,14 @@ export default function CarnforthModel() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
-            <h1>The Carnforth Model of Accessible Adaptive Hypermedia</h1>
+            <h1>The CISNA Model of Accessible Adaptive Hypermedia</h1>
             <p className="lede">
               A five-layer reference model for adaptive hypermedia,
-              published at W4A 2010 with Steve Green and Elaine Pearson,
-              and implemented as the CISNA system during doctoral
-              research at Teesside.
+              published at W4A 2008 with Steve Green and Elaine Pearson
+              (<a href="https://doi.org/10.1145/1368044.1368052">
+                doi:10.1145/1368044.1368052
+              </a>), and implemented as Carnforth-Java during
+              doctoral research at Teesside.
             </p>
           </header>
 
@@ -31,8 +33,8 @@ export default function CarnforthModel() {
           >
             <h2>What it is</h2>
             <p>
-              The Carnforth Model rebuilds the Dexter Reference Model
-              of Hypertext for an era of script-heavy, AJAX-driven
+              The CISNA Model rebuilds the Dexter Reference Model of
+              Hypertext for an era of script-heavy, AJAX-driven
               content, distinguishing five layers:{" "}
               <strong>Adaptation</strong>, <strong>Navigation</strong>,{" "}
               <strong>Semantics</strong>, <strong>Inventory</strong>,
@@ -42,11 +44,11 @@ export default function CarnforthModel() {
               raw content through to adapted presentation.
             </p>
             <p>
-              The published version (W4A 2010) presents the layered
-              architecture and the formal definitions; the
-              implementation (CISNA, Java) applies the model to real
-              interfaces. The Google Maps interface is the worked
-              example used in the published material.
+              The published version (W4A 2008) presents the layered
+              architecture and the formal definitions; the doctoral
+              Java implementation (Carnforth-Java) applies the model
+              to real interfaces. The Google Maps interface is the
+              worked example used in the published material.
             </p>
           </section>
 
@@ -96,7 +98,7 @@ export default function CarnforthModel() {
           >
             <h2>The lineage</h2>
             <p>
-              The Carnforth Model is the published version of a longer
+              The CISNA Model is the published version of a longer
               published track:
             </p>
             <ul>
@@ -119,15 +121,17 @@ export default function CarnforthModel() {
                 Critiques the Dexter Model and its descendant HTML for
                 being structured around a printer&rsquo;s view of a
                 book rather than an author&rsquo;s or a reader&rsquo;s.
-                Proposes the five-layer alternative that became
-                Carnforth.
+                Proposes the five-layer alternative that became CISNA.
               </li>
               <li>
-                <strong>2010</strong> — &ldquo;The Carnforth Model of
-                Accessible Adaptive Hypermedia,&rdquo; W4A 2010, with
-                Steve Green and Elaine Pearson. Published version of
-                the five-layer model with formal definitions. This is
-                what the literature cites.
+                <strong>2008</strong> — &ldquo;The CISNA Model of
+                Accessible Adaptive Hypermedia,&rdquo; W4A 2008, with
+                Steve Green and Elaine Pearson (
+                <a href="https://doi.org/10.1145/1368044.1368052">
+                  doi:10.1145/1368044.1368052
+                </a>
+                ). Published version of the five-layer model with
+                formal definitions. This is what the literature cites.
               </li>
             </ul>
           </section>
@@ -148,7 +152,7 @@ export default function CarnforthModel() {
               for the recursive-design framing beneath it.
             </p>
             <p>
-              The Carnforth XML notation and Java execution engine
+              The Carnforth-Java XML notation and execution engine
               live on as{" "}
               <Link href="/playgrounds/action-language">
                 Action Language
@@ -176,14 +180,14 @@ export default function CarnforthModel() {
                 <Link href="/playgrounds/action-language">
                   Action Language
                 </Link>{" "}
-                — the running code beneath Carnforth, with worked
-                examples in-browser.
+                — the running code beneath CISNA, with worked examples
+                in-browser.
               </li>
               <li>
                 <Link href="/research/the-measure-of-accessibility">
                   The Measure of Accessibility
                 </Link>{" "}
-                — the formal-theory collection that Carnforth
+                — the formal-theory collection that CISNA
                 operationalises.
               </li>
               <li>

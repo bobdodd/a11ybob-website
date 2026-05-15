@@ -32,13 +32,14 @@ export default function Research() {
             <h2 id="research-frameworks-heading">Frameworks</h2>
             <ul>
               <li>
-                <Link href="/research/carnforth-model">
-                  <strong>The Carnforth Model of Accessible Adaptive Hypermedia</strong>
+                <Link href="/research/cisna-model">
+                  <strong>The CISNA Model of Accessible Adaptive Hypermedia</strong>
                 </Link>{" "}
-                — published at W4A 2010 with Steve Green and Elaine
+                — published at W4A 2008 with Steve Green and Elaine
                 Pearson. Five-layer model for adaptive hypermedia
                 (Adaptation, Navigation, Semantics, Inventory,
-                External Content). Implemented as CISNA in Java.
+                External Content). Doctoral Java implementation:
+                Carnforth-Java.
               </li>
               <li>
                 <Link href="/research/polymorphic-task-deconstruction">

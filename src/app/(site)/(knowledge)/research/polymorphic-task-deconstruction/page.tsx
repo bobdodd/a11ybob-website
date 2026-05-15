@@ -91,8 +91,8 @@ export default function PTD() {
             <h2>Reading on</h2>
             <ul>
               <li>
-                <Link href="/research/carnforth-model">
-                  The Carnforth Model
+                <Link href="/research/cisna-model">
+                  The CISNA Model
                 </Link>{" "}
                 — the layered architecture inside which PTD-style
                 alternatives are managed.

@@ -65,25 +65,25 @@ export default function Carnforth() {
           >
             <h2>Where it sits in the tools lineage</h2>
             <p>
-              The naming is not coincidence. The lineage runs
-              from the original Carnforth Model (W4A 2010, with
-              Steve Green and Elaine Pearson) through the PhD-era
-              Carnforth-Java / CISNA implementation, into the
-              runtime-testing branch that Carnforth GPL inhabits:
+              The naming is not coincidence. The lineage runs from
+              the original CISNA Model (W4A 2008, with Steve Green
+              and Elaine Pearson) through the PhD-era Carnforth-Java
+              implementation, into the runtime-testing branch that
+              Carnforth GPL inhabits:
             </p>
             <ul>
               <li>
-                <strong>Carnforth Model</strong> &mdash; theory.
-                The five-layer model of accessible adaptive
-                hypermedia. See{" "}
-                <Link href="/research/carnforth-model">
-                  /research/carnforth-model
+                <strong>CISNA Model</strong> &mdash; theory. The
+                five-layer model of accessible adaptive hypermedia.
+                See{" "}
+                <Link href="/research/cisna-model">
+                  /research/cisna-model
                 </Link>
                 .
               </li>
               <li>
-                <strong>Carnforth-Java / CISNA</strong> &mdash;
-                the doctoral implementation, with Action Language
+                <strong>Carnforth-Java</strong> &mdash; the doctoral
+                Java implementation of CISNA, with Action Language
                 XML. See{" "}
                 <Link href="/playgrounds/action-language">
                   /playgrounds/action-language

@@ -136,8 +136,8 @@ export default function ShlaerMellorLens() {
             <ul>
               <li>
                 <strong>Domain charts</strong> &rarr; the{" "}
-                <Link href="/research/carnforth-model">
-                  Carnforth five-layer model
+                <Link href="/research/cisna-model">
+                  CISNA five-layer model
                 </Link>{" "}
                 (Adaptation / Navigation / Semantics / Inventory /
                 External Content), with peer relationships between

@@ -38,6 +38,20 @@ const nextConfig: NextConfig = {
         destination: "/playgrounds/action-language/:path*",
         permanent: true,
       },
+      // The research model page was originally slugged
+      // /research/carnforth-model — the name conflated the model
+      // (CISNA) with the tool family (Carnforth). The model has its
+      // correct slug now; the old one continues to resolve via 308.
+      {
+        source: "/research/carnforth-model",
+        destination: "/research/cisna-model",
+        permanent: true,
+      },
+      {
+        source: "/research/carnforth-model/:path*",
+        destination: "/research/cisna-model/:path*",
+        permanent: true,
+      },
     ];
   },
 };

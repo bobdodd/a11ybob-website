@@ -304,7 +304,7 @@ export default function Maps() {
               Same OSM data, same pin, same datum &mdash; but the
               map adapts differently because the agent at the
               centre is negotiating differently. That is{" "}
-              <Link href="/research/carnforth-model">CISNA</Link>{" "}
+              <Link href="/research/cisna-model">CISNA</Link>{" "}
               plus the four-model capability framework plus{" "}
               <Link href="/research/2029-framework">
                 the multi-agent CoP framing
@@ -498,11 +498,11 @@ export default function Maps() {
                 &mdash; 2019 origin, SVG-tile architecture.
               </li>
               <li>
-                <Link href="/research/carnforth-model">
-                  The Carnforth Model
+                <Link href="/research/cisna-model">
+                  The CISNA Model
                 </Link>{" "}
-                &mdash; CISNA, the methodological substrate the
-                maps work applies.
+                &mdash; the methodological substrate the maps work
+                applies.
               </li>
               <li>
                 <Link href="/research/2029-framework">
