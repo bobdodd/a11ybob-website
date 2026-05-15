@@ -44,6 +44,20 @@ const decisions = [
     summary:
       "Modular scale with ratio 1.2 (minor third) chosen so that the largest and smallest text on any page differ by no more than 3:1 — ensuring screen-magnifier users do not have to adjust zoom when moving between headings and body text.",
   },
+  {
+    id: "0007",
+    file: "0007-tiered-article-search.md",
+    title: "Tiered relevance scoring for full-text search",
+    summary:
+      "Three should-clauses with descending boosts (phrase 10×, all-terms 4×, any-term 1×) so that exact phrase matches outrank partial matches by score, not by filtering. The match-strength badge surfaces the tier verbatim so assistive technology can convey it.",
+  },
+  {
+    id: "0008",
+    file: "0008-trial-deployment.md",
+    title: "Trial deployment to OVH VPS",
+    summary:
+      "First end-to-end deploy: a single OVHcloud VPS at Gravelines running self-hosted MongoDB, OpenSearch, Next.js under pm2, and Caddy as the reverse proxy. IP-only trial — DNS, TLS, and managed-Mongo cutover deferred. Three things that broke and how they resolved are recorded for next time.",
+  },
 ];
 
 export default function Colophon() {
@@ -96,14 +110,74 @@ export default function Colophon() {
               </li>
               <li>
                 <strong>Hosting:</strong> OVHcloud VPS at the Gravelines
-                data centre (planned). All data resident in EU
-                jurisdiction.
+                data centre. All data resident in EU jurisdiction. See
+                the <em>Hosting and deployment</em> section below.
               </li>
               <li>
                 <strong>Local services:</strong> Homebrew (
                 <code>brew services</code>). No Docker.
               </li>
             </ul>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
+            <h2>Hosting and deployment</h2>
+            <p>
+              The site runs on a single OVHcloud VPS at the Gravelines
+              data centre. MongoDB, OpenSearch, the Next.js server, and
+              Caddy all live on the same 4-core, 8GB box. Each backend
+              binds to <code>127.0.0.1</code>, so the firewall only has
+              to admit ports 22, 80, and 443. There is no separate
+              database tier, no managed search service, no container
+              orchestrator.
+            </p>
+            <p>
+              The single-box shape is a deliberate choice. The
+              site&rsquo;s traffic doesn&rsquo;t justify a multi-tier
+              deployment, and multi-tier deployments add operational
+              surfaces &mdash; network policies, secret management,
+              inter-tier auth, opaque platform layers &mdash; that are
+              themselves accessibility-hostile in the small sense:
+              hard to inspect, hard to reason about, hard to fix when
+              something fails. A single box keeps everything legible.{" "}
+              <code>journalctl -u opensearch</code> and{" "}
+              <code>pm2 logs a11ybob</code> are one SSH session apart.
+              Data residency is incidental but welcome: Gravelines
+              sits under EU jurisdiction, which fits the broader
+              &ldquo;minimise US exposure where the choice is
+              free&rdquo; position.
+            </p>
+            <p>
+              <a href="https://caddyserver.com">Caddy</a> handles HTTPS
+              termination and reverse-proxies to{" "}
+              <code>localhost:3000</code>. When the site moves from
+              IP-only access to its real hostname, Caddy will provision
+              the Let&rsquo;s Encrypt certificate automatically; the
+              Caddyfile gains a domain name and nothing else changes.{" "}
+              <a href="https://pm2.keymetrics.io">pm2</a> keeps the
+              Next.js server running and brings it back across reboots
+              through a generated systemd unit. Neither tool was
+              chosen for novelty; both were chosen because the
+              accessibility-relevant property they share is{" "}
+              <em>not lying about what they&rsquo;re doing</em>.
+            </p>
+            <p>
+              Deployment is <code>git pull</code>,{" "}
+              <code>npm run build</code>,{" "}
+              <code>pm2 restart a11ybob</code> &mdash; done over SSH.
+              No CI, no preview environment, no platform-as-a-service
+              automation. The cost is real and asymmetric: nothing
+              currently runs the build on every push, so a broken
+              build can land on <code>main</code> between deploys; a
+              pre-push hook or a GitHub Actions step will close that
+              gap. The benefit is that the deploy mechanism is the
+              same three commands anyone reading the repository could
+              run on their own server. The site is documentation of
+              itself.
+            </p>
           </section>
 
           <section
