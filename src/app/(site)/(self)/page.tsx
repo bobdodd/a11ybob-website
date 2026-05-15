@@ -21,9 +21,13 @@ export default function Home() {
               Bob Dodd. Currently Head of Accessibility at CNIB Access Labs in
               Toronto. Author of long-form synthesis articles drawing on{" "}
               <Link href="/writing">2,661 reviewed accessibility papers</Link>.
-              Designer of <Link href="/paradise">Paradise</Link>, a multi-model
-              accessibility analyser that reasons about JavaScript runtime
-              behaviour at the source level.
+              Author of the{" "}
+              <Link href="/research/cisna-model">
+                CISNA Model of Accessible Adaptive Hypermedia
+              </Link>
+              . Designer of <Link href="/paradise">Paradise</Link>, a
+              multi-model accessibility analyser that reasons about
+              JavaScript runtime behaviour at the source level.
             </p>
           </header>
 
