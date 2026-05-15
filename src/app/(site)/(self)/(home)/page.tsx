@@ -32,7 +32,7 @@ export default function Home() {
           </header>
 
           <nav
-            aria-label="Three doors"
+            aria-label="Four doors"
             className="grid"
             style={
               {
@@ -46,6 +46,13 @@ export default function Home() {
               <p>
                 Long-form essays grounded in the published research, with
                 citations back to the underlying evidence.
+              </p>
+            </Link>
+            <Link href="/research" className="door">
+              <h2>Read the research</h2>
+              <p>
+                Formal frameworks, the CISNA Model, and the Measure of
+                Accessibility — the theory beneath the writing.
               </p>
             </Link>
             <Link href="/paradise" className="door">
