@@ -1,10 +1,7 @@
 import { MongoClient, type Db } from "mongodb";
 
-const uri = process.env.MONGODB_URI;
-const dbName = process.env.MONGODB_DB;
-
-if (!uri) throw new Error("MONGODB_URI not set");
-if (!dbName) throw new Error("MONGODB_DB not set");
+const uri = process.env.MONGODB_URI ?? "mongodb://localhost:27017";
+const dbName = process.env.MONGODB_DB ?? "a11y_paradise";
 
 declare global {
   var _mongoClientPromise: Promise<MongoClient> | undefined;

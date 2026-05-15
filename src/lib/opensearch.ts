@@ -1,7 +1,6 @@
 import { Client } from "@opensearch-project/opensearch";
 
-const node = process.env.OPENSEARCH_URL;
-if (!node) throw new Error("OPENSEARCH_URL not set");
+const node = process.env.OPENSEARCH_URL ?? "http://localhost:9200";
 
 declare global {
   var _opensearchClient: Client | undefined;
