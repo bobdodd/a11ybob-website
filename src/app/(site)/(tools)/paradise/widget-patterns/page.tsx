@@ -11,7 +11,7 @@ export default function ParadiseWidgetPatterns() {
   const cats = patternsByCategory();
 
   return (
-    <main id="main" className="site-main" data-zone="tools">
+    <main id="main" className="site-main">
       <div className="center">
         <div
           className="stack"

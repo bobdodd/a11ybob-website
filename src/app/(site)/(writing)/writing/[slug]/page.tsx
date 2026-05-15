@@ -49,7 +49,7 @@ export default async function Article({
       : article.content;
 
   return (
-    <main id="main" className="site-main" data-zone="writing">
+    <main id="main" className="site-main">
       <div className="center">
         <article className="stack" style={{ "--space": "var(--s2)" } as CSSProperties}>
           <p>

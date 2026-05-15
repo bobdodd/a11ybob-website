@@ -3,7 +3,7 @@ import type { CSSProperties } from "react";
 
 export default function Privacy() {
   return (
-    <main id="main" className="site-main" data-zone="self">
+    <main id="main" className="site-main">
       <div className="center">
         <div className="stack" style={{ "--space": "var(--s2)" } as CSSProperties}>
           <header

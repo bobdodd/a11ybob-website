@@ -35,7 +35,7 @@ const decisions = [
     file: "0005-zonal-tinting.md",
     title: "Zonal surface tinting",
     summary:
-      "Subtle BridgePoint-style tinting by content category. Four zones (self, writing, knowledge, tools) implemented as Next.js route groups, each rendering a SiteShell wrapper that paints the zone's tint across header, main, and footer.",
+      "Subtle BridgePoint-style tinting per main-nav landing page. Eleven zones, each at perceptually-identical OKLCH lightness so body-text contrast holds across every hue. Sub-pages inherit their landing's zone via a section layout. Initial four-zone version (2026-05-05) collapsed multiple landings into one colour; amended to eleven (2026-05-15) so each main-nav surface reads as its own.",
   },
   {
     id: "0006",
@@ -62,7 +62,7 @@ const decisions = [
 
 export default function Colophon() {
   return (
-    <main id="main" className="site-main" data-zone="self">
+    <main id="main" className="site-main">
       <div className="center">
         <div className="stack" style={{ "--space": "var(--s3)" } as CSSProperties}>
           <header

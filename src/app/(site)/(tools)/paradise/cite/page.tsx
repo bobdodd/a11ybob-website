@@ -4,7 +4,7 @@ import { ParadiseSubNav } from "@/components/ParadiseSubNav";
 
 export default function ParadiseCite() {
   return (
-    <main id="main" className="site-main" data-zone="tools">
+    <main id="main" className="site-main">
       <div className="center">
         <div
           className="stack"

@@ -4,8 +4,8 @@ import { SiteShell } from "@/components/SiteShell";
 
 export default function NotFound() {
   return (
-    <SiteShell zone="self">
-      <main id="main" className="site-main" data-zone="self">
+    <SiteShell zone="ambient">
+      <main id="main" className="site-main">
         <div className="center">
           <div className="stack" style={{ "--space": "var(--s2)" } as CSSProperties}>
             <header>

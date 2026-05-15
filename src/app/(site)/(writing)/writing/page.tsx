@@ -63,7 +63,7 @@ export default async function WritingIndex({
   const filtering = Boolean(q || domain || tag);
 
   return (
-    <main id="main" className="site-main" data-zone="writing">
+    <main id="main" className="site-main">
       <div
         className="center"
         style={{ "--max": "min(80rem, 100%)" } as CSSProperties}

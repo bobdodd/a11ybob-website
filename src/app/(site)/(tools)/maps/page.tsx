@@ -4,7 +4,7 @@ import { MapsSubNav } from "@/components/MapsSubNav";
 
 export default function Maps() {
   return (
-    <main id="main" className="site-main" data-zone="tools">
+    <main id="main" className="site-main">
       <div className="center">
         <div
           className="stack"

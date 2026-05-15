@@ -5,7 +5,7 @@ import { MeasureSubNav } from "@/components/MeasureSubNav";
 
 export default function CommunitiesOfPractice() {
   return (
-    <main id="main" className="site-main" data-zone="knowledge">
+    <main id="main" className="site-main">
       <div className="center">
         <div
           className="stack"

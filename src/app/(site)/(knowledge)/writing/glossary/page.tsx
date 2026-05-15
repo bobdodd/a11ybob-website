@@ -60,7 +60,7 @@ export default async function Glossary({
   const baseUrl = `/writing/glossary${sp.toString() ? `?${sp}` : ""}`;
 
   return (
-    <main id="main" className="site-main" data-zone="knowledge">
+    <main id="main" className="site-main">
       <div className="center" style={{ "--max": "min(80rem, 100%)" } as CSSProperties}>
         <div className="stack" style={{ "--space": "var(--s2)" } as CSSProperties}>
           <header

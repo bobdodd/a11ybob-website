@@ -1,20 +1,35 @@
 # 0005 — Zonal surface tinting
 
-**Date:** 2026-05-05
+**Date:** 2026-05-05 (initial 4-zone version); amended 2026-05-15
+to 11 zones (one per main-nav landing) after the four-zone shape
+collapsed multiple main-nav landings into the same colour — most
+visibly Paradise / Tools / Playgrounds / Maps sharing 215°, and
+Writing / Talks / About sharing 30°. The four-zone version is
+preserved in git history at commit `00d867f^`.
+
 **Status:** Accepted
 
 ## The choice
 
-The site's surface colour shifts subtly by content category. Four zones,
-each a different hue, all sitting at perceptually identical OKLCH lightness
-so body-text contrast is preserved everywhere.
+The site's surface colour shifts subtly per main-nav landing page.
+Eleven zones, each a different hue, all sitting at perceptually
+identical OKLCH lightness so body-text contrast is preserved
+everywhere. Sub-pages inherit their landing page's zone via their
+section layout.
 
-| Zone | Routes | Hue | Chroma | Feel |
-| --- | --- | --- | --- | --- |
-| `self` | `/`, `/now`, `/contact`, `/work` | 85° | 0.04 | warm cream — paper |
-| `writing` | `/writing`, `/writing/[slug]`, `/about`, `/talks` | 30° | 0.05 | warm rose — editorial |
-| `knowledge` | `/writing/reviews`, `/writing/glossary`, `/research` | 230° | 0.045 | cool blue — archive |
-| `tools` | `/paradise`, `/playground` | 215° | 0.015 | technical neutral |
+| Zone | Main-nav landing | Sub-pages (inherit) | Hue | Chroma | Feel |
+| --- | --- | --- | --- | --- | --- |
+| `about` | `/about` | — | 5° | 0.045 | dusty rose-pink — personal |
+| `writing` | `/writing` | `/writing/[slug]`, `/writing/reviews`, `/writing/glossary` | 30° | 0.05 | warm rose — editorial |
+| `talks` | `/talks` | — | 60° | 0.05 | honey/wheat — spoken word |
+| `home` | `/` | — | 85° | 0.05 | warm cream — front door |
+| `work` | `/work` | — | 130° | 0.045 | sage green — practitioner |
+| `maps` | `/maps` | `/maps/*` | 155° | 0.045 | forest green — geographic |
+| `tools` | `/tools` | `/carnforth`, `/a11yauto`, `/lived-testing` | 190° | 0.04 | teal — practical |
+| `paradise` | `/paradise` | `/paradise/*` | 215° | 0.04 | cool slate — technical |
+| `research` | `/research` | `/research/*` | 250° | 0.045 | cool blue — archive |
+| `ambient` | (none) | `/now`, `/contact`, `/privacy`, `/accessibility`, `/colophon` | 270° | 0.012 | near-neutral cool grey — utility |
+| `playgrounds` | `/playgrounds` | `/playgrounds/*` | 305° | 0.045 | lavender — experimental |
 
 ## Why
 
@@ -33,13 +48,18 @@ signal in the colophon.
 
 ## Implementation
 
-Routes are organised into Next.js route groups by zone:
-`(site)/(self)/`, `(site)/(writing)/`, `(site)/(knowledge)/`,
-`(site)/(tools)/`. Each zone group's layout wraps its children in a
-`<SiteShell zone="...">` component which renders a top-level
-`<div className="site-shell" data-zone="...">` containing header, main,
-and footer. The whole shell — chrome and content — paints in the zone's
-tint, matching the BridgePoint pattern faithfully.
+Each main-nav landing has its own `layout.tsx` at its section root
+(e.g. `(site)/(tools)/paradise/layout.tsx`) which wraps its children
+in a `<SiteShell zone="...">` component. SiteShell renders a top-level
+`<div className="site-shell" data-zone="...">` containing header,
+main, and footer. The whole shell — chrome and content — paints in
+the zone's tint, matching the BridgePoint pattern faithfully.
+
+The four umbrella route groups (`(self)`, `(writing)`, `(knowledge)`,
+`(tools)`) survive as folder-organisation only; they no longer carry
+layouts. Inside `(self)` the home page and the ambient pages live in
+their own nested route groups (`(home)`, `(ambient)`) so they can
+have distinct layouts despite sharing the same URL prefix.
 
 Each zone overrides `--hue` and `--chroma`. Surface and ink tokens in
 [tokens.css](../../src/styles/tokens.css) derive from those two custom
@@ -93,7 +113,35 @@ anti-aliasing, and the user's display gamut.
 
 ## Zone count
 
-Four was chosen as a tractable number — large enough to communicate
-"different kinds of content," small enough to maintain. BridgePoint had
-four diagram types. A fifth zone is a one-line addition if the IA grows
-to need it.
+The original 2026-05-05 version of this decision committed to **four
+zones** — "large enough to communicate different kinds of content,
+small enough to maintain." That target turned out to be too small for
+the site's information architecture: nine items live on the main nav,
+and the four-zone shape collapsed Paradise, Tools, Playgrounds, and
+Maps into one colour, plus Writing, Talks, and About into another. A
+visitor moving between Paradise and Maps in the same browsing session
+saw the same surface tint both places — the BridgePoint "where am I"
+signal stopped working at exactly the resolution that matters most.
+
+The amendment (2026-05-15) makes the unit of tinting the **main-nav
+landing page** rather than an umbrella category. Eleven zones in
+total: nine for the main-nav items, one for the home page, one
+near-neutral "ambient" zone for the utility pages off the footer.
+
+Eleven is technically a lot of hues to maintain. Two things make it
+tractable:
+
+- OKLCH's perceptual uniformity means contrast against `--ink` is
+  hue-independent — every zone hits the same ~11:1 just by virtue of
+  using L=95% surface and L=20% ink. Adding a zone is one hue value,
+  not a contrast-tuning exercise.
+- The hues are spaced at least 25° apart on the colour wheel, with
+  the near-neutral ambient zone using very low chroma (0.012) so it
+  reads as utility-grey rather than competing with its neighbours.
+  The closest hue pair on paper (research 250° / ambient 270°) reads
+  as visually distinct because their chromas are an order of
+  magnitude apart.
+
+If the IA grows beyond eleven main-nav-adjacent zones, the question
+of when the colour vocabulary stops scaling becomes real. For now it
+holds.

@@ -32,7 +32,7 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${atkinson.variable} ${sourceSerif.variable}`}
-      data-zone="self"
+      data-zone="home"
     >
       <body>
         <a className="skip-link" href="#main">

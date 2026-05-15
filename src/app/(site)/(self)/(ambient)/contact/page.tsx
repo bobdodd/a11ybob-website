@@ -2,7 +2,7 @@ import type { CSSProperties } from "react";
 
 export default function Contact() {
   return (
-    <main id="main" className="site-main" data-zone="self">
+    <main id="main" className="site-main">
       <div className="center">
         <div className="stack" style={{ "--space": "var(--s1)" } as CSSProperties}>
           <h1>Contact</h1>

@@ -3,7 +3,7 @@ import type { CSSProperties } from "react";
 
 export default function LivedTesting() {
   return (
-    <main id="main" className="site-main" data-zone="tools">
+    <main id="main" className="site-main">
       <div className="center">
         <div
           className="stack"

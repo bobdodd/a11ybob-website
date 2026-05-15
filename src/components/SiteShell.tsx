@@ -1,7 +1,18 @@
 import { SiteHeader } from "./SiteHeader";
 import { SiteFooter } from "./SiteFooter";
 
-type Zone = "self" | "writing" | "knowledge" | "tools";
+type Zone =
+  | "home"
+  | "ambient"
+  | "work"
+  | "about"
+  | "writing"
+  | "talks"
+  | "research"
+  | "paradise"
+  | "tools"
+  | "playgrounds"
+  | "maps";
 
 export function SiteShell({
   zone,

@@ -56,7 +56,7 @@ const talks = [
 
 export default function Talks() {
   return (
-    <main id="main" className="site-main" data-zone="writing">
+    <main id="main" className="site-main">
       <div className="center">
         <div className="stack" style={{ "--space": "var(--s2)" } as CSSProperties}>
           <header

@@ -15,7 +15,7 @@ export default async function ReviewPage({
   if (!review) notFound();
 
   return (
-    <main id="main" className="site-main" data-zone="knowledge">
+    <main id="main" className="site-main">
       <div className="center">
         <div className="stack" style={{ "--space": "var(--s2)" } as CSSProperties}>
           <p>

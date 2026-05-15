@@ -23,7 +23,7 @@ export default async function AnalyserPage({
   if (!analyser) notFound();
 
   return (
-    <main id="main" className="site-main" data-zone="tools">
+    <main id="main" className="site-main">
       <div className="center">
         <div
           className="stack"

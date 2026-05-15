@@ -314,7 +314,7 @@ export function PlaygroundClient() {
   const allHtml = buffers.html.map((f) => f.content).join("\n");
 
   return (
-    <main id="main" className="site-main" data-zone="tools">
+    <main id="main" className="site-main">
       {/* In-page skip link — invisible until focused, then jumps
        * keyboard / screen-reader users straight past the examples
        * picker, the editor tablists, and the filter row to the

@@ -4,7 +4,7 @@ import { ResearchSubNav } from "@/components/ResearchSubNav";
 
 export default function SpotlightIndex() {
   return (
-    <main id="main" className="site-main" data-zone="knowledge">
+    <main id="main" className="site-main">
       <div className="center">
         <div
           className="stack"

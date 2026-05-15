@@ -53,16 +53,31 @@
 }
 
 /* ===== Zone overrides (light mode) =====
-   Each zone redeclares the surface tokens directly. Same lightness
-   pairings (95% / 90%) across zones; only hue and chroma vary.
-   AAA contrast (~11:1) preserved on every zone. */
+   Each main-nav landing page is its own zone with its own hue;
+   sub-pages inherit the landing page's zone via their layout. Same
+   lightness pairings (95% / 90%) across zones; only hue and chroma
+   vary. AAA contrast (~11:1) preserved on every zone.
 
-[data-zone="self"] {
-  --surface-1: oklch(95% 0.04 85);
-  --surface-2: oklch(90% 0.04 85);
-  --ink:       oklch(20% 0.02 85);
-  --ink-muted: oklch(35% 0.02 85);
-  --rule:      oklch(75% 0.04 85);
+   The 11 zones, in hue order:
+     about         5°    rose-pink     personal
+     writing       30°   warm rose     editorial (kept from original)
+     talks         60°   honey/wheat   spoken word
+     home          85°   warm cream    front door (kept from original self)
+     work          130°  sage green    practitioner
+     maps          155°  forest green  geographic
+     tools         190°  teal          practical
+     paradise      215°  cool slate    technical (kept from original tools)
+     research      250°  cool blue     archive (close to original knowledge)
+     ambient       270°  near-neutral  utility (privacy, contact, etc.)
+     playgrounds   305°  lavender      experimental
+*/
+
+[data-zone="about"] {
+  --surface-1: oklch(95% 0.045 5);
+  --surface-2: oklch(90% 0.045 5);
+  --ink:       oklch(20% 0.02 5);
+  --ink-muted: oklch(35% 0.02 5);
+  --rule:      oklch(75% 0.045 5);
 }
 
 [data-zone="writing"] {
@@ -73,40 +88,96 @@
   --rule:      oklch(75% 0.05 30);
 }
 
-[data-zone="knowledge"] {
-  --surface-1: oklch(95% 0.045 230);
-  --surface-2: oklch(90% 0.045 230);
-  --ink:       oklch(20% 0.02 230);
-  --ink-muted: oklch(35% 0.02 230);
-  --rule:      oklch(75% 0.045 230);
+[data-zone="talks"] {
+  --surface-1: oklch(95% 0.05 60);
+  --surface-2: oklch(90% 0.05 60);
+  --ink:       oklch(20% 0.02 60);
+  --ink-muted: oklch(35% 0.02 60);
+  --rule:      oklch(75% 0.05 60);
+}
+
+[data-zone="home"] {
+  --surface-1: oklch(95% 0.05 85);
+  --surface-2: oklch(90% 0.05 85);
+  --ink:       oklch(20% 0.02 85);
+  --ink-muted: oklch(35% 0.02 85);
+  --rule:      oklch(75% 0.05 85);
+}
+
+[data-zone="work"] {
+  --surface-1: oklch(95% 0.045 130);
+  --surface-2: oklch(90% 0.045 130);
+  --ink:       oklch(20% 0.02 130);
+  --ink-muted: oklch(35% 0.02 130);
+  --rule:      oklch(75% 0.045 130);
+}
+
+[data-zone="maps"] {
+  --surface-1: oklch(95% 0.045 155);
+  --surface-2: oklch(90% 0.045 155);
+  --ink:       oklch(20% 0.02 155);
+  --ink-muted: oklch(35% 0.02 155);
+  --rule:      oklch(75% 0.045 155);
 }
 
 [data-zone="tools"] {
-  --surface-1: oklch(95% 0.015 215);
-  --surface-2: oklch(90% 0.015 215);
-  --ink:       oklch(20% 0.01 215);
-  --ink-muted: oklch(35% 0.01 215);
-  --rule:      oklch(75% 0.015 215);
+  --surface-1: oklch(95% 0.04 190);
+  --surface-2: oklch(90% 0.04 190);
+  --ink:       oklch(20% 0.02 190);
+  --ink-muted: oklch(35% 0.02 190);
+  --rule:      oklch(75% 0.04 190);
+}
+
+[data-zone="paradise"] {
+  --surface-1: oklch(95% 0.04 215);
+  --surface-2: oklch(90% 0.04 215);
+  --ink:       oklch(20% 0.02 215);
+  --ink-muted: oklch(35% 0.02 215);
+  --rule:      oklch(75% 0.04 215);
+}
+
+[data-zone="research"] {
+  --surface-1: oklch(95% 0.045 250);
+  --surface-2: oklch(90% 0.045 250);
+  --ink:       oklch(20% 0.02 250);
+  --ink-muted: oklch(35% 0.02 250);
+  --rule:      oklch(75% 0.045 250);
+}
+
+[data-zone="ambient"] {
+  --surface-1: oklch(95% 0.012 270);
+  --surface-2: oklch(90% 0.012 270);
+  --ink:       oklch(20% 0.008 270);
+  --ink-muted: oklch(35% 0.008 270);
+  --rule:      oklch(75% 0.012 270);
+}
+
+[data-zone="playgrounds"] {
+  --surface-1: oklch(95% 0.045 305);
+  --surface-2: oklch(90% 0.045 305);
+  --ink:       oklch(20% 0.02 305);
+  --ink-muted: oklch(35% 0.02 305);
+  --rule:      oklch(75% 0.045 305);
 }
 
 /* ===== Dark mode ===== */
 @media (prefers-color-scheme: dark) {
   :root {
-    --surface-1: oklch(20% 0.04 85);
-    --surface-2: oklch(26% 0.04 85);
+    --surface-1: oklch(20% 0.05 85);
+    --surface-2: oklch(26% 0.05 85);
     --ink:       oklch(96% 0.02 85);
     --ink-muted: oklch(75% 0.02 85);
-    --rule:      oklch(40% 0.04 85);
+    --rule:      oklch(40% 0.05 85);
     --accent:        oklch(75% 0.18 240);
     --accent-bright: oklch(85% 0.18 240);
   }
 
-  [data-zone="self"] {
-    --surface-1: oklch(20% 0.04 85);
-    --surface-2: oklch(26% 0.04 85);
-    --ink:       oklch(96% 0.02 85);
-    --ink-muted: oklch(75% 0.02 85);
-    --rule:      oklch(40% 0.04 85);
+  [data-zone="about"] {
+    --surface-1: oklch(20% 0.045 5);
+    --surface-2: oklch(26% 0.045 5);
+    --ink:       oklch(96% 0.02 5);
+    --ink-muted: oklch(75% 0.02 5);
+    --rule:      oklch(40% 0.045 5);
   }
 
   [data-zone="writing"] {
@@ -117,30 +188,83 @@
     --rule:      oklch(40% 0.05 30);
   }
 
-  [data-zone="knowledge"] {
-    --surface-1: oklch(20% 0.045 230);
-    --surface-2: oklch(26% 0.045 230);
-    --ink:       oklch(96% 0.02 230);
-    --ink-muted: oklch(75% 0.02 230);
-    --rule:      oklch(40% 0.045 230);
+  [data-zone="talks"] {
+    --surface-1: oklch(20% 0.05 60);
+    --surface-2: oklch(26% 0.05 60);
+    --ink:       oklch(96% 0.02 60);
+    --ink-muted: oklch(75% 0.02 60);
+    --rule:      oklch(40% 0.05 60);
+  }
+
+  [data-zone="home"] {
+    --surface-1: oklch(20% 0.05 85);
+    --surface-2: oklch(26% 0.05 85);
+    --ink:       oklch(96% 0.02 85);
+    --ink-muted: oklch(75% 0.02 85);
+    --rule:      oklch(40% 0.05 85);
+  }
+
+  [data-zone="work"] {
+    --surface-1: oklch(20% 0.045 130);
+    --surface-2: oklch(26% 0.045 130);
+    --ink:       oklch(96% 0.02 130);
+    --ink-muted: oklch(75% 0.02 130);
+    --rule:      oklch(40% 0.045 130);
+  }
+
+  [data-zone="maps"] {
+    --surface-1: oklch(20% 0.045 155);
+    --surface-2: oklch(26% 0.045 155);
+    --ink:       oklch(96% 0.02 155);
+    --ink-muted: oklch(75% 0.02 155);
+    --rule:      oklch(40% 0.045 155);
   }
 
   [data-zone="tools"] {
-    --surface-1: oklch(20% 0.015 215);
-    --surface-2: oklch(26% 0.015 215);
-    --ink:       oklch(96% 0.01 215);
-    --ink-muted: oklch(75% 0.01 215);
-    --rule:      oklch(40% 0.015 215);
+    --surface-1: oklch(20% 0.04 190);
+    --surface-2: oklch(26% 0.04 190);
+    --ink:       oklch(96% 0.02 190);
+    --ink-muted: oklch(75% 0.02 190);
+    --rule:      oklch(40% 0.04 190);
+  }
+
+  [data-zone="paradise"] {
+    --surface-1: oklch(20% 0.04 215);
+    --surface-2: oklch(26% 0.04 215);
+    --ink:       oklch(96% 0.02 215);
+    --ink-muted: oklch(75% 0.02 215);
+    --rule:      oklch(40% 0.04 215);
+  }
+
+  [data-zone="research"] {
+    --surface-1: oklch(20% 0.045 250);
+    --surface-2: oklch(26% 0.045 250);
+    --ink:       oklch(96% 0.02 250);
+    --ink-muted: oklch(75% 0.02 250);
+    --rule:      oklch(40% 0.045 250);
+  }
+
+  [data-zone="ambient"] {
+    --surface-1: oklch(20% 0.012 270);
+    --surface-2: oklch(26% 0.012 270);
+    --ink:       oklch(96% 0.008 270);
+    --ink-muted: oklch(75% 0.008 270);
+    --rule:      oklch(40% 0.012 270);
+  }
+
+  [data-zone="playgrounds"] {
+    --surface-1: oklch(20% 0.045 305);
+    --surface-2: oklch(26% 0.045 305);
+    --ink:       oklch(96% 0.02 305);
+    --ink-muted: oklch(75% 0.02 305);
+    --rule:      oklch(40% 0.045 305);
   }
 }
 
 /* ===== Higher contrast preference ===== */
 @media (prefers-contrast: more) {
   :root,
-  [data-zone="self"],
-  [data-zone="writing"],
-  [data-zone="knowledge"],
-  [data-zone="tools"] {
+  [data-zone] {
     --surface-1: white;
     --surface-2: white;
     --ink:       black;
@@ -150,10 +274,7 @@
   }
   @media (prefers-color-scheme: dark) {
     :root,
-    [data-zone="self"],
-    [data-zone="writing"],
-    [data-zone="knowledge"],
-    [data-zone="tools"] {
+    [data-zone] {
       --surface-1: black;
       --surface-2: black;
       --ink:       white;
