@@ -49,7 +49,7 @@ export default function Home() {
               </p>
             </Link>
             <Link href="/research" className="door">
-              <h2>Read the research</h2>
+              <h2>Follow the research</h2>
               <p>
                 Formal frameworks, the CISNA Model, and the Measure of
                 Accessibility — the theory beneath the writing.
