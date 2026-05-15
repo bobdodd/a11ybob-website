@@ -168,15 +168,17 @@ export default function Colophon() {
               Deployment is <code>git pull</code>,{" "}
               <code>npm run build</code>,{" "}
               <code>pm2 restart a11ybob</code> &mdash; done over SSH.
-              No CI, no preview environment, no platform-as-a-service
-              automation. The cost is real and asymmetric: nothing
-              currently runs the build on every push, so a broken
-              build can land on <code>main</code> between deploys; a
-              pre-push hook or a GitHub Actions step will close that
-              gap. The benefit is that the deploy mechanism is the
-              same three commands anyone reading the repository could
-              run on their own server. The site is documentation of
-              itself.
+              No preview environment, no platform-as-a-service
+              automation. A pre-push hook on the developer machine
+              plus a GitHub Actions build job together gate{" "}
+              <code>main</code> against broken builds: TypeScript
+              errors that don&rsquo;t surface in <code>next dev</code>
+              {" "}can still block <code>next build</code>, and that
+              gap had let a broken build sit on <code>main</code> once
+              before the gate landed. The benefit of the deploy
+              mechanism itself is that it&rsquo;s the same three
+              commands anyone reading the repository could run on
+              their own server. The site is documentation of itself.
             </p>
           </section>
 
