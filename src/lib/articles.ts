@@ -176,27 +176,31 @@ export async function searchArticles(
   const total =
     typeof res.body.hits.total === "number"
       ? res.body.hits.total
-      : res.body.hits.total.value;
+      : (res.body.hits.total?.value ?? 0);
 
   const showTier = tierMeaningful(params.q);
 
-  const hits = res.body.hits.hits.map(
-    (h: {
-      _id: string;
-      _source: Record<string, unknown>;
-      highlight?: Record<string, string[]>;
-      matched_queries?: string[];
-    }) => ({
-      _id: h._id,
-      slug: h._source.slug as string,
-      title: (h._source.title as string) ?? "(untitled)",
-      domains: (h._source.domains as string[]) ?? [],
-      tags: (h._source.tags as string[]) ?? [],
-      publishedAt: h._source.publishedAt as string | undefined,
-      tier: showTier ? pickTier(h.matched_queries) : undefined,
-      highlights: h.highlight ?? {},
-    }),
-  );
+  const rawHits = res.body.hits.hits as unknown as Array<{
+    _id: string;
+    _source: Record<string, unknown>;
+    highlight?: Record<string, string[]>;
+    matched_queries?: string[];
+  }>;
+  const hits = rawHits.map((h) => ({
+    _id: h._id,
+    slug: h._source.slug as string,
+    title: (h._source.title as string) ?? "(untitled)",
+    domains: (h._source.domains as string[]) ?? [],
+    tags: (h._source.tags as string[]) ?? [],
+    publishedAt: h._source.publishedAt as string | undefined,
+    tier: showTier ? pickTier(h.matched_queries) : undefined,
+    highlights: h.highlight ?? {},
+  }));
+
+  const aggs = res.body.aggregations as Record<
+    string,
+    { buckets: Array<{ key: string; doc_count: number }> } | undefined
+  > | undefined;
 
   return {
     hits,
@@ -205,18 +209,14 @@ export async function searchArticles(
     perPage,
     totalPages: Math.max(1, Math.ceil(total / perPage)),
     facets: {
-      domains: (res.body.aggregations?.domains?.buckets ?? []).map(
-        (b: { key: string; doc_count: number }) => ({
-          value: b.key,
-          count: b.doc_count,
-        }),
-      ),
-      tags: (res.body.aggregations?.tags?.buckets ?? []).map(
-        (b: { key: string; doc_count: number }) => ({
-          value: b.key,
-          count: b.doc_count,
-        }),
-      ),
+      domains: (aggs?.domains?.buckets ?? []).map((b) => ({
+        value: b.key,
+        count: b.doc_count,
+      })),
+      tags: (aggs?.tags?.buckets ?? []).map((b) => ({
+        value: b.key,
+        count: b.doc_count,
+      })),
     },
   };
 }
@@ -277,7 +277,7 @@ export async function getArticleHighlights(
   };
 
   const res = await opensearch.search({ index: "articles", body });
-  const hits = res.body.hits.hits as Array<{
+  const hits = res.body.hits.hits as unknown as Array<{
     _id: string;
     highlight?: { title?: string[]; content?: string[] };
   }>;

@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
   // Display text comes from _source rather than the suggester's
   // matched-input string, because the completion field truncates
   // inputs to 50 chars by default — we want the full title/term.
-  const groups: Group[] = [
+  const allGroups: Group[] = [
     {
       corpus: "articles",
       label: "Articles",
@@ -59,7 +59,8 @@ export async function GET(req: NextRequest) {
         href: `/writing/glossary/${o._id}`,
       })),
     },
-  ].filter((g) => g.items.length > 0);
+  ];
+  const groups = allGroups.filter((g) => g.items.length > 0);
 
   return NextResponse.json({ groups });
 }

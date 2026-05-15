@@ -37,6 +37,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# local deploy scratch (mongodumps, etc.)
+.deploy-tmp/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

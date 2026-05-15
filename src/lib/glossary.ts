@@ -111,21 +111,25 @@ export async function searchGlossary(
   const res = await opensearch.search({ index: "glossary", body });
   const total = typeof res.body.hits.total === "number"
     ? res.body.hits.total
-    : res.body.hits.total.value;
+    : (res.body.hits.total?.value ?? 0);
 
   const showTier = tierMeaningful(params.q);
-  const hits = res.body.hits.hits.map(
-    (h: {
-      _id: string;
-      _source: Record<string, unknown>;
-      matched_queries?: string[];
-      highlight?: Record<string, string[]>;
-    }) => ({
-      ...serialiseHit(h._id, h._source),
-      tier: showTier ? pickTier(h.matched_queries) : undefined,
-      highlights: h.highlight,
-    }),
-  );
+  const rawHits = res.body.hits.hits as unknown as Array<{
+    _id: string;
+    _source: Record<string, unknown>;
+    matched_queries?: string[];
+    highlight?: Record<string, string[]>;
+  }>;
+  const hits = rawHits.map((h) => ({
+    ...serialiseHit(h._id, h._source),
+    tier: showTier ? pickTier(h.matched_queries) : undefined,
+    highlights: h.highlight,
+  }));
+
+  const aggs = res.body.aggregations as Record<
+    string,
+    { buckets: Array<{ key: string; doc_count: number }> } | undefined
+  > | undefined;
 
   return {
     hits,
@@ -134,12 +138,10 @@ export async function searchGlossary(
     perPage,
     totalPages: Math.max(1, Math.ceil(total / perPage)),
     facets: {
-      categories: (res.body.aggregations?.categories?.buckets ?? []).map(
-        (b: { key: string; doc_count: number }) => ({
-          value: b.key,
-          count: b.doc_count,
-        }),
-      ),
+      categories: (aggs?.categories?.buckets ?? []).map((b) => ({
+        value: b.key,
+        count: b.doc_count,
+      })),
     },
   };
 }
