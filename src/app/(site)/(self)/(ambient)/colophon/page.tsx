@@ -255,14 +255,14 @@ export default function Colophon() {
             <p>
               All colour values are expressed in{" "}
               <a href="https://oklch.com">OKLCH</a> — a perceptually
-              uniform colour space. Surface tints across the four content
-              zones sit at perceptually identical lightness, so body-text
-              contrast (AAA, 7:1 minimum) is preserved across every zone
-              regardless of hue. The zonal tinting pattern is borrowed
-              from BridgePoint, the Shlaer-Mellor xtUML modelling tool
-              that tinted different diagram types so the user&rsquo;s
-              &ldquo;where am I&rdquo; question was answered without
-              chrome.
+              uniform colour space. Surface tints across the eleven
+              zones sit at perceptually identical lightness, so
+              body-text contrast (AAA, 7:1 minimum) is preserved across
+              every zone regardless of hue. The zonal tinting pattern
+              is borrowed from BridgePoint, the Shlaer-Mellor xtUML
+              modelling tool that tinted different diagram types so the
+              user&rsquo;s &ldquo;where am I&rdquo; question was
+              answered without chrome.
             </p>
           </section>
 
