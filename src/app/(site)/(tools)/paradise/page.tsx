@@ -24,7 +24,7 @@ export default function Paradise() {
               tell from intentional behaviour.
             </p>
             <p>
-              The intermediate representation it builds,{" "}
+              The intermediate representation (IR) it builds,{" "}
               <strong>ActionLanguage</strong>, descends from doctoral
               work on adaptive user interfaces — published in the W4A
               2008 CISNA Model paper, parked when I left academia for

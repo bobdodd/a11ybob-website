@@ -23,7 +23,7 @@ export default function ParadiseLineage() {
               executable UML, the W4A 2008 CISNA Model paper, twenty-five
               years of practitioner work at CNIB, and a long detour into
               tools that didn&rsquo;t quite reach what the framework
-              wanted. ActionLanguage, the intermediate representation at
+              wanted. ActionLanguage, the intermediate representation (IR) at
               the heart of Paradise, descends directly from a tree-shaped
               semantic model I designed for that PhD-era work — finally
               matched, fifteen years later, with a problem it was the

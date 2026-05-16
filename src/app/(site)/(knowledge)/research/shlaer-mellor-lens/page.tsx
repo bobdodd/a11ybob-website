@@ -116,8 +116,8 @@ export default function ShlaerMellorLens() {
                 <strong>
                   <Link href="/paradise">Paradise</Link> (current).
                 </strong>{" "}
-                The ActionLanguage IR for source-level accessibility
-                analysis. The same shape again.
+                The ActionLanguage intermediate representation (IR) for
+                source-level accessibility analysis. The same shape again.
               </li>
             </ul>
             <p>

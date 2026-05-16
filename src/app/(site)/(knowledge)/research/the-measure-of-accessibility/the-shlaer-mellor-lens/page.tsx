@@ -373,10 +373,10 @@ export default function ShlaerMellorLensInDepth() {
                 <strong>
                   <Link href="/paradise">Paradise</Link> (current).
                 </strong>{" "}
-                The ActionLanguage IR for source-level accessibility
-                analysis. The same shape again, this time applied
-                to JavaScript runtime behaviour rather than to
-                interface adaptation.
+                The ActionLanguage intermediate representation (IR) for
+                source-level accessibility analysis. The same shape again,
+                this time applied to JavaScript runtime behaviour rather
+                than to interface adaptation.
               </li>
             </ul>
             <p>

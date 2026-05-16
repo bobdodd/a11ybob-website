@@ -58,7 +58,8 @@ export default function ActionLanguagePlayground() {
               (1984&ndash;89). Twenty-five years later, the
               doctoral framework&rsquo;s executable-specification
               runtime treated the Action Language model as a Forth-
-              style threaded interpreter. The ActionLanguage IR in{" "}
+              style threaded interpreter. The ActionLanguage intermediate
+              representation (IR) in{" "}
               <Link href="/paradise/action-language">Paradise</Link>{" "}
               today is the same shape again. <em>Same execution
               model, four problem domains, four decades.</em>

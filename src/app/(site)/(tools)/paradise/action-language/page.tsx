@@ -17,7 +17,7 @@ export default function ParadiseActionLanguage() {
           >
             <h1>ActionLanguage IR</h1>
             <p className="lede">
-              The intermediate representation Paradise builds for
+              The intermediate representation (IR) Paradise builds for
               JavaScript. A tree of actions describing{" "}
               <em>what the program does</em>, not the syntax of how it
               was written. Two semantically-equivalent JavaScript

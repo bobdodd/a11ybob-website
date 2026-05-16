@@ -162,7 +162,7 @@ export default function CisnaModel() {
             </p>
             <p>
               The modern descendant in active use is the
-              ActionLanguage IR inside{" "}
+              ActionLanguage intermediate representation (IR) inside{" "}
               <Link href="/paradise">Paradise</Link> — the same
               shape, the same threaded-interpreter execution model,
               applied to source-level accessibility analysis of

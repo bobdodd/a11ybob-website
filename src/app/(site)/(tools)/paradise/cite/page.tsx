@@ -21,8 +21,8 @@ export default function ParadiseCite() {
               comparisons, or in any context where the source-level
               accessibility analysis claim needs an attribution. Both
               Paradise itself and the underlying W4A 2008 paper that
-              the ActionLanguage IR descends from have suggested
-              citations.
+              the ActionLanguage intermediate representation (IR)
+              descends from have suggested citations.
             </p>
           </header>
 

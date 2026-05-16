@@ -108,8 +108,8 @@ export default function ParadiseArchitecture() {
               differs.
             </p>
             <p>
-              The IR&rsquo;s shape descends directly from work I did on
-              adaptive user interfaces in 2010; the form is treated in
+              The shape of the intermediate representation (IR) descends
+              directly from work I did on adaptive user interfaces in 2010; the form is treated in
               detail on{" "}
               <Link href="/paradise/action-language">
                 ActionLanguage IR

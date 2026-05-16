@@ -22,9 +22,10 @@ export default function ParadiseAnalysers() {
             <p className="lede">
               The {ANALYSERS.length} accessibility analysers that ship
               with Paradise. Each takes the integrated DocumentModel
-              (HTML + ActionLanguage IR + CSS, see{" "}
-              <Link href="/paradise/architecture">Architecture</Link>)
-              and reports a specific class of issue. Pick any to see
+              &mdash; HTML plus the ActionLanguage intermediate
+              representation (IR) plus CSS, see{" "}
+              <Link href="/paradise/architecture">Architecture</Link>{" "}
+              &mdash; and reports a specific class of issue. Pick any to see
               what it detects, the WCAG criteria it maps to, and a short
               broken-code example.
             </p>
