@@ -281,8 +281,9 @@ export default function About() {
               CNIB Frontier, Bob built out the audit processes (websites, apps,
               lived user testing, electronic documents), the toolchain that
               supported them, and an early automated testing tool; the role
-              also brought him into the W3C ACT-R community group defining
-              standard tests for digital accessibility.
+              also brought him into contact with the W3C ACT-R community group
+              defining standard tests for digital accessibility, influencing
+              his own work on accessibility testing.
             </p>
             <p>
               A spell from 2021 as Director of Delivery at Digita11y Accessible
