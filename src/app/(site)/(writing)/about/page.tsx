@@ -43,7 +43,7 @@ export default function About() {
               enforced by the loop.
             </p>
             <p>
-              Around 1980 Bob and his father kit-built a ZX80 on the kitchen
+              In early 1981 Bob and his father kit-built a ZX80 on the kitchen
               table. A 16K Spectrum followed; on it, Bob learned Sinclair
               Spectrum Forth — a stack-oriented language that ran close to
               the metal because the metal was all you had.
