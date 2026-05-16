@@ -19,8 +19,8 @@ export default function Work() {
               Audit and remediation engagements. Accessibility strategy
               and design review. Expert testimony and procurement support.
               Training and workshops, particularly on integrating
-              accessibility into development process. Advisory and board
-              roles.
+              accessibility into development process. Talks. Research
+              collaboration. Advisory and board roles.
             </p>
             <p>
               Consulting work alongside the CNIB role is necessarily
