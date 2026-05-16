@@ -34,8 +34,9 @@ export default function About() {
               is a variation on what was learned then.
             </p>
             <p>
-              Northumberland County Council ran an ICL 2900 mainframe and
-              gave secondary-school students batch-time on it. Programs were
+              In the late 1970s and early 1980s Northumberland County
+              Council ran an ICL 2900 mainframe and gave secondary-school
+              students batch-time on it. Programs were
               written on coding forms, sent in to be punched onto cards by
               typists, and run when the mainframe was quiet. Turnaround was
               measured in weeks. A typo cost three weeks. Discipline was
