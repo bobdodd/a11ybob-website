@@ -272,9 +272,9 @@ export default function About() {
           >
             <h2>CNIB, CELA, and the working tools</h2>
             <p>
-              From 2013, Bob&rsquo;s first role at CNIB was the original CNIB
-              Library website. That work led into the co-design and
-              implementation of CELA, the Centre for Equitable Library Access
+              From 2013, Bob&rsquo;s first role at CNIB was maintaining the
+              original CNIB Library website whilst planning and developing its
+              replacement, CELA, the Centre for Equitable Library Access
               &mdash; the moment Canadian public libraries finally took on the
               responsibility for accessible book access that CNIB had carried
               for a century. From 2019, as Manager of Digital Accessibility at
