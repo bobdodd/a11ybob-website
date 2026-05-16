@@ -215,7 +215,8 @@ export default function About() {
               published from the work, including the W4A 2008 paper{" "}
               <em>The CISNA Model of Accessible Adaptive Hypermedia</em> (with
               Steve Green and Elaine Pearson). The viva was never taken &mdash;
-              largely because CNIB and CELA happened. Two pieces of original
+              largely because of a family move to Canada, and CNIB and CELA
+              happening. Two pieces of original
               conceptual work survived from the period and are still
               load-bearing for current writing: the{" "}
               <Link href="/research/cisna-model">CISNA Model</Link> itself, and{" "}
