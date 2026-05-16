@@ -39,7 +39,7 @@ export default function About() {
               students batch-time on it. Programs were
               written on coding forms, sent in to be punched onto cards by
               typists, and run when the mainframe was quiet. Turnaround was
-              measured in weeks. A typo cost three weeks. Discipline was
+              measured in weeks. A typo could cost three weeks. Discipline was
               enforced by the loop.
             </p>
             <p>
