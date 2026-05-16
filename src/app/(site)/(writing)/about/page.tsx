@@ -344,14 +344,15 @@ export default function About() {
                 through to CNIB. They&rsquo;re my employer, and a charity I
                 believe in, and I love gifting them apps and code.&rdquo;
               </em>{" "}
-              Carnforth GPL became autoA11y; the home audio-analysis PoC became
-              Dictaphone. pdfMax, by contrast, originated entirely within
-              Access Labs &mdash; the first substantive tool the practice
-              produced without a home predecessor. The home/CNIB asymmetry
-              isn&rsquo;t policy; it&rsquo;s preference. Hobby code is the
-              right shape for theoretical exploration, and production code is
-              the right shape for institutional users with conformance
-              obligations. Both keep happening.
+              Both autoA11y and Dictaphone began as personal projects with
+              roots in the PhD, and were later gifted to CNIB &mdash; Carnforth
+              GPL became autoA11y, the home audio-analysis PoC became
+              Dictaphone. pdfMax originated within Access Labs itself, but
+              on the legacy those two earlier gifts had established. The
+              home/CNIB asymmetry isn&rsquo;t policy; it&rsquo;s preference.
+              Hobby code is the right shape for theoretical exploration, and
+              production code is the right shape for institutional users with
+              conformance obligations. Both keep happening.
             </p>
             <p>
               The ActionLanguage IR in Paradise today carries forward the
