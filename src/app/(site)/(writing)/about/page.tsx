@@ -152,16 +152,6 @@ export default function About() {
               Executable UML, SDL.
             </p>
             <p>
-              The mid-1990s also covered a period in Singapore, with connections
-              to the gay Deaf community there. Out of a challenge over drinks
-              at the bar Tantric on a Friday night came{" "}
-              <Link href="/research/spotlight/sign16">Sign16</Link> &mdash; a
-              sign-writing system that fit on the 16-key keypad of a feature
-              phone. The price of solving the problem was a beer. That story is
-              the first of three on the{" "}
-              <Link href="/research/spotlight">Spotlight projects</Link> page.
-            </p>
-            <p>
               Then in 1996 came the Control Data mail hub, which bridged the
               pre-SMTP fragmentation of corporate email &mdash; Microsoft Mail,
               Lotus, IBM systems, X.400 &mdash; by converting between formats
@@ -258,6 +248,16 @@ export default function About() {
               the corpus, written largely on that bus. The Communities of
               Practice framing went on to become the substrate for the{" "}
               <Link href="/research/2029-framework">2029 framework</Link>.
+            </p>
+            <p>
+              A period in Singapore in the mid-2000s, also inside the doctoral
+              years, brought connections to the gay Deaf community there. Out
+              of a challenge over drinks at the bar Tantric on a Friday night
+              came <Link href="/research/spotlight/sign16">Sign16</Link>
+              &mdash; a sign-writing system that fit on the 16-key keypad of a
+              feature phone. The price of solving the problem was a beer. That
+              story is the first of three on the{" "}
+              <Link href="/research/spotlight">Spotlight projects</Link> page.
             </p>
             <p>
               In 2008, Bob and Taodi moved from the UK to Canada when Taodi
