@@ -25,12 +25,13 @@ export default function About() {
           >
             <h2>The model railway</h2>
             <p>
-              Bob grew up in Northumberland and built a model railway, first
-              controlled with relay logic, later with TTL gates. A relay
-              interlock is a real-time safety system; the railway was a
-              real-time control system before he had ever touched a computer.
-              Everything that came afterwards is a variation on what was
-              learned then.
+              Bob grew up in the UK, in Northumberland, and built many
+              model railways. Let&rsquo;s talk about one in particular.
+              This was first controlled with relay logic, later with TTL
+              gates. A relay interlock is a real-time safety system;
+              the railway was a real-time control system before he had
+              ever touched a computer. Everything that came afterwards
+              is a variation on what was learned then.
             </p>
             <p>
               Northumberland County Council ran an ICL 2900 mainframe and
