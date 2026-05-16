@@ -1026,6 +1026,52 @@ export default function Colophon() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
+            <h2>Where AI fits in the build and the work</h2>
+            <p>
+              This site is built with AI assistance &mdash; as a
+              collaborator on implementation, code structure, and the
+              mechanics of the design system. The intellectual content
+              is mine: the positions, the frameworks, the writing, the
+              design choices. The tooling work that gets those ideas
+              into running code happens in conversation with an AI
+              assistant. That collaboration is disclosed here rather
+              than hidden because the colophon&rsquo;s purpose is to
+              make the build examinable.
+            </p>
+            <p>
+              Separately, AI also appears in the substantive
+              accessibility work this site describes. The Dictaphone
+              tool documented at <Link href="/lived-testing">
+                <code>/lived-testing</code>
+              </Link>{" "}
+              and the proof-of-concept analyses at{" "}
+              <Link href="/a11yauto">
+                <code>/a11yauto</code>
+              </Link>{" "}
+              use multimodal LLMs for accessibility analysis on behalf
+              of CNIB Access Labs and Bob&rsquo;s own research lines.
+              That work is the subject of several pages and is covered
+              there in detail.
+            </p>
+            <p>
+              The accessibility industry&rsquo;s relationship with AI
+              right now is uneasy. The fair criticism is real &mdash;
+              there are companies extracting practitioner expertise
+              into models without credit or compensation. The position
+              on this site is to use the tools for what they&rsquo;re
+              genuinely useful for (translation between idea and code;
+              surfacing issues humans don&rsquo;t notice on their first
+              pass) while keeping the intellectual work and the
+              judgement-of-quality with the human whose name is on the
+              work. This colophon is part of that judgement made
+              visible.
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
             <h2>Acknowledgements</h2>
             <p>
               Heydon Pickering and Andy Bell, for{" "}
