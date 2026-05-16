@@ -242,7 +242,7 @@ export default function About() {
               Nokia in Beijing; the route to a same-sex partner visa ran
               through Tsinghua University, where Bob spent two semesters
               studying Mandarin so he could live in China while Taodi worked.
-              The 6am bus journey to Tsinghua produced the{" "}
+              The gruelling 6am bus journey to Tsinghua University produced the{" "}
               <em>User Interface as an Evolving Community of Practice</em>{" "}
               chapter &mdash; one of the more biographically rooted pieces of
               the corpus, written largely on that bus. The Communities of
