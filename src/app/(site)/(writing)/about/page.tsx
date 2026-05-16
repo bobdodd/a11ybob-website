@@ -8,20 +8,15 @@ export default function About() {
         <div className="stack" style={{ "--space": "var(--s2)" } as CSSProperties}>
           <header
             className="with-sidebar with-sidebar--top-aligned"
-            style={{ "--side-width": "18rem" } as CSSProperties}
+            style={{ "--side-width": "12rem" } as CSSProperties}
           >
-            <figure
-              className="sidebar stack"
-              style={{ "--space": "var(--s-1)" } as CSSProperties}
-            >
-              <img
-                src="/bob-dodd.jpg"
-                alt="Bob Dodd"
-                width={590}
-                height={600}
-              />
-              <figcaption>Bob Dodd</figcaption>
-            </figure>
+            <img
+              className="sidebar"
+              src="/bob-dodd.jpg"
+              alt="Bob Dodd"
+              width={393}
+              height={400}
+            />
             <div
               className="not-sidebar stack"
               style={{ "--space": "var(--s1)" } as CSSProperties}
