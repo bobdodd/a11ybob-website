@@ -315,7 +315,7 @@ export default function About() {
               In parallel, and on personal time, Bob develops three open-source
               tools of his own. <Link href="/paradise">Paradise</Link> is a
               multi-model accessibility analyser whose technical contribution
-              is the ActionLanguage intermediate representation &mdash; a
+              is the ActionLanguage intermediate representation (IR) &mdash; a
               JavaScript-to-semantic-tree transcoder that lets analysis reason
               about runtime behaviour at the source level.{" "}
               <Link href="/carnforth">Carnforth GPL</Link> is a Chrome DevTools
