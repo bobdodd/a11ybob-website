@@ -7,16 +7,33 @@ export default function About() {
       <div className="center">
         <div className="stack" style={{ "--space": "var(--s2)" } as CSSProperties}>
           <header
-            className="stack"
-            style={{ "--space": "var(--s1)" } as CSSProperties}
+            className="with-sidebar with-sidebar--top-aligned"
+            style={{ "--side-width": "18rem" } as CSSProperties}
           >
-            <h1>About</h1>
-            <p className="lede">
-              <em>
-                Systems that respond intelligently to context, and the humans
-                within them.
-              </em>
-            </p>
+            <figure
+              className="sidebar stack"
+              style={{ "--space": "var(--s-1)" } as CSSProperties}
+            >
+              <img
+                src="/bob-dodd.jpg"
+                alt="Bob Dodd"
+                width={590}
+                height={600}
+              />
+              <figcaption>Bob Dodd</figcaption>
+            </figure>
+            <div
+              className="not-sidebar stack"
+              style={{ "--space": "var(--s1)" } as CSSProperties}
+            >
+              <h1>About</h1>
+              <p className="lede">
+                <em>
+                  Systems that respond intelligently to context, and the humans
+                  within them.
+                </em>
+              </p>
+            </div>
           </header>
 
           <section
