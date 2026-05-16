@@ -288,7 +288,7 @@ export default function About() {
             <p>
               A spell from 2021 as Director of Delivery at Digita11y Accessible
               Inc. covered the audit department of a SaaS-era consultancy
-              &mdash; an in-house team with Indian subcontractors,
+              &mdash; an in-house team with external agency-supplied subcontractors,
               audit-reporting and test-automation tools, and training and
               consultancy for George Brown College, Centennial College,
               Co-operators, Brookfield Properties, and Philip Morris.
