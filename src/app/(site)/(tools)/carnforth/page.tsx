@@ -235,9 +235,7 @@ export default function Carnforth() {
               name algorithm sits relative to source-level analysis
               and AI-driven testing &mdash; the same three-
               approach framing the tooling page now uses on the
-              site. Slides and any video link land on{" "}
-              <Link href="/talks">/talks</Link> as they become
-              available.
+              site.
             </p>
           </section>
 

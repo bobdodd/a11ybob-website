@@ -1,6 +1,6 @@
 "use client";
 
-/* Primary site navigation. Nine top-level entries; each has a
+/* Primary site navigation. Eight top-level entries; each has a
  * matcher that decides whether the user's current pathname makes
  * it the current page.
  *
@@ -70,11 +70,6 @@ const items: NavItem[] = [
     href: "/maps",
     label: "Maps",
     isActive: (p) => p === "/maps" || p.startsWith("/maps/"),
-  },
-  {
-    href: "/talks",
-    label: "Talks",
-    isActive: (p) => p === "/talks" || p.startsWith("/talks/"),
   },
   {
     href: "/work",

@@ -7,7 +7,6 @@ type Zone =
   | "work"
   | "about"
   | "writing"
-  | "talks"
   | "research"
   | "paradise"
   | "tools"

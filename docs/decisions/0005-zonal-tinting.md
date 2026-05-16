@@ -4,7 +4,9 @@
 to 11 zones (one per main-nav landing) after the four-zone shape
 collapsed multiple main-nav landings into the same colour — most
 visibly Paradise / Tools / Playgrounds / Maps sharing 215°, and
-Writing / Talks / About sharing 30°. The four-zone version is
+Writing / Talks / About sharing 30° (the Talks zone has since been
+temporarily withdrawn alongside the page; see the note under the
+table). The four-zone version is
 preserved in git history at commit `00d867f^`.
 
 **Status:** Accepted
@@ -12,7 +14,7 @@ preserved in git history at commit `00d867f^`.
 ## The choice
 
 The site's surface colour shifts subtly per main-nav landing page.
-Eleven zones, each a different hue, all sitting at perceptually
+Ten zones, each a different hue, all sitting at perceptually
 identical OKLCH lightness so body-text contrast is preserved
 everywhere. Sub-pages inherit their landing page's zone via their
 section layout.
@@ -21,7 +23,6 @@ section layout.
 | --- | --- | --- | --- | --- | --- |
 | `about` | `/about` | — | 5° | 0.045 | dusty rose-pink — personal |
 | `writing` | `/writing` | `/writing/[slug]`, `/writing/reviews`, `/writing/glossary` | 30° | 0.05 | warm rose — editorial |
-| `talks` | `/talks` | — | 60° | 0.05 | honey/wheat — spoken word |
 | `home` | `/` | — | 85° | 0.05 | warm cream — front door |
 | `work` | `/work` | — | 130° | 0.045 | sage green — practitioner |
 | `maps` | `/maps` | `/maps/*` | 155° | 0.045 | forest green — geographic |
@@ -30,6 +31,13 @@ section layout.
 | `research` | `/research` | `/research/*` | 250° | 0.045 | cool blue — archive |
 | `ambient` | (none) | `/now`, `/contact`, `/privacy`, `/accessibility`, `/colophon` | 270° | 0.012 | near-neutral cool grey — utility |
 | `playgrounds` | `/playgrounds` | `/playgrounds/*` | 305° | 0.045 | lavender — experimental |
+
+*The `talks` zone (60°, honey/wheat) was provisioned in the
+2026-05-15 11-zone amendment for the `/talks` landing, and removed on
+2026-05-16 when the `/talks` page was temporarily withdrawn pending
+fresh content. Both the page and the zone will be reinstated together
+when the content is ready; the gap at 60° in the table above is the
+placeholder.*
 
 ## Why
 
@@ -118,7 +126,8 @@ zones** — "large enough to communicate different kinds of content,
 small enough to maintain." That target turned out to be too small for
 the site's information architecture: nine items live on the main nav,
 and the four-zone shape collapsed Paradise, Tools, Playgrounds, and
-Maps into one colour, plus Writing, Talks, and About into another. A
+Maps into one colour, plus Writing, Talks, and About into another (Talks
+has since been temporarily withdrawn). A
 visitor moving between Paradise and Maps in the same browsing session
 saw the same surface tint both places — the BridgePoint "where am I"
 signal stopped working at exactly the resolution that matters most.

@@ -58,10 +58,9 @@
    lightness pairings (95% / 90%) across zones; only hue and chroma
    vary. AAA contrast (~11:1) preserved on every zone.
 
-   The 11 zones, in hue order:
+   The 10 zones, in hue order:
      about         5°    rose-pink     personal
      writing       30°   warm rose     editorial (kept from original)
-     talks         60°   honey/wheat   spoken word
      home          85°   warm cream    front door (kept from original self)
      work          130°  sage green    practitioner
      maps          155°  forest green  geographic
@@ -86,14 +85,6 @@
   --ink:       oklch(20% 0.02 30);
   --ink-muted: oklch(35% 0.02 30);
   --rule:      oklch(75% 0.05 30);
-}
-
-[data-zone="talks"] {
-  --surface-1: oklch(95% 0.05 60);
-  --surface-2: oklch(90% 0.05 60);
-  --ink:       oklch(20% 0.02 60);
-  --ink-muted: oklch(35% 0.02 60);
-  --rule:      oklch(75% 0.05 60);
 }
 
 [data-zone="home"] {
@@ -186,14 +177,6 @@
     --ink:       oklch(96% 0.02 30);
     --ink-muted: oklch(75% 0.02 30);
     --rule:      oklch(40% 0.05 30);
-  }
-
-  [data-zone="talks"] {
-    --surface-1: oklch(20% 0.05 60);
-    --surface-2: oklch(26% 0.05 60);
-    --ink:       oklch(96% 0.02 60);
-    --ink-muted: oklch(75% 0.02 60);
-    --rule:      oklch(40% 0.05 60);
   }
 
   [data-zone="home"] {

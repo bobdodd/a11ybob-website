@@ -184,10 +184,6 @@ export default function MapsGuelph() {
             <h2>Reading on</h2>
             <ul>
               <li>
-                <Link href="/talks">/talks</Link> &mdash; the
-                2019 Guelph webinar slides land here when added.
-              </li>
-              <li>
                 <Link href="/research/cisna-model">
                   The CISNA Model
                 </Link>{" "}

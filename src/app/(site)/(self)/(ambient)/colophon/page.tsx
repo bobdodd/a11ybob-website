@@ -35,7 +35,7 @@ const decisions = [
     file: "0005-zonal-tinting.md",
     title: "Zonal surface tinting",
     summary:
-      "Subtle BridgePoint-style tinting per main-nav landing page. Eleven zones, each at perceptually-identical OKLCH lightness so body-text contrast holds across every hue. Sub-pages inherit their landing's zone via a section layout. Initial four-zone version (2026-05-05) collapsed multiple landings into one colour; amended to eleven (2026-05-15) so each main-nav surface reads as its own.",
+      "Subtle BridgePoint-style tinting per main-nav landing page. Ten zones, each at perceptually-identical OKLCH lightness so body-text contrast holds across every hue. Sub-pages inherit their landing's zone via a section layout. Initial four-zone version (2026-05-05) collapsed multiple landings into one colour; amended to eleven (2026-05-15) so each main-nav surface reads as its own; the Talks zone was temporarily withdrawn 2026-05-16 alongside its page.",
   },
   {
     id: "0006",
@@ -255,7 +255,7 @@ export default function Colophon() {
             <p>
               All colour values are expressed in{" "}
               <a href="https://oklch.com">OKLCH</a> — a perceptually
-              uniform colour space. Surface tints across the eleven
+              uniform colour space. Surface tints across the ten
               zones sit at perceptually identical lightness, so
               body-text contrast (AAA, 7:1 minimum) is preserved across
               every zone regardless of hue. The zonal tinting pattern
