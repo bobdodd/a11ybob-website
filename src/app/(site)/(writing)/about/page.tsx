@@ -166,12 +166,12 @@ export default function About() {
               Between 1997 and 2001, Bob was at Nokia Mobile Phones in Finland
               and Germany, working on a joint project with Nokia Research on
               adaptive UI design methodologies for novel interfaces in in-car
-              telephony. Self-adapting UIs that could move between devices of
-              varying capability &mdash; a 1100 feature phone at the cheap end,
-              a 9900 with a flip-out QWERTY at the high end &mdash; same
-              software, adapting at runtime. This is where adaptive UIs entered
-              the working vocabulary, several years before the accessibility
-              application emerged.
+              telephony. The specific goal was projecting a phone&rsquo;s UI
+              into a third-party in-car infotainment system &mdash; the same
+              phone software adapting at runtime to whichever platform was
+              hosting it. This is where adaptive UIs entered the working
+              vocabulary, several years before the accessibility application
+              emerged.
             </p>
           </section>
 
