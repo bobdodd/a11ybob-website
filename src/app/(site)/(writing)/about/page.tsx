@@ -10,13 +10,17 @@ export default function About() {
             className="with-sidebar with-sidebar--top-aligned"
             style={{ "--side-width": "12rem" } as CSSProperties}
           >
-            <img
-              className="sidebar"
-              src="/bob-dodd.jpg"
-              alt="Bob Dodd"
-              width={393}
-              height={400}
-            />
+            <div
+              className="frame sidebar"
+              style={
+                {
+                  "--frame-n": "393",
+                  "--frame-d": "400",
+                } as CSSProperties
+              }
+            >
+              <img src="/bob-dodd.jpg" alt="Bob Dodd" />
+            </div>
             <div
               className="not-sidebar stack"
               style={{ "--space": "var(--s1)" } as CSSProperties}

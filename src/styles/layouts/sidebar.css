@@ -23,14 +23,3 @@
 .with-sidebar--top-aligned {
   align-items: flex-start;
 }
-
-/* When a media element is itself the sidebar (rather than wrapped in a
-   container), constrain it to --side-width so its intrinsic dimensions
-   don't push the layout to wrap. */
-.with-sidebar > img.sidebar,
-.with-sidebar > picture.sidebar,
-.with-sidebar > video.sidebar,
-.with-sidebar > svg.sidebar {
-  inline-size: var(--side-width, 20rem);
-  block-size: auto;
-}
