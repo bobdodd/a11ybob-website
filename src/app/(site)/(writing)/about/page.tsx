@@ -168,8 +168,7 @@ export default function About() {
               adaptive UI design methodologies for novel interfaces in in-car
               telephony. The specific goal was adapting a phone&rsquo;s UI
               for a third-party in-car infotainment system &mdash; the same
-              phone software adapting at runtime to whichever platform was
-              hosting it. This is where adaptive UIs entered the working
+              phone software, adapted for whichever platform was hosting it. This is where adaptive UIs entered the working
               vocabulary, several years before the accessibility application
               emerged.
             </p>
