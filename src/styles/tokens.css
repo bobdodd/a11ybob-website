@@ -59,7 +59,7 @@
    vary. AAA contrast (~11:1) preserved on every zone.
 
    The 10 zones, in hue order:
-     about         5°    rose-pink     personal
+     about         350°  mauve heather personal
      writing       30°   warm rose     editorial (kept from original)
      home          85°   warm cream    front door (kept from original self)
      work          130°  sage green    practitioner
@@ -72,11 +72,11 @@
 */
 
 [data-zone="about"] {
-  --surface-1: oklch(95% 0.045 5);
-  --surface-2: oklch(90% 0.045 5);
-  --ink:       oklch(20% 0.02 5);
-  --ink-muted: oklch(35% 0.02 5);
-  --rule:      oklch(75% 0.045 5);
+  --surface-1: oklch(95% 0.03 350);
+  --surface-2: oklch(90% 0.03 350);
+  --ink:       oklch(20% 0.02 350);
+  --ink-muted: oklch(35% 0.02 350);
+  --rule:      oklch(75% 0.03 350);
 }
 
 [data-zone="writing"] {
@@ -164,11 +164,11 @@
   }
 
   [data-zone="about"] {
-    --surface-1: oklch(20% 0.045 5);
-    --surface-2: oklch(26% 0.045 5);
-    --ink:       oklch(96% 0.02 5);
-    --ink-muted: oklch(75% 0.02 5);
-    --rule:      oklch(40% 0.045 5);
+    --surface-1: oklch(20% 0.03 350);
+    --surface-2: oklch(26% 0.03 350);
+    --ink:       oklch(96% 0.02 350);
+    --ink-muted: oklch(75% 0.02 350);
+    --rule:      oklch(40% 0.03 350);
   }
 
   [data-zone="writing"] {

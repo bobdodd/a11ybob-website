@@ -21,7 +21,7 @@ section layout.
 
 | Zone | Main-nav landing | Sub-pages (inherit) | Hue | Chroma | Feel |
 | --- | --- | --- | --- | --- | --- |
-| `about` | `/about` | — | 5° | 0.045 | dusty rose-pink — personal |
+| `about` | `/about` | — | 350° | 0.03 | mauve heather — personal |
 | `writing` | `/writing` | `/writing/[slug]`, `/writing/reviews`, `/writing/glossary` | 30° | 0.05 | warm rose — editorial |
 | `home` | `/` | — | 85° | 0.05 | warm cream — front door |
 | `work` | `/work` | — | 130° | 0.045 | sage green — practitioner |
@@ -38,6 +38,16 @@ section layout.
 fresh content. Both the page and the zone will be reinstated together
 when the content is ready; the gap at 60° in the table above is the
 placeholder.*
+
+*The `about` zone was shifted on 2026-05-16 from `5° / 0.045`
+(dusty rose-pink) to `350° / 0.03` (mauve heather). The trigger was
+the editorial portrait on the About page: its near-white studio-grey
+backdrop fought the warmer pink. Cooling the hue toward mauve and
+dropping chroma a notch lets the photo's neutral background read as
+quiet rather than clashing, while staying inside the "personal" feel
+the zone was assigned for. Spacing against the next-warmer zone
+(`writing` at 30°) widens from 25° to 40°, so the two remain
+distinguishable.*
 
 ## Why
 
