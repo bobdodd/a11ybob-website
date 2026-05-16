@@ -79,7 +79,7 @@ export default function About() {
               Bob read BSc Computer Technology at Teesside Polytechnic from
               1982 to 1986 &mdash; a four-year course split evenly between
               hardware and software. During his time there the polytechnic
-              decommissioned its Univac 1100; the building the mainframe had
+              decommissioned its Univac 1100 mainframe; the building it had
               occupied was converted into two squash courts. The conversion
               dates the era for him specifically, in a way that more abstract
               dating could not.
