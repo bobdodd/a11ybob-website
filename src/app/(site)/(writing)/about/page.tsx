@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
+import { ImageFigure } from "@/components/ImageFigure";
 
 export default function About() {
   return (
@@ -104,30 +105,21 @@ export default function About() {
               className="with-sidebar with-sidebar--top-aligned"
               style={{ "--side-width": "14rem" } as CSSProperties}
             >
-              <figure
-                className="sidebar stack"
-                style={{ "--space": "var(--s-1)" } as CSSProperties}
-              >
-                <div
-                  className="frame"
-                  style={
-                    {
-                      "--frame-n": "1",
-                      "--frame-d": "1",
-                    } as CSSProperties
-                  }
-                >
-                  <img
-                    src="/about/sentinel.jpg"
-                    alt="Black-and-white photograph of a laboratory instrument cabinet with three stacked drawer modules; a small CRT monitor and keyboard sit on top of a side console."
-                  />
-                </div>
-                <figcaption>
-                  The Difco automated blood culture system &mdash; prototyped
-                  on Transputers running occam, production on networked 8051s.
-                  First generation of what is now standard in pathology labs.
-                </figcaption>
-              </figure>
+              <ImageFigure
+                sidebar
+                src="/about/sentinel.jpg"
+                alt="Black-and-white photograph of a laboratory instrument cabinet with three stacked drawer modules; a small CRT monitor and keyboard sit on top of a side console."
+                frameN={1}
+                frameD={1}
+                captionText="The Difco automated blood culture system — prototyped on Transputers running occam, production on networked 8051s. First generation of what is now standard in pathology labs."
+                caption={
+                  <>
+                    The Difco automated blood culture system &mdash; prototyped
+                    on Transputers running occam, production on networked 8051s.
+                    First generation of what is now standard in pathology labs.
+                  </>
+                }
+              />
               <p className="not-sidebar">
                 From 1984 he was working at Metal Box Automation and Controls in
                 Worcester, in a culture summed up in one sentence:{" "}
@@ -190,103 +182,66 @@ export default function About() {
                 } as CSSProperties
               }
             >
-              <figure
-                className="stack"
-                style={{ "--space": "var(--s-1)" } as CSSProperties}
-              >
-                <div
-                  className="frame"
-                  style={
-                    {
-                      "--frame-n": "4",
-                      "--frame-d": "3",
-                    } as CSSProperties
-                  }
-                >
-                  <img
-                    src="/about/cf-llads.jpg"
-                    alt="An armoured tracked vehicle in desert paint with a missile-launcher turret carrying twin missile pods and a sensor pod, mounted on an APC-style chassis."
-                  />
-                </div>
-                <figcaption>
-                  Low Level Air Defence System (LLADS) &mdash; one of the
-                  Canadian Forces communications-systems contracts at Siemens
-                  Plessey Defence Systems, Havant, from 1989.
-                </figcaption>
-              </figure>
-              <figure
-                className="stack"
-                style={{ "--space": "var(--s-1)" } as CSSProperties}
-              >
-                <div
-                  className="frame frame--contain"
-                  style={
-                    {
-                      "--frame-n": "4",
-                      "--frame-d": "3",
-                    } as CSSProperties
-                  }
-                >
-                  <img
-                    src="/about/dss.png"
-                    alt="Network diagram showing five Unix nodes — two Secret, one Top Secret, two Unclassified — each connected through a Trusted Network Interface Unit (TNIU) to a shared LAN. Labelled 'Figure 3: A securely partitioned system.'"
-                  />
-                </div>
-                <figcaption>
-                  The Trusted Network Interface Unit (TNIU) at RSRE, extending
-                  the OSI seven-layer model with security layers and specified
-                  in Z notation.
-                </figcaption>
-              </figure>
-              <figure
-                className="stack"
-                style={{ "--space": "var(--s-1)" } as CSSProperties}
-              >
-                <div
-                  className="frame"
-                  style={
-                    {
-                      "--frame-n": "4",
-                      "--frame-d": "3",
-                    } as CSSProperties
-                  }
-                >
-                  <img
-                    src="/about/ascotel-crystal.jpg"
-                    alt="A dark desk telephone with a wide LCD display, rows of function and numeric keys, and a slide-out QWERTZ keyboard underneath, photographed next to its product manual."
-                  />
-                </div>
-                <figcaption>
-                  The Ascotel Crystal &mdash; an Ascom PABX terminal of the
-                  period. Software Group Leader for the introduction of
-                  object-oriented technology at Ascom AG, Solothurn, 1993&ndash;1996.
-                </figcaption>
-              </figure>
-              <figure
-                className="stack"
-                style={{ "--space": "var(--s-1)" } as CSSProperties}
-              >
-                <div
-                  className="frame frame--contain"
-                  style={
-                    {
-                      "--frame-n": "4",
-                      "--frame-d": "3",
-                    } as CSSProperties
-                  }
-                >
-                  <img
-                    src="/about/mailhub.png"
-                    alt="Architecture diagram of Control Data Systems Mail*Hub: proprietary endpoints (cc:Mail/Novell, Lotus Notes, IBM OfficeVision) on the left feed a Mail*Hub routing core containing a translation engine, addressing engine and message queuing, which in turn feeds out to the global OSI network on the right — SMTP gateway (RFC 1327), X.400 Message Transfer System, and the X.25 packet-switched data network."
-                  />
-                </div>
-                <figcaption>
-                  The Control Data Systems Mail*Hub architecture, 1996 &mdash;
-                  the &ldquo;giant giant Perl program&rdquo; bridging
-                  Microsoft Mail, Lotus, IBM systems and X.400 through an
-                  X.500 directory.
-                </figcaption>
-              </figure>
+              <ImageFigure
+                src="/about/cf-llads.jpg"
+                alt="An armoured tracked vehicle in desert paint with a missile-launcher turret carrying twin missile pods and a sensor pod, mounted on an APC-style chassis."
+                frameN={4}
+                frameD={3}
+                captionText="Low Level Air Defence System (LLADS) — one of the Canadian Forces communications-systems contracts at Siemens Plessey Defence Systems, Havant, from 1989."
+                caption={
+                  <>
+                    Low Level Air Defence System (LLADS) &mdash; one of the
+                    Canadian Forces communications-systems contracts at Siemens
+                    Plessey Defence Systems, Havant, from 1989.
+                  </>
+                }
+              />
+              <ImageFigure
+                src="/about/dss.png"
+                alt="Network diagram showing five Unix nodes — two Secret, one Top Secret, two Unclassified — each connected through a Trusted Network Interface Unit (TNIU) to a shared LAN. Labelled 'Figure 3: A securely partitioned system.'"
+                frameN={4}
+                frameD={3}
+                contain
+                captionText="The Trusted Network Interface Unit (TNIU) at RSRE, extending the OSI seven-layer model with security layers and specified in Z notation."
+                caption={
+                  <>
+                    The Trusted Network Interface Unit (TNIU) at RSRE, extending
+                    the OSI seven-layer model with security layers and specified
+                    in Z notation.
+                  </>
+                }
+              />
+              <ImageFigure
+                src="/about/ascotel-crystal.jpg"
+                alt="A dark desk telephone with a wide LCD display, rows of function and numeric keys, and a slide-out QWERTZ keyboard underneath, photographed next to its product manual."
+                frameN={4}
+                frameD={3}
+                captionText="The Ascotel Crystal — an Ascom PABX terminal of the period. Software Group Leader for the introduction of object-oriented technology at Ascom AG, Solothurn, 1993–1996."
+                caption={
+                  <>
+                    The Ascotel Crystal &mdash; an Ascom PABX terminal of the
+                    period. Software Group Leader for the introduction of
+                    object-oriented technology at Ascom AG, Solothurn,
+                    1993&ndash;1996.
+                  </>
+                }
+              />
+              <ImageFigure
+                src="/about/mailhub.png"
+                alt="Architecture diagram of Control Data Systems Mail*Hub: proprietary endpoints (cc:Mail/Novell, Lotus Notes, IBM OfficeVision) on the left feed a Mail*Hub routing core containing a translation engine, addressing engine and message queuing, which in turn feeds out to the global OSI network on the right — SMTP gateway (RFC 1327), X.400 Message Transfer System, and the X.25 packet-switched data network."
+                frameN={4}
+                frameD={3}
+                contain
+                captionText="The Control Data Systems Mail*Hub architecture, 1996 — the 'giant giant Perl program' bridging Microsoft Mail, Lotus, IBM systems and X.400 through an X.500 directory."
+                caption={
+                  <>
+                    The Control Data Systems Mail*Hub architecture, 1996
+                    &mdash; the &ldquo;giant giant Perl program&rdquo;
+                    bridging Microsoft Mail, Lotus, IBM systems and X.400
+                    through an X.500 directory.
+                  </>
+                }
+              />
             </div>
             <p>
               From 1989 Bob was at Siemens Plessey Defence Systems in Havant,
@@ -355,30 +310,21 @@ export default function About() {
                 toward accessibility, and they kept it concrete &mdash; built for
                 specific people, not for an abstract user category.
               </p>
-              <figure
-                className="sidebar stack"
-                style={{ "--space": "var(--s-1)" } as CSSProperties}
-              >
-                <div
-                  className="frame"
-                  style={
-                    {
-                      "--frame-n": "4",
-                      "--frame-d": "3",
-                    } as CSSProperties
-                  }
-                >
-                  <img
-                    src="/about/tup.jpg"
-                    alt="Screenshot of an early text-entry interface: the word 'HELL' partially typed beside a large circle with the letter A inside a small circle, a yellow square containing a smaller square, and a red dot &mdash; within a window titled 'Carnforth.'"
-                  />
-                </div>
-                <figcaption>
-                  <Link href="/research/spotlight/tup">TUP</Link> &mdash;
-                  text entry by keystroke reduction, built first for Bob&rsquo;s
-                  cousin.
-                </figcaption>
-              </figure>
+              <ImageFigure
+                sidebar
+                src="/about/tup.jpg"
+                alt="Screenshot of an early text-entry interface: the word 'HELL' partially typed beside a large circle with the letter A inside a small circle, a yellow square containing a smaller square, and a red dot — within a window titled 'Carnforth.'"
+                frameN={4}
+                frameD={3}
+                captionText="TUP — text entry by keystroke reduction, built first for Bob's cousin."
+                caption={
+                  <>
+                    <Link href="/research/spotlight/tup">TUP</Link> &mdash;
+                    text entry by keystroke reduction, built first for
+                    Bob&rsquo;s cousin.
+                  </>
+                }
+              />
             </div>
             <p>
               Bob enrolled at Teesside two days a week for an MSc in Multimedia
@@ -424,32 +370,23 @@ export default function About() {
                 <em>Defining Accessibility</em> chapter &mdash; gives the
                 formal-and-political theory.
               </p>
-              <figure
-                className="sidebar stack"
-                style={{ "--space": "var(--s-1)" } as CSSProperties}
-              >
-                <div
-                  className="frame"
-                  style={
-                    {
-                      "--frame-n": "4",
-                      "--frame-d": "3",
-                    } as CSSProperties
-                  }
-                >
-                  <img
-                    src="/about/tetris.jpg"
-                    alt="Tetris screenshot with multicoloured falling blocks partly filling a play field on a backdrop of aurora-lit forest. Side panels show score 1400, lines 17, level 2, game type 'Fantasy.'"
-                  />
-                </div>
-                <figcaption>
-                  <Link href="/research/tetris-testbed">
-                    Tetris as accessibility testbed
-                  </Link>{" "}
-                  &mdash; mode, timing, modality and decision-making in a single
-                  artefact.
-                </figcaption>
-              </figure>
+              <ImageFigure
+                sidebar
+                src="/about/tetris.jpg"
+                alt="Tetris screenshot with multicoloured falling blocks partly filling a play field on a backdrop of aurora-lit forest. Side panels show score 1400, lines 17, level 2, game type 'Fantasy.'"
+                frameN={4}
+                frameD={3}
+                captionText="Tetris as accessibility testbed — mode, timing, modality and decision-making in a single artefact."
+                caption={
+                  <>
+                    <Link href="/research/tetris-testbed">
+                      Tetris as accessibility testbed
+                    </Link>{" "}
+                    &mdash; mode, timing, modality and decision-making in a
+                    single artefact.
+                  </>
+                }
+              />
             </div>
             <p>
               A period in Beijing around 2004 sits inside the doctoral years.

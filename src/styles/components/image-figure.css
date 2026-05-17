@@ -1,0 +1,151 @@
+/* ImageFigure — captioned image with a zoom dialog.
+ *
+ * Composes Every Layout primitives: the figure is a .stack, the
+ * trigger is a .frame (so aspect-ratio behaviour comes from the
+ * existing layout primitive), and instances can opt into .sidebar
+ * for placement inside .with-sidebar layouts.
+ *
+ * The styles here cover only what's specific to ImageFigure: the
+ * trigger's button reset and zoom-in cursor, the persistent "View
+ * larger" badge, and the dialog chrome. Aspect ratio, gap, and
+ * sidebar behaviour are inherited from .frame, .stack and .sidebar
+ * in the layouts layer. */
+
+/* ===== Trigger ===== */
+
+/* The trigger is both a .frame (aspect-ratio container) and a
+ * <button>. Reset native button chrome so .frame's flex behaviour
+ * and the image take over the visual. Keep relative positioning so
+ * the badge can sit absolutely inside it. */
+.image-figure__trigger {
+  position: relative;
+  inline-size: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: zoom-in;
+  /* Frame's own focus-visible ring (axiom layer) is what users
+   * see on keyboard focus. No hover ring — the cursor change and
+   * persistent badge are the affordances. */
+}
+
+/* ===== "View larger" badge ===== */
+
+/* Persistent visible label, bottom-right of the image. Solid panel
+ * (not semi-transparent) so it meets AAA 7:1 contrast regardless
+ * of the underlying image. Pointer-events: none so it never steals
+ * clicks from the button it sits inside.
+ *
+ * The badge text is the visible label that satisfies SC 2.5.3
+ * (Label in Name) against the trigger's aria-label, which begins
+ * with the same phrase. */
+.image-figure__badge {
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline-end: 0;
+  padding: 0.2em 0.6em;
+  background: var(--ink);
+  color: var(--surface-1);
+  font-size: var(--s-1);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  pointer-events: none;
+}
+
+/* ===== Dialog ===== */
+
+/* The dialog is mounted in the figure but rendered in the top
+ * layer when opened via showModal(). Native focus-trap, ESC and
+ * focus-return are inherited; everything below is presentation. */
+.image-figure__dialog {
+  /* Sit as a roomy panel; let the image inside dictate height up
+   * to the viewport cap. */
+  max-inline-size: min(95vw, 90rem);
+  max-block-size: 95vh;
+  padding: 0;
+  border: var(--border-thick) solid var(--ink);
+  background: var(--surface-1);
+  color: var(--ink);
+}
+
+/* Backdrop — dark wash so the dialog reads clearly. Solid colour
+ * with alpha rather than blur (cheap, reliable, no perf concerns
+ * on low-end devices). */
+.image-figure__dialog::backdrop {
+  background: color-mix(in oklch, var(--ink) 70%, transparent);
+}
+
+/* Body — vertical stack of close button, image frame, caption.
+ * Padding lives here, not on the dialog, so the backdrop wash
+ * runs flush to the dialog's edge. */
+.image-figure__dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s0);
+  padding: var(--s1);
+}
+
+/* Close button — visible-first, focusable-first. Aligned end so
+ * the visual reads as a close affordance. */
+.image-figure__close {
+  align-self: flex-end;
+  padding: 0.4em 1em;
+  border: var(--border-thin) solid var(--ink);
+  background: var(--surface-1);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.image-figure__close:hover {
+  background: var(--surface-2);
+}
+
+/* Frame around the enlarged image. No aspect-ratio enforcement —
+ * the image is shown at its natural ratio, contained within the
+ * available space. */
+.image-figure__dialog-frame {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* Cap block-size so close + caption stay visible without
+   * page-scrolling the dialog on short viewports. */
+  max-block-size: calc(95vh - var(--s6));
+}
+
+.image-figure__dialog-frame > img {
+  max-inline-size: 100%;
+  max-block-size: 100%;
+  block-size: auto;
+  inline-size: auto;
+  object-fit: contain;
+}
+
+/* Caption inside the dialog — same visual weight as the thumbnail
+ * figcaption (figcaption font-size is set in base.css). */
+.image-figure__dialog-caption {
+  margin: 0;
+  font-size: var(--s-1);
+}
+
+/* ===== Forced-colors / high-contrast =====
+ * Make sure all the dialog chrome stays visible under Windows
+ * High Contrast and similar modes that strip background colour. */
+@media (forced-colors: active) {
+  .image-figure__badge {
+    background: Canvas;
+    color: CanvasText;
+    border: var(--border-thin) solid CanvasText;
+  }
+
+  .image-figure__close {
+    border-color: ButtonText;
+  }
+
+  .image-figure__dialog {
+    border-color: CanvasText;
+  }
+}
