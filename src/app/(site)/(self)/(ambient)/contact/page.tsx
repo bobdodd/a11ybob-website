@@ -11,10 +11,7 @@ export default function Contact() {
             or anything that needs a considered reply.
           </p>
           <p>
-            <a href="mailto:hello@a11ybob.com">hello@a11ybob.com</a>{" "}
-            <em className="muted">
-              <small>(placeholder address — to be replaced)</small>
-            </em>
+            <a href="mailto:bobdodd@gmail.com">bobdodd@gmail.com</a>
           </p>
           <ul
             className="cluster list-flat"
