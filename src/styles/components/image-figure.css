@@ -31,9 +31,9 @@
    * persistent badge are the affordances. */
 }
 
-/* ===== "View larger" badge ===== */
-
-/* Persistent visible label, bottom-right of the image. Solid panel
+/* ===== "View larger" badge (raster mode) =====
+ *
+ * Persistent visible label, bottom-right of the image. Solid panel
  * (not semi-transparent) so it meets AAA 7:1 contrast regardless
  * of the underlying image. Pointer-events: none so it never steals
  * clicks from the button it sits inside.
@@ -52,6 +52,49 @@
   font-weight: 600;
   letter-spacing: 0.02em;
   pointer-events: none;
+}
+
+/* ===== Content-mode frame + overlay trigger =====
+ *
+ * Content mode (used for inline SVG diagrams) renders the trigger
+ * as a real <button> overlay sibling of the content, not as its
+ * parent. The frame becomes a position-relative container so the
+ * overlay button can anchor to its bottom-right corner. This keeps
+ * the SVG's internal WAI-ARIA Graphics roles reachable to AT users
+ * — burying them inside an interactive <button> would make them
+ * announce only the button's accessible name. */
+
+.image-figure__content-frame {
+  position: relative;
+}
+
+/* The overlay trigger is visually identical to the .image-figure__badge
+ * but is a real <button>, so it accepts pointer events and the
+ * accessible name lives on it (not on a wrapping element). */
+.image-figure__overlay-trigger {
+  position: absolute;
+  inset-block-end: 0;
+  inset-inline-end: 0;
+  padding: 0.2em 0.6em;
+  border: 0;
+  background: var(--ink);
+  color: var(--surface-1);
+  font: inherit;
+  font-size: var(--s-1);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: zoom-in;
+}
+
+/* Forced-colors override for the overlay trigger mirrors the
+ * raster badge: under stripped-palette modes, fall back to the
+ * system button colour pair. */
+@media (forced-colors: active) {
+  .image-figure__overlay-trigger {
+    background: ButtonFace;
+    color: ButtonText;
+    border: var(--border-thin) solid ButtonText;
+  }
 }
 
 /* ===== Dialog ===== */

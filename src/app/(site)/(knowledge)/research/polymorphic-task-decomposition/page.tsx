@@ -34,6 +34,7 @@ export default function PTD() {
             frameN={16}
             frameD={9}
             contain
+            triggerLabel="the PTD task tree"
             captionText="The canonical PTD example. The same underlying intention — Delete File — realised as two polymorphs: Direct Manipulation and Modal Dialogue, each with its own task ordering and its own leaf-level modality affordances. The capability model selects between polymorphs at runtime based on user, device, and operating context."
             caption={
               <>

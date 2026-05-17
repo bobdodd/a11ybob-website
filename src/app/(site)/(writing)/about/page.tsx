@@ -111,6 +111,7 @@ export default function About() {
                 alt="Black-and-white photograph of a laboratory instrument cabinet with three stacked drawer modules; a small CRT monitor and keyboard sit on top of a side console."
                 frameN={1}
                 frameD={1}
+                triggerLabel="the Sentinel photograph"
                 captionText="The Difco automated blood culture system — prototyped on Transputers running occam, production on networked 8051s. First generation of what is now standard in pathology labs."
                 caption={
                   <>
@@ -187,6 +188,7 @@ export default function About() {
                 alt="An armoured tracked vehicle in desert paint with a missile-launcher turret carrying twin missile pods and a sensor pod, mounted on an APC-style chassis."
                 frameN={4}
                 frameD={3}
+                triggerLabel="the CF LLADS photograph"
                 captionText="Low Level Air Defence System (LLADS) — one of the Canadian Forces communications-systems contracts at Siemens Plessey Defence Systems, Havant, from 1989."
                 caption={
                   <>
@@ -202,6 +204,7 @@ export default function About() {
                 frameN={4}
                 frameD={3}
                 contain
+                triggerLabel="the TNIU security diagram"
                 captionText="The Trusted Network Interface Unit (TNIU) at RSRE, extending the OSI seven-layer model with security layers and specified in Z notation."
                 caption={
                   <>
@@ -216,6 +219,7 @@ export default function About() {
                 alt="A dark desk telephone with a wide LCD display, rows of function and numeric keys, and a slide-out QWERTZ keyboard underneath, photographed next to its product manual."
                 frameN={4}
                 frameD={3}
+                triggerLabel="the Ascotel Crystal terminal"
                 captionText="The Ascotel Crystal — an Ascom PABX terminal of the period. Software Group Leader for the introduction of object-oriented technology at Ascom AG, Solothurn, 1993–1996."
                 caption={
                   <>
@@ -232,6 +236,7 @@ export default function About() {
                 frameN={4}
                 frameD={3}
                 contain
+                triggerLabel="the Mail*Hub architecture diagram"
                 captionText="The Control Data Systems Mail*Hub architecture, 1996 — the 'giant giant Perl program' bridging Microsoft Mail, Lotus, IBM systems and X.400 through an X.500 directory."
                 caption={
                   <>
@@ -316,6 +321,7 @@ export default function About() {
                 alt="Screenshot of an early text-entry interface: the word 'HELL' partially typed beside a large circle with the letter A inside a small circle, a yellow square containing a smaller square, and a red dot — within a window titled 'Carnforth.'"
                 frameN={4}
                 frameD={3}
+                triggerLabel="the TUP screenshot"
                 captionText="TUP — text entry by keystroke reduction, built first for Bob's cousin."
                 caption={
                   <>
@@ -376,6 +382,7 @@ export default function About() {
                 alt="Tetris screenshot with multicoloured falling blocks partly filling a play field on a backdrop of aurora-lit forest. Side panels show score 1400, lines 17, level 2, game type 'Fantasy.'"
                 frameN={4}
                 frameD={3}
+                triggerLabel="the Tetris screenshot"
                 captionText="Tetris as accessibility testbed — mode, timing, modality and decision-making in a single artefact."
                 caption={
                   <>

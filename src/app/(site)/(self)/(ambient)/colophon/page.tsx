@@ -659,22 +659,45 @@ export default function Colophon() {
               persistent &ldquo;View larger&rdquo; badge sits in the
               bottom-right corner of every thumbnail; the badge text
               matches the start of the trigger&rsquo;s accessible name{" "}
-              &mdash; <code>View larger: {"{caption}"}</code>. A
-              voice-control user can say &ldquo;View larger&rdquo; to
-              activate, and the engine&rsquo;s numbered-overlay
-              disambiguation handles the case where multiple triggers
-              match at once. The badge is solid ink-on-surface (not
-              semi-transparent) so it meets AAA 7:1 contrast against
-              any underlying image.
+              &mdash; <code>View larger: {"{trigger label}"}</code>{" "}
+              &mdash; where the trigger label is a short identifier
+              for the figure (e.g. <em>the Ascotel Crystal terminal</em>,{" "}
+              <em>the PTD task tree</em>). A voice-control user can say
+              &ldquo;View larger&rdquo; to activate, and the
+              engine&rsquo;s numbered-overlay disambiguation handles
+              the case where multiple triggers match at once. The badge
+              is solid ink-on-surface (not semi-transparent) so it
+              meets AAA 7:1 contrast against any underlying image.
+            </p>
+            <p>
+              The dialog uses <code>aria-label</code> for the same
+              short trigger label and{" "}
+              <code>aria-describedby</code> pointing at the in-dialog
+              caption for the longer description, so SR users hear
+              the figure&rsquo;s caption as the dialog&rsquo;s{" "}
+              <em>description</em> rather than its <em>name</em>. An
+              earlier draft put the full caption directly into the
+              dialog&rsquo;s accessible name (and into the
+              trigger&rsquo;s <code>aria-label</code>), which meant a
+              60-word string was read on every focus and on every
+              dialog open. The short-name / long-description split
+              fixes the noise without losing the description.
             </p>
             <p>
               The figure is a composition of the Every Layout
               primitives already documented:{" "}
               <code>Stack</code> for the figure&rsquo;s internal
               spacing, <code>Frame</code> (cover for photographs,
-              contain for diagrams) doubling as the trigger button,
-              with <code>Sidebar</code> or <code>Grid</code> placing
-              it against the surrounding prose. The dialog is the
+              contain for diagrams) holding the image, and{" "}
+              <code>Sidebar</code> or <code>Grid</code> placing the
+              figure against the surrounding prose. For raster images
+              the trigger button <em>is</em> the Frame &mdash;
+              click-anywhere on the image opens the dialog. For inline
+              SVG content the Frame is a plain container and the
+              trigger is an overlay button positioned absolutely in
+              the Frame&rsquo;s bottom-right corner; visually
+              identical, structurally a sibling. See the next section
+              for why that distinction matters. The dialog is the
               standard native <code>&lt;dialog&gt;</code> &mdash;
               nothing custom, no JavaScript focus-trap, no portal.
             </p>
@@ -731,14 +754,35 @@ export default function Colophon() {
               tokens or media queries.
             </p>
             <p>
+              For the WAI-ARIA Graphics roles inside the SVG to
+              actually reach AT, the SVG must render <em>outside</em>{" "}
+              the trigger button, not inside it. A{" "}
+              <code>&lt;button&gt;</code> is an interactive leaf: AT
+              users land on it, hear its accessible name, and the
+              traversal stops. Any roles inside the button &mdash;
+              <code>role=&ldquo;graphics-object&rdquo;</code>,{" "}
+              <code>role=&ldquo;graphics-symbol&rdquo;</code> and their
+              labels &mdash; are unreachable. So when <code>ImageFigure</code>{" "}
+              is given <code>content</code> (rather than{" "}
+              <code>src</code> / <code>alt</code>), it renders the
+              content as a child of a plain <code>&lt;div&gt;</code>{" "}
+              and places the &ldquo;View larger&rdquo; trigger as a
+              sibling absolute-positioned overlay. Visually identical
+              to the raster badge; structurally a separate node, so
+              the SVG&rsquo;s internal AT structure stays addressable.
+              An earlier draft buried the SVG inside the button and
+              defeated its own ARIA before this was caught.
+            </p>
+            <p>
               The <code>ImageFigure</code> component was extended with
               an optional <code>content</code> prop that accepts a
               ReactNode in place of the <code>&lt;img&gt;</code>{" "}
-              element. The trigger button, the visible &ldquo;View
-              larger&rdquo; badge, the zoom modal, focus-return and the
-              caption-as-dialog-name contract documented above all
-              apply to SVG content identically to raster images. The
-              trigger and the dialog render the SVG as separate React
+              element. The visible &ldquo;View larger&rdquo; badge,
+              the zoom modal, focus-return and the trigger-label /
+              caption-description contract all apply to SVG content
+              identically to raster images; the only structural
+              difference is the trigger-as-sibling treatment above.
+              The trigger and the dialog render the SVG as separate React
               subtrees, so any <code>useId()</code> inside the SVG
               generates distinct IDs in each location with no DOM ID
               collision.
