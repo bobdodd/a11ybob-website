@@ -16,10 +16,9 @@
   display: block;
 }
 
-/* Default outline styling for every rect, line and circle inside
- * the diagram. Individual elements that need a different fill set
- * it explicitly via fill="currentColor" or fill="none" on the
- * element itself (those attributes win over CSS). */
+/* Default outline styling. Individual elements that need a
+ * different fill set it explicitly via fill="currentColor" or
+ * fill="none" on the element itself (those attributes win over CSS). */
 .ptd-task-tree rect,
 .ptd-task-tree line,
 .ptd-task-tree circle,
@@ -31,12 +30,35 @@
   stroke-linejoin: round;
 }
 
-/* Text uses currentColor and inherits the page font. */
+/* Text colour and font inherit; per-level font-size comes from
+ * the role-specific classes below so the visual hierarchy reads
+ * regardless of where the diagram is rendered. */
 .ptd-task-tree text {
   fill: currentColor;
   font-family: inherit;
-  font-size: 32px;
   font-weight: 500;
+}
+
+/* Type hierarchy across the diagram. SVG font-size values are in
+ * viewBox units; the SVG scales to its container, so these resolve
+ * to proportional CSS pixels at the final rendered size. */
+.ptd-task-tree__root-text {
+  font-size: 36px;
+  font-weight: 600;
+}
+.ptd-task-tree__polymorph-text {
+  font-size: 32px;
+  font-weight: 600;
+}
+.ptd-task-tree__subtask-text {
+  font-size: 30px;
+}
+.ptd-task-tree__edge-label {
+  font-size: 22px;
+  font-style: italic;
+}
+.ptd-task-tree__modality-label {
+  font-size: 26px;
 }
 
 /* Node boxes — surface fill so they read against the page tint. */
@@ -59,9 +81,7 @@
 
 /* Windows High Contrast / forced-colors mode: remap to system
  * colours so the diagram remains legible when the OS strips the
- * palette. currentColor on the SVG resolves to CanvasText; the
- * node-box fill is overridden to Canvas so boxes remain
- * distinguishable from the page background. */
+ * palette. */
 @media (forced-colors: active) {
   .ptd-task-tree {
     color: CanvasText;
