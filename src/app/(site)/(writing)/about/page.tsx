@@ -194,10 +194,20 @@ export default function About() {
                 className="stack"
                 style={{ "--space": "var(--s-1)" } as CSSProperties}
               >
-                <img
-                  src="/about/cf-llads.jpg"
-                  alt="An armoured tracked vehicle in desert paint with a missile-launcher turret carrying twin missile pods and a sensor pod, mounted on an APC-style chassis."
-                />
+                <div
+                  className="frame"
+                  style={
+                    {
+                      "--frame-n": "4",
+                      "--frame-d": "3",
+                    } as CSSProperties
+                  }
+                >
+                  <img
+                    src="/about/cf-llads.jpg"
+                    alt="An armoured tracked vehicle in desert paint with a missile-launcher turret carrying twin missile pods and a sensor pod, mounted on an APC-style chassis."
+                  />
+                </div>
                 <figcaption>
                   Low Level Air Defence System (LLADS) &mdash; one of the
                   Canadian Forces communications-systems contracts at Siemens
@@ -208,10 +218,20 @@ export default function About() {
                 className="stack"
                 style={{ "--space": "var(--s-1)" } as CSSProperties}
               >
-                <img
-                  src="/about/dss.png"
-                  alt="Network diagram showing five Unix nodes — two Secret, one Top Secret, two Unclassified — each connected through a Trusted Network Interface Unit (TNIU) to a shared LAN. Labelled 'Figure 3: A securely partitioned system.'"
-                />
+                <div
+                  className="frame frame--contain"
+                  style={
+                    {
+                      "--frame-n": "4",
+                      "--frame-d": "3",
+                    } as CSSProperties
+                  }
+                >
+                  <img
+                    src="/about/dss.png"
+                    alt="Network diagram showing five Unix nodes — two Secret, one Top Secret, two Unclassified — each connected through a Trusted Network Interface Unit (TNIU) to a shared LAN. Labelled 'Figure 3: A securely partitioned system.'"
+                  />
+                </div>
                 <figcaption>
                   The Trusted Network Interface Unit (TNIU) at RSRE, extending
                   the OSI seven-layer model with security layers and specified
@@ -222,10 +242,20 @@ export default function About() {
                 className="stack"
                 style={{ "--space": "var(--s-1)" } as CSSProperties}
               >
-                <img
-                  src="/about/ascotel-crystal.jpg"
-                  alt="A dark desk telephone with a wide LCD display, rows of function and numeric keys, and a slide-out QWERTZ keyboard underneath, photographed next to its product manual."
-                />
+                <div
+                  className="frame"
+                  style={
+                    {
+                      "--frame-n": "4",
+                      "--frame-d": "3",
+                    } as CSSProperties
+                  }
+                >
+                  <img
+                    src="/about/ascotel-crystal.jpg"
+                    alt="A dark desk telephone with a wide LCD display, rows of function and numeric keys, and a slide-out QWERTZ keyboard underneath, photographed next to its product manual."
+                  />
+                </div>
                 <figcaption>
                   The Ascotel Crystal &mdash; an Ascom PABX terminal of the
                   period. Software Group Leader for the introduction of
@@ -236,10 +266,20 @@ export default function About() {
                 className="stack"
                 style={{ "--space": "var(--s-1)" } as CSSProperties}
               >
-                <img
-                  src="/about/mailhub.png"
-                  alt="Architecture diagram of Control Data Systems Mail*Hub: proprietary endpoints (cc:Mail/Novell, Lotus Notes, IBM OfficeVision) on the left feed a Mail*Hub routing core containing a translation engine, addressing engine and message queuing, which in turn feeds out to the global OSI network on the right — SMTP gateway (RFC 1327), X.400 Message Transfer System, and the X.25 packet-switched data network."
-                />
+                <div
+                  className="frame frame--contain"
+                  style={
+                    {
+                      "--frame-n": "4",
+                      "--frame-d": "3",
+                    } as CSSProperties
+                  }
+                >
+                  <img
+                    src="/about/mailhub.png"
+                    alt="Architecture diagram of Control Data Systems Mail*Hub: proprietary endpoints (cc:Mail/Novell, Lotus Notes, IBM OfficeVision) on the left feed a Mail*Hub routing core containing a translation engine, addressing engine and message queuing, which in turn feeds out to the global OSI network on the right — SMTP gateway (RFC 1327), X.400 Message Transfer System, and the X.25 packet-switched data network."
+                  />
+                </div>
                 <figcaption>
                   The Control Data Systems Mail*Hub architecture, 1996 &mdash;
                   the &ldquo;giant giant Perl program&rdquo; bridging
@@ -319,10 +359,20 @@ export default function About() {
                 className="sidebar stack"
                 style={{ "--space": "var(--s-1)" } as CSSProperties}
               >
-                <img
-                  src="/about/tup.jpg"
-                  alt="Screenshot of an early text-entry interface: the word 'HELL' partially typed beside a large circle with the letter A inside a small circle, a yellow square containing a smaller square, and a red dot &mdash; within a window titled 'Carnforth.'"
-                />
+                <div
+                  className="frame"
+                  style={
+                    {
+                      "--frame-n": "4",
+                      "--frame-d": "3",
+                    } as CSSProperties
+                  }
+                >
+                  <img
+                    src="/about/tup.jpg"
+                    alt="Screenshot of an early text-entry interface: the word 'HELL' partially typed beside a large circle with the letter A inside a small circle, a yellow square containing a smaller square, and a red dot &mdash; within a window titled 'Carnforth.'"
+                  />
+                </div>
                 <figcaption>
                   <Link href="/research/spotlight/tup">TUP</Link> &mdash;
                   text entry by keystroke reduction, built first for Bob&rsquo;s
@@ -378,10 +428,20 @@ export default function About() {
                 className="sidebar stack"
                 style={{ "--space": "var(--s-1)" } as CSSProperties}
               >
-                <img
-                  src="/about/tetris.jpg"
-                  alt="Tetris screenshot with multicoloured falling blocks partly filling a play field on a backdrop of aurora-lit forest. Side panels show score 1400, lines 17, level 2, game type 'Fantasy.'"
-                />
+                <div
+                  className="frame"
+                  style={
+                    {
+                      "--frame-n": "4",
+                      "--frame-d": "3",
+                    } as CSSProperties
+                  }
+                >
+                  <img
+                    src="/about/tetris.jpg"
+                    alt="Tetris screenshot with multicoloured falling blocks partly filling a play field on a backdrop of aurora-lit forest. Side panels show score 1400, lines 17, level 2, game type 'Fantasy.'"
+                  />
+                </div>
                 <figcaption>
                   <Link href="/research/tetris-testbed">
                     Tetris as accessibility testbed

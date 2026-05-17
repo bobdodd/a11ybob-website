@@ -15,3 +15,10 @@
   block-size: 100%;
   object-fit: cover;
 }
+
+/* Letterbox content rather than crop it — for diagrams, schematics
+   and other images where labels must stay readable. */
+.frame--contain > img,
+.frame--contain > video {
+  object-fit: contain;
+}
