@@ -30,3 +30,18 @@
   border: var(--border-thin) solid var(--rule);
   background: var(--surface-2);
 }
+
+/* Reversed-pair sample for the zonal-tinting swatches. Solid ink
+ * background with surface-coloured text — the same pairing the
+ * ImageFigure "View larger" badge, tier badges, severity badges, and
+ * the pill-toggle's selected state use. Renders in zone tokens so
+ * each swatch shows the reversed direction holds AAA on its hue. */
+.styleguide-reversed-badge {
+  display: inline-block;
+  padding: 0.2em 0.6em;
+  background: var(--ink);
+  color: var(--surface-1);
+  font-size: var(--s-1);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}

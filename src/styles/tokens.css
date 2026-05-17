@@ -58,6 +58,18 @@
    lightness pairings (95% / 90%) across zones; only hue and chroma
    vary. AAA contrast (~11:1) preserved on every zone.
 
+   The pairing is symmetric: ink-on-surface inherits the same ~11:1
+   as surface-on-ink, so solid-ink-fill components — the pill-toggle's
+   selected state, the destructive button, the tier and severity
+   badges, the ImageFigure "View larger" badge, the search-submit
+   button — meet AAA on every zone without per-zone tuning.
+
+   The top layer used by native <dialog> does not inherit CSS custom
+   properties through its rendering parent, but it does inherit them
+   through its DOM-tree parent. Modals opened from inside a zoned
+   page therefore take the zone's tint automatically; no token
+   propagation is needed.
+
    The 10 zones, in hue order:
      about         350°  mauve heather personal
      writing       30°   warm rose     editorial (kept from original)

@@ -13,10 +13,16 @@ const scale = [
 ] as const;
 
 const zones = [
-  ["self", "warm cream — home, about, now, contact"],
-  ["writing", "warm rose — articles, talks"],
-  ["knowledge", "cool blue — reviews database, glossary, research"],
-  ["tools", "technical neutral — paradise, playground"],
+  ["home", "warm cream — front door"],
+  ["writing", "warm rose — articles, reviews, glossary"],
+  ["research", "cool blue — research archive"],
+  ["paradise", "cool slate — technical work"],
+  ["tools", "teal — practical tools"],
+  ["playgrounds", "lavender — experimental"],
+  ["maps", "forest green — geographic"],
+  ["work", "sage green — practitioner"],
+  ["about", "mauve heather — personal"],
+  ["ambient", "near-neutral — utility pages (colophon, privacy, contact)"],
 ] as const;
 
 function ZonePreview({ zone, label }: { zone: string; label: string }) {
@@ -34,6 +40,9 @@ function ZonePreview({ zone, label }: { zone: string; label: string }) {
         </p>
         <p className="flush">
           A <a href="#">link in this zone</a> sits on the same surface.
+        </p>
+        <p className="flush">
+          <span className="styleguide-reversed-badge">Reversed pair</span>
         </p>
       </div>
     </section>
@@ -136,9 +145,15 @@ export default function StyleguidePage() {
         <section className="stack">
           <h2>Zonal tinting</h2>
           <p>
-            Each content zone has a subtly tinted surface. All four sit at
-            perceptually identical OKLCH lightness so body-text contrast is
-            preserved across every zone (AAA, 7:1 minimum).
+            Each main-nav landing has its own zone hue; sub-pages inherit.
+            All ten sit at the same OKLCH lightness pair (95% surface / 20%
+            ink in light mode, 20% / 96% in dark), so body-text contrast
+            holds at ~11:1 across every zone &mdash; comfortably above
+            AAA&rsquo;s 7:1 minimum. The pairing is symmetric: the reversed
+            direction (ink-on-surface, used by badges, the pill-toggle&rsquo;s
+            selected state, the destructive button, and the ImageFigure
+            &ldquo;View larger&rdquo; badge) inherits the same contrast,
+            demonstrated by the small reversed-pair sample in each swatch.
           </p>
           <div
             className="grid"

@@ -79,16 +79,27 @@ layouts. Inside `(self)` the home page and the ambient pages live in
 their own nested route groups (`(home)`, `(ambient)`) so they can
 have distinct layouts despite sharing the same URL prefix.
 
-Each zone overrides `--hue` and `--chroma`. Surface and ink tokens in
-[tokens.css](../../src/styles/tokens.css) derive from those two custom
-properties via OKLCH:
+Each zone is a `[data-zone="..."]` attribute selector in
+[tokens.css](../../src/styles/tokens.css) that sets the surface, ink
+and rule tokens explicitly with literal OKLCH values for that zone's
+hue and chroma:
 
 ```css
---surface-1: oklch(95% var(--chroma) var(--hue));
---surface-2: oklch(90% var(--chroma) var(--hue));
---ink:       oklch(20% 0.02 var(--hue));
---ink-muted: oklch(35% 0.02 var(--hue));
+[data-zone="paradise"] {
+  --surface-1: oklch(95% 0.04 215);
+  --surface-2: oklch(90% 0.04 215);
+  --ink:       oklch(20% 0.02 215);
+  --ink-muted: oklch(35% 0.02 215);
+  --rule:      oklch(75% 0.04 215);
+}
 ```
+
+An earlier draft chained the surface tokens through `--hue` /
+`--chroma` custom properties (`oklch(95% var(--chroma) var(--hue))`).
+The chained form is defensible CSS but resolves unreliably across
+browsers — notably Safari — when the inner vars are overridden on a
+descendant. Baking the OKLCH values explicitly per zone is more
+verbose but bulletproof.
 
 The shell's body uses `--surface-1` (the lighter zone tint); header and
 footer use `--surface-2` (slightly more emphasised), banding the page top
