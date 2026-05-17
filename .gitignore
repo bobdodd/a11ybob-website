@@ -40,6 +40,11 @@ yarn-error.log*
 # local deploy scratch (mongodumps, etc.)
 .deploy-tmp/
 
+# source-of-truth originals for images processed into /public/.
+# Filenames there are human-readable ('Ascotel Crystal.jpg'); the
+# deployed copies live under /public/ with kebab-case names.
+IMAGES/
+
 # local working notes / dev-environment instructions —
 # not site content, not knowledge about the site
 CLAUDE.md
