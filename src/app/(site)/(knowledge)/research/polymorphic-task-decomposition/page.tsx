@@ -16,7 +16,7 @@ export default function PTD() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
-            <h1>Polymorphic Task Deconstruction</h1>
+            <h1>Polymorphic Task Decomposition</h1>
             <p className="lede">
               A way of describing multiple manipulations of the same
               data so a capability model can choose the most

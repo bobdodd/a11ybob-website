@@ -42,8 +42,8 @@ export default function Research() {
                 Carnforth-Java.
               </li>
               <li>
-                <Link href="/research/polymorphic-task-deconstruction">
-                  <strong>Polymorphic Task Deconstruction</strong>
+                <Link href="/research/polymorphic-task-decomposition">
+                  <strong>Polymorphic Task Decomposition</strong>
                 </Link>{" "}
                 — multiple ways of manipulating the same data so a
                 capability model can choose the appropriate route. A

@@ -148,7 +148,7 @@ export default function ActionLanguagePlayground() {
               <code>present(modality)</code> call runs in both
               cases; the metaphor selection is internal. That is the
               shape of intrinsic accessibility&rsquo;s polymorphic
-              task deconstruction in microcosm.
+              task decomposition in microcosm.
             </p>
             <p>
               Try changing one of the modality strings to

@@ -14,8 +14,8 @@ const SUB_PAGES = [
   { href: "/research", label: "Research" },
   { href: "/research/cisna-model", label: "CISNA Model" },
   {
-    href: "/research/polymorphic-task-deconstruction",
-    label: "Polymorphic Task Deconstruction",
+    href: "/research/polymorphic-task-decomposition",
+    label: "Polymorphic Task Decomposition",
   },
   { href: "/research/tetris-testbed", label: "Tetris testbed" },
   { href: "/research/shlaer-mellor-lens", label: "Shlaer-Mellor lens" },
