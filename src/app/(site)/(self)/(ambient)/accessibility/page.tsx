@@ -137,6 +137,28 @@ export default function Accessibility() {
               </li>
               <li>
                 <strong>
+                  Structural diagrams are inline SVG, not opaque images.
+                </strong>{" "}
+                Where a page carries a structural diagram &mdash; a
+                hierarchy, a flow, a relational network &mdash; the
+                diagram is rendered as inline SVG with{" "}
+                <code>role=&ldquo;img&rdquo;</code> plus{" "}
+                <code>&lt;title&gt;</code> and <code>&lt;desc&gt;</code>{" "}
+                at the root, and WAI-ARIA Graphics module roles
+                (<code>graphics-object</code>,{" "}
+                <code>graphics-symbol</code>) labelling each node and
+                modality affordance inside. AT users on engines that
+                understand the Graphics module can navigate the
+                diagram&rsquo;s internal structure rather than
+                receiving it as one opaque image; engines that
+                don&rsquo;t still receive the always-supported title +
+                description summary. Inline SVG also inherits the
+                page&rsquo;s zone tint and adapts to forced-colors
+                mode automatically, neither of which a raster image
+                provides.
+              </li>
+              <li>
+                <strong>
                   Forced-colors mode (Windows High Contrast).
                 </strong>{" "}
                 Components that rely on colour for meaning carry explicit{" "}

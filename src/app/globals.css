@@ -41,5 +41,6 @@
 @import "../styles/components/playground.css"        layer(components);
 @import "../styles/components/al-playground.css"     layer(components);
 @import "../styles/components/image-figure.css"      layer(components);
+@import "../styles/components/ptd-task-tree.css"     layer(components);
 
 @import "../styles/utilities/text.css" layer(utilities);

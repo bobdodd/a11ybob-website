@@ -684,6 +684,71 @@ export default function Colophon() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
+            <h2>
+              Structural diagrams are inline SVG with WAI-ARIA Graphics
+              roles
+            </h2>
+            <p>
+              The PTD task tree on{" "}
+              <Link href="/research/polymorphic-task-decomposition">
+                /research/polymorphic-task-decomposition
+              </Link>{" "}
+              is hand-authored inline SVG, not a raster image. The
+              choice is structural rather than aesthetic. AT users on
+              engines that understand the WAI-ARIA Graphics module
+              (VoiceOver, recent NVDA) can navigate the tree node by
+              node &mdash; root task, polymorphs, sub-tasks, modality
+              affordances &mdash; through{" "}
+              <code>role=&ldquo;graphics-object&rdquo;</code> and{" "}
+              <code>role=&ldquo;graphics-symbol&rdquo;</code>{" "}
+              attributes on each grouped element, each labelled with{" "}
+              <code>aria-label</code>. Engines that don&rsquo;t
+              understand the Graphics module yet (JAWS at time of
+              writing) silently ignore those roles and fall back to the
+              always-supported root contract: <code>role=&ldquo;img&rdquo;</code>{" "}
+              with <code>&lt;title&gt;</code> and <code>&lt;desc&gt;</code>{" "}
+              children that summarise the diagram. Either way, no AT
+              user gets the diagram as one opaque image with a single
+              alt text, which is what a raster <code>&lt;img&gt;</code>{" "}
+              would have given them.
+            </p>
+            <p>
+              Inline SVG also inherits the page&rsquo;s CSS custom
+              properties. Strokes and text use <code>currentColor</code>;
+              the wrapping CSS sets <code>color</code> on the root SVG
+              element to <code>var(--ink)</code>, so the diagram
+              automatically picks up the research zone&rsquo;s ink tint
+              and adapts to Windows High Contrast / forced-colors mode
+              through CSS system colour resolution. Node-box fills use{" "}
+              <code>var(--surface-1)</code> via class, with a{" "}
+              <code>@media (forced-colors: active)</code> override that
+              swaps in <code>Canvas</code> so boxes remain
+              distinguishable from the page background under stripped
+              palettes. Neither behaviour is available to an external
+              SVG referenced through <code>&lt;img src&gt;</code>: the
+              browser renders external SVGs in their own document
+              context with no access to the parent page&rsquo;s
+              tokens or media queries.
+            </p>
+            <p>
+              The <code>ImageFigure</code> component was extended with
+              an optional <code>content</code> prop that accepts a
+              ReactNode in place of the <code>&lt;img&gt;</code>{" "}
+              element. The trigger button, the visible &ldquo;View
+              larger&rdquo; badge, the zoom modal, focus-return and the
+              caption-as-dialog-name contract documented above all
+              apply to SVG content identically to raster images. The
+              trigger and the dialog render the SVG as separate React
+              subtrees, so any <code>useId()</code> inside the SVG
+              generates distinct IDs in each location with no DOM ID
+              collision.
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
             <h2>Weight, not colour, marks the destructive action</h2>
             <p>
               The site palette is monochrome — ink, surface, rule, a

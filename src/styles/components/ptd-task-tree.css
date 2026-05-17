@@ -1,0 +1,73 @@
+/* PTDTaskTree — inline-SVG styling for the Polymorphic Task
+ * Decomposition diagram on /research/polymorphic-task-decomposition.
+ *
+ * The diagram inherits the page's zone tint and forced-colors mode
+ * through currentColor: setting `color` on the root SVG element
+ * pins currentColor to var(--ink) under normal rendering and to
+ * CanvasText under Windows High Contrast (because the system
+ * forced-colors algorithm remaps ink-derived colours to the system
+ * palette). Strokes and text use currentColor; surface fills use
+ * var(--surface-1) directly. */
+
+.ptd-task-tree {
+  color: var(--ink);
+  inline-size: 100%;
+  block-size: 100%;
+  display: block;
+}
+
+/* Default outline styling for every rect, line and circle inside
+ * the diagram. Individual elements that need a different fill set
+ * it explicitly via fill="currentColor" or fill="none" on the
+ * element itself (those attributes win over CSS). */
+.ptd-task-tree rect,
+.ptd-task-tree line,
+.ptd-task-tree circle,
+.ptd-task-tree path {
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Text uses currentColor and inherits the page font. */
+.ptd-task-tree text {
+  fill: currentColor;
+  font-family: inherit;
+  font-size: 32px;
+  font-weight: 500;
+}
+
+/* Node boxes — surface fill so they read against the page tint. */
+.ptd-task-tree__node-box {
+  fill: var(--surface-1);
+}
+
+/* Modality enclosure — same surface fill, slightly thinner stroke
+ * so the box reads as a frame rather than a primary node. */
+.ptd-task-tree__modality-box {
+  fill: var(--surface-1);
+  stroke-width: 1.5;
+}
+
+/* Edges — slightly thinner than node borders so they read as
+ * connectors rather than enclosures. */
+.ptd-task-tree__edges line {
+  stroke-width: 1.5;
+}
+
+/* Windows High Contrast / forced-colors mode: remap to system
+ * colours so the diagram remains legible when the OS strips the
+ * palette. currentColor on the SVG resolves to CanvasText; the
+ * node-box fill is overridden to Canvas so boxes remain
+ * distinguishable from the page background. */
+@media (forced-colors: active) {
+  .ptd-task-tree {
+    color: CanvasText;
+  }
+  .ptd-task-tree__node-box,
+  .ptd-task-tree__modality-box {
+    fill: Canvas;
+  }
+}

@@ -1,6 +1,8 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { ResearchSubNav } from "@/components/ResearchSubNav";
+import { ImageFigure } from "@/components/ImageFigure";
+import { PTDTaskTree } from "@/components/PTDTaskTree";
 
 export default function PTD() {
   return (
@@ -26,6 +28,25 @@ export default function PTD() {
               nothing to adapt between.
             </p>
           </header>
+
+          <ImageFigure
+            content={<PTDTaskTree />}
+            frameN={16}
+            frameD={9}
+            contain
+            captionText="The canonical PTD example. The same underlying intention — Delete File — realised as two polymorphs: Direct Manipulation and Modal Dialogue, each with its own task ordering and its own leaf-level modality affordances. The capability model selects between polymorphs at runtime based on user, device, and operating context."
+            caption={
+              <>
+                The canonical PTD example. The same underlying intention
+                &mdash; <em>Delete File</em> &mdash; realised as two
+                polymorphs: Direct Manipulation and Modal Dialogue, each
+                with its own task ordering and its own leaf-level
+                modality affordances. The capability model selects
+                between polymorphs at runtime based on user, device, and
+                operating context.
+              </>
+            }
+          />
 
           <section
             className="stack"

@@ -32,8 +32,19 @@ import {
 } from "react";
 
 interface ImageFigureProps {
-  src: string;
-  alt: string;
+  /* Image source. Required when `content` is not supplied. */
+  src?: string;
+  /* Image alt text. Required when `content` is not supplied. */
+  alt?: string;
+  /* Optional ReactNode replacement for the inner <img>. When supplied,
+   * this content is rendered in both the trigger frame and the
+   * dialog frame in place of the <img>. Use for inline SVG diagrams
+   * that need to inherit the page's CSS custom properties (zone
+   * tokens, forced-colors mode) and carry their own ARIA structure.
+   * The component instances rendered in trigger and dialog are
+   * separate React subtrees, so any useId() inside the content
+   * generates distinct IDs in each location. */
+  content?: ReactNode;
   /* Visible caption — may contain inline elements like <Link>. */
   caption: ReactNode;
   /* Plain-text version of the caption, used for the trigger's
@@ -51,6 +62,7 @@ interface ImageFigureProps {
 export function ImageFigure({
   src,
   alt,
+  content,
   caption,
   captionText,
   frameN,
@@ -110,7 +122,7 @@ export function ImageFigure({
         onClick={open}
         aria-label={`View larger: ${captionText}`}
       >
-        <img src={src} alt={alt} />
+        {content ?? <img src={src} alt={alt} />}
         <span className="image-figure__badge" aria-hidden="true">
           View larger
         </span>
@@ -133,7 +145,7 @@ export function ImageFigure({
             Close
           </button>
           <div className={dialogFrameClass}>
-            <img src={src} alt={alt} />
+            {content ?? <img src={src} alt={alt} />}
           </div>
           <p
             id={dialogCaptionId}
