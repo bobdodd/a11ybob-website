@@ -512,7 +512,8 @@ export default function Colophon() {
             <h2>Modals are native <code>&lt;dialog&gt;</code>, not a custom widget</h2>
             <p>
               Every modal on this site — the Playground&rsquo;s Help,
-              Fix, and Reset confirmations — is a native HTML{" "}
+              Fix, and Reset confirmations, and the image-zoom modal
+              on the About page — is a native HTML{" "}
               <code>&lt;dialog&gt;</code> opened with{" "}
               <code>showModal()</code>. The browser handles focus
               trapping, Escape-to-close, backdrop rendering, and the
@@ -541,6 +542,55 @@ export default function Colophon() {
               explicit width so short confirm dialogs render compact
               instead of stretching. Two CSS lines, against an entire
               category of accessibility bugs the platform now handles.
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
+            <h2>
+              Image-zoom triggers carry a visible label, not just an{" "}
+              <code>aria-label</code>
+            </h2>
+            <p>
+              The About page carries seven figures spanning a
+              four-decade career timeline &mdash; period photographs,
+              architecture diagrams and project screenshots. At
+              thumbnail width the labelled diagrams in particular are
+              too small to read in detail. Tapping or clicking any
+              thumbnail opens the image at near-viewport size in a
+              native <code>&lt;dialog&gt;</code>, with the same focus
+              trap, Escape-to-close and focus-return contract as the
+              Playground&rsquo;s dialogs above.
+            </p>
+            <p>
+              The interesting choice is the trigger. Image-only buttons
+              routinely fail SC 2.5.3 <em>Label in Name</em>: the
+              button carries an <code>aria-label</code> describing the
+              action, but voice-control users cannot speak that label
+              because there is no visible text matching it. A
+              persistent &ldquo;View larger&rdquo; badge sits in the
+              bottom-right corner of every thumbnail; the badge text
+              matches the start of the trigger&rsquo;s accessible name{" "}
+              &mdash; <code>View larger: {"{caption}"}</code>. A
+              voice-control user can say &ldquo;View larger&rdquo; to
+              activate, and the engine&rsquo;s numbered-overlay
+              disambiguation handles the case where multiple triggers
+              match at once. The badge is solid ink-on-surface (not
+              semi-transparent) so it meets AAA 7:1 contrast against
+              any underlying image.
+            </p>
+            <p>
+              The figure is a composition of the Every Layout
+              primitives already documented:{" "}
+              <code>Stack</code> for the figure&rsquo;s internal
+              spacing, <code>Frame</code> (cover for photographs,
+              contain for diagrams) doubling as the trigger button,
+              with <code>Sidebar</code> or <code>Grid</code> placing
+              it against the surrounding prose. The dialog is the
+              standard native <code>&lt;dialog&gt;</code> &mdash;
+              nothing custom, no JavaScript focus-trap, no portal.
             </p>
           </section>
 
