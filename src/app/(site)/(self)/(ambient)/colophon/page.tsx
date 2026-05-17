@@ -539,6 +539,62 @@ export default function Colophon() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
+            <h2>
+              The pagination current-page cue is self-contained, not
+              relative
+            </h2>
+            <p>
+              The conventional way to mark the current page in a
+              paginated list is to set its number in bold. That works
+              fine for a reader who can see the whole row at once and
+              compare cells. It fails at high zoom: a screen-magnifier
+              user looking at one cell with the surrounding cells off
+              screen has no way to know whether <em>this</em> cell is
+              the current one, because bold-versus-not-bold is a{" "}
+              <em>relative</em> cue. So the current page on this site
+              gets an outlined box (a 2px border in the ink colour),
+              plus the bold weight as a secondary signal. The border
+              padding matches the unstyled cells&rsquo; padding so
+              cells don&rsquo;t shift width when state changes. A
+              single isolated cell now answers the question on its
+              own.
+            </p>
+            <p>
+              The current page is rendered as a real{" "}
+              <code>&lt;a&gt;</code> linking to itself, carrying{" "}
+              <code>aria-current=&ldquo;page&rdquo;</code> and a
+              prefixed accessible name of &ldquo;Current page, page
+              N&rdquo;. The W3C Design System recommends this
+              pattern: keeping the current page as an actual link
+              means AT users navigating the document by links never
+              lose track of where they are. The earlier draft used an
+              inert <code>&lt;span&gt;</code> which dropped out of the
+              link list entirely.
+            </p>
+            <p>
+              The count line (<em>Results 1&ndash;10 of 17</em>) and
+              the row of page links sit in one horizontal cluster
+              rather than two stacked rows. At 400% zoom the
+              difference is meaningful &mdash; vertical traversal
+              between the count and the controls reads as one widget,
+              not two. Previous and Next carry the destination page
+              number in their accessible name
+              (&ldquo;Previous, page 2&rdquo; rather than
+              &ldquo;Previous&rdquo;) so voice-control users can
+              speak the destination as well as the direction, and
+              screen-reader users hear where the link will take them
+              before they activate it. Gaps between page numbers
+              announce the skipped range explicitly via a
+              visually-hidden span (&ldquo;skipping pages 4 to
+              12&rdquo;) rather than relying on the visible ellipsis
+              alone, which screen readers omit in browse mode.
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
             <h2>Modals are native <code>&lt;dialog&gt;</code>, not a custom widget</h2>
             <p>
               Every modal on this site — the Playground&rsquo;s Help,

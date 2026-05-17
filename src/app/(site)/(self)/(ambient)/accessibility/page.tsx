@@ -110,6 +110,20 @@ export default function Accessibility() {
                 trigger&rsquo;s accessible name.
               </li>
               <li>
+                <strong>State indicators are self-contained.</strong>{" "}
+                Where a control&rsquo;s visual cue is &ldquo;this one is
+                current / selected / active&rdquo; &mdash; the pagination
+                current-page indicator, the pill-toggle selected state,
+                the destructive confirm button &mdash; the cue is
+                rendered as an enclosed visual property (an outlined box,
+                a background fill, or a heavier border) that is visible
+                on the control itself, not as a typographic comparison
+                against its neighbours. Screen-magnifier users zoomed in
+                on a single control can identify its state without
+                comparing it to siblings they may not see in the same
+                field of view.
+              </li>
+              <li>
                 <strong>
                   Informative alt text, separate from caption context.
                 </strong>{" "}

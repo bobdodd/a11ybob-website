@@ -1,22 +1,73 @@
-/* Pagination — server-rendered nav with a count line and a row of
- * page links. The nav is itself a stack child elsewhere; its
- * internal <p> and <ul> would inherit UA margins (margin-block: 1em)
- * if not reset, doubling the visible gap. */
+/* Pagination — single horizontal cluster combining the count line
+ * and the page-link row. Reads as one self-contained widget at any
+ * zoom level; reflows naturally at narrow viewports / 400% zoom.
+ *
+ * The current page is rendered as a real <a> linking to itself
+ * (W3C pattern), marked semantically with aria-current="page" and
+ * visually with an outlined box + bold. The box is a self-contained
+ * cue — visible without comparison to neighbouring cells — which
+ * matters for screen-magnifier users who may only see one cell at a
+ * time. The border draws in the ink colour and the matching padding
+ * means cells don't shift width when their state changes. */
 
-.pagination > p {
+/* The pagination nav is itself a cluster; the count <p> and the
+ * link <ul> are its two children. Cluster gap is set generously so
+ * the count is clearly distinct from the link row. */
+.pagination {
+  --space: var(--s0);
+  --align: baseline;
+}
+
+/* Count line: muted, no UA margins, sits at the same baseline as
+ * the link cluster. */
+.pagination__count {
   color: var(--ink-muted);
   margin-block: 0;
 }
 
-/* Spacing above the page-link row (separates count text from the
- * link row inside the nav). */
-.pagination > .nav-list {
-  margin-block: var(--s-1);
+/* Link row cluster. Smaller internal gap than the outer cluster so
+ * page numbers / prev / next read as a tight group. */
+.pagination__items {
+  --space: var(--s-1);
+  --align: baseline;
+  /* Override the list-flat utility's role: this is a real list of
+   * controls, no bullet markers. */
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
-/* Active page is rendered as a <span aria-current="page"> rather
- * than a link so it isn't activatable. Bold to mark it as current
- * — the aria-current attribute carries the semantic. */
-.pagination [aria-current="page"] {
+/* Each link's hit area is at least 2.25rem tall (the WCAG 2.2 SC
+ * 2.5.8 Target Size minimum is 24×24 CSS px; we sit comfortably
+ * above that with padding scaled to the type size). */
+.pagination__items a {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 2.25rem;
+  padding-inline: 0.5em;
+  padding-block: 0.25em;
+}
+
+/* Current page — outlined box + bold. Border in the ink colour;
+ * padding kept identical to the unstyled links so width doesn't
+ * jump when state changes. text-decoration removed so the underline
+ * doesn't compete with the box; the box is the affordance. */
+.pagination__current {
   font-weight: 600;
+  border: var(--border-thick) solid var(--ink);
+  text-decoration: none;
+}
+
+/* Don't underline the current-page link on hover/focus either —
+ * the box is the affordance, and the focus ring (axiom) still
+ * appears on top. */
+.pagination__current:hover,
+.pagination__current:focus-visible {
+  text-decoration: none;
+}
+
+/* Gap glyph — visual ellipsis only; the announcement comes from a
+ * sibling .visually-hidden span describing the skipped range. */
+.pagination__items li > [aria-hidden="true"] {
+  color: var(--ink-muted);
 }
