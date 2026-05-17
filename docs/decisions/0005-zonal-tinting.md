@@ -51,18 +51,48 @@ distinguishable.*
 
 ## Why
 
-Inspired by **BridgePoint** (the Shlaer-Mellor xtUML modelling tool), which
-tinted different diagram types — Component, Class, State, Action — at low
-saturation so the user's "where am I" question was answered without
-chrome or labels. Almost no public-facing site does this, partly because
-doing it well is technically constrained (must preserve text contrast
-everywhere) and partly because flat brand palettes are the conventional
-default.
+Three motivations layered.
 
-For a content-heavy site that traverses categorically different intellectual
-surfaces — long-form essays, paper-review database, working software tools
-— the BridgePoint pattern fits. It also reads as a quiet design-craft
-signal in the colophon.
+**1. Pale, not stark.** Body text on pure white is harsh for sustained
+reading. The low-vision recommendation that recurs across AT practice
+is closer to "cream surface, dark grey text" — softer than pure black-
+on-white, easier on prolonged use. The site doesn't enforce that
+specific palette (visitor preference via `prefers-color-scheme` and
+`prefers-contrast` overrides whatever the site says), but the default
+surface sits at 95% OKLCH lightness rather than pure white (100%) and
+the default ink at 20% lightness rather than pure black. The starting
+point is gentler than the conventional defaults, before any tint is
+applied on top.
+
+**2. Tinting for orientation, never for information.** Inspired by
+**BridgePoint** (the Shlaer-Mellor xtUML modelling tool), which tinted
+different diagram types — Component, Class, State, Action — at low
+saturation so the user's "where am I" question was answered without
+chrome or labels. The same affordance fits a content site that
+traverses categorically different intellectual surfaces — long-form
+essays, paper-review database, working software tools, biographical
+pages. Critically, nothing on the site requires perceiving the tint to
+use it. The colour is a way-finding cue layered on top of structure
+that already works without it; visitors with colour-vision deficiencies,
+high-contrast user stylesheets, or `prefers-contrast: more` engaged see
+no information loss, only a flattened palette.
+
+**3. Identical luminance across every zone.** Low-vision users
+navigating between sections of the site should not have to re-adjust
+their display brightness or screen-magnifier contrast settings as they
+move from one zone to another. So while hue and chroma vary per zone,
+lightness is held constant: 95% surface / 20% ink in light mode, 20% /
+96% in dark. Body-text contrast ratio is therefore identical on every
+page; only the hue of the underlying surface shifts. OKLCH's perceptual
+uniformity makes the constraint trivially enforceable across ten
+different hues — a property HSL and sRGB do not provide.
+
+Almost no public-facing site does this. Doing it well is technically
+constrained (must preserve text contrast everywhere), and flat brand
+palettes are the conventional default. For a content-heavy site whose
+pages serve categorically different purposes, the BridgePoint pattern
+fits — and the identical-luminance constraint is what makes the system
+work *for* low-vision navigation rather than against it.
 
 ## Implementation
 

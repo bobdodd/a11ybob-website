@@ -50,6 +50,23 @@ export default function Accessibility() {
                 contrast checker as the design evolves.
               </li>
               <li>
+                <strong>Tinted surfaces at constant luminance.</strong>{" "}
+                The default page surface sits at 95% OKLCH lightness
+                rather than pure white, so prolonged reading is gentler
+                than on a stark white background &mdash; the
+                cream-surface, dark-grey-text recommendation from
+                low-vision practice, translated into the site&rsquo;s
+                palette. Each main-nav landing carries a different hue
+                (mauve for About, rose for Writing, sage for Work, and
+                so on) as a way-finding cue for visitors who can
+                perceive it. Lightness is held constant across every
+                zone, so low-vision users do not need to re-adjust
+                display brightness or contrast as they move between
+                sections &mdash; only the hue shifts. The tint is an
+                affordance; no information on the site is conveyed by
+                colour alone.
+              </li>
+              <li>
                 <strong>Focus appearance meeting WCAG 2.2 SC 2.4.11.</strong>{" "}
                 A solid 2px outline at the accent colour, offset 3px from
                 the element edge, with a halo box-shadow underneath in the

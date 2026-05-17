@@ -253,16 +253,46 @@ export default function Colophon() {
           >
             <h2>Colour</h2>
             <p>
-              All colour values are expressed in{" "}
-              <a href="https://oklch.com">OKLCH</a> — a perceptually
-              uniform colour space. Surface tints across the ten
-              zones sit at perceptually identical lightness, so
-              body-text contrast (AAA, 7:1 minimum) is preserved across
-              every zone regardless of hue. The zonal tinting pattern
-              is borrowed from BridgePoint, the Shlaer-Mellor xtUML
-              modelling tool that tinted different diagram types so the
-              user&rsquo;s &ldquo;where am I&rdquo; question was
-              answered without chrome.
+              Three motivations layered. First, body text on pure white
+              is harsh for sustained reading &mdash; the low-vision
+              recommendation that recurs across AT practice is closer to
+              &ldquo;cream surface, dark grey text.&rdquo; The default
+              surface on this site sits at 95% OKLCH lightness, not
+              100%, and the default ink at 20%, not pure black, so the
+              starting point is gentler than the conventional defaults
+              before any tint is applied. Visitor preferences via{" "}
+              <code>prefers-color-scheme</code> and{" "}
+              <code>prefers-contrast</code> override whatever the site
+              says.
+            </p>
+            <p>
+              Second, per-zone hue answers the &ldquo;where am I&rdquo;
+              question for visitors who can perceive subtle colour
+              differences &mdash; borrowed from{" "}
+              <strong>BridgePoint</strong>, the Shlaer-Mellor xtUML
+              modelling tool that tinted
+              Component / Class / State / Action diagrams so engineers
+              always knew which kind they were looking at. Nothing on
+              the site requires perceiving the tint to use it; the
+              colour is a way-finding cue layered on top of structure
+              that already works without it. Colour-vision deficiencies,
+              high-contrast user stylesheets and{" "}
+              <code>prefers-contrast: more</code> all flatten the
+              palette without losing information.
+            </p>
+            <p>
+              Third, identical luminance across every zone. Low-vision
+              users should not have to re-adjust display brightness or
+              screen-magnifier contrast as they navigate between
+              sections, so while hue and chroma vary per zone, lightness
+              is constant: 95% surface / 20% ink in light mode, 20% /
+              96% in dark. Body-text contrast is identical on every
+              page; only the hue of the underlying surface shifts. All
+              colour values are expressed in{" "}
+              <a href="https://oklch.com">OKLCH</a> &mdash; a
+              perceptually uniform colour space &mdash; for that reason:
+              the constant-lightness constraint is enforceable across
+              ten different hues in a way HSL and sRGB do not provide.
             </p>
           </section>
 
