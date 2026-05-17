@@ -19,20 +19,21 @@ import { useId } from "react";
  *   relationships they encode are spelled out inside each
  *   sub-task's aria-label.
  *
- * Layout coordinates (viewBox 0 0 2400 1350, 16:9):
+ * Layout (viewBox 0 0 2000 1125, 16:9):
  *
- *   Row 0 root           y=40-120
- *   Row 1 polymorphs     y=200-280
- *   Row 2 sub-tasks      y=380-460
- *   Row 3 modality boxes y=540-820
+ *   Row 0 root           y=40-140   (h=100)
+ *   Row 1 polymorphs     y=240-340  (h=100)
+ *   Row 2 sub-tasks      y=440-540  (h=100)
+ *   Row 3 modality boxes y=620-1080 (h=460)
  *
- * Sub-task boxes are sized to comfortably accommodate their
- * labels at font-size 30 with at least ~80 units of horizontal
- * padding; the gap between adjacent sub-tasks is 120 units, wide
- * enough that the "before" label and arrow sit cleanly without
- * overrunning either box. The wider 2400-unit viewBox (vs the
- * original 1600) provides the horizontal real-estate needed for
- * Modal Dialogue's three sub-tasks to breathe.
+ * The viewBox is sized so the bounding box of all content fills
+ * roughly 90% of the frame at 16:9; rendered text resolves to body-
+ * text size on a typical desktop column, rather than the half-size
+ * the earlier 2400x1350 viewBox produced.
+ *
+ * Stroke widths are deliberately heavy (node boxes 4 units, edges
+ * 3 units) so lines read as deliberate rules rather than the
+ * hairlines that 2-unit strokes produced at the rendered scale.
  *
  * Styling: strokes and text use currentColor; the wrapping CSS
  * pins color to var(--ink) and overrides for forced-colors mode,
@@ -47,7 +48,7 @@ export function PTDTaskTree() {
 
   return (
     <svg
-      viewBox="0 0 2400 1350"
+      viewBox="0 0 2000 1125"
       xmlns="http://www.w3.org/2000/svg"
       role="img"
       aria-labelledby={titleId}
@@ -83,29 +84,29 @@ export function PTDTaskTree() {
       {/* ===== Edges (decorative; relationships spelled out in node labels) ===== */}
       <g aria-hidden="true" className="ptd-task-tree__edges">
         {/* Root to polymorphs */}
-        <line x1="1200" y1="120" x2="585" y2="200" />
-        <line x1="1200" y1="120" x2="1805" y2="200" />
+        <line x1="937" y1="140" x2="430" y2="240" />
+        <line x1="937" y1="140" x2="1443" y2="240" />
         {/* Direct Manipulation to its sub-tasks */}
-        <line x1="585" y1="280" x2="375" y2="380" />
-        <line x1="585" y1="280" x2="780" y2="380" />
+        <line x1="430" y1="340" x2="250" y2="440" />
+        <line x1="430" y1="340" x2="610" y2="440" />
         {/* Modal Dialogue to its sub-tasks */}
-        <line x1="1805" y1="280" x2="1390" y2="380" />
-        <line x1="1805" y1="280" x2="1795" y2="380" />
-        <line x1="1805" y1="280" x2="2210" y2="380" />
+        <line x1="1443" y1="340" x2="1100" y2="440" />
+        <line x1="1443" y1="340" x2="1440" y2="440" />
+        <line x1="1443" y1="340" x2="1790" y2="440" />
       </g>
 
       {/* ===== ROOT ===== */}
       <g role="graphics-object" aria-label="Root task: Delete File">
         <rect
-          x="1070"
+          x="807"
           y="40"
           width="260"
-          height="80"
+          height="100"
           className="ptd-task-tree__node-box"
         />
         <text
-          x="1200"
-          y="80"
+          x="937"
+          y="90"
           textAnchor="middle"
           dominantBaseline="central"
           className="ptd-task-tree__root-text"
@@ -120,15 +121,15 @@ export function PTDTaskTree() {
         aria-label="First polymorph of Delete File: Direct Manipulation"
       >
         <rect
-          x="385"
-          y="200"
+          x="230"
+          y="240"
           width="400"
-          height="80"
+          height="100"
           className="ptd-task-tree__node-box"
         />
         <text
-          x="585"
-          y="240"
+          x="430"
+          y="290"
           textAnchor="middle"
           dominantBaseline="central"
           className="ptd-task-tree__polymorph-text"
@@ -143,15 +144,15 @@ export function PTDTaskTree() {
         aria-label="Direct Manipulation sub-task: Select File, performed before Select Delete"
       >
         <rect
-          x="240"
-          y="380"
-          width="270"
-          height="80"
+          x="120"
+          y="440"
+          width="260"
+          height="100"
           className="ptd-task-tree__node-box"
         />
         <text
-          x="375"
-          y="420"
+          x="250"
+          y="490"
           textAnchor="middle"
           dominantBaseline="central"
           className="ptd-task-tree__subtask-text"
@@ -164,15 +165,15 @@ export function PTDTaskTree() {
         aria-label="Direct Manipulation sub-task: Select Delete, performed after Select File"
       >
         <rect
-          x="630"
-          y="380"
+          x="460"
+          y="440"
           width="300"
-          height="80"
+          height="100"
           className="ptd-task-tree__node-box"
         />
         <text
-          x="780"
-          y="420"
+          x="610"
+          y="490"
           textAnchor="middle"
           dominantBaseline="central"
           className="ptd-task-tree__subtask-text"
@@ -184,16 +185,17 @@ export function PTDTaskTree() {
       {/* DM "before" arrow + label */}
       <g aria-hidden="true" className="ptd-task-tree__edges">
         <line
-          x1="510"
-          y1="420"
-          x2="630"
-          y2="420"
+          x1="380"
+          y1="490"
+          x2="460"
+          y2="490"
           markerEnd={`url(#${arrowId})`}
         />
         <text
-          x="570"
-          y="396"
+          x="420"
+          y="420"
           textAnchor="middle"
+          dominantBaseline="central"
           className="ptd-task-tree__edge-label"
         >
           before
@@ -206,23 +208,24 @@ export function PTDTaskTree() {
         aria-label="Direct Manipulation modality affordances: scanning input and visual output"
       >
         <rect
-          x="365"
-          y="540"
-          width="440"
-          height="280"
+          x="130"
+          y="620"
+          width="600"
+          height="460"
           className="ptd-task-tree__modality-box"
         />
 
-        {/* Scanning icon: 2x2 grid with top-left filled = current scan cell */}
+        {/* Scanning icon: 2x2 grid of 60x60 cells, top-left filled */}
         <g role="graphics-symbol" aria-label="Scanning modality">
-          <rect x="445" y="585" width="40" height="40" fill="currentColor" />
-          <rect x="490" y="585" width="40" height="40" fill="none" />
-          <rect x="445" y="630" width="40" height="40" fill="none" />
-          <rect x="490" y="630" width="40" height="40" fill="none" />
+          <rect x="230" y="760" width="60" height="60" fill="currentColor" />
+          <rect x="290" y="760" width="60" height="60" fill="none" />
+          <rect x="230" y="820" width="60" height="60" fill="none" />
+          <rect x="290" y="820" width="60" height="60" fill="none" />
           <text
-            x="488"
-            y="720"
+            x="290"
+            y="970"
             textAnchor="middle"
+            dominantBaseline="central"
             className="ptd-task-tree__modality-label"
           >
             scanning
@@ -231,13 +234,14 @@ export function PTDTaskTree() {
 
         {/* Visual icon: stylised monitor with stand */}
         <g role="graphics-symbol" aria-label="Visual modality">
-          <rect x="625" y="585" width="120" height="80" fill="none" />
-          <line x1="685" y1="665" x2="685" y2="690" />
-          <line x1="660" y1="690" x2="710" y2="690" />
+          <rect x="470" y="760" width="180" height="120" fill="none" />
+          <line x1="560" y1="880" x2="560" y2="915" />
+          <line x1="515" y1="915" x2="605" y2="915" />
           <text
-            x="685"
-            y="730"
+            x="560"
+            y="970"
             textAnchor="middle"
+            dominantBaseline="central"
             className="ptd-task-tree__modality-label"
           >
             visual
@@ -251,15 +255,15 @@ export function PTDTaskTree() {
         aria-label="Second polymorph of Delete File: Modal Dialogue"
       >
         <rect
-          x="1645"
-          y="200"
-          width="320"
-          height="80"
+          x="1293"
+          y="240"
+          width="300"
+          height="100"
           className="ptd-task-tree__node-box"
         />
         <text
-          x="1805"
-          y="240"
+          x="1443"
+          y="290"
           textAnchor="middle"
           dominantBaseline="central"
           className="ptd-task-tree__polymorph-text"
@@ -274,15 +278,15 @@ export function PTDTaskTree() {
         aria-label="Modal Dialogue sub-task: Select Delete, first in sequence"
       >
         <rect
-          x="1240"
-          y="380"
-          width="300"
-          height="80"
+          x="960"
+          y="440"
+          width="280"
+          height="100"
           className="ptd-task-tree__node-box"
         />
         <text
-          x="1390"
-          y="420"
+          x="1100"
+          y="490"
           textAnchor="middle"
           dominantBaseline="central"
           className="ptd-task-tree__subtask-text"
@@ -295,15 +299,15 @@ export function PTDTaskTree() {
         aria-label="Modal Dialogue sub-task: Select File, performed after Select Delete"
       >
         <rect
-          x="1660"
-          y="380"
-          width="270"
-          height="80"
+          x="1320"
+          y="440"
+          width="240"
+          height="100"
           className="ptd-task-tree__node-box"
         />
         <text
-          x="1795"
-          y="420"
+          x="1440"
+          y="490"
           textAnchor="middle"
           dominantBaseline="central"
           className="ptd-task-tree__subtask-text"
@@ -316,15 +320,15 @@ export function PTDTaskTree() {
         aria-label="Modal Dialogue sub-task: Confirm Delete, performed after Select File"
       >
         <rect
-          x="2050"
-          y="380"
-          width="320"
-          height="80"
+          x="1640"
+          y="440"
+          width="300"
+          height="100"
           className="ptd-task-tree__node-box"
         />
         <text
-          x="2210"
-          y="420"
+          x="1790"
+          y="490"
           textAnchor="middle"
           dominantBaseline="central"
           className="ptd-task-tree__subtask-text"
@@ -336,31 +340,33 @@ export function PTDTaskTree() {
       {/* MD "before" arrows + labels */}
       <g aria-hidden="true" className="ptd-task-tree__edges">
         <line
-          x1="1540"
-          y1="420"
-          x2="1660"
-          y2="420"
+          x1="1240"
+          y1="490"
+          x2="1320"
+          y2="490"
           markerEnd={`url(#${arrowId})`}
         />
         <text
-          x="1600"
-          y="396"
+          x="1280"
+          y="420"
           textAnchor="middle"
+          dominantBaseline="central"
           className="ptd-task-tree__edge-label"
         >
           before
         </text>
         <line
-          x1="1930"
-          y1="420"
-          x2="2050"
-          y2="420"
+          x1="1560"
+          y1="490"
+          x2="1640"
+          y2="490"
           markerEnd={`url(#${arrowId})`}
         />
         <text
-          x="1990"
-          y="396"
+          x="1600"
+          y="420"
           textAnchor="middle"
+          dominantBaseline="central"
           className="ptd-task-tree__edge-label"
         >
           before
@@ -373,22 +379,23 @@ export function PTDTaskTree() {
         aria-label="Modal Dialogue modality affordances: visual output and non-visual button input"
       >
         <rect
-          x="1565"
-          y="540"
-          width="480"
-          height="280"
+          x="1140"
+          y="620"
+          width="620"
+          height="460"
           className="ptd-task-tree__modality-box"
         />
 
         {/* Visual icon */}
         <g role="graphics-symbol" aria-label="Visual modality">
-          <rect x="1645" y="585" width="120" height="80" fill="none" />
-          <line x1="1705" y1="665" x2="1705" y2="690" />
-          <line x1="1680" y1="690" x2="1730" y2="690" />
+          <rect x="1210" y="760" width="180" height="120" fill="none" />
+          <line x1="1300" y1="880" x2="1300" y2="915" />
+          <line x1="1255" y1="915" x2="1345" y2="915" />
           <text
-            x="1705"
-            y="730"
+            x="1300"
+            y="970"
             textAnchor="middle"
+            dominantBaseline="central"
             className="ptd-task-tree__modality-label"
           >
             visual
@@ -398,20 +405,21 @@ export function PTDTaskTree() {
         {/* Non-visual button icon */}
         <g role="graphics-symbol" aria-label="Non-visual button modality">
           <rect
-            x="1820"
-            y="595"
-            width="170"
-            height="70"
-            rx="22"
+            x="1500"
+            y="775"
+            width="240"
+            height="90"
+            rx="30"
             fill="none"
           />
-          <circle cx="1855" cy="630" r="6" fill="currentColor" />
-          <circle cx="1895" cy="630" r="6" fill="currentColor" />
-          <circle cx="1935" cy="630" r="6" fill="currentColor" />
+          <circle cx="1560" cy="820" r="10" fill="currentColor" />
+          <circle cx="1620" cy="820" r="10" fill="currentColor" />
+          <circle cx="1680" cy="820" r="10" fill="currentColor" />
           <text
-            x="1905"
-            y="730"
+            x="1620"
+            y="970"
             textAnchor="middle"
+            dominantBaseline="central"
             className="ptd-task-tree__modality-label"
           >
             non-visual button
