@@ -142,20 +142,22 @@ export default function Accessibility() {
                 Where a page carries a structural diagram &mdash; a
                 hierarchy, a flow, a relational network &mdash; the
                 diagram is rendered as inline SVG with{" "}
-                <code>role=&ldquo;img&rdquo;</code> plus{" "}
+                <code>role=&ldquo;graphics-document&rdquo;</code> on
+                the root (the WAI-ARIA Graphics module role for a
+                navigable graphical document), plus{" "}
+                <code>graphics-object</code> and{" "}
+                <code>graphics-symbol</code> roles labelling each node
+                and modality affordance inside. The SVG&rsquo;s native{" "}
                 <code>&lt;title&gt;</code> and <code>&lt;desc&gt;</code>{" "}
-                at the root, and WAI-ARIA Graphics module roles
-                (<code>graphics-object</code>,{" "}
-                <code>graphics-symbol</code>) labelling each node and
-                modality affordance inside. AT users on engines that
-                understand the Graphics module can navigate the
-                diagram&rsquo;s internal structure rather than
-                receiving it as one opaque image; engines that
-                don&rsquo;t still receive the always-supported title +
-                description summary. Inline SVG also inherits the
-                page&rsquo;s zone tint and adapts to forced-colors
-                mode automatically, neither of which a raster image
-                provides.
+                children carry an accessible name and description that
+                every AT engine announces, including engines that
+                don&rsquo;t recognise the Graphics roles. AT users on
+                engines that do recognise them (VoiceOver, recent
+                NVDA) can navigate the diagram&rsquo;s internal
+                structure rather than receiving it as one opaque
+                image. Inline SVG also inherits the page&rsquo;s zone
+                tint and adapts to forced-colors mode automatically,
+                neither of which a raster image provides.
               </li>
               <li>
                 <strong>

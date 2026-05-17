@@ -6,15 +6,20 @@ import { useId } from "react";
  * modality affordances.
  *
  * AT contract (WAI-ARIA Graphics module + always-on fallback):
- * - Root <svg role="img"> with aria-labelledby + aria-describedby
- *   pointing at <title> and <desc>. The always-supported summary
- *   every AT engine announces.
+ * - Root <svg role="graphics-document"> — declares the SVG as a
+ *   navigable graphical document, not an atomic image. role="img"
+ *   would actively contradict the structural roles inside (graphics-
+ *   object, graphics-symbol) by telling AT "this is one opaque
+ *   image, don't navigate in." Combined with aria-labelledby +
+ *   aria-describedby pointing at <title> and <desc>, the root
+ *   carries both an accessible name and a description.
  * - Structural groups carry role="graphics-object" with aria-label;
  *   leaf modality icons carry role="graphics-symbol" with
  *   aria-label. Engines that understand the Graphics module
  *   (VoiceOver, recent NVDA) expose these for in-diagram
- *   navigation; engines that don't (older JAWS) silently ignore
- *   them and the title/desc still carries the diagram.
+ *   navigation; engines that don't (older JAWS) treat the root
+ *   role as unknown and fall back to the SVG's <title>/<desc>
+ *   announcement, so the diagram still carries its summary.
  * - Edges and "before" labels are aria-hidden; the temporal
  *   relationships they encode are spelled out inside each
  *   sub-task's aria-label.
@@ -50,7 +55,7 @@ export function PTDTaskTree() {
     <svg
       viewBox="0 0 2000 1125"
       xmlns="http://www.w3.org/2000/svg"
-      role="img"
+      role="graphics-document"
       aria-labelledby={titleId}
       aria-describedby={descId}
       className="ptd-task-tree"

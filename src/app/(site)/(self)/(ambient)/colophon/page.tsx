@@ -717,23 +717,38 @@ export default function Colophon() {
                 /research/polymorphic-task-decomposition
               </Link>{" "}
               is hand-authored inline SVG, not a raster image. The
-              choice is structural rather than aesthetic. AT users on
-              engines that understand the WAI-ARIA Graphics module
-              (VoiceOver, recent NVDA) can navigate the tree node by
-              node &mdash; root task, polymorphs, sub-tasks, modality
-              affordances &mdash; through{" "}
-              <code>role=&ldquo;graphics-object&rdquo;</code> and{" "}
-              <code>role=&ldquo;graphics-symbol&rdquo;</code>{" "}
+              choice is structural rather than aesthetic. The root{" "}
+              <code>&lt;svg&gt;</code> carries{" "}
+              <code>role=&ldquo;graphics-document&rdquo;</code> &mdash;
+              the WAI-ARIA Graphics module&rsquo;s role for a
+              navigable graphical document. AT users on engines that
+              understand the Graphics module (VoiceOver, recent NVDA)
+              can navigate the tree node by node &mdash; root task,
+              polymorphs, sub-tasks, modality affordances &mdash;
+              through <code>role=&ldquo;graphics-object&rdquo;</code>{" "}
+              and <code>role=&ldquo;graphics-symbol&rdquo;</code>{" "}
               attributes on each grouped element, each labelled with{" "}
               <code>aria-label</code>. Engines that don&rsquo;t
               understand the Graphics module yet (JAWS at time of
-              writing) silently ignore those roles and fall back to the
-              always-supported root contract: <code>role=&ldquo;img&rdquo;</code>{" "}
-              with <code>&lt;title&gt;</code> and <code>&lt;desc&gt;</code>{" "}
-              children that summarise the diagram. Either way, no AT
-              user gets the diagram as one opaque image with a single
-              alt text, which is what a raster <code>&lt;img&gt;</code>{" "}
-              would have given them.
+              writing) treat the root role as unknown and fall back to
+              the SVG&rsquo;s native <code>&lt;title&gt;</code> and{" "}
+              <code>&lt;desc&gt;</code> children, which every AT engine
+              announces. Either way, no AT user gets the diagram as
+              one opaque image with a single alt text, which is what
+              a raster <code>&lt;img&gt;</code> would have given them.
+            </p>
+            <p>
+              An earlier draft set <code>role=&ldquo;img&rdquo;</code>{" "}
+              on the root. That was wrong: <code>img</code> tells AT
+              &ldquo;this is an atomic image, don&rsquo;t navigate
+              in,&rdquo; which directly contradicts the navigable
+              structure inside.{" "}
+              <code>role=&ldquo;graphics-document&rdquo;</code> is the
+              specific WAI-ARIA role that says &ldquo;this is
+              structured graphical content; the named objects inside
+              are addressable.&rdquo; Wrong root role would have
+              re-created the same hide-the-structure defect that the
+              trigger-as-sibling fix solved at the DOM layer.
             </p>
             <p>
               Inline SVG also inherits the page&rsquo;s CSS custom
