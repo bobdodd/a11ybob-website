@@ -12,7 +12,7 @@ export default function Accessibility() {
           >
             <h1>Accessibility statement</h1>
             <p className="muted">
-              <small>Last reviewed: 2026-05-10.</small>
+              <small>Last reviewed: 2026-05-17.</small>
             </p>
           </header>
 
@@ -79,6 +79,42 @@ export default function Accessibility() {
                 <code>&lt;details&gt;</code>. Custom interaction patterns
                 (combobox, focus management, live regions) appear only on
                 the surfaces that demand them.
+              </li>
+              <li>
+                <strong>
+                  Visible labels for every interactive control (SC 2.5.3).
+                </strong>{" "}
+                Where a control would otherwise have only an icon or only
+                an image, a visible text label is rendered alongside so
+                voice-control users can speak the same words the screen
+                reader announces. The About page&rsquo;s image-zoom
+                triggers carry a persistent &ldquo;View larger&rdquo;
+                badge; the badge text matches the start of each
+                trigger&rsquo;s accessible name.
+              </li>
+              <li>
+                <strong>
+                  Informative alt text, separate from caption context.
+                </strong>{" "}
+                Every image carries alt text describing what is visibly in
+                the image. Where a figure also needs contextual
+                information &mdash; what the image is, when it dates from,
+                what role it played &mdash; that context lives in a
+                visible <code>&lt;figcaption&gt;</code> so it reaches every
+                reader, not only those using assistive technology.
+                Decorative chrome uses <code>alt=&ldquo;&rdquo;</code>.
+              </li>
+              <li>
+                <strong>
+                  Forced-colors mode (Windows High Contrast).
+                </strong>{" "}
+                Components that rely on colour for meaning carry explicit{" "}
+                <code>@media (forced-colors: active)</code> styles that
+                fall back to system colour pairs (<code>Canvas</code> /{" "}
+                <code>CanvasText</code>, <code>ButtonText</code>), so
+                dialog chrome, badges and close buttons stay
+                distinguishable when the user&rsquo;s OS strips the
+                palette.
               </li>
               <li>
                 <strong>Skip link on every page.</strong> The first focusable
