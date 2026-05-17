@@ -100,32 +100,61 @@ export default function About() {
               dates the era for him specifically, in a way that more abstract
               dating could not.
             </p>
-            <p>
-              From 1984 he was working at Metal Box Automation and Controls in
-              Worcester, in a culture summed up in one sentence:{" "}
-              <em>
-                &ldquo;Any hardware, any language, any architecture &mdash; so
-                long as projects were kept to tight deadlines, typically three
-                months.&rdquo;
-              </em>{" "}
-              Three projects from those five years are worth naming. The first
-              was the programmable logic controllers that ran the Cadbury Cream
-              Egg production line, written in ladder logic with relay-symbol
-              diagrams. The second was the Metal Box Microguage, an industrial
-              quality-control system for measuring the wall thickness and height
-              of beer cans &mdash; factory-floor version in 8085 assembler,
-              portable briefcase version in PolyForth on a PC. The third was the
-              Difco automated blood culture system, initially prototyped on
-              Transputers &mdash; chosen for their built-in networking and an
-              elegant fit for the problem &mdash; running occam, with the
-              production version moved to the less exciting networked 8051
-              microcontrollers in each drawer; first generation of what is now
-              standard in pathology labs. The work was practitioner-level
-              rather than algorithmic; what mattered was finding an elegant
-              solution, not a novel one. Originally aimed at the food industry,
-              where it turned out to be too slow and too expensive, the Difco
-              system found its market in medicine, where it was neither.
-            </p>
+            <div
+              className="with-sidebar with-sidebar--top-aligned"
+              style={{ "--side-width": "14rem" } as CSSProperties}
+            >
+              <figure
+                className="sidebar stack"
+                style={{ "--space": "var(--s-1)" } as CSSProperties}
+              >
+                <div
+                  className="frame"
+                  style={
+                    {
+                      "--frame-n": "1",
+                      "--frame-d": "1",
+                    } as CSSProperties
+                  }
+                >
+                  <img
+                    src="/about/sentinel.jpg"
+                    alt="Black-and-white photograph of a laboratory instrument cabinet with three stacked drawer modules; a small CRT monitor and keyboard sit on top of a side console."
+                  />
+                </div>
+                <figcaption>
+                  The Difco automated blood culture system &mdash; prototyped
+                  on Transputers running occam, production on networked 8051s.
+                  First generation of what is now standard in pathology labs.
+                </figcaption>
+              </figure>
+              <p className="not-sidebar">
+                From 1984 he was working at Metal Box Automation and Controls in
+                Worcester, in a culture summed up in one sentence:{" "}
+                <em>
+                  &ldquo;Any hardware, any language, any architecture &mdash; so
+                  long as projects were kept to tight deadlines, typically three
+                  months.&rdquo;
+                </em>{" "}
+                Three projects from those five years are worth naming. The first
+                was the programmable logic controllers that ran the Cadbury Cream
+                Egg production line, written in ladder logic with relay-symbol
+                diagrams. The second was the Metal Box Microguage, an industrial
+                quality-control system for measuring the wall thickness and height
+                of beer cans &mdash; factory-floor version in 8085 assembler,
+                portable briefcase version in PolyForth on a PC. The third was the
+                Difco automated blood culture system, initially prototyped on
+                Transputers &mdash; chosen for their built-in networking and an
+                elegant fit for the problem &mdash; running occam, with the
+                production version moved to the less exciting networked 8051
+                microcontrollers in each drawer; first generation of what is now
+                standard in pathology labs. The work was practitioner-level
+                rather than algorithmic; what mattered was finding an elegant
+                solution, not a novel one. Originally aimed at the food industry,
+                where it turned out to be too slow and too expensive, the Difco
+                system found its market in medicine, where it was neither.
+              </p>
+            </div>
             <p>
               The briefcase Microguage carried a teachable parable. The earlier
               version had been implemented in floating point, and its rounding
@@ -149,6 +178,76 @@ export default function About() {
             style={{ "--space": "var(--s1)" } as CSSProperties}
           >
             <h2>Distributed systems, switching, adaptive UIs</h2>
+            <p>
+              Four projects from this period, in chronological order:
+            </p>
+            <div
+              className="grid"
+              style={
+                {
+                  "--minimum": "12rem",
+                  "--space": "var(--s0)",
+                } as CSSProperties
+              }
+            >
+              <figure
+                className="stack"
+                style={{ "--space": "var(--s-1)" } as CSSProperties}
+              >
+                <img
+                  src="/about/cf-llads.jpg"
+                  alt="An armoured tracked vehicle in desert paint with a missile-launcher turret carrying twin missile pods and a sensor pod, mounted on an APC-style chassis."
+                />
+                <figcaption>
+                  Low Level Air Defence System (LLADS) &mdash; one of the
+                  Canadian Forces communications-systems contracts at Siemens
+                  Plessey Defence Systems, Havant, from 1989.
+                </figcaption>
+              </figure>
+              <figure
+                className="stack"
+                style={{ "--space": "var(--s-1)" } as CSSProperties}
+              >
+                <img
+                  src="/about/dss.png"
+                  alt="Network diagram showing five Unix nodes — two Secret, one Top Secret, two Unclassified — each connected through a Trusted Network Interface Unit (TNIU) to a shared LAN. Labelled 'Figure 3: A securely partitioned system.'"
+                />
+                <figcaption>
+                  The Trusted Network Interface Unit (TNIU) at RSRE, extending
+                  the OSI seven-layer model with security layers and specified
+                  in Z notation.
+                </figcaption>
+              </figure>
+              <figure
+                className="stack"
+                style={{ "--space": "var(--s-1)" } as CSSProperties}
+              >
+                <img
+                  src="/about/ascotel-crystal.jpg"
+                  alt="A dark desk telephone with a wide LCD display, rows of function and numeric keys, and a slide-out QWERTZ keyboard underneath, photographed next to its product manual."
+                />
+                <figcaption>
+                  The Ascotel Crystal &mdash; an Ascom PABX terminal of the
+                  period. Software Group Leader for the introduction of
+                  object-oriented technology at Ascom AG, Solothurn, 1993&ndash;1996.
+                </figcaption>
+              </figure>
+              <figure
+                className="stack"
+                style={{ "--space": "var(--s-1)" } as CSSProperties}
+              >
+                <img
+                  src="/about/mailhub.png"
+                  alt="Architecture diagram of Control Data Systems Mail*Hub: proprietary endpoints (cc:Mail/Novell, Lotus Notes, IBM OfficeVision) on the left feed a Mail*Hub routing core containing a translation engine, addressing engine and message queuing, which in turn feeds out to the global OSI network on the right — SMTP gateway (RFC 1327), X.400 Message Transfer System, and the X.25 packet-switched data network."
+                />
+                <figcaption>
+                  The Control Data Systems Mail*Hub architecture, 1996 &mdash;
+                  the &ldquo;giant giant Perl program&rdquo; bridging
+                  Microsoft Mail, Lotus, IBM systems and X.400 through an
+                  X.500 directory.
+                </figcaption>
+              </figure>
+            </div>
             <p>
               From 1989 Bob was at Siemens Plessey Defence Systems in Havant,
               working on communications systems for clients that included the
@@ -195,23 +294,42 @@ export default function About() {
             style={{ "--space": "var(--s1)" } as CSSProperties}
           >
             <h2>The shift to accessibility</h2>
-            <p>
-              In the early 2000s, three family motivations layered. Bob became
-              increasingly involved in his cousin&rsquo;s welfare as the MS
-              progressed, and that involvement became the technical focus of
-              much of the doctoral work that followed &mdash; see{" "}
-              <Link href="/research/spotlight/tup">TUP</Link>, the first of the
-              tools built specifically for him. Bob&rsquo;s mother has
-              arthritis, and her experience of typing on mobile devices
-              informed the input-reduction direction of the same tool. Then,
-              late in the same period, Bob&rsquo;s father&rsquo;s final illness
-              put the family in an ICU where picture-board AAC proved
-              inadequate for a man trying to participate in his own treatment
-              decisions. None of these alone is the formal cause of the
-              research focus, but together they turned the technical work
-              toward accessibility, and they kept it concrete &mdash; built for
-              specific people, not for an abstract user category.
-            </p>
+            <div
+              className="with-sidebar with-sidebar--top-aligned"
+              style={{ "--side-width": "11rem" } as CSSProperties}
+            >
+              <p className="not-sidebar">
+                In the early 2000s, three family motivations layered. Bob became
+                increasingly involved in his cousin&rsquo;s welfare as the MS
+                progressed, and that involvement became the technical focus of
+                much of the doctoral work that followed &mdash; see{" "}
+                <Link href="/research/spotlight/tup">TUP</Link>, the first of the
+                tools built specifically for him. Bob&rsquo;s mother has
+                arthritis, and her experience of typing on mobile devices
+                informed the input-reduction direction of the same tool. Then,
+                late in the same period, Bob&rsquo;s father&rsquo;s final illness
+                put the family in an ICU where picture-board AAC proved
+                inadequate for a man trying to participate in his own treatment
+                decisions. None of these alone is the formal cause of the
+                research focus, but together they turned the technical work
+                toward accessibility, and they kept it concrete &mdash; built for
+                specific people, not for an abstract user category.
+              </p>
+              <figure
+                className="sidebar stack"
+                style={{ "--space": "var(--s-1)" } as CSSProperties}
+              >
+                <img
+                  src="/about/tup.jpg"
+                  alt="Screenshot of an early text-entry interface: the word 'HELL' partially typed beside a large circle with the letter A inside a small circle, a yellow square containing a smaller square, and a red dot &mdash; within a window titled 'Carnforth.'"
+                />
+                <figcaption>
+                  <Link href="/research/spotlight/tup">TUP</Link> &mdash;
+                  text entry by keystroke reduction, built first for Bob&rsquo;s
+                  cousin.
+                </figcaption>
+              </figure>
+            </div>
             <p>
               Bob enrolled at Teesside two days a week for an MSc in Multimedia
               Applications, with a thesis on mobile accessibility for people
@@ -222,36 +340,57 @@ export default function About() {
               <em>User Capability in an Adaptive World</em> paper. The
               researcher is inside the design space he is modelling.
             </p>
-            <p>
-              The doctoral research ran from 2004 to 2013. It began on the
-              effectiveness of self-adapting user interfaces as assistive
-              technology in hand-held mobile devices, and over those years grew
-              into formal models of UI adaptation and of user capability. Most
-              of the writing was completed and several peer-reviewed papers
-              published from the work, including the W4A 2008 paper{" "}
-              <em>The CISNA Model of Accessible Adaptive Hypermedia</em> (with
-              Steve Green and Elaine Pearson). The viva was never taken &mdash;
-              largely because of a family move to Canada, and CNIB and CELA
-              happening. Two pieces of original
-              conceptual work survived from the period and are still
-              load-bearing for current writing: the{" "}
-              <Link href="/research/cisna-model">CISNA Model</Link> itself, and{" "}
-              <Link href="/research/tetris-testbed">
-                Tetris as accessibility testbed
-              </Link>
-              , which turned out to be the most teachable artefact of the
-              entire period &mdash; and produced an{" "}
-              <Link href="/research/spotlight/tetris-audio">
-                audio rendering
-              </Link>{" "}
-              that re-framed the modality question itself. Beneath both, the{" "}
-              <Link href="/research/the-measure-of-accessibility">
-                Measure of Accessibility
-              </Link>{" "}
-              collection &mdash; six pages from the{" "}
-              <em>Defining Accessibility</em> chapter &mdash; gives the
-              formal-and-political theory.
-            </p>
+            <div
+              className="with-sidebar with-sidebar--top-aligned"
+              style={{ "--side-width": "11rem" } as CSSProperties}
+            >
+              <p className="not-sidebar">
+                The doctoral research ran from 2004 to 2013. It began on the
+                effectiveness of self-adapting user interfaces as assistive
+                technology in hand-held mobile devices, and over those years grew
+                into formal models of UI adaptation and of user capability. Most
+                of the writing was completed and several peer-reviewed papers
+                published from the work, including the W4A 2008 paper{" "}
+                <em>The CISNA Model of Accessible Adaptive Hypermedia</em> (with
+                Steve Green and Elaine Pearson). The viva was never taken &mdash;
+                largely because of a family move to Canada, and CNIB and CELA
+                happening. Two pieces of original
+                conceptual work survived from the period and are still
+                load-bearing for current writing: the{" "}
+                <Link href="/research/cisna-model">CISNA Model</Link> itself, and{" "}
+                <Link href="/research/tetris-testbed">
+                  Tetris as accessibility testbed
+                </Link>
+                , which turned out to be the most teachable artefact of the
+                entire period &mdash; and produced an{" "}
+                <Link href="/research/spotlight/tetris-audio">
+                  audio rendering
+                </Link>{" "}
+                that re-framed the modality question itself. Beneath both, the{" "}
+                <Link href="/research/the-measure-of-accessibility">
+                  Measure of Accessibility
+                </Link>{" "}
+                collection &mdash; six pages from the{" "}
+                <em>Defining Accessibility</em> chapter &mdash; gives the
+                formal-and-political theory.
+              </p>
+              <figure
+                className="sidebar stack"
+                style={{ "--space": "var(--s-1)" } as CSSProperties}
+              >
+                <img
+                  src="/about/tetris.jpg"
+                  alt="Tetris screenshot with multicoloured falling blocks partly filling a play field on a backdrop of aurora-lit forest. Side panels show score 1400, lines 17, level 2, game type 'Fantasy.'"
+                />
+                <figcaption>
+                  <Link href="/research/tetris-testbed">
+                    Tetris as accessibility testbed
+                  </Link>{" "}
+                  &mdash; mode, timing, modality and decision-making in a single
+                  artefact.
+                </figcaption>
+              </figure>
+            </div>
             <p>
               A period in Beijing around 2004 sits inside the doctoral years.
               Bob&rsquo;s husband, Taodi, had finished his Masters and joined
