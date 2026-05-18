@@ -5,21 +5,23 @@ import { useId } from "react";
  * polymorphs, each with its own task ordering and leaf-level
  * modality affordances.
  *
- * AT contract (WAI-ARIA Graphics module + always-on fallback):
- * - Root <svg role="graphics-document"> — declares the SVG as a
- *   navigable graphical document, not an atomic image. role="img"
- *   would actively contradict the structural roles inside (graphics-
- *   object, graphics-symbol) by telling AT "this is one opaque
- *   image, don't navigate in." Combined with aria-labelledby +
- *   aria-describedby pointing at <title> and <desc>, the root
- *   carries both an accessible name and a description.
- * - Structural groups carry role="graphics-object" with aria-label;
- *   leaf modality icons carry role="graphics-symbol" with
- *   aria-label. Engines that understand the Graphics module
- *   (VoiceOver, recent NVDA) expose these for in-diagram
- *   navigation; engines that don't (older JAWS) treat the root
- *   role as unknown and fall back to the SVG's <title>/<desc>
- *   announcement, so the diagram still carries its summary.
+ * AT contract (current — see /colophon for the rationale and the
+ * history of how we got here):
+ * - Root <svg role="img"> with aria-labelledby + aria-describedby
+ *   pointing at <title> and <desc>. AT engines treat the SVG as a
+ *   single labelled image with a descriptive description. Every
+ *   engine handles this correctly.
+ * - The internal structural roles below (graphics-object on each
+ *   <g>, graphics-symbol on each leaf modality icon, each with its
+ *   own aria-label) are PRESERVED in the markup as a working
+ *   example of the WAI-ARIA Graphics module pattern, but are
+ *   currently overridden by role="img" on the root. Real-world AT
+ *   support for the Graphics module is too uneven — TalkBack on
+ *   Android walks SVG elements individually regardless of roles,
+ *   JAWS largely doesn't implement the module, NVDA support varies
+ *   by browser. When that catches up, the role="img" override can
+ *   come off in one line and the inner structure becomes
+ *   navigable.
  * - Edges and "before" labels are aria-hidden; the temporal
  *   relationships they encode are spelled out inside each
  *   sub-task's aria-label.
@@ -55,7 +57,7 @@ export function PTDTaskTree() {
     <svg
       viewBox="0 0 2000 1125"
       xmlns="http://www.w3.org/2000/svg"
-      role="graphics-document"
+      role="img"
       aria-labelledby={titleId}
       aria-describedby={descId}
       className="ptd-task-tree"
@@ -64,12 +66,14 @@ export function PTDTaskTree() {
         Polymorphic Task Decomposition: the Delete File example
       </title>
       <desc id={descId}>
-        The canonical PTD example. The same underlying intention &mdash;
-        Delete File &mdash; realised as two polymorphs: Direct
-        Manipulation and Modal Dialogue, each with its own task
-        ordering and its own leaf-level modality affordances. The
-        capability model selects between polymorphs at runtime based
-        on user, device, and operating context.
+        Hierarchical task tree with root &ldquo;Delete File&rdquo;
+        branching into two polymorphs. Direct Manipulation contains
+        sub-tasks &ldquo;Select File&rdquo; before &ldquo;Select
+        Delete,&rdquo; with leaf modality affordances for scanning
+        and visual interaction. Modal Dialogue contains sub-tasks
+        &ldquo;Select Delete&rdquo; before &ldquo;Select File&rdquo;
+        before &ldquo;Confirm Delete,&rdquo; with leaf affordances
+        for visual and non-visual button interaction.
       </desc>
 
       <defs>

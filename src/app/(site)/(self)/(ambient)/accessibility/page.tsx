@@ -137,27 +137,27 @@ export default function Accessibility() {
               </li>
               <li>
                 <strong>
-                  Structural diagrams are inline SVG, not opaque images.
+                  Structural diagrams are inline SVG, with descriptive
+                  <code>&lt;title&gt;</code> and{" "}
+                  <code>&lt;desc&gt;</code>.
                 </strong>{" "}
                 Where a page carries a structural diagram &mdash; a
                 hierarchy, a flow, a relational network &mdash; the
-                diagram is rendered as inline SVG with{" "}
-                <code>role=&ldquo;graphics-document&rdquo;</code> on
-                the root (the WAI-ARIA Graphics module role for a
-                navigable graphical document), plus{" "}
-                <code>graphics-object</code> and{" "}
-                <code>graphics-symbol</code> roles labelling each node
-                and modality affordance inside. The SVG&rsquo;s native{" "}
-                <code>&lt;title&gt;</code> and <code>&lt;desc&gt;</code>{" "}
-                children carry an accessible name and description that
-                every AT engine announces, including engines that
-                don&rsquo;t recognise the Graphics roles. AT users on
-                engines that do recognise them (VoiceOver, recent
-                NVDA) can navigate the diagram&rsquo;s internal
-                structure rather than receiving it as one opaque
-                image. Inline SVG also inherits the page&rsquo;s zone
+                diagram is rendered as inline SVG. The root carries{" "}
+                <code>role=&ldquo;img&rdquo;</code> with{" "}
+                <code>&lt;title&gt;</code> and{" "}
+                <code>&lt;desc&gt;</code> children supplying the
+                accessible name and a descriptive summary of the
+                diagram&rsquo;s structure. Every AT engine announces
+                these. Inline SVG also inherits the page&rsquo;s zone
                 tint and adapts to forced-colors mode automatically,
-                neither of which a raster image provides.
+                neither of which a raster image provides. (A complete
+                example of the WAI-ARIA Graphics module structure
+                lives inside the SVG markup but is currently
+                overridden by <code>role=&ldquo;img&rdquo;</code>{" "}
+                because AT support for the module remains uneven; see
+                the <Link href="/colophon">colophon</Link> for the
+                rationale.)
               </li>
               <li>
                 <strong>

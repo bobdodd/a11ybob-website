@@ -708,99 +708,124 @@ export default function Colophon() {
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
             <h2>
-              Structural diagrams are inline SVG with WAI-ARIA Graphics
-              roles
+              Structural diagrams are inline SVG, with the Graphics
+              module preserved as a worked example
             </h2>
             <p>
               The PTD task tree on{" "}
               <Link href="/research/polymorphic-task-decomposition">
                 /research/polymorphic-task-decomposition
               </Link>{" "}
-              is hand-authored inline SVG, not a raster image. The
-              choice is structural rather than aesthetic. The root{" "}
-              <code>&lt;svg&gt;</code> carries{" "}
-              <code>role=&ldquo;graphics-document&rdquo;</code> &mdash;
-              the WAI-ARIA Graphics module&rsquo;s role for a
-              navigable graphical document. AT users on engines that
-              understand the Graphics module (VoiceOver, recent NVDA)
-              can navigate the tree node by node &mdash; root task,
-              polymorphs, sub-tasks, modality affordances &mdash;
-              through <code>role=&ldquo;graphics-object&rdquo;</code>{" "}
-              and <code>role=&ldquo;graphics-symbol&rdquo;</code>{" "}
-              attributes on each grouped element, each labelled with{" "}
-              <code>aria-label</code>. Engines that don&rsquo;t
-              understand the Graphics module yet (JAWS at time of
-              writing) treat the root role as unknown and fall back to
-              the SVG&rsquo;s native <code>&lt;title&gt;</code> and{" "}
-              <code>&lt;desc&gt;</code> children, which every AT engine
-              announces. Either way, no AT user gets the diagram as
-              one opaque image with a single alt text, which is what
-              a raster <code>&lt;img&gt;</code> would have given them.
+              is hand-authored inline SVG, not a raster image. Three
+              reasons make the choice worth keeping even when the AT
+              path is ultimately the same as a raster image with alt
+              text: (a) inline SVG inherits the page&rsquo;s CSS custom
+              properties &mdash; strokes and text use{" "}
+              <code>currentColor</code>; the wrapping CSS sets{" "}
+              <code>color</code> on the root SVG element to{" "}
+              <code>var(--ink)</code>, so the diagram automatically
+              picks up the research zone&rsquo;s ink tint and adapts
+              to Windows High Contrast / forced-colors mode through
+              CSS system colour resolution; node-box fills use{" "}
+              <code>var(--surface-1)</code> with a{" "}
+              <code>@media (forced-colors: active)</code> override.
+              (b) The diagram scales vector-perfect at any zoom level,
+              including the dialog&rsquo;s near-viewport size.
+              (c) Text labels are real text &mdash; selectable,
+              indexed by find-in-page, copy-paste-able. None of these
+              are available to an external SVG referenced through{" "}
+              <code>&lt;img src&gt;</code>: the browser renders
+              external SVGs in their own document context with no
+              access to the parent page&rsquo;s tokens or media
+              queries.
             </p>
             <p>
-              An earlier draft set <code>role=&ldquo;img&rdquo;</code>{" "}
-              on the root. That was wrong: <code>img</code> tells AT
-              &ldquo;this is an atomic image, don&rsquo;t navigate
-              in,&rdquo; which directly contradicts the navigable
-              structure inside.{" "}
-              <code>role=&ldquo;graphics-document&rdquo;</code> is the
-              specific WAI-ARIA role that says &ldquo;this is
-              structured graphical content; the named objects inside
-              are addressable.&rdquo; Wrong root role would have
-              re-created the same hide-the-structure defect that the
-              trigger-as-sibling fix solved at the DOM layer.
+              The SVG also carries a complete example of the{" "}
+              <strong>WAI-ARIA Graphics module</strong> structure
+              inside it:{" "}
+              <code>role=&ldquo;graphics-object&rdquo;</code> on every
+              grouped node (root task, polymorphs, sub-tasks, modality
+              enclosures) and{" "}
+              <code>role=&ldquo;graphics-symbol&rdquo;</code> on every
+              leaf modality icon, each labelled with{" "}
+              <code>aria-label</code>. The intention of those roles is
+              to let AT users navigate the tree structure node by node
+              &mdash; hearing &ldquo;Root task: Delete File,&rdquo;{" "}
+              &ldquo;First polymorph: Direct Manipulation,&rdquo;
+              &ldquo;sub-task: Select File, performed before Select
+              Delete,&rdquo; and so on, walking the diagram as a
+              navigable structure rather than receiving it as one
+              opaque image.
             </p>
             <p>
-              Inline SVG also inherits the page&rsquo;s CSS custom
-              properties. Strokes and text use <code>currentColor</code>;
-              the wrapping CSS sets <code>color</code> on the root SVG
-              element to <code>var(--ink)</code>, so the diagram
-              automatically picks up the research zone&rsquo;s ink tint
-              and adapts to Windows High Contrast / forced-colors mode
-              through CSS system colour resolution. Node-box fills use{" "}
-              <code>var(--surface-1)</code> via class, with a{" "}
-              <code>@media (forced-colors: active)</code> override that
-              swaps in <code>Canvas</code> so boxes remain
-              distinguishable from the page background under stripped
-              palettes. Neither behaviour is available to an external
-              SVG referenced through <code>&lt;img src&gt;</code>: the
-              browser renders external SVGs in their own document
-              context with no access to the parent page&rsquo;s
-              tokens or media queries.
+              That contract turned out to be{" "}
+              <em>aspirational</em>. AT support for the Graphics
+              module (defined in 2018) is patchier than the spec
+              suggests in 2026: VoiceOver on macOS and iOS handles it
+              reasonably well; NVDA on Windows is inconsistent across
+              browser combinations; JAWS on Windows largely
+              doesn&rsquo;t implement it; <strong>TalkBack on
+              Android walks SVG elements individually regardless of
+              roles</strong>, announcing pixel-coordinate geometry of
+              the inner <code>&lt;rect&gt;</code> and{" "}
+              <code>&lt;text&gt;</code> elements rather than the
+              parent group&rsquo;s <code>aria-label</code>. Tested
+              directly on this site. Two of the most-used AT engines
+              (JAWS and TalkBack) don&rsquo;t honour the module at
+              all, which means the carefully-placed roles inside the
+              SVG don&rsquo;t reach the AT users who depend on those
+              engines.
             </p>
             <p>
-              For the WAI-ARIA Graphics roles inside the SVG to
-              actually reach AT, the SVG must render <em>outside</em>{" "}
-              the trigger button, not inside it. A{" "}
-              <code>&lt;button&gt;</code> is an interactive leaf: AT
-              users land on it, hear its accessible name, and the
-              traversal stops. Any roles inside the button &mdash;
-              <code>role=&ldquo;graphics-object&rdquo;</code>,{" "}
-              <code>role=&ldquo;graphics-symbol&rdquo;</code> and their
-              labels &mdash; are unreachable. So when <code>ImageFigure</code>{" "}
-              is given <code>content</code> (rather than{" "}
-              <code>src</code> / <code>alt</code>), it renders the
-              content as a child of a plain <code>&lt;div&gt;</code>{" "}
-              and places the &ldquo;View larger&rdquo; trigger as a
-              sibling absolute-positioned overlay. Visually identical
-              to the raster badge; structurally a separate node, so
-              the SVG&rsquo;s internal AT structure stays addressable.
-              An earlier draft buried the SVG inside the button and
-              defeated its own ARIA before this was caught.
+              So the SVG&rsquo;s root currently carries{" "}
+              <code>role=&ldquo;img&rdquo;</code> &mdash; atomic-image
+              semantics &mdash; with descriptive{" "}
+              <code>&lt;title&gt;</code> and <code>&lt;desc&gt;</code>{" "}
+              children carrying the accessible name and description.
+              Every AT engine announces those.{" "}
+              <em>
+                The structural Graphics-module roles remain in the
+                markup as a worked example of the spec
+              </em>{" "}
+              &mdash; the diagram <em>would</em> become navigable in a
+              more mature ARIA-support landscape by simply removing
+              the <code>role=&ldquo;img&rdquo;</code> override; the
+              one-line change is left explicit in the source so the
+              upgrade path is obvious. The site is honest about
+              shipping what AT support can reliably deliver today
+              rather than claiming a navigation experience most users
+              don&rsquo;t actually receive.
+            </p>
+            <p>
+              Three earlier drafts of this figure overstated the AT
+              delivery. The first hid the SVG inside an interactive{" "}
+              <code>&lt;button&gt;</code> (the &ldquo;View
+              larger&rdquo; trigger), which makes every inner role
+              unreachable regardless of engine support &mdash; the
+              button is an AT leaf, and SR users stop at its name.
+              The second declared{" "}
+              <code>role=&ldquo;graphics-document&rdquo;</code> on the
+              root with the implication that VoiceOver and NVDA users
+              would get rich navigation &mdash; true for some
+              configurations, untrue for most. Both got fixed as they
+              were caught, but the pattern is worth naming: AT
+              contracts you commit to in markup are only as real as
+              the AT engines that honour them, and assuming
+              &ldquo;the spec exists therefore it works&rdquo; is a
+              recurring trap. The trigger-outside-button fix from the
+              first round is preserved in{" "}
+              <code>ImageFigure</code>&rsquo;s content-mode path;
+              when the Graphics module is widely supported, it will
+              do its job correctly.
             </p>
             <p>
               The <code>ImageFigure</code> component was extended with
               an optional <code>content</code> prop that accepts a
               ReactNode in place of the <code>&lt;img&gt;</code>{" "}
-              element. The visible &ldquo;View larger&rdquo; badge,
-              the zoom modal, focus-return and the trigger-label /
-              caption-description contract all apply to SVG content
-              identically to raster images; the only structural
-              difference is the trigger-as-sibling treatment above.
-              The trigger and the dialog render the SVG as separate React
-              subtrees, so any <code>useId()</code> inside the SVG
-              generates distinct IDs in each location with no DOM ID
-              collision.
+              element. The trigger and the dialog render the content
+              as separate React subtrees, so any <code>useId()</code>{" "}
+              inside the content generates distinct IDs in each
+              location with no DOM ID collision.
             </p>
           </section>
 
