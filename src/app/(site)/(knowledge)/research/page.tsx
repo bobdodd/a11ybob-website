@@ -114,10 +114,14 @@ export default function Research() {
             <p>
               The original XML notation and execution engine from the
               PhD, with worked examples that run in the browser via a
-              TypeScript port of the Java reference. Demonstrates the
-              Shlaer-Mellor lens in code: the same threaded-
-              interpreter execution model that started in Forth at
-              Metal Box in the mid-1980s.
+              TypeScript port of the Java reference. The page is{" "}
+              <em>interactive</em>: visitors can edit the supplied
+              examples or write their own Action Language scripts in
+              the in-page editor, run them, and watch the execution
+              trace in the same window. Demonstrates the Shlaer-Mellor
+              lens in code: the same threaded-interpreter execution
+              model that started in Forth at Metal Box in the
+              mid-1980s.
             </p>
             <p>
               <Link href="/playgrounds/action-language">
