@@ -17,7 +17,7 @@ import type { Viewport } from "next";
  * file. Light/dark are supplied as separate themeColor entries so
  * the browser picks the one matching the user's OS preference. */
 
-type ZoneName =
+export type ZoneName =
   | "home"
   | "ambient"
   | "work"
@@ -29,7 +29,7 @@ type ZoneName =
   | "playgrounds"
   | "maps";
 
-const ZONE_THEME_COLORS: Record<ZoneName, { light: string; dark: string }> = {
+export const ZONE_THEME_COLORS: Record<ZoneName, { light: string; dark: string }> = {
   home:        { light: "oklch(95% 0.05 85)",   dark: "oklch(20% 0.05 85)"   },
   about:       { light: "oklch(95% 0.03 350)",  dark: "oklch(20% 0.03 350)"  },
   writing:     { light: "oklch(95% 0.05 30)",   dark: "oklch(20% 0.05 30)"   },
