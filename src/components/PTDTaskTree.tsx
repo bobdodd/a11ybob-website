@@ -73,7 +73,7 @@ export function PTDTaskTree() {
         and visual interaction. Modal Dialogue contains sub-tasks
         &ldquo;Select Delete&rdquo; before &ldquo;Select File&rdquo;
         before &ldquo;Confirm Delete,&rdquo; with leaf affordances
-        for visual and non-visual button interaction.
+        for visual and non-visual listbox interaction.
       </desc>
 
       <defs>
@@ -385,7 +385,7 @@ export function PTDTaskTree() {
       {/* MD modality affordances */}
       <g
         role="graphics-object"
-        aria-label="Modal Dialogue modality affordances: visual output and non-visual button input"
+        aria-label="Modal Dialogue modality affordances: visual output and non-visual listbox input"
       >
         <rect
           x="1140"
@@ -411,19 +411,20 @@ export function PTDTaskTree() {
           </text>
         </g>
 
-        {/* Non-visual button icon */}
-        <g role="graphics-symbol" aria-label="Non-visual button modality">
+        {/* Non-visual listbox icon: container with three stacked
+         * items; the middle one is filled to indicate the currently-
+         * selected option. */}
+        <g role="graphics-symbol" aria-label="Non-visual listbox modality">
+          <rect x="1530" y="760" width="180" height="130" fill="none" />
+          <line x1="1555" y1="790" x2="1685" y2="790" />
           <rect
-            x="1500"
-            y="775"
-            width="240"
-            height="90"
-            rx="30"
-            fill="none"
+            x="1550"
+            y="810"
+            width="140"
+            height="30"
+            fill="currentColor"
           />
-          <circle cx="1560" cy="820" r="10" fill="currentColor" />
-          <circle cx="1620" cy="820" r="10" fill="currentColor" />
-          <circle cx="1680" cy="820" r="10" fill="currentColor" />
+          <line x1="1555" y1="860" x2="1685" y2="860" />
           <text
             x="1620"
             y="970"
@@ -431,7 +432,7 @@ export function PTDTaskTree() {
             dominantBaseline="central"
             className="ptd-task-tree__modality-label"
           >
-            non-visual button
+            non-visual listbox
           </text>
         </g>
       </g>
