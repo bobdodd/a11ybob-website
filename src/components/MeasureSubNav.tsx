@@ -45,7 +45,11 @@ export function MeasureSubNav() {
   const pathname = usePathname();
 
   return (
-    <nav aria-label="The Measure of Accessibility — pages">
+    <nav
+      aria-label="The Measure of Accessibility — pages"
+      className="section-nav"
+    >
+      <p className="section-nav__label">In this collection</p>
       <ul
         className="nav-list cluster"
         style={{ "--space": "var(--s-1)" } as CSSProperties}

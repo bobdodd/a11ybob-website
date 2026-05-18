@@ -35,7 +35,8 @@ export function ResearchSubNav() {
   const pathname = usePathname();
 
   return (
-    <nav aria-label="Research sections">
+    <nav aria-label="Research sections" className="section-nav">
+      <p className="section-nav__label">In this section</p>
       <ul
         className="nav-list cluster"
         style={{ "--space": "var(--s0)" } as CSSProperties}

@@ -29,7 +29,8 @@ export function ParadiseSubNav() {
   const pathname = usePathname();
 
   return (
-    <nav aria-label="Paradise sections">
+    <nav aria-label="Paradise sections" className="section-nav">
+      <p className="section-nav__label">In this section</p>
       <ul
         className="nav-list cluster"
         style={{ "--space": "var(--s0)" } as CSSProperties}

@@ -61,6 +61,30 @@
   text-underline-offset: 0.15em;
 }
 
+/* Section navigation — the in-page sub-nav widget that sits at
+ * the top of each Research / Paradise / Maps / Measure page.
+ *
+ * Wraps the SubNav components in a bordered box with the surface-2
+ * tint, so the sub-nav reads as a discrete navigation widget
+ * rather than as floating text inside the article column. A
+ * visible "In this section" label sits above the list of items
+ * for sighted users; the nav element keeps its own aria-label
+ * (e.g. "Research sections") so AT users get section-specific
+ * landmark names. */
+.section-nav {
+  border: var(--border-thin) solid var(--rule);
+  background: var(--surface-2);
+  padding: var(--s-1) var(--s0);
+}
+
+.section-nav__label {
+  margin-block: 0 var(--s-1);
+  font-size: var(--s-1);
+  color: var(--ink-muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
 /* Nav lists (primary and secondary) */
 .nav-list {
   list-style: none;

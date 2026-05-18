@@ -20,7 +20,8 @@ export function MapsSubNav() {
   const pathname = usePathname();
 
   return (
-    <nav aria-label="Maps sections">
+    <nav aria-label="Maps sections" className="section-nav">
+      <p className="section-nav__label">In this section</p>
       <ul
         className="nav-list cluster"
         style={{ "--space": "var(--s0)" } as CSSProperties}
