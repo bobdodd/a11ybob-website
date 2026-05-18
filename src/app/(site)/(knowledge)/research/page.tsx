@@ -17,10 +17,12 @@ export default function Research() {
             <p className="lede">
               Frameworks, papers, and one forward-looking project.
               Most of this work was developed during doctoral
-              research at Teesside between 2004 and 2013, parked when
-              CNIB and CELA happened, and is being resumed now that
-              the implementation tools the original research called
-              for have arrived.
+              research at Teesside between 2004 and 2013, parked
+              when CNIB and CELA happened, and is being resumed now
+              that the implementation tools the original research
+              called for have arrived &mdash; and along the
+              trajectory toward 2029, when more time becomes
+              available for it.
             </p>
           </header>
 
