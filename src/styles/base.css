@@ -56,13 +56,25 @@ em, i    { font-style: italic; }
 /* ===== Links =====
    Underlined by default — colour is never the only signal.
    Underline thickens on hover and focus so the affordance is
-   reinforced kinaesthetically as well as visually. */
+   reinforced kinaesthetically as well as visually.
+
+   white-space: nowrap treats spaces inside link text as non-
+   breaking, so a multi-word link like "See the Spotlight index"
+   never splits across two lines. The link can still wrap to a new
+   line as a whole — the wrap point just moves to before the link,
+   not into it. Risk: a link longer than the article column width
+   would overflow horizontally; on a 60ch column with short link
+   text throughout the site, this hasn't surfaced. If a future long
+   link causes overflow, the author can either craft the sentence
+   so the link is shorter, or override white-space on that one
+   instance. */
 a {
   color: var(--accent);
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-decoration-skip-ink: auto;
   text-underline-offset: 0.2em;
+  white-space: nowrap;
 }
 
 a:hover,
