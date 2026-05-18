@@ -1,62 +1,39 @@
 "use client";
 
-/* ZoneSync — keeps the browser chrome (URL bar / tab strip tint) in
- * sync with the page's current zone on SPA navigation.
+/* ZoneSync — keeps the <html> element's data-zone attribute in
+ * sync with the current SiteShell zone on client-side navigation.
  *
- * Problem: Next.js App Router's viewport export renders correct
- * theme-color meta tags into each route segment's <head> on the
- * server, but most browsers — Safari in particular — only read
- * theme-color on initial document load. When the user navigates
- * between zones client-side, Next.js mutates the meta tag in the
- * DOM, but Safari keeps using whichever theme-color it picked up at
- * the start of the session (usually home).
+ * The root layout renders <html data-zone="home"> as a static
+ * fallback. Each route's SiteShell sets data-zone on an inner
+ * <div>, so the body content paints in the correct zone, but the
+ * html element's attribute stays "home" across the whole session.
+ * Some browsers — Safari notably — derive their URL-bar tint by
+ * sampling the document's outer background, which resolves
+ * through the html element's CSS tokens. With data-zone stuck on
+ * "home" everywhere, Safari's toolbar stays cream regardless of
+ * which page is showing.
  *
- * Fix: on every zone change, this effect (a) removes and re-creates
- * the theme-color meta tags from scratch, which triggers a fresh
- * DOM mutation observable to Safari's chrome-tinting code; and (b)
- * updates the <html> element's data-zone attribute so any browser
- * that falls back to sampling the document background also gets the
- * current zone's surface colour.
+ * This effect copies the current zone onto document.documentElement
+ * so the html bg matches the page bg, and Safari (and any other
+ * browser using a sampling heuristic) tints its chrome correctly.
  *
- * SSR initial loads already work without this effect — the meta is
- * correct in the rendered HTML. ZoneSync only matters for in-app
- * navigation between zones. */
+ * Earlier drafts of this component also removed and re-created
+ * theme-color meta tags from JS to nudge Safari into re-reading
+ * them on SPA navigation. That approach turned out to break
+ * client-side routing — Next.js renders those meta tags through
+ * React's <head> management, and removing them out from under
+ * React left its virtual DOM out of sync with the real DOM. The
+ * first nav click would change the URL but the new layout would
+ * fail to mount; the second click recovered. The meta-tag dance
+ * is gone; the data-zone update is the safe, React-compatible
+ * version of the same idea (modifying an attribute on the html
+ * root, which React doesn't manage). */
 
 import { useEffect } from "react";
-import {
-  ZONE_THEME_COLORS,
-  type ZoneName,
-} from "@/lib/zone-theme-color";
+import type { ZoneName } from "@/lib/zone-theme-color";
 
 export function ZoneSync({ zone }: { zone: ZoneName }) {
   useEffect(() => {
-    const colors = ZONE_THEME_COLORS[zone];
-    if (!colors) return;
-
-    /* Remove every existing theme-color meta so the browser sees
-     * a clean slate. */
-    document
-      .querySelectorAll('meta[name="theme-color"]')
-      .forEach((m) => m.remove());
-
-    /* Re-create the light and dark variants with the current
-     * zone's surface colours. Newly-appended <meta> nodes are a
-     * DOM mutation the browser's chrome-tinter actually observes,
-     * unlike content-attribute changes on an existing node. */
-    const light = document.createElement("meta");
-    light.setAttribute("name", "theme-color");
-    light.setAttribute("media", "(prefers-color-scheme: light)");
-    light.setAttribute("content", colors.light);
-    document.head.appendChild(light);
-
-    const dark = document.createElement("meta");
-    dark.setAttribute("name", "theme-color");
-    dark.setAttribute("media", "(prefers-color-scheme: dark)");
-    dark.setAttribute("content", colors.dark);
-    document.head.appendChild(dark);
-
-    /* Sampling fallback for browsers that don't honour
-     * theme-color: html bg follows the current zone too. */
     document.documentElement.dataset.zone = zone;
   }, [zone]);
 
