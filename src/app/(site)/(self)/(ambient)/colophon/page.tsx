@@ -251,6 +251,35 @@ export default function Colophon() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
+            <h2>Multi-word link text doesn&rsquo;t wrap across lines</h2>
+            <p>
+              Every <code>&lt;a&gt;</code> on the site carries{" "}
+              <code>white-space: nowrap</code>. A multi-word link like{" "}
+              <em>See the Spotlight index</em> or{" "}
+              <em>Polymorphic Task Decomposition</em> is a single phrase
+              that should be scannable as one unit; splitting it across
+              two lines on a column-margin break makes it read as two
+              disconnected fragments and obscures where the link starts
+              and ends. The white-space rule treats internal spaces as
+              non-breaking, so the wrap point moves to{" "}
+              <em>before</em> the link rather than into it.
+            </p>
+            <p>
+              The trade-off is that a link longer than the article
+              column would overflow horizontally rather than wrap. Site
+              link text is short enough throughout that this
+              hasn&rsquo;t surfaced; if a future case overflows, the
+              preferred fix is to reword the surrounding prose so the
+              link is shorter (link text rarely needs to be the entire
+              descriptive sentence) rather than override the global
+              rule. The global rule stays.
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
             <h2>Colour</h2>
             <p>
               Three motivations layered. First, body text on pure white
