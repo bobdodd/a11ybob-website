@@ -6,6 +6,29 @@
    (slightly more emphasised) to band the page; main uses surface-1
    (the lightest tint) for the body. */
 
+/* Skip link — always the first focusable element on every page.
+   Translated off-screen until focused; slides into view when a
+   keyboard user tabs to it. Lives in the components layer (not
+   axioms) because base.css's anchor colour rule would override
+   surface-1 text colour if the skip link were declared earlier
+   in the cascade. */
+.skip-link {
+  position: absolute;
+  inset-inline-start: var(--s0);
+  inset-block-start: var(--s0);
+  padding: var(--s-1) var(--s0);
+  background: var(--ink);
+  color: var(--surface-1);
+  text-decoration: none;
+  z-index: 100;
+  transform: translateY(-200%);
+  transition: transform 0.15s;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
 .site-shell {
   min-block-size: 100vh;
   background: var(--surface-1);

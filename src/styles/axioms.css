@@ -89,20 +89,7 @@ dialog,
   color: var(--surface-1);
 }
 
-/* ===== Skip link (axiom — every page has one) ===== */
-.skip-link {
-  position: absolute;
-  inset-inline-start: var(--s0);
-  inset-block-start: var(--s0);
-  padding: var(--s-1) var(--s0);
-  background: var(--ink);
-  color: var(--surface-1);
-  text-decoration: none;
-  z-index: 100;
-  transform: translateY(-200%);
-  transition: transform 0.15s;
-}
-
-.skip-link:focus {
-  transform: translateY(0);
-}
+/* Skip link styles live in chrome.css (components layer) because
+   base.css's anchor colour rule would otherwise override the
+   skip link's surface-coloured text — layers beat specificity in
+   the cascade. */
