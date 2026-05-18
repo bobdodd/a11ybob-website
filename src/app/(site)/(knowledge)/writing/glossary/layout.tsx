@@ -1,4 +1,7 @@
 import { SiteShell } from "@/components/SiteShell";
+import { zoneViewport } from "@/lib/zone-theme-color";
+
+export const viewport = zoneViewport("writing");
 
 /* /writing/glossary/* inherits the Writing zone — sub-tree of the
  * Writing main-nav landing. */

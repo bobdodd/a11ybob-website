@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Atkinson_Hyperlegible, Source_Serif_4 } from "next/font/google";
+import { zoneViewport } from "@/lib/zone-theme-color";
 import "./globals.css";
 
 const atkinson = Atkinson_Hyperlegible({
@@ -22,6 +23,13 @@ export const metadata: Metadata = {
   title: "a11ybob.com",
   description: "Bob Dodd on digital accessibility.",
 };
+
+/* Default theme-color for routes that don't have a zone layout in
+ * their tree (e.g. /styleguide, /health). Each zone-bearing layout
+ * overrides this with its own viewport export. The home zone is
+ * the default because <html> carries data-zone="home" as its
+ * fallback. */
+export const viewport = zoneViewport("home");
 
 export default function RootLayout({
   children,
