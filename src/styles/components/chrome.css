@@ -31,10 +31,14 @@
   color: var(--ink-muted);
 }
 
-/* Inner container for chrome — wider than the editorial measure since
-   chrome benefits from spanning the viewport more generously. */
+/* Inner container for chrome. Wider than the article column
+   (60ch / --measure) so the nine-item header cluster fits on one
+   line at typical desktop widths, but narrower than the previous
+   80rem so branding and nav stay visually adjacent to the body
+   column rather than floating to the viewport edges. Cluster
+   wraps naturally on narrower viewports. */
 .site-chrome {
-  --max: 80rem;
+  --max: 60rem;
   --gutter: var(--s1);
 }
 
