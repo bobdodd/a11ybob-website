@@ -15,7 +15,11 @@ export function SiteHeader() {
           className="cluster"
           style={
             {
-              "--align": "center",
+              /* Baseline align so the visually-larger logo and the
+               * nav items share a text baseline rather than
+               * centring on each other (which made the smaller nav
+               * text float and the bottoms misalign). */
+              "--align": "baseline",
               "--space": "var(--s1)",
             } as React.CSSProperties
           }

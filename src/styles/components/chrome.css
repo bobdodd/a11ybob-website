@@ -42,10 +42,12 @@
   --gutter: var(--s1);
 }
 
-/* Logo */
+/* Logo. Sits in the same horizontal cluster as the primary nav,
+ * baseline-aligned with the nav items but visibly larger so it
+ * reads as the brand anchor rather than just another nav entry. */
 .site-logo {
   font-family: var(--font-heading);
-  font-size: var(--s1);
+  font-size: var(--s2);
   font-weight: 600;
   color: var(--ink);
   text-decoration: none;
