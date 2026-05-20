@@ -316,27 +316,24 @@ export default function LivedUserTesting() {
           >
             <h2>Bob-owned: the vision-AI line</h2>
             <p>
-              A Bob-owned proof-of-concept using{" "}
-              <strong>Qwen 3.5</strong> (Alibaba&rsquo;s
-              open-weights vision-language model) is in
-              development as a values-significant alternative to
-              the Claude-based production stack &mdash; self-
-              hostable, with no US-corporate API dependency. The
-              choice is deliberate: the production stack
-              acknowledges Claude as a flagged exception to the
-              minimise-US-exposure trajectory the rest of the
-              practice follows; the home-version research line
-              commits to the non-US, self-hostable, open-weights
-              alternative.
+              A Bob-owned proof-of-concept in development that
+              adds <strong>Qwen 3.5</strong> (Alibaba&rsquo;s
+              vision-language model, accessed via API) to the
+              audio-and-video pipeline. Qwen is used exclusively
+              for the vision side: analysis of screen recordings
+              of user interaction. It works as the video/vision
+              counterpart to what Claude does for audio in the
+              same pipeline &mdash; two specialised models for
+              two modalities, not alternatives to each other.
             </p>
             <p>
-              Targeting two classes of issue: visual
-              accessibility problems a sighted analyst would
-              normally catch from watching, and user-interaction
-              problems (hesitation, abandonment, target
-              misidentification &mdash; the usability dimension
-              of accessibility audits). Licence: GPL-3.0,
-              matching the rest of the Bob-owned tooling.
+              Targeting two classes of issue that vision-on-video
+              can reach: visual accessibility problems a sighted
+              analyst would normally catch from watching, and
+              user-interaction problems (hesitation, abandonment,
+              target misidentification &mdash; the usability
+              dimension of accessibility audits). Licence:
+              GPL-3.0, matching the rest of the Bob-owned tooling.
             </p>
             <p>
               The home-version source lives at{" "}
@@ -348,11 +345,7 @@ export default function LivedUserTesting() {
                 content will appear there as the home and
                 production versions diverge sufficiently to be
                 safely separable.
-              </em>{" "}
-              The research direction is itself the path toward
-              the <em>Canadian-sovereign alternative
-              workflow</em> offered as a separate engagement at
-              CNIB Access Labs.
+              </em>
             </p>
           </section>
 

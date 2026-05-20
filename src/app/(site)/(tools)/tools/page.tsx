@@ -100,9 +100,12 @@ export default function Tools() {
                 identification / Claude analysis with extended
                 context) producing structured, WCAG-mapped reports
                 with time-indexed callouts. The CNIB-owned
-                production tool is described here; the home-version
-                research line uses the open-weights Qwen 3.5 model
-                as a values-significant alternative.
+                production tool is described here; a Bob-owned
+                research line adds Qwen 3.5 (Alibaba&rsquo;s
+                vision-language model, via API) for analysis of
+                screen recordings of user interaction &mdash; the
+                video/vision counterpart to Claude&rsquo;s audio
+                analysis.
               </p>
               <p>
                 <small className="muted">

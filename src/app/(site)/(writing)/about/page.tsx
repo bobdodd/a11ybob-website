@@ -484,9 +484,10 @@ export default function About() {
               <Link href="/automated-testing">automated-testing</Link> is a
               set of five AI-driven proofs-of-concept targeting classes of
               issue commercial scanners cannot reach. A fourth open-source line is in
-              development: vision-AI analysis of think-aloud recordings using
-              the open-weights Qwen 3.5 model, intended as a values-significant
-              self-hostable alternative to the Claude-based production stack.
+              development: vision-AI analysis of screen recordings of user
+              interaction using Qwen 3.5 (Alibaba&rsquo;s vision-language
+              model, via API), as the video/vision counterpart to
+              Claude-based audio analysis in the audio-and-video pipeline.
             </p>
             <p>
               Running alongside the testing tools is a seven-year sustained
