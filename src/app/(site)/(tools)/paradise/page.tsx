@@ -48,7 +48,7 @@ export default function Paradise() {
               <Link href="/playgrounds/paradise">Playground</Link>{" "}
               demonstrates what the analysers detect and serves as a
               template for anyone wanting to build their own analysis
-              surface. MIT-licensed. Source on GitHub.
+              surface. GPL-3.0. Source on GitHub.
             </p>
           </header>
 
@@ -227,10 +227,11 @@ export default function Paradise() {
               code is preserved in the new repo.
             </p>
             <p>
-              Licence: MIT for the analyser engine and the VS Code plugin.
-              The companion documentation pages (this page and the
-              <code> /paradise/* </code>
-              sub-pages) are CC BY-SA 4.0 alongside the rest of{" "}
+              Licence: GPL-3.0-or-later for the analyser engine and
+              the VS Code plugin, matching the rest of the Bob-owned
+              tooling. The companion documentation pages (this page
+              and the <code>/paradise/*</code> sub-pages) are
+              CC&nbsp;BY-SA 4.0 alongside the rest of{" "}
               <em>a11ybob.com</em>.
             </p>
             <p>

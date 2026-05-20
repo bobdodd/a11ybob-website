@@ -34,7 +34,7 @@ export default function ParadiseCite() {
             <p>Suggested human-readable citation:</p>
             <blockquote>
               Dodd, B. <em>Paradise: a multi-model accessibility
-              analyser</em>. Open-source software, MIT licence.{" "}
+              analyser</em>. Open-source software, GPL-3.0-or-later.{" "}
               <a href="https://github.com/bobdodd/paradise">
                 https://github.com/bobdodd/paradise
               </a>
@@ -149,7 +149,7 @@ const BIBTEX_PARADISE = `@software{dodd_paradise,
   author = {Dodd, Bob},
   title  = {Paradise: a multi-model accessibility analyser},
   url    = {https://github.com/bobdodd/paradise},
-  note   = {Open-source software, MIT licence}
+  note   = {Open-source software, GPL-3.0-or-later}
 }`;
 
 const BIBTEX_CISNA = `@inproceedings{dodd2008cisna,
