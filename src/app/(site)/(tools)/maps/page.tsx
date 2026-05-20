@@ -96,17 +96,17 @@ export default function Maps() {
             <h2>The field critique</h2>
             <p>
               Before naming where the field has stalled, an
-              integrity note about the evidence: my positions on
-              Audiom, GoodMaps, and Blind Square are{" "}
+              integrity note about the evidence: Bob&rsquo;s
+              positions on Audiom, GoodMaps, and Blind Square are{" "}
               <em>observer-grade</em> &mdash; based on the academic
               literature, published material, and direct field
               interaction. CNIB Access Labs has not formally
-              evaluated any of them. The only competitor I have
+              evaluated any of them. The only competitor Bob has
               tested in a structured way is Navilens, via a
               small-scale installation usability test with two
-              lived-experience testers plus me trying it out
+              lived-experience testers plus Bob trying it out
               (CNIB Access Labs engagement; not a formal audit).
-              The phrase I use about it:{" "}
+              The phrase Bob uses about it:{" "}
               <em>
                 &ldquo;I wouldn&rsquo;t be prepared to call it an
                 audit.&rdquo;
