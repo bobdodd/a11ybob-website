@@ -13,7 +13,7 @@ export default function Carnforth() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
-            <h1>Carnforth GPL</h1>
+            <h1>Carnforth</h1>
             <p className="lede">
               A GPL-3.0 Chrome DevTools extension that tests pages
               for accessible-name conformance against WCAG 4.1.2.
@@ -54,7 +54,7 @@ export default function Carnforth() {
               criterion most commonly under-implemented in real
               codebases, and the accessible-name algorithm is
               subtle enough that a tool dedicated to it adds value
-              beyond the broader commercial scanners. Carnforth GPL
+              beyond the broader commercial scanners. Carnforth
               is a single-criterion deep test, not a sweep.
             </p>
           </section>
@@ -69,7 +69,7 @@ export default function Carnforth() {
               the original CISNA Model (W4A 2008, with Steve Green
               and Elaine Pearson) through the PhD-era Carnforth-Java
               implementation, into the runtime-testing branch that
-              Carnforth GPL inhabits:
+              Carnforth inhabits:
             </p>
             <ul>
               <li>
@@ -91,7 +91,7 @@ export default function Carnforth() {
                 for the in-browser worked examples.
               </li>
               <li>
-                <strong>Carnforth GPL (this tool)</strong>{" "}
+                <strong>Carnforth (this tool)</strong>{" "}
                 &mdash; the runtime DOM-testing branch, 2024.
                 Bob-owned, GPL-3.0.
               </li>
@@ -196,7 +196,7 @@ export default function Carnforth() {
             </p>
             <ul>
               <li>
-                <strong>Carnforth GPL (this tool)</strong> &mdash;
+                <strong>Carnforth (this tool)</strong> &mdash;
                 runtime, DOM-based, one criterion in depth.
                 Browser-side; no network round-trips; written in
                 plain JavaScript so the source is readable
@@ -232,7 +232,7 @@ export default function Carnforth() {
           >
             <h2>The a11yTO Accessibility Camp 2024 talk</h2>
             <p>
-              Carnforth GPL was the demonstration at a11yTO
+              Carnforth was the demonstration at a11yTO
               Accessibility Camp 2024. The talk framed the tool
               as a worked example of where the runtime accessible-
               name algorithm sits relative to source-level analysis

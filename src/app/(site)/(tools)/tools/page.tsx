@@ -41,7 +41,7 @@ export default function Tools() {
               style={{ "--space": "var(--s0)" } as CSSProperties}
             >
               <h2>
-                <Link href="/carnforth">Carnforth GPL</Link>
+                <Link href="/carnforth">Carnforth</Link>
               </h2>
               <p>
                 A GPL-3.0 Chrome DevTools extension that tests

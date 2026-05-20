@@ -363,7 +363,7 @@ export default function LivedUserTesting() {
             <h2>Reading on</h2>
             <ul>
               <li>
-                <Link href="/carnforth">Carnforth GPL</Link>{" "}
+                <Link href="/carnforth">Carnforth</Link>{" "}
                 &mdash; runtime DOM testing; the open-source
                 companion to the Bob-owned tooling line.
               </li>
