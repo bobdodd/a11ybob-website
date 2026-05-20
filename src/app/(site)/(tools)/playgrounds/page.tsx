@@ -189,8 +189,8 @@ export default function Playgrounds() {
             <ul>
               <li>
                 <Link href="/tools">Tools</Link> &mdash; the
-                companion accessibility-testing tools (Carnforth
-                GPL, a11yAuto, lived-experience testing).
+                companion accessibility-testing tools (Carnforth,
+                automated-testing, lived user testing).
               </li>
               <li>
                 <Link href="/paradise">Paradise</Link> &mdash;

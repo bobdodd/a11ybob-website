@@ -64,7 +64,9 @@ export default function Tools() {
               style={{ "--space": "var(--s0)" } as CSSProperties}
             >
               <h2>
-                <Link href="/a11yauto">a11yAuto</Link>
+                <Link href="/automated-testing">
+                  Automated accessibility testing
+                </Link>
               </h2>
               <p>
                 Five proof-of-concept demonstrations of AI-driven
@@ -89,7 +91,7 @@ export default function Tools() {
               style={{ "--space": "var(--s0)" } as CSSProperties}
             >
               <h2>
-                <Link href="/lived-testing">Lived-experience testing</Link>
+                <Link href="/lived-user-testing">Lived User Testing</Link>
               </h2>
               <p>
                 Audio-and-video AI analysis of lived-experience

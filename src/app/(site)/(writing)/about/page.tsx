@@ -459,7 +459,7 @@ export default function About() {
               practice as a whole. Three production tools are in active use at
               Access Labs: <em>autoA11y</em>, the commercial
               accessibility-testing platform;{" "}
-              <Link href="/lived-testing">Dictaphone</Link>, an AI-assisted
+              <Link href="/lived-user-testing">Dictaphone</Link>, an AI-assisted
               audio-and-video accessibility analyser working from
               lived-experience and audit recordings, in production for over two
               years; and <em>pdfMax</em>, a PDF accessibility platform that
@@ -477,12 +477,13 @@ export default function About() {
               is the ActionLanguage intermediate representation (IR) &mdash; a
               JavaScript-to-semantic-tree transcoder that lets analysis reason
               about runtime behaviour at the source level.{" "}
-              <Link href="/carnforth">Carnforth GPL</Link> is a Chrome DevTools
+              <Link href="/carnforth">Carnforth</Link> is a Chrome DevTools
               extension testing the accessible-name computation algorithm in
               depth, the runtime counterpart to Paradise&rsquo;s source-level
-              work. <Link href="/a11yauto">a11yAuto</Link> is a set of five
-              AI-driven proofs-of-concept targeting classes of issue commercial
-              scanners cannot reach. A fourth open-source line is in
+              work.{" "}
+              <Link href="/automated-testing">automated-testing</Link> is a
+              set of five AI-driven proofs-of-concept targeting classes of
+              issue commercial scanners cannot reach. A fourth open-source line is in
               development: vision-AI analysis of think-aloud recordings using
               the open-weights Qwen 3.5 model, intended as a values-significant
               self-hostable alternative to the Claude-based production stack.

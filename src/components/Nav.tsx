@@ -6,8 +6,8 @@
  *
  * Two of the entries are index-page parents whose children sit at
  * different routes for historical reasons:
- *  - Tools  → /tools, and also /carnforth, /a11yauto,
- *             /lived-testing as siblings in spirit.
+ *  - Tools  → /tools, and also /carnforth, /automated-testing,
+ *             /lived-user-testing as siblings in spirit.
  *  - Playgrounds → /playgrounds, /playground (the analyser
  *             playground), and /playgrounds/action-language (the
  *             Action Language playground).
@@ -51,10 +51,10 @@ const items: NavItem[] = [
       p.startsWith("/tools/") ||
       p === "/carnforth" ||
       p.startsWith("/carnforth/") ||
-      p === "/a11yauto" ||
-      p.startsWith("/a11yauto/") ||
-      p === "/lived-testing" ||
-      p.startsWith("/lived-testing/"),
+      p === "/automated-testing" ||
+      p.startsWith("/automated-testing/") ||
+      p === "/lived-user-testing" ||
+      p.startsWith("/lived-user-testing/"),
   },
   {
     href: "/playgrounds",

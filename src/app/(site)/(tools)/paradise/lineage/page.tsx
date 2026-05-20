@@ -184,30 +184,38 @@ export default function ParadiseLineage() {
               </li>
               <li>
                 <strong>
-                  <Link href="/carnforth">Carnforth GPL</Link>
+                  <Link href="/carnforth">Carnforth</Link>
                 </strong>{" "}
                 &mdash; 2024 Chrome DevTools extension; runtime DOM
                 testing focused on WCAG 4.1.2 (Name, Role, Value).
                 Bob-owned, GPL-3.0. The first surfacing of the
-                Carnforth name in a shipping runtime tool.
+                Carnforth name in a shipping runtime tool. (Repo
+                originally <code>CarnforthGPL</code>, renamed to{" "}
+                <code>carnforth</code> in May 2026.)
               </li>
               <li>
                 <strong>
-                  <Link href="/a11yauto">a11yAuto</Link>
+                  <Link href="/automated-testing">
+                    automated-testing
+                  </Link>
                 </strong>{" "}
                 &mdash; Bob-owned GPL repository of AI-driven
-                accessibility-testing demonstrations. The original
-                name; the repository preserves it. Five PoCs covering
-                classes of issue commercial tools cannot reach.
+                accessibility-testing demonstrations. Five PoCs
+                covering classes of issue commercial tools cannot
+                reach. (Repo and project originally named{" "}
+                <code>a11yAuto</code>, renamed to{" "}
+                <code>automated-testing</code> in May 2026 to make
+                the content more legible.)
               </li>
               <li>
                 <strong>autoA11y</strong> &mdash; CNIB&rsquo;s much
                 more complete production rebrand and continuation of
-                a11yAuto. CNIB-owned. The current commercial
-                platform sold by CNIB Access Labs; in active
-                development; integrated with{" "}
-                <Link href="/lived-testing">Dictaphone</Link> for
-                lived-experience analysis.
+                what was then called <code>a11yAuto</code>.
+                CNIB-owned. The current commercial platform sold by
+                CNIB Access Labs; in active development; integrated
+                with{" "}
+                <Link href="/lived-user-testing">Dictaphone</Link>{" "}
+                for lived-experience analysis.
               </li>
               <li>
                 <strong>Paradise (this section)</strong> &mdash;
@@ -246,12 +254,12 @@ export default function ParadiseLineage() {
             </p>
             <p>
               The boundary line: <em>if Bob left CNIB tomorrow,
-              would this artefact go with him?</em> Carnforth GPL,
-              a11yAuto, and Paradise all answer yes. autoA11y and
-              Dictaphone answer no. The first three are mine; the
-              last two are CNIB&rsquo;s. The site treats each at
-              its appropriate framing &mdash; portfolio for the
-              Bob-owned tools, practice for the CNIB-owned tools.
+              would this artefact go with him?</em> Carnforth,
+              automated-testing, and Paradise all answer yes.
+              autoA11y and Dictaphone answer no. The first three are
+              mine; the last two are CNIB&rsquo;s. The site treats
+              each at its appropriate framing &mdash; portfolio for
+              the Bob-owned tools, practice for the CNIB-owned tools.
             </p>
           </section>
 

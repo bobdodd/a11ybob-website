@@ -36,12 +36,15 @@ export default function Now() {
               <Link href="/maps">accessible-maps</Link>{" "}
               four-page section with the seven-year body of work
               and the polar-coordinate finding, the{" "}
-              <Link href="/a11yauto">a11yAuto</Link> AI-PoC
-              demonstrations, the{" "}
-              <Link href="/carnforth">Carnforth GPL</Link>{" "}
+              <Link href="/automated-testing">automated-testing</Link>{" "}
+              AI-PoC demonstrations, the{" "}
+              <Link href="/carnforth">Carnforth</Link>{" "}
               Chrome extension page, and the{" "}
-              <Link href="/lived-testing">lived-testing</Link>{" "}
-              description for the production Dictaphone tool. The{" "}
+              <Link href="/lived-user-testing">
+                lived-user-testing
+              </Link>{" "}
+              page describing both the production Dictaphone tool
+              and the Bob-owned vision-AI companion line. The{" "}
               <Link href="/research/the-measure-of-accessibility">
                 Measure of Accessibility
               </Link>{" "}

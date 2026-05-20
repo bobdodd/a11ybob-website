@@ -35,8 +35,8 @@ export default function ParadiseCite() {
             <blockquote>
               Dodd, B. <em>Paradise: a multi-model accessibility
               analyser</em>. Open-source software, MIT licence.{" "}
-              <a href="https://github.com/bobdodd/phd/tree/main/Action%20Language">
-                https://github.com/bobdodd/phd/tree/main/Action&nbsp;Language
+              <a href="https://github.com/bobdodd/paradise">
+                https://github.com/bobdodd/paradise
               </a>
             </blockquote>
             <p>BibTeX:</p>
@@ -148,7 +148,7 @@ export default function ParadiseCite() {
 const BIBTEX_PARADISE = `@software{dodd_paradise,
   author = {Dodd, Bob},
   title  = {Paradise: a multi-model accessibility analyser},
-  url    = {https://github.com/bobdodd/phd/tree/main/Action%20Language},
+  url    = {https://github.com/bobdodd/paradise},
   note   = {Open-source software, MIT licence}
 }`;
 

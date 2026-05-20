@@ -933,6 +933,52 @@ export default function Colophon() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
+            <h2>
+              No marketplace listings &mdash; distribution is the
+              repo itself
+            </h2>
+            <p>
+              Bob&rsquo;s tools that ship as browser-or-editor
+              extensions &mdash; Paradise&rsquo;s VS Code plugin,
+              the Carnforth Chrome DevTools extension &mdash; are
+              distributed as a checkout or download from the source
+              repo, never via a marketplace listing (the Visual
+              Studio Marketplace, the Chrome Web Store). The choice
+              is intentional and permanent, not a stopgap awaiting
+              a listing that will eventually arrive.
+            </p>
+            <p>
+              The reasoning fits the rest of the site&rsquo;s
+              framing. Marketplaces interpose a third party between
+              the author and the user: they introduce policy
+              surface (content moderation, name-collision rules,
+              region-blocking), they introduce a brand
+              (&ldquo;available on the Marketplace&rdquo; signals a
+              commercial-product posture the work isn&rsquo;t), and
+              they introduce a release ceremony that doesn&rsquo;t
+              match how Bob actually develops the code &mdash;
+              small experimental commits, frequent reframings,
+              version numbers that mean something to the author
+              rather than to a listings catalogue. Distributing
+              from the repo keeps the artefact aligned with the way
+              it was made.
+            </p>
+            <p>
+              Practically: install steps live in each tool&rsquo;s
+              page (the VS Code plugin via{" "}
+              <code>code --install-extension paradise-a11y.vsix</code>;
+              Carnforth as a Chrome developer-mode unpacked
+              extension). Users who want guaranteed currency clone
+              and rebuild from <code>main</code>. Users who
+              don&rsquo;t want to do that aren&rsquo;t the target
+              audience for the tools.
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
             <h2>All my code as readable source, not as compiled libraries</h2>
             <p>
               The site ships several substantial pieces of working
@@ -1355,12 +1401,12 @@ export default function Colophon() {
             <p>
               Separately, AI also appears in the substantive
               accessibility work this site describes. The Dictaphone
-              tool documented at <Link href="/lived-testing">
-                <code>/lived-testing</code>
+              tool documented at <Link href="/lived-user-testing">
+                <code>/lived-user-testing</code>
               </Link>{" "}
               and the proof-of-concept analyses at{" "}
-              <Link href="/a11yauto">
-                <code>/a11yauto</code>
+              <Link href="/automated-testing">
+                <code>/automated-testing</code>
               </Link>{" "}
               use multimodal LLMs for accessibility analysis on behalf
               of CNIB Access Labs and Bob&rsquo;s own research lines.

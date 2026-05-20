@@ -37,14 +37,18 @@ export default function Paradise() {
               Paradise is a <em>platform</em> I continue to develop, not a
               finished commercial tool. Fourteen working analysers,
               twenty-one ARIA widget patterns validated, ninety-five
-              passing tests, over ninety percent coverage. The VS Code
-              plugin is in active development and not yet released on the
-              Marketplace; a browser plugin version is planned. A working
+              passing tests, over ninety percent coverage. Available
+              as a VS Code extension: the extension is in active
+              development, and is available in source at{" "}
+              <a href="https://github.com/bobdodd/paradise">
+                bobdodd/paradise
+              </a>
+              . A browser plugin version is planned. A working
               in-browser{" "}
-              <Link href="/playgrounds/paradise">Playground</Link> demonstrates what
-              the analysers detect and serves as a template for anyone
-              wanting to build their own analysis surface. MIT-licensed.
-              Source on GitHub.
+              <Link href="/playgrounds/paradise">Playground</Link>{" "}
+              demonstrates what the analysers detect and serves as a
+              template for anyone wanting to build their own analysis
+              surface. MIT-licensed. Source on GitHub.
             </p>
           </header>
 
@@ -178,8 +182,8 @@ export default function Paradise() {
               </li>
               <li>
                 <strong>VS Code plugin</strong> in active development.
-                Available as a <code>.vsix</code> from the source repo;
-                not yet on the Marketplace.
+                Distributed as a <code>.vsix</code> from the source
+                repo.
               </li>
               <li>
                 <strong>Browser plugin</strong> planned, not yet built.
@@ -212,12 +216,15 @@ export default function Paradise() {
           >
             <h2>Source, licence, citation</h2>
             <p>
-              Paradise is open source on GitHub, currently in the{" "}
-              <a href="https://github.com/bobdodd/phd/tree/main/Action%20Language">
-                <code>Action Language/</code> subdirectory of bobdodd/phd
+              Paradise is open source at{" "}
+              <a href="https://github.com/bobdodd/paradise">
+                bobdodd/paradise
               </a>
-              . A move to its own top-level repo is planned but not yet
-              done.
+              . History extracted with{" "}
+              <code>git filter-repo</code> from its original home as
+              the <code>Action Language/</code> subdirectory of the
+              doctoral repo, so every commit that ever touched the
+              code is preserved in the new repo.
             </p>
             <p>
               Licence: MIT for the analyser engine and the VS Code plugin.

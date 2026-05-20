@@ -1,14 +1,15 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
 
-/* /a11yauto — five proof-of-concept accessibility-AI
+/* /automated-testing — five proof-of-concept accessibility-AI
  * demonstrations. The prompts, responses, and discussion text
- * are the captured versions from github.com/bobdodd/a11yAuto and
- * are reproduced verbatim with only light typo correction for
+ * are the captured versions from the source repo
+ * (github.com/bobdodd/automated-testing, formerly bobdodd/a11yAuto)
+ * and are reproduced verbatim with only light typo correction for
  * readability. PoC framing per the plan: this page is research-
  * in-progress, not a tool catalogue. */
 
-export default function A11yAuto() {
+export default function AutomatedTesting() {
   return (
     <main id="main" className="site-main">
       <div className="center">
@@ -20,7 +21,7 @@ export default function A11yAuto() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
-            <h1>a11yAuto</h1>
+            <h1>Automated accessibility testing</h1>
             <p className="lede">
               Five proof-of-concept demonstrations of AI-driven
               accessibility testing &mdash; the territory commercial
@@ -29,10 +30,11 @@ export default function A11yAuto() {
               issue, with the exact prompt, the captured Claude
               response, and an honest discussion of what worked
               and what did not. Open-source GPL-3.0 at{" "}
-              <a href="https://github.com/bobdodd/a11yAuto">
-                github.com/bobdodd/a11yAuto
-              </a>
-              .
+              <a href="https://github.com/bobdodd/automated-testing">
+                github.com/bobdodd/automated-testing
+              </a>{" "}
+              (the project was originally named <code>a11yAuto</code>;
+              renamed in May 2026 to make the content more legible).
             </p>
           </header>
 
@@ -112,17 +114,17 @@ export default function A11yAuto() {
             </p>
             <ul>
               <li>
-                <Link href="/carnforth">Carnforth GPL</Link> &mdash;
+                <Link href="/carnforth">Carnforth</Link> &mdash;
                 a runtime Chrome extension that tests the rendered
                 DOM against the live page. Browser-side, no
                 network round-trips, written in plain JavaScript.
               </li>
               <li>
-                <strong>a11yAuto (this page)</strong> &mdash; AI-
-                driven testing applied to specific classes of
-                issue commercial tools cannot reach. Five PoCs,
-                explicitly experimental, with discussion of where
-                each is fragile.
+                <strong>automated-testing (this page)</strong>{" "}
+                &mdash; AI-driven testing applied to specific
+                classes of issue commercial tools cannot reach.
+                Five PoCs, explicitly experimental, with discussion
+                of where each is fragile.
               </li>
               <li>
                 <Link href="/paradise">Paradise</Link> &mdash;
@@ -130,8 +132,8 @@ export default function A11yAuto() {
                 JavaScript, and CSS into separate semantic models;
                 reasons over the integrated structure. The most
                 technically substantive of the three; sits at the
-                opposite end of the spectrum from a11yAuto in
-                terms of methodology.
+                opposite end of the spectrum from automated-testing
+                in terms of methodology.
               </li>
             </ul>
             <p>
@@ -140,7 +142,7 @@ export default function A11yAuto() {
                 2029 framework
               </Link>{" "}
               is the theoretical end of the research line whose
-              practical present-day end the a11yAuto PoCs
+              practical present-day end the automated-testing PoCs
               probe. The PoCs identify where AI testing can
               plausibly add value beyond commercial tools, and
               where the approach is currently fragile. The 2029
@@ -764,7 +766,7 @@ export default function A11yAuto() {
 }
 
 /* The prompts are reproduced verbatim from the upstream repo
- * (github.com/bobdodd/a11yAuto) with only the embedded
+ * (github.com/bobdodd/automated-testing) with only the embedded
  * InaccessibilityMatters HTML body trimmed out for length —
  * the on-site demo shows the prompt instruction; the full
  * including-HTML version lives in the repository. */

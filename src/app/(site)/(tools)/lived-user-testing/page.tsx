@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
 
-export default function LivedTesting() {
+export default function LivedUserTesting() {
   return (
     <main id="main" className="site-main">
       <div className="center">
@@ -13,16 +13,17 @@ export default function LivedTesting() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
-            <h1>Lived-experience testing with audio-and-video AI</h1>
+            <h1>Lived User Testing</h1>
             <p className="lede">
-              A production tool that turns lived-experience tester
-              recordings into structured, WCAG-mapped accessibility
-              reports. Audio-and-video analysis of real sessions
-              &mdash; the territory commercial automated scanners
-              do not reach. Described, not demoed: the production
-              tool is CNIB-owned, and the home-developed predecessor
-              is too close to it to be safely published as a
-              separate open-source artefact yet.
+              Two lines of work, related but separable: a
+              CNIB-owned production tool that turns lived-experience
+              tester recordings into structured, WCAG-mapped
+              accessibility reports; and a Bob-owned open-source
+              companion line, currently developing a vision-AI
+              analysis path using open-weights models on
+              think-aloud recordings. Audio-and-video analysis of
+              real sessions &mdash; the territory commercial
+              automated scanners do not reach.
             </p>
           </header>
 
@@ -30,7 +31,7 @@ export default function LivedTesting() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
-            <h2>Position</h2>
+            <h2>Dictaphone (CNIB-owned)</h2>
             <p>
               At CNIB Access Labs I lead development of{" "}
               <em>Dictaphone</em> (codenamed{" "}
@@ -313,7 +314,7 @@ export default function LivedTesting() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
-            <h2>Research direction &mdash; the home-version Qwen PoC</h2>
+            <h2>Bob-owned: the vision-AI line</h2>
             <p>
               A Bob-owned proof-of-concept using{" "}
               <strong>Qwen 3.5</strong> (Alibaba&rsquo;s
@@ -334,15 +335,19 @@ export default function LivedTesting() {
               normally catch from watching, and user-interaction
               problems (hesitation, abandonment, target
               misidentification &mdash; the usability dimension
-              of accessibility audits). License: GPL-3.0,
+              of accessibility audits). Licence: GPL-3.0,
               matching the rest of the Bob-owned tooling.
             </p>
             <p>
+              The home-version source lives at{" "}
+              <a href="https://github.com/bobdodd/lived-user-testing">
+                bobdodd/lived-user-testing
+              </a>
+              . The repo is currently a placeholder &mdash;{" "}
               <em>
-                Demonstrations of the Bob-owned home version
-                will appear here when the home and production
-                versions have diverged sufficiently to be safely
-                separable.
+                content will appear there as the home and
+                production versions diverge sufficiently to be
+                safely separable.
               </em>{" "}
               The research direction is itself the path toward
               the <em>Canadian-sovereign alternative
@@ -363,7 +368,7 @@ export default function LivedTesting() {
                 companion to the Bob-owned tooling line.
               </li>
               <li>
-                <Link href="/a11yauto">a11yAuto</Link> &mdash;
+                <Link href="/automated-testing">automated-testing</Link> &mdash;
                 AI-driven text-and-HTML testing PoCs.
               </li>
               <li>

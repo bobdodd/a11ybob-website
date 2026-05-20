@@ -27,11 +27,12 @@ export default function ParadiseVSCodeExtension() {
             </p>
             <p className="muted">
               <small>
-                The plugin is in active development and not yet
-                released on the Visual Studio Marketplace. A signed{" "}
-                <code>.vsix</code> can be installed from the Paradise
-                repo for evaluation; a Marketplace listing is the next
-                release milestone.
+                The plugin is in active development. It is
+                distributed as a signed <code>.vsix</code> from the
+                source repo, installed by hand &mdash; not via a
+                marketplace listing. The choice is deliberate: see
+                the <Link href="/colophon">colophon</Link> for the
+                rationale.
               </small>
             </p>
           </header>
@@ -42,8 +43,7 @@ export default function ParadiseVSCodeExtension() {
           >
             <h2>Install (.vsix)</h2>
             <p>
-              Until the Marketplace listing lands, the plugin is
-              installed by hand from the packaged{" "}
+              The plugin is installed by hand from the packaged{" "}
               <code>.vsix</code> file in the repo. From a checkout of
               the source:
             </p>
@@ -202,10 +202,11 @@ export default function ParadiseVSCodeExtension() {
                 versions have partial coverage.
               </li>
               <li>
-                <strong>Marketplace listing pending.</strong> The
-                plugin works fully via .vsix install; the Marketplace
-                publish is on Bob&rsquo;s release roadmap, not yet
-                done.
+                <strong>Distributed as a signed .vsix from the source
+                repo</strong>, not via a marketplace. The choice is
+                deliberate &mdash; see the{" "}
+                <Link href="/colophon">colophon</Link> for the
+                rationale.
               </li>
             </ul>
           </section>
@@ -241,9 +242,9 @@ export default function ParadiseVSCodeExtension() {
   );
 }
 
-const INSTALL_VSIX = `# clone the Paradise repo (current location)
-git clone https://github.com/bobdodd/phd
-cd "phd/Action Language/app/vscode-extension"
+const INSTALL_VSIX = `# clone the Paradise repo
+git clone https://github.com/bobdodd/paradise
+cd paradise/app/vscode-extension
 
 # install the packaged extension into VS Code
 code --install-extension paradise-a11y.vsix`;

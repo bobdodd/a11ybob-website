@@ -96,7 +96,7 @@ export default function Carnforth() {
                 Bob-owned, GPL-3.0.
               </li>
               <li>
-                <Link href="/a11yauto">a11yAuto</Link> &mdash;
+                <Link href="/automated-testing">automated-testing</Link> &mdash;
                 AI-driven accessibility testing experiments;
                 Bob-owned, GPL-3.0. Five PoCs covering classes of
                 issue commercial tools cannot reach.
@@ -129,14 +129,17 @@ export default function Carnforth() {
           >
             <h2>Install</h2>
             <p>
-              No Chrome Web Store listing &mdash; not yet, and
-              probably not at all for this PoC. Install from
-              source:
+              No Chrome Web Store listing. The extension is
+              distributed as a checkout of the source repo, loaded
+              via Chrome&rsquo;s developer mode. The choice is
+              deliberate &mdash; see the{" "}
+              <Link href="/colophon">colophon</Link> for the
+              rationale.
             </p>
             <ol>
               <li>
                 Clone the repository:{" "}
-                <code>git clone https://github.com/bobdodd/CarnforthGPL.git</code>
+                <code>git clone https://github.com/bobdodd/carnforth.git</code>
               </li>
               <li>
                 Open Chrome and navigate to{" "}
@@ -200,7 +203,7 @@ export default function Carnforth() {
                 end-to-end.
               </li>
               <li>
-                <Link href="/a11yauto">a11yAuto</Link> &mdash;
+                <Link href="/automated-testing">automated-testing</Link> &mdash;
                 AI-driven, applied to specific classes of issue
                 commercial tools cannot reach. Five PoCs with
                 captured prompts, responses, and discussion.
@@ -246,8 +249,8 @@ export default function Carnforth() {
             <h2>Contribute</h2>
             <p>
               GPL-3.0; contributions welcome via pull request on{" "}
-              <a href="https://github.com/bobdodd/CarnforthGPL">
-                github.com/bobdodd/CarnforthGPL
+              <a href="https://github.com/bobdodd/carnforth">
+                github.com/bobdodd/carnforth
               </a>
               . Issues against the accessible-name computation
               specifically are the highest-leverage place for

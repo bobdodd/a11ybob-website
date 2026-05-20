@@ -169,10 +169,11 @@ export default function MapsGuelph() {
           >
             <h2>Source</h2>
             <p>
-              GPL-3.0. Repository information will be linked here
-              when the maps repository is moved to its dedicated
-              public location alongside the other tooling. The
-              tile-generation Python pipeline and the web-app
+              GPL-3.0. Source:{" "}
+              <a href="https://github.com/bobdodd/accessible-maps">
+                github.com/bobdodd/accessible-maps
+              </a>
+              . The tile-generation Python pipeline and the web-app
               source are both part of the public artefact.
             </p>
           </section>

@@ -26,7 +26,7 @@ section layout.
 | `home` | `/` | — | 85° | 0.05 | warm cream — front door |
 | `work` | `/work` | — | 130° | 0.045 | sage green — practitioner |
 | `maps` | `/maps` | `/maps/*` | 155° | 0.045 | forest green — geographic |
-| `tools` | `/tools` | `/carnforth`, `/a11yauto`, `/lived-testing` | 190° | 0.04 | teal — practical |
+| `tools` | `/tools` | `/carnforth`, `/automated-testing`, `/lived-user-testing` | 190° | 0.04 | teal — practical |
 | `paradise` | `/paradise` | `/paradise/*` | 215° | 0.04 | cool slate — technical |
 | `research` | `/research` | `/research/*` | 250° | 0.045 | cool blue — archive |
 | `ambient` | (none) | `/now`, `/contact`, `/privacy`, `/accessibility`, `/colophon` | 270° | 0.012 | near-neutral cool grey — utility |

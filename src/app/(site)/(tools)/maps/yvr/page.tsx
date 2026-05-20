@@ -145,9 +145,11 @@ export default function MapsYVR() {
           >
             <h2>Source</h2>
             <p>
-              GPL-3.0. Repository information will be linked here
-              when the maps repository is moved to its dedicated
-              public location alongside the other tooling.
+              GPL-3.0. Source:{" "}
+              <a href="https://github.com/bobdodd/accessible-maps">
+                github.com/bobdodd/accessible-maps
+              </a>
+              .
             </p>
           </section>
         </div>

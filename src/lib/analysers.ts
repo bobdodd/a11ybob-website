@@ -32,7 +32,7 @@ export const FAMILY_LABEL: Record<AnalyserFamily, string> = {
   "structural-html": "Structural HTML analysers",
 };
 
-const REPO = "https://github.com/bobdodd/phd/blob/main/Action%20Language";
+const REPO = "https://github.com/bobdodd/paradise/blob/main";
 
 export function sourceUrl(a: Analyser): string {
   return `${REPO}/${a.sourcePath}`;
