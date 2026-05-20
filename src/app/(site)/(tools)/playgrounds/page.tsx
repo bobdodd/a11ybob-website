@@ -45,8 +45,9 @@ export default function Playgrounds() {
               <p>
                 Edit HTML, JavaScript, and CSS across multiple
                 files; watch the{" "}
-                <Link href="/paradise">Paradise</Link> analyser
-                re-run on every keystroke and report cross-file
+                <Link href="/paradise">Paradise</Link>{" "}
+                analyser re-run on every keystroke and report
+                cross-file
                 accessibility issues with severity, confidence,
                 WCAG mapping, and suggested fixes. Five curated
                 examples covering cross-file demonstrations and a
