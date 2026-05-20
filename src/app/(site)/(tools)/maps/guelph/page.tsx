@@ -125,8 +125,8 @@ export default function MapsGuelph() {
               already present in primitive form. The architectural
               decisions on this page &mdash; SVG over raster, CSS
               filters over JS, pre-rendered tiles over runtime
-              queries, OSM as the values-significant data source
-              &mdash; came from the work that followed.
+              queries, OpenStreetMap as the data source &mdash;
+              came from the work that followed.
             </p>
             <p>
               The Toronto streetmap currently under development

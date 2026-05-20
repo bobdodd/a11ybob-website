@@ -360,11 +360,10 @@ export default function Maps() {
                 speed.
               </li>
               <li>
-                <strong>OSM data as the values-significant source.</strong>{" "}
-                Open data; non-US-corporate; community-maintained.
-                The same logic that drives the rest of the site
-                away from US-corporate infrastructure where the
-                alternative exists.
+                <strong>OpenStreetMap as the data source.</strong>{" "}
+                Community-maintained, openly licensed, with the
+                fine-grained tagging the indoor and pedestrian
+                pieces of the maps work depend on.
               </li>
             </ul>
           </section>
