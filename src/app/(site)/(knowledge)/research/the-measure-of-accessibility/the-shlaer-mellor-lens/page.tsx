@@ -85,9 +85,11 @@ export default function ShlaerMellorLensInDepth() {
               each with its own subject matter (its own
               vocabulary, its own information model, its own
               assumptions), joined by formal{" "}
-              <em>bridges</em>. The abstract analysis is then{" "}
+              <em>bridges</em> that map counterparts between the
+              bridged domains. The abstract analysis is then{" "}
               <em>translated</em> &mdash; not elaborated &mdash; into
-              a concrete realisation for a specific platform via a{" "}
+              a concrete realisation for a specific platform
+              (defined by populated counterpart tables) via a{" "}
               <em>model compiler</em>. The same domain analysis
               produces different concrete realisations for
               different targets. That last property is what{" "}

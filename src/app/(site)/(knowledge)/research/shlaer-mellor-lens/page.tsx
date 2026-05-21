@@ -42,12 +42,14 @@ export default function ShlaerMellorLens() {
             <p>
               In Shlaer-Mellor, you analyse a system as a collection
               of independent-but-related problem domains, each with
-              its own subject matter, joined by formal bridges. The
+              its own subject matter, joined by formal bridges that
+              map counterparts between the bridged domains. The
               abstract analysis is then <em>translated</em> (not
               elaborated) into a concrete realisation for a specific
-              platform via a model compiler. Same domains, different
-              concrete realisations for different targets — that is
-              recursive design.
+              platform (defined by populated counterpart tables) via
+              a model compiler. Same domains, different concrete
+              realisations for different targets — that is recursive
+              design.
             </p>
             <p>
               Accessibility has the same structure with different
