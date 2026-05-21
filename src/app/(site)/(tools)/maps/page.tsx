@@ -532,8 +532,9 @@ export default function Maps() {
                   Direction-of-flow indication for unidirectional
                   corridors
                 </strong>{" "}
-                on the terminal map &mdash; needed for wheelchair
-                users who can&rsquo;t backtrack. Known gap.
+                on the terminal map &mdash; needed for any
+                traveller who shouldn&rsquo;t have to discover the
+                direction by walking it. Known gap.
               </li>
               <li>
                 <strong>Right-click menu for non-drag pin placement</strong>{" "}
