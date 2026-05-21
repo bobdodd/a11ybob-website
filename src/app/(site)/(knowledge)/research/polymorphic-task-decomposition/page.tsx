@@ -87,7 +87,7 @@ export default function PTD() {
               The bolt-on assistive technology approach assumes a
               single canonical realisation of every task and grafts
               alternative input or output onto it. PTD assumes the
-              opposite: that multiple realisations exist
+              opposite: that multiple realisations exist{" "}
               <em>by design</em>, and the system chooses among them.
               That choice is what makes the whole framework
               intrinsically accessible rather than functionally

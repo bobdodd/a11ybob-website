@@ -21,8 +21,8 @@ export default function ParadiseArchitecture() {
               specialised semantic models, merges the three through CSS
               selectors into a single integrated DocumentModel, and runs
               its analysers over that. The architecture is what makes
-              cross-file accessibility analysis tractable: a handler in
-              <code> handlers.js</code>, an element in{" "}
+              cross-file accessibility analysis tractable: a handler in{" "}
+              <code>handlers.js</code>, an element in{" "}
               <code>index.html</code>, and a class in{" "}
               <code>styles.css</code> become one element with one set of
               behaviours that the analysers can reason about together.
@@ -130,8 +130,8 @@ export default function ParadiseArchitecture() {
               source order preserved. It can answer questions of the
               form &ldquo;under condition X, what styles apply to
               element Y?&rdquo; without rendering the page. That
-              matters for accessibility because behaviours like
-              <code> display: none</code>, <code>visibility: hidden</code>
+              matters for accessibility because behaviours like{" "}
+              <code>display: none</code>, <code>visibility: hidden</code>
               , and <code>pointer-events: none</code> change whether an
               element is reachable to keyboard and screen-reader users
               — and those declarations can sit in a different file from
@@ -156,16 +156,16 @@ export default function ParadiseArchitecture() {
                 / media-query state, from the CSSModel.
               </li>
               <li>
-                The handlers attached to it — directly via
-                <code> on*</code> attributes, via JavaScript in the
+                The handlers attached to it — directly via{" "}
+                <code>on*</code> attributes, via JavaScript in the
                 ActionLanguage tree, or indirectly via event delegation
                 on an ancestor — from selector resolution.
               </li>
               <li>
                 The ARIA relationships into and out of it: which
                 elements name it via <code>aria-labelledby</code>, which
-                it controls via <code>aria-controls</code>, which its
-                <code> aria-describedby</code> targets, all matched
+                it controls via <code>aria-controls</code>, which its{" "}
+                <code>aria-describedby</code> targets, all matched
                 against the actual elements in the DOMModel.
               </li>
               <li>
@@ -178,7 +178,7 @@ export default function ParadiseArchitecture() {
               Once an element carries all of that information, the
               analysers can ask cross-cutting questions in plain terms.
               <em> Is this <code>onclick</code> handler also reachable
-              by keyboard?</em> — yes if the same selector also has a
+              by keyboard?</em> — yes if the same selector also has a{" "}
               <code>keydown</code> handler in the ActionLanguage tree.{" "}
               <em>Does this <code>aria-labelledby</code> point at an
               element that exists?</em> — yes if the target id resolves
@@ -216,8 +216,8 @@ export default function ParadiseArchitecture() {
             </p>
             <p>
               A rendered-DOM scanner does better — it sees the click
-              handler attached, the keydown handler attached, the
-              <code> role=&quot;button&quot;</code> applied. But it
+              handler attached, the keydown handler attached, the{" "}
+              <code>role=&quot;button&quot;</code> applied. But it
               cannot tell whether the keydown handler ran <em>because
               the source had it</em> or because some test harness
               attached it; it cannot tell that the focus state breaks
@@ -232,8 +232,8 @@ export default function ParadiseArchitecture() {
               <code>role=&quot;button&quot;</code>. The ActionLanguage
               tree records two registrations on{" "}
               <code>#save</code>: a click handler and a keydown handler
-              that fires on Enter or Space. The CSSModel records that
-              <code> .save:focus</code> sets <code>display: none</code>.
+              that fires on Enter or Space. The CSSModel records that{" "}
+              <code>.save:focus</code> sets <code>display: none</code>.
               The DocumentModel composes these and the analysers report
               one issue, in plain terms: the keyboard-equivalent
               handler is in place, but the element disappears the
@@ -415,8 +415,8 @@ export default function ParadiseArchitecture() {
               Paradise still works on are: dynamic CSS class assignment
               (a handler that adds <code>.is-open</code> to an element
               changes its visibility, but only conditionally); event
-              delegation through complex parent chains (a handler on
-              <code> document.body</code> that switches on{" "}
+              delegation through complex parent chains (a handler on{" "}
+              <code>document.body</code> that switches on{" "}
               <code>e.target</code>); template-driven HTML (React JSX,
               Vue templates) where the rendered structure is itself a
               function of state. Each of these has partial coverage in

@@ -207,8 +207,8 @@ export default function SpotlightTetrisAudio() {
             <p>
               <strong>The sonic design space is naturally
               immersive.</strong> Bob looked for observational audio
-              metaphors as alternatives to the immersive ones, and
-              <em> &ldquo;came up empty.&rdquo;</em> When the
+              metaphors as alternatives to the immersive ones, and{" "}
+              <em>&ldquo;came up empty.&rdquo;</em> When the
               modality is audio, the player is at the centre of the
               perceptual field by default; the observational stance
               that the visual version of Tetris encouraged is not

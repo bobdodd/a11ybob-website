@@ -137,7 +137,7 @@ export default function Accessibility() {
               </li>
               <li>
                 <strong>
-                  Structural diagrams are inline SVG, with descriptive
+                  Structural diagrams are inline SVG, with descriptive{" "}
                   <code>&lt;title&gt;</code> and{" "}
                   <code>&lt;desc&gt;</code>.
                 </strong>{" "}

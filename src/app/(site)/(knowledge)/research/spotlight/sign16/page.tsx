@@ -93,8 +93,8 @@ export default function SpotlightSign16() {
               </em>
             </p>
             <p>
-              Encoding the <em>form</em> of the sign rather than its
-              <em> meaning</em> sidestepped the requirement to know
+              Encoding the <em>form</em> of the sign rather than its{" "}
+              <em>meaning</em> sidestepped the requirement to know
               any specific sign language. A signer would recognise
               their own actions in form-descriptions; the writer
               didn&rsquo;t need to know what the signs meant. The

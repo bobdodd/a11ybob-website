@@ -145,8 +145,8 @@ export default function EquivalentExperience() {
               the claim asks for. A blind user cannot have the same
               perceptual experience as a sighted user; the
               difference is not the accessibility problem.
-              Equivalent-experience analysis is about whether the
-              <em> functional outcome</em> &mdash; the goods, the
+              Equivalent-experience analysis is about whether the{" "}
+              <em>functional outcome</em> &mdash; the goods, the
               services, the participation in society &mdash; is
               available to both at comparable cost in effort,
               attention, and time. The shape of the journey can

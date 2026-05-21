@@ -103,8 +103,8 @@ export default function CommunitiesOfPractice() {
               is, what time it is, who else is around).
             </p>
             <p>
-              Each of these has what Wenger would call an
-              <em> identity</em> in the community &mdash; a stable
+              Each of these has what Wenger would call an{" "}
+              <em>identity</em> in the community &mdash; a stable
               role and a characteristic pattern of contribution.
               Custom &amp; Practice is the damping factor, pulling
               every interface toward rectangular grids and visual
@@ -144,8 +144,8 @@ export default function CommunitiesOfPractice() {
               communities of practice in this sense.
             </p>
             <p>
-              The interesting consequence at this level is that
-              <em> portable user profiles act as memes</em>. A
+              The interesting consequence at this level is that{" "}
+              <em>portable user profiles act as memes</em>. A
               configuration that one user finds works for them is
               shared with peers in the same community; the peers
               copy it with variation; the variations that work

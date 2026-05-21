@@ -142,8 +142,8 @@ export default function ActionLanguagePlayground() {
               The accessibility-shaped if-then-else: pick a
               presentation metaphor based on a user-capability
               variable. The point of the example is not the if-then-
-              else itself (mechanically straightforward) but the way
-              <em> the polymorphism lives in the data, not at the
+              else itself (mechanically straightforward) but the way{" "}
+              <em>the polymorphism lives in the data, not at the
               call site</em>. The same{" "}
               <code>present(modality)</code> call runs in both
               cases; the metaphor selection is internal. That is the
@@ -151,8 +151,8 @@ export default function ActionLanguagePlayground() {
               task decomposition in microcosm.
             </p>
             <p>
-              Try changing one of the modality strings to
-              <code> &quot;haptic&quot;</code> — neither branch
+              Try changing one of the modality strings to{" "}
+              <code>&quot;haptic&quot;</code> — neither branch
               matches, the fallback fires.
             </p>
             <ALPlaygroundLoader initialSource={CONDITIONAL_CONTENT_XML} />

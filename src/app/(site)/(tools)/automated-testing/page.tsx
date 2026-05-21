@@ -490,8 +490,8 @@ export default function AutomatedTesting() {
               user tabbing to the cookie notice, naming the
               interactive elements as it goes; it requires eight
               tabs to reach the accept button. Claude also
-              identifies that the language switcher is
-              <code> aria-hidden</code> and has a misspelled{" "}
+              identifies that the language switcher is{" "}
+              <code>aria-hidden</code> and has a misspelled{" "}
               <code>rol="presentation"</code> attribute (which
               should be <code>role="presentation"</code>); correctly
               identifies the language switcher as keyboard-
@@ -555,7 +555,7 @@ export default function AutomatedTesting() {
               It also looks for drop-down menus and disclosure
               widgets to see if they at least use{" "}
               <code>aria-expanded</code> (the test is not
-              currently strong enough to know whether it is used
+              currently strong enough to know whether it is used{" "}
               <em>correctly</em>).
             </p>
             <p>
@@ -576,8 +576,8 @@ export default function AutomatedTesting() {
               argument; I expected it to report on the{" "}
               <code>aria-hidden</code> attribute. So: right
               answer but wrong reason, I think. That said, the
-              response does also recognise the elements as
-              <code> aria-hidden</code>.
+              response does also recognise the elements as{" "}
+              <code>aria-hidden</code>.
             </p>
             <p>
               Claude finds one drop-down menu (the hamburger

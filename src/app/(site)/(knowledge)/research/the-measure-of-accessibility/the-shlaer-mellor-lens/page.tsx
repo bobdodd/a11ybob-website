@@ -46,8 +46,8 @@ export default function ShlaerMellorLensInDepth() {
               Pages 2 through 4 give the formal account of what
               functional, intrinsic, and equivalent-experience
               accessibility are. They give definitions and a
-              measurement vocabulary. They do not give a method for
-              <em> building</em> interfaces that satisfy those
+              measurement vocabulary. They do not give a method for{" "}
+              <em>building</em> interfaces that satisfy those
               definitions. The gap between definition and
               construction is the gap this page is for.
             </p>
@@ -87,11 +87,11 @@ export default function ShlaerMellorLensInDepth() {
               assumptions), joined by formal{" "}
               <em>bridges</em>. The abstract analysis is then{" "}
               <em>translated</em> &mdash; not elaborated &mdash; into
-              a concrete realisation for a specific platform via a
-              <em> model compiler</em>. The same domain analysis
+              a concrete realisation for a specific platform via a{" "}
+              <em>model compiler</em>. The same domain analysis
               produces different concrete realisations for
-              different targets. That last property is what
-              <em> recursive design</em> names: design abstractions
+              different targets. That last property is what{" "}
+              <em>recursive design</em> names: design abstractions
               that are reused across multiple targets, not
               re-elaborated for each.
             </p>
@@ -130,8 +130,8 @@ export default function ShlaerMellorLensInDepth() {
               that the model compiler operates on.
             </p>
             <p>
-              The &ldquo;platform&rdquo; the system is targeting is
-              <em> the user-plus-environment</em>. A screen-reader
+              The &ldquo;platform&rdquo; the system is targeting is{" "}
+              <em>the user-plus-environment</em>. A screen-reader
               user on a phone in a quiet room is one platform; a
               sighted user on a laptop in a noisy office is another;
               a switch-access user on a tablet using a shared

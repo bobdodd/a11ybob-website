@@ -213,8 +213,8 @@ export default function IntrinsicAccessibility() {
             </p>
             <ol>
               <li>
-                <strong>Capability Model.</strong> What
-                <em> properties</em> exist for describing a user,
+                <strong>Capability Model.</strong> What{" "}
+                <em>properties</em> exist for describing a user,
                 organised by subject ontology &mdash; Visual,
                 Sonic, Haptic, Cognitive, Language,
                 ColourBlindness, TabularContent. Properties are

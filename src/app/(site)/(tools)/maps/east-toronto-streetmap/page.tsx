@@ -28,8 +28,8 @@ export default function MapsEastTorontoStreetmap() {
               rendering is deliberately basic &mdash; the work
               isn&rsquo;t about pretty maps; it&rsquo;s about
               whether the structure of an SVG can be made
-              understandable to assistive technology. The
-              <em> ARIA Landmarks</em> model, the <em>filter</em>{" "}
+              understandable to assistive technology. The{" "}
+              <em>ARIA Landmarks</em> model, the <em>filter</em>{" "}
               system, and the <em>rotor</em> first appeared here,
               and the three later maps in the family inherit the
               architecture from this one. The map content itself

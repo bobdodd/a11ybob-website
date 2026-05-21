@@ -47,8 +47,8 @@ export default function FunctionalAccessibility() {
               protocol exists through which that user can complete
               the interaction the interface is for. The definition
               is deliberately weak: it does not require the user to
-              have the same experience as anyone else, only that
-              <em> some path through</em> exists.
+              have the same experience as anyone else, only that{" "}
+              <em>some path through</em> exists.
             </p>
             <p>
               Three things in that sentence carry weight.
@@ -140,12 +140,12 @@ export default function FunctionalAccessibility() {
             <h2>The capacity-requirement match</h2>
             <p>
               The formal core of the definition is a match between
-              two structures. The user, in their context, has a
-              <strong> capacity</strong> &mdash; what they can
+              two structures. The user, in their context, has a{" "}
+              <strong>capacity</strong> &mdash; what they can
               actually do in this body, on this device, at this
               moment, with these inputs and outputs. The interface,
-              for each medium-and-protocol path it offers, has a
-              <strong> requirement</strong> &mdash; what the user
+              for each medium-and-protocol path it offers, has a{" "}
+              <strong>requirement</strong> &mdash; what the user
               would need to bring to the interaction for that path
               to succeed. A path is available to the user when the
               user&rsquo;s capacity meets or exceeds the path&rsquo;s
@@ -198,8 +198,8 @@ export default function FunctionalAccessibility() {
               output through text-to-speech. To its target users it
               was functionally accessible &mdash; the
               capacity-and-requirement match succeeded; the
-              tasks could be completed. But the interface was
-              <em> no longer the original device</em>. Sighted
+              tasks could be completed. But the interface was{" "}
+              <em>no longer the original device</em>. Sighted
               colleagues couldn&rsquo;t pick it up to help. The
               braille input kept the user inside a parallel
               workflow. Software updates from the original platform

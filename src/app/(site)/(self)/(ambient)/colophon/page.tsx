@@ -408,9 +408,9 @@ export default function Colophon() {
           >
             <h2>Why every search result carries a match-strength badge</h2>
             <p>
-              Each search result on this site shows a small pill labelled
-              <em> Exact phrase</em>, <em> All terms</em>, or
-              <em> Some terms</em>. Three tiers, in descending strength
+              Each search result on this site shows a small pill labelled{" "}
+              <em>Exact phrase</em>, <em> All terms</em>, or{" "}
+              <em>Some terms</em>. Three tiers, in descending strength
               of match.
             </p>
             <p>
@@ -481,8 +481,8 @@ export default function Colophon() {
             <p>
               The search box offers type-ahead suggestions after two
               characters, drawn from article and review titles and
-              from glossary terms (including aliases — typing
-              <em> Music Braille</em> finds the entry whose canonical
+              from glossary terms (including aliases — typing{" "}
+              <em>Music Braille</em> finds the entry whose canonical
               term is <em>Braille Music</em>). Suggestions are
               grouped by corpus and selecting one quick-jumps to the
               resource. Pressing Enter without picking a suggestion
@@ -1033,8 +1033,8 @@ export default function Colophon() {
               user&rsquo;s next intentional action is many tab stops
               away from their current position, that&rsquo;s a
               measurable cost we can erase by giving them a
-              shortcut, and dialogs are the case where the cost of
-              <em> not</em> doing it is highest.
+              shortcut, and dialogs are the case where the cost of{" "}
+              <em>not</em> doing it is highest.
             </p>
           </section>
 
@@ -1329,8 +1329,8 @@ export default function Colophon() {
           >
             <h2>Depth split across navigable surfaces</h2>
             <p>
-              The single deepest piece of writing on the site is
-              <em> The Measure of Accessibility</em>, treating
+              The single deepest piece of writing on the site is{" "}
+              <em>The Measure of Accessibility</em>, treating
               what accessibility is, how to measure it, and why
               the answer matters. It runs to roughly nine thousand
               words. It is not a single page.
@@ -1408,7 +1408,7 @@ export default function Colophon() {
               The research-and-position writing on this site is
               written to the reader, in the present tense, without
               the scaffolding that long-arc personal research
-              typically accumulates. There is no
+              typically accumulates. There is no{" "}
               <em>&ldquo;in my doctoral work I argued&hellip;&rdquo;</em>{" "}
               and no <em>&ldquo;the chapter on X says&hellip;&rdquo;</em>
               {" "}weighing down the prose. The position is stated; the

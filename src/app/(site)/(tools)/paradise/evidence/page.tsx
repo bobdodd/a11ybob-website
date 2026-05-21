@@ -57,8 +57,8 @@ export default function ParadiseEvidence() {
               &ldquo;tool you skim past&rdquo;.
             </p>
             <p>
-              The number is honest about scope. It is computed against
-              <em> source-detectable</em> issues — things that can be
+              The number is honest about scope. It is computed against{" "}
+              <em>source-detectable</em> issues — things that can be
               identified without running the application. Runtime-only
               concerns (focus order during dynamic content load,
               ARIA-live announcements, third-party widgets injected at
