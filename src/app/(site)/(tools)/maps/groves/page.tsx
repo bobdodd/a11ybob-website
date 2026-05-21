@@ -97,8 +97,8 @@ export default function MapsGroves() {
               marker (sighted users see it at centre); polar
               origin (distances and directions resolve against
               it); datum (the map orbits the pin, not vice
-              versa); and the user&rsquo;s agent in the multi-
-              agent CoP framing.
+              versa); and the user&rsquo;s agent in the 
+              multi-agent CoP framing.
             </p>
           </section>
 

@@ -57,8 +57,8 @@ export default function ActionLanguagePlayground() {
               commercial language was Forth at Metal Box
               (1984&ndash;89). Twenty-five years later, the
               doctoral framework&rsquo;s executable-specification
-              runtime treated the Action Language model as a Forth-
-              style threaded interpreter. The ActionLanguage intermediate
+              runtime treated the Action Language model as a 
+              Forth-style threaded interpreter. The ActionLanguage intermediate
               representation (IR) in{" "}
               <Link href="/paradise/action-language">Paradise</Link>{" "}
               today is the same shape again. <em>Same execution
@@ -141,8 +141,8 @@ export default function ActionLanguagePlayground() {
             <p>
               The accessibility-shaped if-then-else: pick a
               presentation metaphor based on a user-capability
-              variable. The point of the example is not the if-then-
-              else itself (mechanically straightforward) but the way{" "}
+              variable. The point of the example is not the 
+              if-then-else itself (mechanically straightforward) but the way{" "}
               <em>the polymorphism lives in the data, not at the
               call site</em>. The same{" "}
               <code>present(modality)</code> call runs in both
@@ -193,8 +193,8 @@ export default function ActionLanguagePlayground() {
           >
             <h2>Example 4: Adaptation across user profiles</h2>
             <p>
-              A button rollover that adapts its inventory-to-
-              semantics mapping for visual vs sonic user profiles.
+              A button rollover that adapts its 
+              inventory-to-semantics mapping for visual vs sonic user profiles.
               The same event &mdash; <em>USER ENTERS PROXIMITY OF
               NODE</em> &mdash; triggers different concrete
               realisations through the bridge function{" "}
@@ -224,8 +224,8 @@ export default function ActionLanguagePlayground() {
             <ul>
               <li>
                 <Link href="/research/the-measure-of-accessibility/the-shlaer-mellor-lens">
-                  The Measure of Accessibility &mdash; the Shlaer-
-                  Mellor lens
+                  The Measure of Accessibility &mdash; the 
+                  Shlaer-Mellor lens
                 </Link>{" "}
                 — the methodological substrate this code makes
                 concrete.
@@ -241,8 +241,8 @@ export default function ActionLanguagePlayground() {
                 <Link href="/paradise/action-language">
                   Paradise: ActionLanguage IR
                 </Link>{" "}
-                — the modern descendant in active use for source-
-                level JavaScript accessibility analysis.
+                — the modern descendant in active use for 
+                source-level JavaScript accessibility analysis.
               </li>
             </ul>
           </section>

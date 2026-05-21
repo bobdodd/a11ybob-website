@@ -140,8 +140,8 @@ export default function AccessibilityOfDialogue() {
               <Link href="/research/the-measure-of-accessibility/intrinsic-accessibility">
                 the Measure of Accessibility collection
               </Link>
-              . Intrinsic accessibility names how many pseudo-
-              users a <em>single</em> underlying interface
+              . Intrinsic accessibility names how many 
+              pseudo-users a <em>single</em> underlying interface
               admits; coverage names how many real-population
               users a <em>provider&rsquo;s collection</em> of
               interfaces admits. The two measures complement
@@ -206,8 +206,8 @@ export default function AccessibilityOfDialogue() {
               accessibility case is not a single textbook
               disability but combinations that compound and that
               change over time &mdash; and that the demographic
-              engine for this is ageing, not disability-from-
-              birth. Today&rsquo;s accessibility-and-ageing pivot
+              engine for this is ageing, not 
+              disability-from-birth. Today&rsquo;s accessibility-and-ageing pivot
               is a 2006 claim, written up twenty years ago, that
               no venue picked up at the time. The paper&rsquo;s
               rejection means it is not a citation; the dated

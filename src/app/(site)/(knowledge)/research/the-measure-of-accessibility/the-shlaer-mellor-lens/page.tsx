@@ -154,8 +154,8 @@ export default function ShlaerMellorLensInDepth() {
               maps directly onto the recursive-design frame.
               Functional accessibility is the property that{" "}
               <em>at least one</em> traversal of the bridges yields
-              a usable concrete realisation for the user-and-
-              environment platform. Intrinsic accessibility is the
+              a usable concrete realisation for the 
+              user-and-environment platform. Intrinsic accessibility is the
               property of the underlying domain analysis that it
               admits <em>many</em> such traversals across many
               user-platforms. The compiler does the actual work;
@@ -190,8 +190,8 @@ export default function ShlaerMellorLensInDepth() {
                   The five layers &mdash; Adaptation, Navigation,
                   Semantics, Inventory, External Content &mdash;
                   are a domain chart for the accessible-hypermedia
-                  problem. They differ from canonical Shlaer-
-                  Mellor domain charts in that the relationships
+                  problem. They differ from canonical 
+                  Shlaer-Mellor domain charts in that the relationships
                   between layers are <em>peer</em> rather than
                   client-server: each layer admits queries from
                   any other layer above it, rather than being
@@ -334,8 +334,8 @@ export default function ShlaerMellorLensInDepth() {
             <ul>
               <li>
                 <strong>Forth at Metal Box (1984&ndash;89).</strong>{" "}
-                The threaded-interpreter execution model that, twenty-
-                five years later, became the runtime for the
+                The threaded-interpreter execution model that, 
+                twenty-five years later, became the runtime for the
                 Action Language.
               </li>
               <li>

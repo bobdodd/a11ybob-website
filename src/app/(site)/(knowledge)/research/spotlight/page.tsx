@@ -60,8 +60,8 @@ export default function SpotlightIndex() {
                 &mdash; a Java/JOAL audio rendering of the most
                 visual game, built as the PhD&rsquo;s deliberate
                 falsification test for the framework. Discovered, by
-                accident, that the modality shift turned a third-
-                person observational game into a first-person
+                accident, that the modality shift turned a 
+                third-person observational game into a first-person
                 immersive one.
               </li>
             </ul>

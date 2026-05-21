@@ -237,8 +237,8 @@ export default function ParadiseArchitecture() {
               The DocumentModel composes these and the analysers report
               one issue, in plain terms: the keyboard-equivalent
               handler is in place, but the element disappears the
-              moment it receives focus, so it is not actually keyboard-
-              reachable. That issue cannot be detected in any single
+              moment it receives focus, so it is not actually 
+              keyboard-reachable. That issue cannot be detected in any single
               file.
             </p>
           </section>

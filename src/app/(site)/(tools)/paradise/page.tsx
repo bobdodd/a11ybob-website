@@ -31,8 +31,8 @@ export default function Paradise() {
                 W4A 2008
               </a>{" "}
               CISNA Model paper, parked when I left academia for
-              CNIB, and finished, fifteen years later, when source-
-              level reasoning about JavaScript turned out to be
+              CNIB, and finished, fifteen years later, when 
+              source-level reasoning about JavaScript turned out to be
               exactly the missing piece for honest accessibility
               analysis.
             </p>

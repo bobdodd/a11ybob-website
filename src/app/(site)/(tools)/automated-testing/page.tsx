@@ -45,8 +45,8 @@ export default function AutomatedTesting() {
             <h2>What this page is &mdash; and what it isn&rsquo;t</h2>
             <p>
               <em>
-                These are exploratory experiments, not commercial-
-                tool replacements.
+                These are exploratory experiments, not 
+                commercial-tool replacements.
               </em>{" "}
               The page demonstrates that the AI-driven approach
               works for some categories of accessibility issue that
@@ -80,8 +80,8 @@ export default function AutomatedTesting() {
             </p>
             <p>
               The test page for every demo is{" "}
-              <em>InaccessibilityMatters</em>, a deliberately-
-              broken site purpose-built to exercise specific
+              <em>InaccessibilityMatters</em>, a 
+              deliberately-broken site purpose-built to exercise specific
               accessibility failures. It currently lives at{" "}
               <code>bobd69.sg-host.com</code> pending migration off
               SiteGround to{" "}
@@ -494,8 +494,8 @@ export default function AutomatedTesting() {
               <code>aria-hidden</code> and has a misspelled{" "}
               <code>rol="presentation"</code> attribute (which
               should be <code>role="presentation"</code>); correctly
-              identifies the language switcher as keyboard-
-              unreachable; and surfaces both conformance issues
+              identifies the language switcher as 
+              keyboard-unreachable; and surfaces both conformance issues
               under WCAG 5.2.4 and syntax issues under WCAG
               4.1.2.
             </p>

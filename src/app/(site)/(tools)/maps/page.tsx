@@ -224,8 +224,8 @@ export default function Maps() {
                   <strong>The Groves subdivision</strong>
                 </Link>{" "}
                 &mdash; the simplest, and the demo that produced
-                the theoretical finding. By far the most stripped-
-                down: residential streets, no interior detail. The
+                the theoretical finding. By far the most 
+                stripped-down: residential streets, no interior detail. The
                 simplicity is what exposed the asymmetry between
                 visual scanning and blind navigation.
               </li>
@@ -268,8 +268,8 @@ export default function Maps() {
               <em>sequential rather than parallel</em> (audio,
               screen reader, haptic) and that the user{" "}
               <em>occupies rather than observes</em>, the spatial
-              reference frame collapses from Cartesian to first-
-              person polar coordinates centred on the user.
+              reference frame collapses from Cartesian to 
+              first-person polar coordinates centred on the user.
               Cartesian space is a sighted observer&rsquo;s frame;
               polar space is an embodied user&rsquo;s frame. The
               modality shift forces the frame shift.
@@ -334,8 +334,8 @@ export default function Maps() {
               visual marker (sighted users see it at centre); the
               polar origin (all distances and directions are
               relative to it); the datum (fixed reference the map
-              orbits); and the user&rsquo;s agent in the multi-
-              agent / Community-of-Practice framing &mdash;
+              orbits); and the user&rsquo;s agent in the 
+              multi-agent / Community-of-Practice framing &mdash;
               negotiating on behalf of user capability and
               preference. Wheelchair users have agents that
               prioritise gradients, ramps, accessible washrooms;
@@ -462,8 +462,8 @@ export default function Maps() {
                 <strong>
                   Voice control via Dragon NaturallySpeaking.
                 </strong>{" "}
-                Rotor includes a Dragon-optimised mode with voice-
-                friendly category names. The voice population is
+                Rotor includes a Dragon-optimised mode with 
+                voice-friendly category names. The voice population is
                 often skipped; not skipped here.
               </li>
               <li>
@@ -586,8 +586,8 @@ export default function Maps() {
                 <Link href="/research/2029-framework">
                   The 2029 framework
                 </Link>{" "}
-                &mdash; the multi-agent CoP framing the pin-as-
-                datum embodies.
+                &mdash; the multi-agent CoP framing the 
+                pin-as-datum embodies.
               </li>
             </ul>
           </section>

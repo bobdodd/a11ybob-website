@@ -25,8 +25,8 @@ export default function MeasureOfAccessibilityIndex() {
               between functional and intrinsic accessibility; the
               rejection of utilitarianism; the methodological
               substrate that lets the formal definitions be built
-              rather than just stated; and the communities-of-
-              practice framing that opens onto the{" "}
+              rather than just stated; and the 
+              communities-of-practice framing that opens onto the{" "}
               <Link href="/research/2029-framework">
                 2029 framework
               </Link>
@@ -64,8 +64,8 @@ export default function MeasureOfAccessibilityIndex() {
                   it? The answer is wholly political.&rdquo;
                 </em>{" "}
                 The hammer-and-nail line. The spectrum from
-                insertion-into-existing-society to universal-access-
-                by-design. Why current vocabularies (legal, ergonomic,
+                insertion-into-existing-society to 
+                universal-access-by-design. Why current vocabularies (legal, ergonomic,
                 usability) underdetermine the answer.
               </li>
               <li>

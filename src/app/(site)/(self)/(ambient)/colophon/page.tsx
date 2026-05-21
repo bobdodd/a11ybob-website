@@ -1109,8 +1109,8 @@ export default function Colophon() {
             <p>
               The lib-snapshot pattern is convenient. It keeps the
               site repository small; it lets a single canonical
-              source be consumed elsewhere; it sidesteps strict-
-              compilation drift between projects. It is also opaque.
+              source be consumed elsewhere; it sidesteps 
+              strict-compilation drift between projects. It is also opaque.
               A reader who clicks &ldquo;view source&rdquo; on the
               analyser engine, or who pulls the repo to learn from
               what was built, gets a wall of emitted JavaScript that
@@ -1234,8 +1234,8 @@ export default function Colophon() {
             <p>
               The analyser Playground was originally built on
               Monaco, the editor that powers VS Code. Monaco is an
-              extraordinary piece of engineering &mdash; multi-
-              cursor editing, IntelliSense, deep semantic
+              extraordinary piece of engineering &mdash; 
+              multi-cursor editing, IntelliSense, deep semantic
               tokenisation, language-server protocol support &mdash;
               and on most accessibility metrics it is fine. On
               several criteria the site targets, it is not. Monaco
@@ -1258,8 +1258,8 @@ export default function Colophon() {
               <kbd>Tab</kbd> moves focus out of the editor without
               special configuration; the surface is themeable via
               ordinary CSS rather than internal class systems;
-              the bundle is small enough to ship without code-
-              splitting acrobatics. The trade is loss of Monaco&rsquo;s
+              the bundle is small enough to ship without 
+              code-splitting acrobatics. The trade is loss of Monaco&rsquo;s
               richer language-aware features &mdash; no IntelliSense
               suggestions, no multi-cursor, simpler tokenisation.
               For a Playground whose purpose is to{" "}
@@ -1302,8 +1302,8 @@ export default function Colophon() {
               syntactic role through a non-chromatic dimension. A
               user with red-green or blue-yellow colour-vision
               deficiency reads the highlighted code at the same
-              fidelity as anyone else; a user reading on a high-
-              contrast user stylesheet does not lose the structural
+              fidelity as anyone else; a user reading on a 
+              high-contrast user stylesheet does not lose the structural
               cue when the conventional palette is overridden;
               every token resolves to <code>var(--ink)</code> or{" "}
               <code>var(--ink-muted)</code> over the editor

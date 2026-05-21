@@ -28,8 +28,8 @@ export default function SpotlightTUP() {
               An iPodLinux reimplementation of Transparent
               User-guided Prediction with two pieces of original
               engineering on top: a finite-state machine handling
-              the woodpecker effect of hand tremor and the sliding-
-              touch problem of reduced cutaneous sensitivity, and an
+              the woodpecker effect of hand tremor and the 
+              sliding-touch problem of reduced cutaneous sensitivity, and an
               adaptive wheel display that puts the predicted letter
               under the user&rsquo;s finger rather than asking them
               to reach for it.
@@ -141,16 +141,16 @@ export default function SpotlightTUP() {
                 A <strong>finite state machine</strong> modelling
                 user input, designed specifically to handle the
                 woodpecker effect (multiple brief contacts treated
-                as one intentional press) and the sliding-from-
-                numbness problem (a press that drifts is
+                as one intentional press) and the 
+                sliding-from-numbness problem (a press that drifts is
                 interpreted as the original landing point, not the
                 drift).
               </li>
               <li>
                 The <strong>adaptive wheel display</strong> with
                 the large on-screen letter, designed for low-vision
-                users (also relevant to MS, which can affect optic-
-                nerve function).
+                users (also relevant to MS, which can affect 
+                optic-nerve function).
               </li>
             </ol>
           </section>
@@ -202,8 +202,8 @@ export default function SpotlightTUP() {
               <code>constantTouching</code>,{" "}
               <code>touchAStaticPoint</code>,{" "}
               <code>touchAMovingPoint</code> &mdash; that are
-              precisely what TUP&rsquo;s woodpecker-and-sliding-
-              touch FSM was modelling at the engineering level
+              precisely what TUP&rsquo;s 
+              woodpecker-and-sliding-touch FSM was modelling at the engineering level
               years before the framework existed. The ad-hoc
               engineering of TUP became the formal haptic capability
               template; the persona who appears in the framework as

@@ -243,8 +243,8 @@ export default function EquivalentExperience() {
             </p>
             <ul>
               <li>
-                <strong>Different sequencing.</strong> A screen-
-                reader user often navigates a page non-linearly via
+                <strong>Different sequencing.</strong> A 
+                screen-reader user often navigates a page non-linearly via
                 heading or landmark navigation, while a sighted
                 user scans visually. The two routes are different;
                 neither is wrong. Equivalent-experience analysis
@@ -260,8 +260,8 @@ export default function EquivalentExperience() {
                 conveyed.
               </li>
               <li>
-                <strong>Different affordances.</strong> A motor-
-                impaired user may invoke an action via a single
+                <strong>Different affordances.</strong> A 
+                motor-impaired user may invoke an action via a single
                 switch press rather than a click-drag-release; the
                 action sequence is different; the action is the
                 same. Whether the affordances are <em>equivalent</em>{" "}
@@ -277,9 +277,9 @@ export default function EquivalentExperience() {
               it is a tax. A switch-access path that requires
               twenty stops to invoke an action a mouse user
               completes in one click is not equivalent; it is a
-              tax. The analysis is comfortable with shape-
-              difference; it is not comfortable with cost-
-              difference at scales that fall systematically on the
+              tax. The analysis is comfortable with 
+              shape-difference; it is not comfortable with 
+              cost-difference at scales that fall systematically on the
               minority user.
             </p>
           </section>
@@ -338,8 +338,8 @@ export default function EquivalentExperience() {
                 the device
               </Link>{" "}
               &mdash; a complementary 2006 reframing, with the
-              coverage-set formulation and the commercial-and-
-              legal version of the equality argument.
+              coverage-set formulation and the 
+              commercial-and-legal version of the equality argument.
             </p>
           </section>
         </div>

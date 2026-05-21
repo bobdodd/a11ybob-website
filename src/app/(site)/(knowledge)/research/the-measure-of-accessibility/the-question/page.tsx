@@ -149,8 +149,8 @@ export default function TheQuestion() {
               are tractable. The fourth is political.
             </p>
             <p>
-              The hammer is software. Software is the assistive-
-              technology field&rsquo;s strongest tool, and as a
+              The hammer is software. Software is the 
+              assistive-technology field&rsquo;s strongest tool, and as a
               consequence the field has largely framed
               accessibility as a problem software can solve. That
               framing carries a hidden constraint: it pushes the
@@ -275,11 +275,11 @@ export default function TheQuestion() {
               can do well on one while doing badly on the other.
               The clearest illustration is in the field itself:
               specialist assistive devices &mdash; the PacMate, for
-              example, with its replaced keyboard and forced text-
-              to-speech &mdash; are functionally accessible to their
+              example, with its replaced keyboard and forced 
+              text-to-speech &mdash; are functionally accessible to their
               target users at high cost in usability. They are
-              accessible in the sense that the relevant user-
-              population can complete tasks; they are unusable in
+              accessible in the sense that the relevant 
+              user-population can complete tasks; they are unusable in
               the sense that the experience is profoundly
               different from what a typical user encounters.
               Conversely, a beautifully designed web app with no

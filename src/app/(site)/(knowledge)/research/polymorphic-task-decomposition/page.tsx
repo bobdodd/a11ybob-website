@@ -98,8 +98,8 @@ export default function PTD() {
               <Link href="/paradise">Paradise</Link>&rsquo;s analysers
               borrow PTD&rsquo;s vocabulary for &ldquo;there are
               several valid ways to express this; pick one and check
-              the choice is consistent.&rdquo; The cross-file event-
-              handler validation is exactly this — a click handler
+              the choice is consistent.&rdquo; The cross-file 
+              event-handler validation is exactly this — a click handler
               and a keyboard handler are two polymorphs of the same
               activation task, and the analyser checks they
               co-exist when both are needed.

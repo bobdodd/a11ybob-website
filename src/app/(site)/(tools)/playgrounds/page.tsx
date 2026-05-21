@@ -99,8 +99,8 @@ export default function Playgrounds() {
               <p>
                 <small className="muted">
                   Demonstrates the methodological substrate{" "}
-                  <em>in code</em>, not just in description. Cross-
-                  references{" "}
+                  <em>in code</em>, not just in description. 
+                  Cross-references{" "}
                   <Link href="/research/the-measure-of-accessibility/the-shlaer-mellor-lens">
                     the Shlaer-Mellor lens
                   </Link>

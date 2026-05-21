@@ -116,8 +116,8 @@ export default function LivedUserTesting() {
             <ul>
               <li>
                 <strong>Audit</strong> &mdash; WCAG compliance
-                focus, structured issue reporting with success-
-                criteria mapping, designed for professional
+                focus, structured issue reporting with 
+                success-criteria mapping, designed for professional
                 accessibility auditors.
               </li>
               <li>
@@ -158,8 +158,8 @@ export default function LivedUserTesting() {
             </p>
             <ul>
               <li>
-                <strong>Key Takeaways</strong> &mdash; analyst-
-                narrative top-level findings.
+                <strong>Key Takeaways</strong> &mdash; 
+                analyst-narrative top-level findings.
               </li>
               <li>
                 <strong>User Pain Points</strong> &mdash;
@@ -195,8 +195,8 @@ export default function LivedUserTesting() {
           >
             <h2>Per-issue fields, outputs, captions</h2>
             <p>
-              Per issue: title, description, what, why, who, how-
-              to-fix, WCAG 2.2 success-criterion mapping, impact
+              Per issue: title, description, what, why, who, 
+              how-to-fix, WCAG 2.2 success-criterion mapping, impact
               (Low / Medium / High), and precise timecodes
               linking back into the source video. Built-in
               heuristics for screen reader, screen magnifier,
@@ -204,8 +204,8 @@ export default function LivedUserTesting() {
               compatibility.
             </p>
             <p>
-              Outputs: JSON (machine-consumable), HTML (human-
-              review, bilingual), VTT captions, and{" "}
+              Outputs: JSON (machine-consumable), HTML (
+              human-review, bilingual), VTT captions, and{" "}
               <em>
                 an optional enhanced video with callouts overlaid
                 at precise moments and chapter markers

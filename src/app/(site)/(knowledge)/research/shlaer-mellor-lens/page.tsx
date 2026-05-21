@@ -53,12 +53,12 @@ export default function ShlaerMellorLens() {
               Accessibility has the same structure with different
               vocabulary. The domains are content-semantics,
               navigation, modality (visual / sonic / haptic), user
-              capability, device capacity, environment, custom-and-
-              practice. The &ldquo;platform&rdquo; you are targeting
+              capability, device capacity, environment, 
+              custom-and-practice. The &ldquo;platform&rdquo; you are targeting
               is <em>the user-plus-environment</em>. The model
               compiler is the adaptation system that selects
-              appropriate inventory and presentation for that user-
-              and-environment context.
+              appropriate inventory and presentation for that 
+              user-and-environment context.
             </p>
             <p>
               <em>Functional accessibility</em> is achieving one
@@ -82,8 +82,8 @@ export default function ShlaerMellorLens() {
             <ul>
               <li>
                 <strong>Forth at Metal Box (1984&ndash;89).</strong>{" "}
-                The threaded-interpreter execution model that, twenty-
-                five years later, became how the PhD&rsquo;s Action
+                The threaded-interpreter execution model that, 
+                twenty-five years later, became how the PhD&rsquo;s Action
                 Language runtime executed.
               </li>
               <li>
@@ -108,8 +108,8 @@ export default function ShlaerMellorLens() {
               </li>
               <li>
                 <strong>PhD (2004&ndash;13).</strong> SM applied
-                explicitly to accessibility, with the bridge-
-                composition contribution and the Forth-style
+                explicitly to accessibility, with the 
+                bridge-composition contribution and the Forth-style
                 threaded-interpreter Action Language execution engine.
               </li>
               <li>
@@ -169,8 +169,8 @@ export default function ShlaerMellorLens() {
               <li>
                 <strong>State Transition Tables</strong> with
                 &ldquo;Can&rsquo;t Happen&rdquo; and
-                &ldquo;Ignore&rdquo; entries &rarr; user-capability-
-                specific exception handling expressed per user
+                &ldquo;Ignore&rdquo; entries &rarr; 
+                user-capability-specific exception handling expressed per user
                 profile.
               </li>
               <li>

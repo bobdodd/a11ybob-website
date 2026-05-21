@@ -111,8 +111,8 @@ export default function ParadiseCite() {
               </li>
               <li>
                 <strong>Citing the IR specifically</strong> — work
-                that builds on or extends ActionLanguage, the action-
-                tree representation, or the JavaScript-to-tree
+                that builds on or extends ActionLanguage, the 
+                action-tree representation, or the JavaScript-to-tree
                 transcoding: both citations.
               </li>
             </ul>

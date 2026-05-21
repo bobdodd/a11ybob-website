@@ -32,8 +32,8 @@ export default function TetrisTestbed() {
           >
             <h2>Why Tetris</h2>
             <p>
-              Six tile types, four orientations, the silhouette-
-              recognition problem at the bottom of the well, the
+              Six tile types, four orientations, the
+              silhouette-recognition problem at the bottom of the well, the
               next-tile preview, the held-tile, multi-line scoring,
               increasing tempo. Everything an accessibility researcher
               needs to test — vision, audition, motor, cognitive,

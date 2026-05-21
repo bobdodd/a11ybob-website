@@ -66,8 +66,8 @@ export default function ParadiseLineage() {
               not by serving up a different design but by{" "}
               <em>substituting algorithm fragments at runtime</em>. The
               same mindset as Shlaer-Mellor: a program is a tree of
-              actions; some sub-trees can be replaced with semantically-
-              equivalent variants tuned to a particular user.
+              actions; some sub-trees can be replaced with 
+              semantically-equivalent variants tuned to a particular user.
             </p>
             <p>
               Two artefacts came out of that work. The{" "}
@@ -178,8 +178,8 @@ export default function ParadiseLineage() {
               <li>
                 <strong>Carnforth-Java</strong> &mdash; the doctoral
                 Java implementation of CISNA, with the Action
-                Language XML notation and a Forth-style threaded-
-                interpreter execution engine. See{" "}
+                Language XML notation and a Forth-style 
+                threaded-interpreter execution engine. See{" "}
                 <Link href="/playgrounds/action-language">
                   /playgrounds/action-language
                 </Link>{" "}

@@ -163,8 +163,8 @@ export default function SpotlightTetrisAudio() {
           >
             <h2>The insight</h2>
             <p>
-              Converting Tetris from visual to audio turned a third-
-              person observational game into a first-person
+              Converting Tetris from visual to audio turned a 
+              third-person observational game into a first-person
               immersive one. And it wasn&rsquo;t deliberate.
             </p>
             <p>

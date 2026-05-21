@@ -92,8 +92,8 @@ export default function FrameworkPage2029() {
             </blockquote>
             <p>
               In 2006, the theory was understood; the compute was
-              not. In 2013, the formalism was clearer; autonomous-
-              agent implementations remained academic toys. With
+              not. In 2013, the formalism was clearer; 
+              autonomous-agent implementations remained academic toys. With
               practical agentic AI now available, the implementation
               tools have caught up. This is the line — the 2029
               project is the resumption of explicitly-named research,
@@ -152,8 +152,8 @@ export default function FrameworkPage2029() {
               framework to accessibility, using agentic AI as the
               implementation substrate that wasn&rsquo;t available in
               2013, and explicitly carrying both the game-theoretic
-              competitive dimension and the CoP collaborative-and-
-              learning dimension.
+              competitive dimension and the CoP 
+              collaborative-and-learning dimension.
             </p>
             <p className="muted">
               <small>

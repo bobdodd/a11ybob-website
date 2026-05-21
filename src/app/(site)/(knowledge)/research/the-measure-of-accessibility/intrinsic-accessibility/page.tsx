@@ -58,8 +58,8 @@ export default function IntrinsicAccessibility() {
             <p>
               Intrinsic accessibility asks the next question.
               Instead of requiring at least one successful path for
-              a given user, it asks how many distinct user-and-
-              context profiles the underlying interface admits
+              a given user, it asks how many distinct 
+              user-and-context profiles the underlying interface admits
               successful paths for &mdash; without specialist
               hardware, without parallel workflows, without the
               user being carried through an experience designed
@@ -184,8 +184,8 @@ export default function IntrinsicAccessibility() {
               practice the procedure terminates because the dimension
               vocabulary used by accessibility tooling is itself
               finite. The claim is open at the edges &mdash; any
-              shift in what the field considers an accessibility-
-              relevant capacity changes the optimal set &mdash; but
+              shift in what the field considers an 
+              accessibility-relevant capacity changes the optimal set &mdash; but
               within a fixed analytical scope, the set is unique up
               to the equivalence above.
             </p>
@@ -227,8 +227,8 @@ export default function IntrinsicAccessibility() {
               </li>
               <li>
                 <strong>Capacity Model.</strong> The{" "}
-                <em>settings</em> for a specific user (or pseudo-
-                user, or group of users) in a specific context,
+                <em>settings</em> for a specific user (or 
+                pseudo-user, or group of users) in a specific context,
                 populating the Capability Model. The crucial move
                 here is the support for{" "}
                 <em>functionally-dependent settings</em>: a setting
@@ -275,8 +275,8 @@ export default function IntrinsicAccessibility() {
               admits user agency; requirement filters what
               modalities are available. Functional accessibility
               becomes the statement &ldquo;at least one
-              capacity-requirement match exists for this user-
-              context-modality.&rdquo; Intrinsic accessibility
+              capacity-requirement match exists for this 
+              user-context-modality.&rdquo; Intrinsic accessibility
               becomes &ldquo;the underlying interface admits many
               such matches across many pseudo-users.&rdquo; The same
               machinery measures both; the only difference is what

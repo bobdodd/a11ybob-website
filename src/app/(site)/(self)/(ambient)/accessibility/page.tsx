@@ -233,8 +233,8 @@ export default function Accessibility() {
                   Playground simulators for visceral testing.
                 </strong>{" "}
                 The Playground includes a virtual screen reader, a
-                switch-access simulator (single-switch and dual-
-                switch modes with configurable scan speed), and a
+                switch-access simulator (single-switch and 
+                dual-switch modes with configurable scan speed), and a
                 session recorder that captures a screen-reader walk
                 for replay later. They are deliberately accurate
                 enough to teach and not so accurate as to be a

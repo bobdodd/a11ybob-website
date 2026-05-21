@@ -19,8 +19,8 @@ export default function Carnforth() {
               for accessible-name conformance against WCAG 4.1.2.
               Runtime testing against the rendered DOM &mdash; the
               opposite end of the spectrum from{" "}
-              <Link href="/paradise">Paradise</Link>&rsquo;s source-
-              level analysis. A working proof-of-concept, presented
+              <Link href="/paradise">Paradise</Link>&rsquo;s 
+              source-level analysis. A working proof-of-concept, presented
               at a11yTO Accessibility Camp 2024, intended as a
               demonstration of an approach rather than a
               productionised tool.
@@ -238,10 +238,10 @@ export default function Carnforth() {
             <p>
               Carnforth was the demonstration at a11yTO
               Accessibility Camp 2024. The talk framed the tool
-              as a worked example of where the runtime accessible-
-              name algorithm sits relative to source-level analysis
-              and AI-driven testing &mdash; the same three-
-              approach framing the tooling page now uses on the
+              as a worked example of where the runtime 
+              accessible-name algorithm sits relative to source-level analysis
+              and AI-driven testing &mdash; the same 
+              three-approach framing the tooling page now uses on the
               site.
             </p>
           </section>

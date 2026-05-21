@@ -131,8 +131,8 @@ export default function MapsYVR() {
             <p className="muted">
               <small>
                 As with the Groves demo, the YVR map takes over
-                keyboard navigation, focus management, and screen-
-                reader announcements once opened; that is why it
+                keyboard navigation, focus management, and 
+                screen-reader announcements once opened; that is why it
                 lives at its own URL rather than as an iframe on
                 this page.
               </small>

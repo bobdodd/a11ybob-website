@@ -81,8 +81,8 @@ export default function MapsEastTorontoStreetmap() {
               speed rather than at JavaScript speed; the SVG is
               served as a plain asset. The interest of the
               artefact is the structure of the SVG itself: whether
-              an OSM extract could be turned into screen-reader-
-              navigable structure rather than into a picture a
+              an OSM extract could be turned into 
+              screen-reader-navigable structure rather than into a picture a
               sighted user looks at.
             </p>
             <p>

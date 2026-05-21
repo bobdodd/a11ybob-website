@@ -274,17 +274,17 @@ export default function CommunitiesOfPractice() {
           >
             <h2>Why competition-only agentic AI is the wrong frame</h2>
             <p>
-              The current agentic-AI literature is competition-
-              shaped. Auctions, negotiations, marketplaces, multi-
-              agent reinforcement learning &mdash; all of them
+              The current agentic-AI literature is 
+              competition-shaped. Auctions, negotiations, marketplaces, 
+              multi-agent reinforcement learning &mdash; all of them
               model the relationships between agents primarily as
               competition for scarce resources, with cooperation as
               an emergent equilibrium when the game permits it.
               That framing is plausible; it is also incomplete.
             </p>
             <p>
-              The community-of-practice framing is collaboration-
-              and-learning-shaped. Agents do not just bid against
+              The community-of-practice framing is 
+              collaboration-and-learning-shaped. Agents do not just bid against
               each other for the audio channel; they tune their
               relationships, they learn collectively, they hold
               shared identity, they migrate between roles as the
