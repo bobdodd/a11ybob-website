@@ -460,16 +460,27 @@ export default function Maps() {
           >
             <h2>The seven-year arc</h2>
             <p>
-              2019 Guelph Accessibility Conference (the original
-              45-minute in-person session, demoing a
-              file:///-served, black-and-white line-art east
-              Toronto streetmap) &rarr; 2022 Groves subdivision
-              demo (PNG-based map with checkbox-curated pin
-              overlay) &rarr; 2025 Maps platform (pre-rendered
-              SVG tiles, comprehensive OSM coverage, rotor +
-              rose, cartographically professional Toronto and YVR
-              maps). Same design vocabulary throughout;
-              materially improved engineering and visual quality.
+              The arc begins with the{" "}
+              <strong>Groves subdivision</strong>, built out of a
+              client request for accessible spatial information
+              about a residential development &mdash; the work that
+              produced the polar-coordinate finding. The{" "}
+              <strong>East Toronto streetmap</strong> followed:
+              first publicly shown at a 45-minute in-person session
+              at the 2019 Guelph Accessibility Conference (a
+              file:///-served, black-and-white line-art proof of
+              concept) and the demo that introduced the ARIA
+              Landmarks + filters + rotor model the family of maps
+              now shares. The{" "}
+              <strong>multi-tile Toronto streetmap</strong>{" "}
+              followed as the direct architectural successor of
+              East Toronto, scaling the single-tile pipeline to a
+              full city &mdash; currently in active development,
+              with no public demo live yet. Most recently, the{" "}
+              <strong>YVR terminal map</strong> carries the
+              conceptual model into an indoor airport surface. Same
+              design vocabulary throughout; materially improved
+              engineering and visual quality at each step.
             </p>
           </section>
 
