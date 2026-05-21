@@ -41,7 +41,13 @@ h6 { font-size: var(--s1); font-weight: 400; font-style: italic; }
 /* ===== Body prose ===== */
 p {
   text-wrap: pretty;
-  hyphens: auto;
+  /* Words never break across lines with a hyphen, even automatically.
+   * The visual cost is a more ragged right margin; the readability
+   * benefit is that a screen-magnifier user — for whom traversing
+   * from the end of one line to the start of the next is a slow
+   * physical motion — never has to reassemble a word split between
+   * the two. See colophon: "Words never break across lines". */
+  hyphens: none;
 }
 
 small,

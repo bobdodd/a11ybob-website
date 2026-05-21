@@ -289,6 +289,44 @@ export default function Colophon() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
+            <h2>Words never break across lines</h2>
+            <p>
+              Body paragraphs set <code>hyphens: none</code>, which
+              disables automatic word-breaking and ignores authored
+              soft hyphens too. A word like{" "}
+              <em>polymorphic</em> or <em>capability</em> stays as a
+              single token on one line; the line wraps before the
+              word rather than through it.
+            </p>
+            <p>
+              The visual cost is a more ragged right margin than the
+              browser&rsquo;s default justified-with-hyphens layout
+              would produce. The reading benefit is the one that
+              matters for the users this site is built for. A
+              screen-magnifier user reading at high zoom traverses
+              from the end of one line back to the start of the next
+              as a slow physical motion: the eye, the head, sometimes
+              the whole upper body. When a word is split across that
+              gap, the two halves don&rsquo;t reassemble naturally on
+              re-reading the way they would for a sighted user
+              reading at normal zoom &mdash; the reader sees{" "}
+              <em>capa-</em>, scrolls, sees <em>bility</em>, and has
+              to consciously stitch the word together. Multiplied
+              across a paragraph it becomes substantial cognitive
+              friction.
+            </p>
+            <p>
+              Same family of decision as the no-wrap rule for link
+              text above: optimise for read-flow at high
+              magnification rather than for compact text-fitting at
+              default zoom.
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
             <h2>Colour</h2>
             <p>
               Three motivations layered. First, body text on pure white
