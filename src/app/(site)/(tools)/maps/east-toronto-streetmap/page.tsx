@@ -136,10 +136,10 @@ export default function MapsEastTorontoStreetmap() {
               First publicly shown as a 45-minute in-person
               session at the 2019 Guelph Accessibility Conference
               at the University of Guelph. The talk demoed an
-              earlier, file:///-served, black-and-white line-art
-              version of the streetmap with the dual-mode
-              interaction model and the pin-as-datum already
-              present in primitive form. The architectural
+              earlier, low-fidelity, black-and-white,
+              file:///-served rendering of the streetmap with the
+              dual-mode interaction model and the pin-as-datum
+              already present in primitive form. The architectural
               decisions on this page &mdash; SVG over raster, CSS
               filters over JS, OpenStreetMap as the data source
               &mdash; came from the work that followed. The
@@ -150,7 +150,7 @@ export default function MapsEastTorontoStreetmap() {
             </p>
             <p>
               The lineage reads in three steps. The{" "}
-              <Link href="/maps/groves">Groves cemetery work</Link>{" "}
+              <Link href="/maps/groves">Groves subdivision work</Link>{" "}
               came first &mdash; it introduced the
               Cartesian-to-polar verbal description of space (the
               vocabulary the rotor still uses: &ldquo;1 o&rsquo;clock,

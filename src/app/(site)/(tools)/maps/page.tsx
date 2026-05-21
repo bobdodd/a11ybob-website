@@ -491,10 +491,10 @@ export default function Maps() {
               <strong>East Toronto streetmap</strong> followed:
               first publicly shown at a 45-minute in-person session
               at the 2019 Guelph Accessibility Conference (a
-              file:///-served, black-and-white line-art proof of
-              concept) and the demo that introduced the ARIA
-              Landmarks + filters + rotor model the family of maps
-              now shares. The{" "}
+              low-fidelity, black-and-white, file:///-served
+              rendering of an east Toronto streetmap) and the demo
+              that introduced the ARIA Landmarks + filters + rotor
+              model the family of maps now shares. The{" "}
               <strong>multi-tile Toronto streetmap</strong>{" "}
               followed as the direct architectural successor of
               East Toronto, scaling the single-tile pipeline to a
