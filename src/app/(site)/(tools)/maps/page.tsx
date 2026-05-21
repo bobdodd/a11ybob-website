@@ -383,16 +383,27 @@ export default function Maps() {
                 opposite choice deliberately.
               </li>
               <li>
-                <strong>Pre-rendered SVG tile pipeline.</strong>{" "}
-                OpenStreetMap data is processed into 0.01&deg;
-                geographic squares (~1km&sup2;), each rendered as
-                a compressed SVG.gz file with ARIA labels pre-built
-                at generation time. Performance against runtime
-                Overpass queries: initial load 2&ndash;3s &rarr;
-                0.5s; pan to new area 1&ndash;2s &rarr; 0.3s;
-                filter toggle 500ms &rarr; 50ms; memory 100MB
-                &rarr; 30MB. Works offline after the initial
-                cache.
+                <strong>
+                  Pre-rendered SVG, no runtime spatial-database
+                  queries.
+                </strong>{" "}
+                Nothing on the platform queries OpenStreetMap (or
+                an Overpass endpoint, or any spatial database) at
+                runtime. The published demos use one-time static
+                OSM pulls, rendered offline, and served as plain
+                assets &mdash; the East Toronto streetmap, for
+                instance, is a single SVG generated from one
+                long-ago OSM extract; the data isn&rsquo;t
+                refreshed. The multi-tile Toronto streetmap
+                currently in development extends the same
+                principle to a city: OSM data is processed offline
+                into 0.01&deg; geographic squares (~1km&sup2;),
+                each rendered as a compressed SVG.gz file with
+                ARIA labels pre-built at generation time, served
+                from a tile server Bob maintains. The viewer
+                fetches tiles from that server as the viewport
+                pans; the spatial database is touched only at
+                tile-generation time, never at view time.
               </li>
               <li>
                 <strong>CSS-based filtering for clutter management.</strong>{" "}

@@ -71,15 +71,19 @@ export default function MapsEastTorontoStreetmap() {
           >
             <h2>The SVG architecture</h2>
             <p>
-              The demo is a single tile &mdash; one{" "}
-              <strong>0.01&deg; geographic square</strong>{" "}
-              (roughly 1km&sup2;) of OpenStreetMap data, processed
-              offline into one compressed SVG.gz file with ARIA
-              labels <em>pre-built at generation time</em>. There
-              is no live Overpass query against a remote database,
-              no JavaScript-driven feature lookup, and filter
-              toggles run at CSS speed rather than at JavaScript
-              speed.
+              The demo is a single SVG generated from a long-ago
+              one-time pull of OpenStreetMap data for a section of
+              east Toronto, with ARIA labels{" "}
+              <em>pre-built at generation time</em>. The data is
+              not refreshed and is not the point &mdash; nothing
+              on the demo queries OpenStreetMap (or any spatial
+              database) at runtime; filter toggles run at CSS
+              speed rather than at JavaScript speed; the SVG is
+              served as a plain asset. The interest of the
+              artefact is the structure of the SVG itself: whether
+              an OSM extract could be turned into screen-reader-
+              navigable structure rather than into a picture a
+              sighted user looks at.
             </p>
             <p>
               The architecture is a four-layer CISNA instantiation
@@ -89,18 +93,16 @@ export default function MapsEastTorontoStreetmap() {
               and how it relates to nearby features), and
               Inventory (which OSM features have been rendered
               into the SVG) &mdash; with External Content sitting
-              beneath everything as the raw OpenStreetMap source
-              data.
+              beneath everything as the raw OpenStreetMap extract.
             </p>
             <p className="muted">
               <small>
-                The multi-tile pipeline &mdash; dynamic tile
-                fetches as the viewport pans, offline-capable
-                caching, and the city-scale performance numbers
-                that come with it &mdash; is the contribution of
-                the in-development Toronto streetmap project,
-                which builds on this single-tile demo&rsquo;s
-                foundation. It isn&rsquo;t live here.
+                The pipeline that processes OSM data into many
+                pre-rendered SVG tiles served from Bob&rsquo;s own
+                tile server, with the viewer fetching tiles as the
+                viewport pans, is the contribution of the
+                in-development multi-tile Toronto streetmap. It
+                isn&rsquo;t part of this single-tile demo.
               </small>
             </p>
           </section>
