@@ -147,10 +147,14 @@ export default function Playgrounds() {
               <p>
                 <small className="muted">
                   The two richer demos (YVR terminal interior
-                  wayfinding and the Guelph streetmap with the
-                  SVG-tile architecture) live at{" "}
+                  wayfinding and the East Toronto streetmap, where
+                  the ARIA Landmarks + filters + rotor model first
+                  appeared) live at{" "}
                   <Link href="/maps/yvr">/maps/yvr</Link> and{" "}
-                  <Link href="/maps/guelph">/maps/guelph</Link>.
+                  <Link href="/maps/east-toronto-streetmap">
+                    /maps/east-toronto-streetmap
+                  </Link>
+                  .
                 </small>
               </p>
             </article>

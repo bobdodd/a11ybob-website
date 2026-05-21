@@ -112,7 +112,8 @@ export default function MapsGroves() {
               <a href="https://bobd76.sg-host.com">
                 bobd76.sg-host.com
               </a>{" "}
-              alongside the Guelph streetmap on the same hosting.
+              alongside the East Toronto streetmap on the same
+              hosting.
               Pending the in-progress migration off SiteGround
               onto the OVH VPS, after which the demo moves to{" "}
               <code>maps-groves.a11ybob.com</code> and the link

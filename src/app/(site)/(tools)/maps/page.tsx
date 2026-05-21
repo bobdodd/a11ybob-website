@@ -240,14 +240,16 @@ export default function Maps() {
                 scales beyond residential subdivisions.
               </li>
               <li>
-                <Link href="/maps/guelph">
-                  <strong>Guelph streetmap</strong>
+                <Link href="/maps/east-toronto-streetmap">
+                  <strong>East Toronto streetmap</strong>
                 </Link>{" "}
-                &mdash; the earliest demo, from a 2019 Guelph
-                Accessibility Conference webinar, and the most
-                architecturally ambitious. Pre-rendered SVG tiles,
-                full OSM coverage, the architecture that scales
-                the approach to a city.
+                &mdash; the earliest OSM-rendering demo, first
+                shown at a 45-minute in-person session at the 2019
+                Guelph Accessibility Conference. The conceptual
+                model the family of maps shares &mdash; ARIA
+                Landmarks, filters, rotor &mdash; originated here.
+                Rendering is deliberately basic; the contribution
+                is the SVG structure for screen-reader navigation.
               </li>
             </ul>
           </section>
@@ -459,14 +461,15 @@ export default function Maps() {
             <h2>The seven-year arc</h2>
             <p>
               2019 Guelph Accessibility Conference (the original
-              webinar demo, served from file:///, black-and-white
-              line art) &rarr; 2022 Groves subdivision demo
-              (PNG-based map with checkbox-curated pin overlay)
-              &rarr; 2025 Maps platform (pre-rendered SVG tiles,
-              comprehensive OSM coverage, rotor + rose,
-              cartographically professional Toronto and YVR
-              maps). Same design vocabulary throughout; materially
-              improved engineering and visual quality.
+              45-minute in-person session, demoing a
+              file:///-served, black-and-white line-art east
+              Toronto streetmap) &rarr; 2022 Groves subdivision
+              demo (PNG-based map with checkbox-curated pin
+              overlay) &rarr; 2025 Maps platform (pre-rendered
+              SVG tiles, comprehensive OSM coverage, rotor +
+              rose, cartographically professional Toronto and YVR
+              maps). Same design vocabulary throughout;
+              materially improved engineering and visual quality.
             </p>
           </section>
 
@@ -531,8 +534,11 @@ export default function Maps() {
                 &mdash; interior wayfinding, airport scale.
               </li>
               <li>
-                <Link href="/maps/guelph">Guelph streetmap</Link>{" "}
-                &mdash; 2019 origin, SVG-tile architecture.
+                <Link href="/maps/east-toronto-streetmap">
+                  East Toronto streetmap
+                </Link>{" "}
+                &mdash; 2019 origin; introduced the ARIA Landmarks
+                + filters + rotor model the family shares.
               </li>
               <li>
                 <Link href="/research/cisna-model">
