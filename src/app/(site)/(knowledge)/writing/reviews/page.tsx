@@ -75,8 +75,8 @@ export default async function Reading({
             </p>
             <h1>Reviews</h1>
             <p className="lede">
-              The literature-review database. Every paper Bob has read with
-              accessibility-relevant findings, with a short reviewed summary,
+              The literature-review database. Every paper Bob has
+              reviewed (he has read many more), with a short summary,
               key findings, and tags. Browse, filter, search.
             </p>
           </header>
