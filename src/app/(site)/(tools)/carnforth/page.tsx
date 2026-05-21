@@ -66,8 +66,12 @@ export default function Carnforth() {
             <h2>Where it sits in the tools lineage</h2>
             <p>
               The naming is not coincidence. The lineage runs from
-              the original CISNA Model (W4A 2008, with Steve Green
-              and Elaine Pearson) through the PhD-era Carnforth-Java
+              the original CISNA Model (
+              <a href="https://doi.org/10.1145/1368044.1368052">
+                W4A 2008
+              </a>
+              , with Steve Green and Elaine Pearson) through the
+              PhD-era Carnforth-Java
               implementation, into the runtime-testing branch that
               Carnforth inhabits:
             </p>

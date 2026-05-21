@@ -20,7 +20,11 @@ export default function ParadiseLineage() {
               Paradise is the practical realisation of an idea I parked in
               2010 when I left academia for CNIB. The route from there to
               here passes through real-time systems, Shlaer-Mellor
-              executable UML, the W4A 2008 CISNA Model paper, twenty-five
+              executable UML, the{" "}
+              <a href="https://doi.org/10.1145/1368044.1368052">
+                W4A 2008
+              </a>{" "}
+              CISNA Model paper, twenty-five
               years of practitioner work at CNIB, and a long detour into
               tools that didn&rsquo;t quite reach what the framework
               wanted. ActionLanguage, the intermediate representation (IR) at

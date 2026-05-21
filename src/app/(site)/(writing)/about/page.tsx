@@ -352,7 +352,11 @@ export default function About() {
                 technology in hand-held mobile devices, and over those years grew
                 into formal models of UI adaptation and of user capability. Most
                 of the writing was completed and several peer-reviewed papers
-                published from the work, including the W4A 2008 paper{" "}
+                published from the work, including the{" "}
+                <a href="https://doi.org/10.1145/1368044.1368052">
+                  W4A 2008
+                </a>{" "}
+                paper{" "}
                 <em>The CISNA Model of Accessible Adaptive Hypermedia</em> (with
                 Steve Green and Elaine Pearson). The viva was never taken &mdash;
                 largely because of a family move to Canada, and CNIB and CELA

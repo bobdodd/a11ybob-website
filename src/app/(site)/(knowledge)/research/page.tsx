@@ -37,8 +37,12 @@ export default function Research() {
                 <Link href="/research/cisna-model">
                   <strong>The CISNA Model of Accessible Adaptive Hypermedia</strong>
                 </Link>{" "}
-                — published at W4A 2008 with Steve Green and Elaine
-                Pearson. Five-layer model for adaptive hypermedia
+                — published at{" "}
+                <a href="https://doi.org/10.1145/1368044.1368052">
+                  W4A 2008
+                </a>{" "}
+                with Steve Green and Elaine Pearson. Five-layer
+                model for adaptive hypermedia
                 (Adaptation, Navigation, Semantics, Inventory,
                 External Content). Doctoral Java implementation:
                 Carnforth-Java.

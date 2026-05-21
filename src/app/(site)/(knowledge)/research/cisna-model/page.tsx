@@ -44,7 +44,7 @@ export default function CisnaModel() {
               raw content through to adapted presentation.
             </p>
             <p>
-              The published version (W4A 2008) presents the layered
+              The published version (<a href="https://doi.org/10.1145/1368044.1368052">W4A 2008</a>) presents the layered
               architecture and the formal definitions; the doctoral
               Java implementation (Carnforth-Java) applies the model
               to real interfaces. The Google Maps interface is the

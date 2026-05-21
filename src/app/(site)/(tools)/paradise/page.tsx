@@ -26,8 +26,11 @@ export default function Paradise() {
             <p>
               The intermediate representation (IR) it builds,{" "}
               <strong>ActionLanguage</strong>, descends from doctoral
-              work on adaptive user interfaces — published in the W4A
-              2008 CISNA Model paper, parked when I left academia for
+              work on adaptive user interfaces — published in the{" "}
+              <a href="https://doi.org/10.1145/1368044.1368052">
+                W4A 2008
+              </a>{" "}
+              CISNA Model paper, parked when I left academia for
               CNIB, and finished, fifteen years later, when source-
               level reasoning about JavaScript turned out to be
               exactly the missing piece for honest accessibility
@@ -252,7 +255,11 @@ export default function Paradise() {
             <ul>
               <li>
                 <Link href="/paradise/lineage">Lineage</Link> — the
-                PhD-era work, the W4A 2008 CISNA Model paper, where
+                PhD-era work, the{" "}
+                <a href="https://doi.org/10.1145/1368044.1368052">
+                  W4A 2008
+                </a>{" "}
+                CISNA Model paper, where
                 ActionLanguage came from, and the relationship with
                 autoA11y.
               </li>
@@ -294,7 +301,10 @@ export default function Paradise() {
               </li>
               <li>
                 <Link href="/paradise/cite">Cite</Link> — suggested
-                citation, BibTeX entries for Paradise and the W4A 2008
+                citation, BibTeX entries for Paradise and the{" "}
+                <a href="https://doi.org/10.1145/1368044.1368052">
+                  W4A 2008
+                </a>{" "}
                 paper.
               </li>
               <li>
