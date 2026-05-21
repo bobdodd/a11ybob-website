@@ -425,11 +425,23 @@ export default function Maps() {
           >
             <h2>Universal-design discipline across four user populations</h2>
             <p>
-              Not the usual one or two. The interaction model
-              serves screen-reader users, keyboard users, voice-
-              control users (via Dragon NaturallySpeaking), and
-              touch users &mdash; each with first-class affordances,
-              not a fallback experience.
+              Not the usual one or two. Across the body of work,
+              the interaction model addresses four user
+              populations &mdash; screen-reader users, keyboard
+              users, voice-control users (via Dragon
+              NaturallySpeaking), and touch users &mdash; each
+              with first-class affordances rather than a fallback
+              experience.
+            </p>
+            <p>
+              The concepts below are{" "}
+              <strong>distributed across the demos</strong>: this
+              is the current state-of-play of the accessible-maps
+              work as a whole, not a feature list any single demo
+              implements end-to-end. Each demo carries some
+              subset, and each new demo has been the surface on
+              which one or another of these ideas was first
+              expressed in code.
             </p>
             <ul>
               <li>
