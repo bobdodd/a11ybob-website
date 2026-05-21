@@ -205,6 +205,15 @@ export default function Colophon() {
               responsiveness without breakpoints, content-derived sizing,
               logical properties throughout.
             </p>
+            <p>
+              The{" "}
+              <Link href="/styleguide">styleguide</Link>{" "}
+              is the working artefact this design is checked against
+              &mdash; every token, primitive, and state used by the
+              site, rendered live. Not a destination route in the
+              production sense; a reference surface the design system
+              is held accountable to.
+            </p>
           </section>
 
           <section
@@ -528,6 +537,68 @@ export default function Colophon() {
               encounter them in a sensible reading order;
               narrow-viewport users see filters and results in their
               actual priority order without a layout shift.
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
+            <h2>
+              Filter facets are alpha-sorted and case-normalised
+            </h2>
+            <p>
+              Two related decisions about how the filter options
+              themselves are produced.
+            </p>
+            <p>
+              <strong>Alpha-sorted within the top-N by count.</strong>{" "}
+              The default order returned by OpenSearch&rsquo;s{" "}
+              <code>terms</code> aggregation is count-desc. That keeps
+              the biggest buckets first but makes the list hard to scan
+              for a specific value: the reader has to read every label
+              before giving up. The page now takes the top-N facets by
+              count (so the long tail is still excluded) and then
+              alpha-sorts the slice for display. Year facets keep their
+              numeric-desc order — most-recent-first is the right
+              reading order there.
+            </p>
+            <p>
+              <strong>
+                Case-normalised at index time, not at the source.
+              </strong>{" "}
+              The papers in the reviews corpus carry whatever tags the
+              authors wrote: &ldquo;Assistive Technology&rdquo;,
+              &ldquo;assistive technology&rdquo;, and the rare
+              &ldquo;ASSISTIVE TECHNOLOGY&rdquo; all appear in the
+              source. The source data is definitively correct &mdash;
+              that&rsquo;s how the papers were tagged &mdash; so the
+              fix isn&rsquo;t to rewrite it. Instead the OpenSearch
+              keyword fields for{" "}
+              <code>category</code> (glossary), <code>tags</code>{" "}
+              (reviews, articles), and <code>domains</code> (articles)
+              now have a <code>lowercase</code> normaliser. The
+              normaliser applies to indexed values <em>and</em> to the
+              query input of <code>term</code> filters, so case
+              variants collapse into one bucket for aggregation and
+              continue to filter correctly. URL parameters are
+              defensively lowercased in the lib too, so old
+              mixed-case shareable links still match.
+            </p>
+            <p className="muted">
+              <small>
+                Diacritics are not yet folded. &ldquo;Caf&eacute;&rdquo;
+                and &ldquo;cafe&rdquo; would still be two buckets if
+                they appeared. The <code>asciifolding</code> token
+                filter that would merge them is applied to the
+                full-text analyser but not to the taxonomy keywords,
+                because the change is behavioural (it strips
+                diacritics from filter values shown to the reader) and
+                hasn&rsquo;t been needed by the current corpus. If a
+                future ingest brings in tags whose only difference is
+                a diacritic, the normaliser gets <code>asciifolding</code>{" "}
+                added alongside <code>lowercase</code>.
+              </small>
             </p>
           </section>
 
