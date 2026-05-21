@@ -230,16 +230,6 @@ export default function Maps() {
                 visual scanning and blind navigation.
               </li>
               <li>
-                <Link href="/maps/yvr">
-                  <strong>YVR terminal</strong>
-                </Link>{" "}
-                &mdash; interior wayfinding for Vancouver
-                International Airport. The most feature-rich demo:
-                gates, security, washrooms, retail, services. The
-                airport-grade demonstration that the approach
-                scales beyond residential subdivisions.
-              </li>
-              <li>
                 <Link href="/maps/east-toronto-streetmap">
                   <strong>East Toronto streetmap</strong>
                 </Link>{" "}
@@ -250,6 +240,16 @@ export default function Maps() {
                 Landmarks, filters, rotor &mdash; originated here.
                 Rendering is deliberately basic; the contribution
                 is the SVG structure for screen-reader navigation.
+              </li>
+              <li>
+                <Link href="/maps/yvr">
+                  <strong>YVR terminal</strong>
+                </Link>{" "}
+                &mdash; interior wayfinding for Vancouver
+                International Airport. The most feature-rich demo:
+                gates, security, washrooms, retail, services. The
+                airport-grade demonstration that the approach
+                scales beyond residential subdivisions.
               </li>
             </ul>
           </section>
@@ -530,15 +530,15 @@ export default function Maps() {
                 &mdash; simplest demo, polar finding origin.
               </li>
               <li>
-                <Link href="/maps/yvr">YVR terminal</Link>{" "}
-                &mdash; interior wayfinding, airport scale.
-              </li>
-              <li>
                 <Link href="/maps/east-toronto-streetmap">
                   East Toronto streetmap
                 </Link>{" "}
                 &mdash; 2019 origin; introduced the ARIA Landmarks
                 + filters + rotor model the family shares.
+              </li>
+              <li>
+                <Link href="/maps/yvr">YVR terminal</Link>{" "}
+                &mdash; interior wayfinding, airport scale.
               </li>
               <li>
                 <Link href="/research/cisna-model">

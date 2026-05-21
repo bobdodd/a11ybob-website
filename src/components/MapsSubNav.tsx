@@ -12,8 +12,8 @@ import type { CSSProperties } from "react";
 const SUB_PAGES = [
   { href: "/maps", label: "Maps" },
   { href: "/maps/groves", label: "The Groves" },
-  { href: "/maps/yvr", label: "YVR terminal" },
   { href: "/maps/east-toronto-streetmap", label: "East Toronto streetmap" },
+  { href: "/maps/yvr", label: "YVR terminal" },
 ] as const;
 
 export function MapsSubNav() {
