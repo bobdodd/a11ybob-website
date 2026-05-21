@@ -17,7 +17,20 @@ const analysis = {
       filter: ["lowercase", "asciifolding", "english_stop", "english_stemmer"],
     },
   },
+  normalizer: {
+    // Applied to keyword fields holding user-authored taxonomy values
+    // (paper tags, glossary categories, article domains) so that case
+    // variants in the source data ("Assistive Technology" /
+    // "assistive technology") collapse into one bucket for both
+    // aggregation and term filtering.
+    lowercase_keyword: {
+      type: "custom",
+      filter: ["lowercase"],
+    },
+  },
 };
+
+const lowercaseKeyword = { type: "keyword", normalizer: "lowercase_keyword" };
 
 const dateField = {
   type: "date",
@@ -48,7 +61,7 @@ const reviewsMapping = {
     year: { type: "integer" },
     publication: textWithKeyword(256),
     doi: { type: "keyword" },
-    tags: { type: "keyword" },
+    tags: lowercaseKeyword,
     standards_referenced: { type: "keyword" },
     summary: text(),
     key_findings: text(),
@@ -65,7 +78,7 @@ const glossaryMapping = {
     term: textWithKeyword(256),
     aka: text(),
     definition: text(),
-    category: { type: "keyword" },
+    category: lowercaseKeyword,
     related_terms: { type: "keyword" },
     sources: { type: "keyword" },
     created: dateField,
@@ -78,8 +91,8 @@ const articlesMapping = {
   properties: {
     title: textWithKeyword(512),
     slug: { type: "keyword" },
-    tags: { type: "keyword" },
-    domains: { type: "keyword" },
+    tags: lowercaseKeyword,
+    domains: lowercaseKeyword,
     content: text(),
     publishedAt: dateField,
     updatedAt: dateField,

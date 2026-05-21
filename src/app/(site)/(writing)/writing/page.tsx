@@ -148,13 +148,19 @@ export default async function WritingIndex({
                       name: "domain",
                       label: "Domain",
                       active: domain,
-                      options: result.facets.domains,
+                      // Alpha-sort domain facets for display.
+                      options: result.facets.domains.toSorted((a, b) =>
+                        a.value.localeCompare(b.value),
+                      ),
                     },
                     {
                       name: "tag",
                       label: "Tag",
                       active: tag,
-                      options: result.facets.tags.slice(0, 30),
+                      // Take top-30 by count, then alpha-sort for display.
+                      options: result.facets.tags
+                        .slice(0, 30)
+                        .toSorted((a, b) => a.value.localeCompare(b.value)),
                     },
                   ]}
                 />

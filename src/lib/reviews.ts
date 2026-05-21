@@ -67,9 +67,11 @@ export async function searchReviews(
   const perPage = params.perPage ?? DEFAULT_PER_PAGE;
   const from = (page - 1) * perPage;
 
+  // tags is a lowercase-normalised keyword in the index; lowercasing
+  // the URL parameter here keeps old/mixed-case links working.
   const filter = [
     ...(params.year ? [{ term: { year: params.year } }] : []),
-    ...(params.tag ? [{ term: { tags: params.tag } }] : []),
+    ...(params.tag ? [{ term: { tags: params.tag.toLowerCase() } }] : []),
   ];
 
   const fields = [

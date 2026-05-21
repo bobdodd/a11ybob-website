@@ -61,8 +61,12 @@ export async function searchGlossary(
   const perPage = params.perPage ?? DEFAULT_PER_PAGE;
   const from = (page - 1) * perPage;
 
+  // category is a lowercase-normalised keyword in the index; the term
+  // query value must be lowercased to match. OpenSearch applies the
+  // normalizer to the input automatically, but lowercasing here keeps
+  // URL handling robust to mixed-case parameter values from old links.
   const filter = params.category
-    ? [{ term: { category: params.category } }]
+    ? [{ term: { category: params.category.toLowerCase() } }]
     : [];
 
   const fields = ["term^4", "aka^3", "definition^2"];

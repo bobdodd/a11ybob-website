@@ -143,7 +143,10 @@ export default async function Reading({
                       name: "tag",
                       label: "Tag",
                       active: tag,
-                      options: result.facets.tags.slice(0, 25),
+                      // Take top-25 by count, then alpha-sort for display.
+                      options: result.facets.tags
+                        .slice(0, 25)
+                        .toSorted((a, b) => a.value.localeCompare(b.value)),
                     },
                   ]}
                 />

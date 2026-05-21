@@ -124,9 +124,12 @@ export async function searchArticles(
   const perPage = params.perPage ?? DEFAULT_PER_PAGE;
   const from = (page - 1) * perPage;
 
+  // tags and domains are lowercase-normalised keywords in the index;
+  // lowercasing the URL parameters here keeps old/mixed-case links
+  // working.
   const filter = [
-    ...(params.domain ? [{ term: { domains: params.domain } }] : []),
-    ...(params.tag ? [{ term: { tags: params.tag } }] : []),
+    ...(params.domain ? [{ term: { domains: params.domain.toLowerCase() } }] : []),
+    ...(params.tag ? [{ term: { tags: params.tag.toLowerCase() } }] : []),
   ];
 
   /* Three-tier relevance scoring (Solr/Lucene pattern). For a query
