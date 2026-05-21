@@ -117,6 +117,15 @@ export default function Maps() {
               language.
             </p>
             <p>
+              The four products below are CNIB Access Labs
+              partners, recommended case-by-case depending on the
+              environment and the kind of movement the user needs.
+              Each represents a distinct class of
+              navigation-and-wayfinding tool with its own pros and
+              cons; they are not like-for-like alternatives to one
+              another.
+            </p>
+            <p>
               The field map:
             </p>
             <ul>
@@ -148,11 +157,40 @@ export default function Maps() {
                 walking it.
               </li>
               <li>
-                <strong>GoodMaps</strong> and{" "}
-                <strong>Blind Square</strong> &mdash; both invested
-                in step-by-step indoor navigation. Polished, narrow
-                scope. Different problem from accessible
-                cartography.
+                <strong>GoodMaps</strong> &mdash; indoor wayfinding
+                for venues mapped with their LiDAR-based 3D
+                point-cloud technology, deployed at airports
+                (MidAmerica St. Louis), university campuses
+                (York University&rsquo;s Glendon Campus among
+                others), and other commercial venues. Three
+                surfaces: a mobile app for in-venue turn-by-turn
+                with foot-level positioning, a web platform
+                offering interactive 3D venue maps that can be
+                previewed before a visit, and an SDK letting venue
+                partners embed the positioning in their own apps.
+                The map exploration is real but venue-bounded
+                &mdash; the user gets a map of the venue they are
+                entering, not a cognitive model of general space or
+                unmapped places.
+              </li>
+              <li>
+                <strong>BlindSquare</strong> &mdash; positional
+                awareness in real time. As the user moves, the app
+                announces nearby points of interest, intersections,
+                and venue features, letting them build a mental
+                picture of the world immediately around them.
+                Outdoors, the positioning is GPS plus
+                OpenStreetMap and Foursquare data; indoors, it is
+                Apple iBeacons that venues install, each beacon
+                programmed to describe its location (door, service
+                counter, washroom, vestibule). Every Service
+                Canada location in Canada is BlindSquare-enabled,
+                alongside the Yonge &amp; St.&nbsp;Clair
+                neighbourhood deployment in Toronto and other
+                sites. Not turn-by-turn routing; not a pre-built
+                spatial map &mdash; the user assembles the model
+                from in-the-moment announcements about what is
+                right here, right now.
               </li>
             </ul>
             <p>
