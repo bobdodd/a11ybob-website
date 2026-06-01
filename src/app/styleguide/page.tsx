@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import { NewTabLink } from "@/components/NewTabLink";
 
 const scale = [
   ["--s-2", "0.694rem", "small UI / meta"],
@@ -288,6 +289,46 @@ export default function StyleguidePage() {
           <p>
             Toggle each preference in your OS or browser to see the effect
             live.
+          </p>
+        </section>
+
+        {/* ===== Links that open a new window ===== */}
+        <section className="stack">
+          <h2>Links that open a new window</h2>
+          <p>
+            The <code>NewTabLink</code> component is used for any link
+            that opens in a new browser window or tab &mdash; the
+            interactive demo launchers, and any link that should open
+            away from the current page. The &ldquo;(opens in a new
+            window)&rdquo; notice is <em>visible text inside the
+            link</em>, so it is part of the link&rsquo;s accessible
+            name: a screen-reader user tabbing through focusable
+            content hears the warning when the link takes focus,
+            before they activate it (WCAG 3.2.5, technique G201). It
+            sets <code>rel=&ldquo;noopener&rdquo;</code> on the way out.
+          </p>
+          <p>As a button-style launcher (with the <code>pill</code> class):</p>
+          <p>
+            <NewTabLink className="pill" href="/demos/terminal-map/viewer.html">
+              Open the interactive terminal map
+            </NewTabLink>
+          </p>
+          <p>As an inline link in prose:</p>
+          <p>
+            Read the{" "}
+            <NewTabLink href="https://www.w3.org/WAI/WCAG22/Understanding/on-input.html">
+              WCAG 2.2 Understanding On&nbsp;Input
+            </NewTabLink>{" "}
+            document for the reasoning behind the warning.
+          </p>
+          <p className="muted">
+            <small>
+              The label and the notice are each kept as one
+              non-breaking phrase, but the link may wrap{" "}
+              <em>between</em> them, so the appended notice never
+              forces horizontal overflow on a narrow column &mdash;
+              even when the link is also a pill.
+            </small>
           </p>
         </section>
       </div>

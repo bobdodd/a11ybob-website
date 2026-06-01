@@ -327,6 +327,50 @@ export default function Colophon() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
+            <h2>Links that open a new window announce it on the link</h2>
+            <p>
+              A handful of links open in a new browser window rather
+              than navigating in place &mdash; the interactive demos,
+              which take over keyboard, focus, and screen-reader
+              handling and have no site chrome to navigate back
+              through, so they need a window of their own. Every such
+              link carries a visible &ldquo;(opens in a new
+              window)&rdquo; notice, and the notice is{" "}
+              <em>part of the link itself</em>, not a separate line
+              beside it.
+            </p>
+            <p>
+              That placement is the whole point. Because the notice is
+              inside the link, it is part of the link&rsquo;s
+              accessible name &mdash; so a screen-reader user moving
+              through focusable content hears &ldquo;Open the
+              interactive terminal map, opens in a new window,
+              link&rdquo; <em>when the link takes focus, before they
+              activate it</em>. A warning that sits in nearby prose,
+              or only appears after the new window has already opened,
+              arrives too late to be a warning. The earlier draft of
+              this used a visually-hidden notice plus a separate
+              sentence; making it visible and part of the link is both
+              clearer for sighted users and more robust for everyone
+              (WCAG 2.4.4, 3.2.5; technique G201).
+            </p>
+            <p>
+              The mechanics live in one <code>NewTabLink</code>{" "}
+              component so the behaviour can&rsquo;t drift link to
+              link: it sets <code>rel=&ldquo;noopener&rdquo;</code>,
+              appends the notice, and keeps the label and the notice
+              each as one non-breaking phrase while letting the link
+              wrap <em>between</em> them &mdash; so the added words
+              never force horizontal overflow, honouring the{" "}
+              same no-mid-phrase-break rule the link and hyphenation
+              decisions above follow.
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
             <h2>Colour</h2>
             <p>
               Three motivations layered. First, body text on pure white
