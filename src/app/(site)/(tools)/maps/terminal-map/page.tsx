@@ -42,18 +42,28 @@ export default function MapsTerminalMap() {
           >
             <h2>Try the interactive demo</h2>
             <p>
-              <a className="pill" href="/demos/terminal-map/viewer.html">
+              <a
+                className="pill"
+                href="/demos/terminal-map/viewer.html"
+                target="_blank"
+                rel="noopener"
+              >
                 Open the interactive terminal map
+                <span className="visually-hidden">
+                  {" "}
+                  (opens in a new tab)
+                </span>
               </a>
             </p>
             <p className="muted">
               <small>
-                The demo runs here on a11ybob. As with the Groves
-                demo, it takes over keyboard navigation, focus
-                management, and screen-reader announcements once
-                opened, so it lives on its own surface rather than
-                embedded in this page; use the browser&rsquo;s back
-                control to return here.
+                Opens in a new browser tab. The demo runs here on
+                a11ybob, but once opened it takes over keyboard
+                navigation, focus management, and screen-reader
+                announcements, so it needs its own surface rather
+                than this page&rsquo;s &mdash; opening it in a new
+                tab leaves this page intact to return to. Close that
+                tab to come back here.
               </small>
             </p>
           </section>
