@@ -146,8 +146,13 @@ export default function MapsYVR() {
             <h2>Source</h2>
             <p>
               GPL-3.0. Source:{" "}
+              <a href="https://github.com/bobdodd/terminal-map">
+                github.com/bobdodd/terminal-map
+              </a>
+              . The terminal map has its own repository; the other two
+              demos live in{" "}
               <a href="https://github.com/bobdodd/accessible-maps">
-                github.com/bobdodd/accessible-maps
+                accessible-maps
               </a>
               .
             </p>
