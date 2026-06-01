@@ -1,0 +1,34 @@
+/* NewTabLink — a link that opens in a new browser window/tab.
+ *
+ * The "(opens in a new window)" notice is visible text inside the
+ * link, so it is part of the link's accessible name and is announced
+ * when the link takes focus — the warning reaches a screen-reader
+ * user tabbing through focusable content *before* they activate it
+ * (WCAG 3.2.5 / technique G201), not only after the window opens.
+ *
+ * Wrapping: the label and the notice are each kept as one
+ * non-breaking phrase — honouring the global a{white-space:nowrap}
+ * intent that a link phrase never fragments mid-phrase — but the link
+ * as a whole may break *between* the label and the notice, so the
+ * appended notice can never force horizontal overflow on a narrow
+ * column. */
+.new-tab-link {
+  white-space: normal;
+}
+
+.new-tab-link__label,
+.new-tab-link__notice {
+  white-space: nowrap;
+}
+
+/* The notice is supplementary, not de-emphasised by shrinking: it
+ * stays at the label's size (the parentheses do the signalling), so
+ * it never drops below the surrounding text's legibility floor. */
+
+/* When the link also carries .pill (button-style launch), the pill's
+ * own a.pill{white-space:nowrap} rule would win on specificity; this
+ * compound selector lets the pill grow and wrap to fit the notice
+ * rather than overflow. The label/notice spans keep their own nowrap. */
+a.pill.new-tab-link {
+  white-space: normal;
+}

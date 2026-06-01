@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { MapsSubNav } from "@/components/MapsSubNav";
+import { NewTabLink } from "@/components/NewTabLink";
 
 export default function MapsTerminalMap() {
   return (
@@ -42,28 +43,20 @@ export default function MapsTerminalMap() {
           >
             <h2>Try the interactive demo</h2>
             <p>
-              <a
+              <NewTabLink
                 className="pill"
                 href="/demos/terminal-map/viewer.html"
-                target="_blank"
-                rel="noopener"
               >
                 Open the interactive terminal map
-                <span className="visually-hidden">
-                  {" "}
-                  (opens in a new tab)
-                </span>
-              </a>
+              </NewTabLink>
             </p>
             <p className="muted">
               <small>
-                Opens in a new browser tab. The demo runs here on
-                a11ybob, but once opened it takes over keyboard
-                navigation, focus management, and screen-reader
-                announcements, so it needs its own surface rather
-                than this page&rsquo;s &mdash; opening it in a new
-                tab leaves this page intact to return to. Close that
-                tab to come back here.
+                Once opened, the demo takes over keyboard navigation,
+                focus management, and screen-reader announcements, so
+                it runs on its own surface rather than inside this
+                page &mdash; which is why it opens in a new window.
+                Close it to come back here.
               </small>
             </p>
           </section>
