@@ -59,8 +59,8 @@ export default function MapsEastTorontoStreetmap() {
               category fast &mdash; became the family resemblance
               that the three later maps in the lineage share: the
               multi-tile, fully-rendered Toronto streetmap
-              currently in active development, the YVR terminal
-              map, and this east Toronto demo where the model
+              currently in active development, the terminal map,
+              and this east Toronto demo where the model
               originated.
             </p>
           </section>
@@ -163,7 +163,7 @@ export default function MapsEastTorontoStreetmap() {
               active development (the direct architectural
               successor, scaling the single-tile pipeline shown
               here to a full city), the{" "}
-              <Link href="/maps/terminal-map">YVR terminal map</Link>{" "}
+              <Link href="/maps/terminal-map">terminal map</Link>{" "}
               (which carries the same conceptual model into an
               indoor airport surface), and this demo itself, which
               remains live as the architectural reference.

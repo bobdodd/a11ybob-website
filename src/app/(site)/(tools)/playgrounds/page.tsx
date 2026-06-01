@@ -146,8 +146,8 @@ export default function Playgrounds() {
               </p>
               <p>
                 <small className="muted">
-                  The two richer demos (YVR terminal interior
-                  wayfinding and the East Toronto streetmap, where
+                  The two richer demos (the terminal map&rsquo;s
+                  interior wayfinding and the East Toronto streetmap, where
                   the ARIA Landmarks + filters + rotor model first
                   appeared) live at{" "}
                   <Link href="/maps/terminal-map">/maps/terminal-map</Link> and{" "}

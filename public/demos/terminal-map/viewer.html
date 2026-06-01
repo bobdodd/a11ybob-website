@@ -1,0 +1,4510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!--
+    SPDX-License-Identifier: GPL-3.0-or-later
+    Copyright (C) Bob Dodd. Accessible terminal-map viewer.
+    Licensed under the GNU GPL v3.0 or later; see LICENSE.
+    The map geometry it renders is derived from YVR's published
+    terminal maps; see the "Source material and copyright" note in
+    README.md — YVR retains copyright in the underlying cartography.
+  -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YVR Terminal Map Viewer</title>
+  <style>
+    /* ========================================================================
+       YVR Terminal Map — visual styling
+       Design borrows from map.yvr.ca: floating panels over a full-bleed map,
+       navy primary, light shadows, rounded corners. Accessibility patterns
+       (visible focus, semantic landmarks, live regions) preserved.
+       ======================================================================== */
+
+    /* Chrome 129+: lets `height: auto` animate where applicable. Browsers
+       that don't support this property silently ignore it. */
+    :root { interpolate-size: allow-keywords; }
+
+    :root {
+      --c-navy:        #021B41;
+      --c-navy-2:      #0B3B8E;
+      --c-blue:        #2266DD;
+      --c-blue-soft:   #eaf2fb;
+      --c-blue-line:   #c7daf0;
+      --c-text:        #231f20;
+      --c-text-soft:   #555b66;
+      --c-bg:          #f3f4f7;
+      --c-card:        #ffffff;
+      --c-divider:     #e6e8ee;
+      --c-focus:       #fbc509;
+      --c-success:     #00662B;
+      --c-warning:     #9D3800;
+      --c-danger:      #B00000;
+      --shadow-card:   0 6px 24px rgba(8, 17, 46, 0.12);
+      --shadow-soft:   0 2px 8px rgba(0,0,0,0.06);
+      --radius:        10px;
+      --panel-width:   360px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body { height: 100%; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--c-bg);
+      color: var(--c-text);
+      overflow: hidden;
+      /* Force body to be its own stacking context so children with high
+         z-index (skip links) reliably stack above siblings whose own
+         stacking is created by backdrop-filter (.left-panel, etc.). */
+      isolation: isolate;
+    }
+
+    /* ---------- A11y helpers ---------- */
+    .visually-hidden {
+      position: absolute !important;
+      width: 1px; height: 1px;
+      padding: 0; margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .skip-link {
+      position: fixed;
+      top: -100px;            /* hidden off-screen until focused */
+      left: 16px;
+      background: var(--c-navy);
+      color: #fff;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      z-index: 10000;
+      text-decoration: underline;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+      white-space: nowrap;
+    }
+    .skip-link:focus { top: 16px; }
+
+    /* Help modals (native <dialog>) */
+    .help-modal {
+      border: none;
+      border-radius: 12px;
+      padding: 0;
+      width: min(640px, calc(100vw - 32px));
+      max-height: 80dvh;
+      box-shadow: 0 12px 40px rgba(8, 17, 46, 0.35);
+      color: var(--c-text);
+      background: #ffffff;
+    }
+    .help-modal::backdrop {
+      background: rgba(8, 17, 46, 0.45);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+    .help-modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 1rem 1.25rem 0.75rem;
+      border-bottom: 1px solid var(--c-divider);
+      position: sticky;
+      top: 0;
+      background: #ffffff;
+      z-index: 1;
+    }
+    .help-modal-head h2 {
+      font-size: 1.2rem;
+      color: var(--c-navy);
+      font-weight: 700;
+      margin: 0;
+    }
+    .help-modal .modal-close {
+      flex: 0 0 auto;
+      border: 1px solid var(--c-divider);
+      background: #ffffff;
+      color: var(--c-text-soft);
+      width: 32px; height: 32px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1.25rem;
+      line-height: 1;
+    }
+    .help-modal .modal-close:hover {
+      background: var(--c-blue-soft);
+      color: var(--c-navy);
+    }
+    .help-modal-body {
+      padding: 1rem 1.25rem 1.25rem;
+      overflow-y: auto;
+      max-height: calc(80dvh - 4rem);
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+    .help-modal-body p { margin-bottom: 0.75rem; }
+    .help-modal-body ul {
+      padding-left: 1.5rem;
+      margin-bottom: 0.75rem;
+    }
+    .help-modal-body li { margin-bottom: 0.4rem; }
+    /* The universal :focus-visible rule sets position:relative + z-index:2,
+       which would knock the skip link out of fixed positioning and below
+       the panel. Override both to keep it on top when focused. */
+    .skip-link:focus-visible,
+    .skip-link:focus {
+      position: fixed;
+      z-index: 10000;
+    }
+
+    /* Universal focus ring.
+       Two-layer ring: 2 px white inside, 3 px navy outside. Total 5 px.
+       Works on any background:
+       - On light backgrounds the outer navy ring is highly visible (~16:1).
+       - On navy/dark backgrounds the inner white ring is highly visible.
+       Both layers clear WCAG 1.4.11's 3:1 non-text-contrast threshold.
+       position:relative + z-index lifts the focused element above its
+       siblings so the ring isn't covered where it overlaps an adjacent
+       sibling's background (e.g. pressed category chips stacked vertically). */
+    a:focus-visible,
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible,
+    [role="option"]:focus-visible,
+    [tabindex]:focus-visible {
+      outline: none;
+      box-shadow:
+        0 0 0 2px #ffffff,
+        0 0 0 5px var(--c-navy);
+      border-radius: 4px;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* ========================================================================
+       Layout: full-bleed map with floating panels
+       ======================================================================== */
+    .map-stage {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      /* Use dynamic viewport height (dvh) and explicit height instead of
+         `bottom: 0` so the area follows the actual visible viewport on
+         iOS where the URL bar shows/hides — particularly noticeable
+         when rotating to landscape. Falls back to 100vh in old browsers. */
+      height: 100vh;
+      height: calc(100dvh - var(--sheet-height, 0px));
+      overflow: hidden; /* we pan via transform, not scrollbars */
+      background: var(--c-bg);
+      z-index: 1;
+      user-select: none;
+      -webkit-user-select: none;
+      transition: height 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+      /* Disable the browser's default touch-zoom and double-tap-zoom on the
+         map area, so two-finger pinches drive our SVG zoom rather than
+         scaling the whole page. The bottom sheet still scrolls normally. */
+      touch-action: none;
+    }
+    .map-stage:focus-visible { outline: none; }
+
+    .map-wrapper {
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      display: block;
+    }
+    .map-wrapper svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+      will-change: transform; /* keep on its own compositor layer */
+      user-select: none;
+      -webkit-user-select: none;
+      /* With preserveAspectRatio="slice", the SVG fills the container by
+         scaling up so the smaller dimension fits and the other overflows.
+         Default SVG viewport-clipping hides that overflow — so on
+         landscape mobile, panning revealed white space because the
+         clipped content can't be re-exposed by translating the element.
+         overflow:visible disables the SVG's own viewport clip; the
+         .map-wrapper's overflow:hidden still clips to the visible
+         window, and CSS transforms now reveal the formerly-hidden
+         slice overflow. */
+      overflow: visible;
+    }
+    /* Smooth-pan only when triggered programmatically (search select,
+       Find on map, etc.). Not applied during drag, so dragging stays
+       responsive 1:1. */
+    .map-wrapper svg.smooth-pan {
+      transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    /* ---------- Left panel (search, categories, directions) ---------- */
+    .left-panel {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      width: var(--panel-width);
+      max-height: calc(100dvh - 32px);
+      background: rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-card);
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: height 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+                  max-height 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .left-panel-head {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.85rem 1rem 0.6rem;
+      border-bottom: 1px solid var(--c-divider);
+    }
+    .brand-mark {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px; height: 36px;
+      background: var(--c-navy);
+      color: #fff;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 0.04em;
+    }
+    .brand-text h1 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--c-navy);
+      letter-spacing: 0.02em;
+    }
+    .brand-text .brand-sub {
+      font-size: 0.75rem;
+      color: var(--c-text-soft);
+    }
+
+    .left-panel-body {
+      overflow-y: auto;
+      flex: 1 1 auto;
+      min-height: 0;            /* allow flex child to shrink for internal scroll */
+      padding-bottom: 0.5rem;
+    }
+
+    /* ---------- Search form ---------- */
+    .search-form {
+      position: relative;
+      padding: 0.85rem 1rem 0.5rem;
+    }
+    .search-form > label {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      font-size: 0.8rem;
+      color: var(--c-text-soft);
+      font-weight: 500;
+    }
+    .search-input-wrap {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .search-input-wrap > [role="combobox"] {
+      flex: 1 1 auto;
+      position: relative;
+    }
+    .search-input-wrap input[type="search"] {
+      width: 100%;
+      padding: 0.55rem 0.75rem 0.55rem 2.25rem;
+      border: 1px solid var(--c-blue-line);
+      border-radius: 6px;
+      font-size: 0.95rem;
+      background: #ffffff
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="%23021B41" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>')
+        no-repeat 0.55rem center / 18px 18px;
+      color: var(--c-text);
+    }
+    .search-input-wrap input[type="search"]:focus {
+      border-color: var(--c-navy);
+    }
+    .search-input-wrap button[type="submit"] {
+      padding: 0 0.85rem;
+      border: none;
+      border-radius: 6px;
+      background: var(--c-navy);
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+    .search-input-wrap button[type="submit"]:hover { background: var(--c-navy-2); }
+
+    /* Autocomplete listbox — in-flow, so panel grows to fit results */
+    .suggestions {
+      margin: 4px 0 0;
+      background: #ffffff;
+      border: 1px solid var(--c-blue-line);
+      border-radius: 6px;
+      max-height: 320px;
+      overflow-y: auto;
+      list-style: none;
+      box-shadow: var(--shadow-soft);
+    }
+    .suggestions[hidden] { display: none; }
+    .suggestions li {
+      padding: 0.55rem 0.75rem;
+      cursor: pointer;
+      border-bottom: 1px solid var(--c-divider);
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      font-size: 0.9rem;
+    }
+    .suggestions li:last-child { border-bottom: none; }
+    .suggestions li[aria-selected="true"],
+    .suggestions li:hover {
+      background: var(--c-navy);
+      color: #ffffff;
+    }
+    .suggestions .opt-cat {
+      font-size: 0.75rem;
+      color: var(--c-text-soft);
+      margin-left: auto;
+    }
+    .suggestions li[aria-selected="true"] .opt-cat,
+    .suggestions li:hover .opt-cat { color: #d6e3f5; }
+    .suggestions .empty {
+      padding: 0.75rem;
+      color: var(--c-text-soft);
+      font-style: italic;
+    }
+
+    /* ---------- Directions toggle inline button ---------- */
+    .panel-actions {
+      display: flex;
+      gap: 0.5rem;
+      padding: 0.25rem 1rem 0.75rem;
+      border-bottom: 1px solid var(--c-divider);
+    }
+    .directions-toggle {
+      flex: 1 1 auto;
+      padding: 0.55rem 0.75rem;
+      border: 1px solid var(--c-navy);
+      border-radius: 6px;
+      background: #ffffff;
+      color: var(--c-navy);
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+    }
+    .directions-toggle[aria-expanded="true"],
+    .directions-toggle:hover {
+      background: var(--c-navy);
+      color: #ffffff;
+    }
+
+    /* ---------- Collapsible filters/tools section ---------- */
+    .panel-collapse-toggle {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      padding: 0.55rem 1rem;
+      border: none;
+      border-top: 1px solid var(--c-divider);
+      background: #f8f9fc;
+      color: var(--c-navy);
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+    .panel-collapse-toggle:hover { background: var(--c-blue-soft); }
+    .panel-collapse-toggle .pc-chevron {
+      display: inline-block;
+      transition: transform 0.15s ease;
+      font-size: 0.85rem;
+      color: var(--c-text-soft);
+    }
+    .panel-collapse-toggle[aria-expanded="true"] .pc-chevron {
+      transform: rotate(180deg);
+    }
+    .panel-collapsible[hidden] { display: none; }
+
+    /* ---------- Category list ---------- */
+    .category-nav {
+      padding: 0.5rem 0.5rem 0.75rem;
+    }
+    .category-nav .nav-label {
+      display: block;
+      padding: 0.5rem 0.75rem 0.25rem;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--c-text-soft);
+    }
+    .chip {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      width: 100%;
+      padding: 0.55rem 0.75rem;
+      border: none;
+      background: transparent;
+      color: var(--c-text);
+      font-size: 0.95rem;
+      cursor: pointer;
+      border-radius: 6px;
+      text-align: left;
+    }
+    .chip[aria-pressed="true"] {
+      background: var(--c-blue-soft);
+      color: var(--c-navy);
+      font-weight: 600;
+    }
+    .chip[aria-pressed="false"] {
+      color: var(--c-text-soft);
+    }
+    .chip:hover { background: #f4f6fa; }
+    .chip[aria-pressed="true"]:hover { background: #dde7f5; }
+
+    /* Dot reflects on/off state:
+       - On  → solid colour fill (filter is showing this category)
+       - Off → hollow ring of the same colour (category is hidden)
+       Combined with text colour change, on/off is unambiguous. */
+    .chip .chip-dot {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--cat-color, var(--c-navy));
+      border: 2px solid var(--cat-color, var(--c-navy));
+      flex-shrink: 0;
+      display: inline-block;
+      transition: background 0.15s ease;
+    }
+    .chip[aria-pressed="false"] .chip-dot {
+      background: transparent;
+    }
+    /* The "All" chip has no single category colour; render its dot in
+       the panel's primary navy. */
+    .chip[data-cat="__all__"] .chip-dot {
+      background: var(--c-navy);
+      border-color: var(--c-navy);
+    }
+    .chip[data-cat="__all__"][aria-pressed="false"] .chip-dot {
+      background: transparent;
+    }
+
+    /* ---------- Directions panel ---------- */
+    .directions-panel {
+      border-top: 1px solid var(--c-divider);
+      padding: 0.85rem 1rem 1rem;
+      background: transparent;
+      max-height: 2000px;
+      overflow: hidden;
+      opacity: 1;
+      transition: max-height 0.3s ease, opacity 0.25s ease, padding 0.3s ease;
+    }
+    .directions-panel[hidden] {
+      display: block;
+      max-height: 0;
+      opacity: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+    .directions-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.6rem;
+    }
+    .directions-head h2 {
+      font-size: 1rem;
+      color: var(--c-navy);
+      font-weight: 700;
+    }
+    .directions-close {
+      border: 1px solid var(--c-divider);
+      background: #ffffff;
+      color: var(--c-text-soft);
+      width: 28px; height: 28px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      line-height: 1;
+    }
+    .directions-close:hover { background: var(--c-blue-soft); color: var(--c-navy); }
+
+    .directions-fields {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.6rem;
+      margin-bottom: 0.6rem;
+    }
+    .dir-stops { display: contents; }
+    .dir-field {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      font-size: 0.75rem;
+      color: var(--c-text-soft);
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .dir-field input[type="search"] {
+      padding: 0.5rem 0.65rem;
+      border: 1px solid var(--c-blue-line);
+      border-radius: 6px;
+      font-size: 0.95rem;
+      background: #ffffff;
+      color: var(--c-text);
+      font-weight: normal;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+    .dir-field input[type="search"]:focus { border-color: var(--c-navy); }
+
+    .dir-stop-row {
+      display: flex;
+      align-items: stretch;
+      gap: 0.5rem;
+    }
+    .dir-stop-row .dir-field { flex: 1 1 auto; }
+    .dir-stop-row .remove-stop-btn {
+      align-self: flex-end;
+      padding: 0.45rem 0.65rem;
+      border: 1px solid var(--c-danger);
+      background: #ffffff;
+      color: var(--c-danger);
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.8rem;
+    }
+    .dir-stop-row .remove-stop-btn:hover { background: #fbe8e8; }
+
+    .directions-controls {
+      display: flex;
+      gap: 0.4rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .directions-controls .chip {
+      width: auto;
+      padding: 0.45rem 0.7rem;
+      border: 1px solid var(--c-blue-line);
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--c-text-soft);
+    }
+    .directions-controls .chip[aria-pressed="true"] {
+      background: var(--c-navy);
+      color: #ffffff;
+      border-color: var(--c-navy);
+    }
+    .primary-btn {
+      padding: 0.55rem 0.9rem;
+      border: none;
+      border-radius: 6px;
+      background: var(--c-navy);
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    .primary-btn:hover { background: var(--c-navy-2); }
+    .primary-btn:disabled {
+      background: #b8bdc7;
+      cursor: not-allowed;
+    }
+    .secondary-btn {
+      padding: 0.45rem 0.75rem;
+      border: 1px solid var(--c-blue-line);
+      border-radius: 6px;
+      background: #ffffff;
+      color: var(--c-navy);
+      font-weight: 600;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+    .secondary-btn:hover { background: var(--c-blue-soft); }
+
+    .directions-results { margin-top: 0.6rem; font-size: 0.9rem; }
+    .directions-results h3 {
+      font-size: 0.95rem;
+      color: var(--c-navy);
+      margin-bottom: 0.25rem;
+    }
+    .directions-results .summary {
+      font-size: 0.85rem;
+      color: var(--c-text-soft);
+      margin-bottom: 0.5rem;
+    }
+    .directions-results ol {
+      padding-left: 1.5rem;
+      margin: 0.4rem 0 0.6rem;
+    }
+    .directions-results ol li { margin-bottom: 0.25rem; }
+    .directions-results .no-route { color: var(--c-danger); font-weight: 600; }
+
+    /* Lane picker */
+    .segments-list {
+      list-style: none;
+      padding: 0;
+      margin: 0.5rem 0;
+      border: 1px solid var(--c-divider);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .segments-list li { border-bottom: 1px solid var(--c-divider); }
+    .segments-list li:last-child { border-bottom: none; }
+    .segments-list button {
+      width: 100%;
+      text-align: left;
+      padding: 0.5rem 0.75rem;
+      border: none;
+      background: #ffffff;
+      cursor: pointer;
+      font-size: 0.85rem;
+      color: var(--c-text);
+      display: flex;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+    .segments-list button[aria-pressed="true"] {
+      background: var(--c-navy);
+      color: #ffffff;
+    }
+    .segments-list button:hover { background: var(--c-blue-soft); }
+    .segments-list button[aria-pressed="true"]:hover { background: var(--c-navy-2); }
+    .segments-list .seg-distance {
+      font-size: 0.8em;
+      color: var(--c-text-soft);
+      flex-shrink: 0;
+    }
+    .segments-list button[aria-pressed="true"] .seg-distance { color: #d6e3f5; }
+
+    /* Route segments visual states */
+    .map-wrapper svg .route-segment.dim { opacity: 0.25; }
+    .map-wrapper svg .route-segment.highlight { stroke-width: 6; }
+
+    /* En-route mode */
+    .en-route {
+      margin-top: 0.6rem;
+      padding: 0.75rem;
+      background: var(--c-blue-soft);
+      border: 1px solid var(--c-blue-line);
+      border-radius: 6px;
+    }
+    .en-route[hidden] { display: none; }
+    .en-route h3 {
+      font-size: 0.85rem;
+      color: var(--c-navy);
+      margin-bottom: 0.4rem;
+    }
+    .en-route .step-text {
+      font-size: 1.05rem;
+      font-weight: 500;
+      margin-bottom: 0.4rem;
+      color: var(--c-text);
+    }
+    .en-route .step-meta {
+      font-size: 0.8rem;
+      color: var(--c-text-soft);
+      margin-bottom: 0.5rem;
+    }
+    .en-route .step-controls { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+
+    /* ---------- Dev tools (tucked in disclosure) ---------- */
+    .dev-tools-disclosure {
+      border-top: 1px solid var(--c-divider);
+      background: #f8f9fc;
+      font-size: 0.8rem;
+    }
+    .dev-tools-disclosure summary {
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      color: var(--c-text-soft);
+      list-style: none;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-size: 0.7rem;
+    }
+    .dev-tools-disclosure summary::-webkit-details-marker { display: none; }
+    .dev-tools-disclosure summary::before {
+      content: "▸ ";
+      color: var(--c-text-soft);
+    }
+    .dev-tools-disclosure[open] summary::before { content: "▾ "; }
+    .dev-tools {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 0.75rem;
+      padding: 0.5rem 1rem 0.85rem;
+      align-items: center;
+      font-size: 0.8rem;
+    }
+    .dev-tools label {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .dev-tools select,
+    .dev-tools button,
+    .dev-tools input[type="number"] {
+      padding: 0.35rem 0.55rem;
+      border: 1px solid var(--c-blue-line);
+      border-radius: 4px;
+      font-size: 0.8rem;
+      background: #ffffff;
+      color: var(--c-text);
+    }
+    .dev-tools button { cursor: pointer; }
+
+    /* ========================================================================
+       POI section: inline accordion below "Get directions"
+       ======================================================================== */
+    .poi-section {
+      border-top: 1px solid var(--c-divider);
+      border-bottom: 1px solid var(--c-divider);
+      background: transparent;
+    }
+    .poi-section[hidden] { display: none; }
+
+    .poi-section-head {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.35rem 0.5rem 0.35rem 0;
+    }
+    .poi-section-h2 {
+      flex: 1 1 auto;
+      margin: 0;
+      font-size: inherit;
+      font-weight: inherit;
+    }
+    .poi-section-toggle {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      padding: 0.5rem 0.5rem 0.5rem 1rem;
+      border: none;
+      background: transparent;
+      color: var(--c-navy);
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: left;
+    }
+    .poi-section-toggle:hover { background: var(--c-blue-soft); }
+    .poi-section-chevron {
+      display: inline-block;
+      transition: transform 0.15s ease;
+      font-size: 0.9rem;
+      color: var(--c-text-soft);
+    }
+    .poi-section-toggle[aria-expanded="false"] .poi-section-chevron {
+      transform: rotate(-90deg);
+    }
+    .poi-section-head .close-btn {
+      flex: 0 0 auto;
+      border: 1px solid var(--c-divider);
+      background: #ffffff;
+      color: var(--c-text-soft);
+      width: 28px; height: 28px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      line-height: 1;
+      margin-right: 0.4rem;
+    }
+    .poi-section-head .close-btn:hover { background: var(--c-blue-soft); color: var(--c-navy); }
+
+    .poi-section-body {
+      padding: 0.5rem 1rem 1rem;
+      max-height: 1600px;
+      overflow: hidden;
+      opacity: 1;
+      transition: max-height 0.3s ease, opacity 0.25s ease, padding 0.3s ease;
+    }
+    .poi-section-body[hidden] {
+      /* override default display:none so we can animate */
+      display: block;
+      max-height: 0;
+      opacity: 0;
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+
+    .poi-section .cat-badge {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #ffffff;
+      margin-bottom: 0.5rem;
+    }
+    .poi-section .status-pill {
+      display: inline-block;
+      padding: 0.15rem 0.55rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #ffffff;
+      margin-left: 0.4rem;
+    }
+
+    .poi-section dl {
+      margin-top: 0.6rem;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.25rem 0.75rem;
+      font-size: 0.85rem;
+    }
+    .poi-section dt { font-weight: 600; color: var(--c-text-soft); }
+
+    .poi-section .poi-website,
+    .poi-section .poi-phone {
+      margin-top: 0.4rem;
+      font-size: 0.85rem;
+    }
+    .poi-section .poi-website a,
+    .poi-section .poi-phone a {
+      color: var(--c-navy);
+      text-decoration: underline;
+    }
+    .poi-section .poi-tags {
+      margin-top: 0.55rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+    }
+    .poi-section .poi-tag {
+      background: var(--c-blue-soft);
+      color: var(--c-navy);
+      padding: 0.1rem 0.5rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+    }
+    .poi-section .poi-hours {
+      margin-top: 0.4rem;
+      font-size: 0.85rem;
+      color: var(--c-text-soft);
+    }
+    .poi-section .poi-context {
+      margin-top: 0.6rem;
+      font-size: 0.85rem;
+      color: var(--c-text-soft);
+      line-height: 1.4;
+      border-left: 3px solid var(--c-blue-line);
+      padding-left: 0.55rem;
+    }
+    .poi-actions {
+      margin-top: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .poi-actions .secondary-btn {
+      width: 100%;
+      text-align: center;
+    }
+
+    /* ========================================================================
+       Map controls: bottom-right vertical strip + top-right floor pill
+       ======================================================================== */
+    /* Unified control card: dark navy buttons (white icons) on a
+       white card so the controls have visual weight against the map's
+       light apron / building tones. Buttons are 44 × 44 CSS pixels
+       (WCAG 2.5.5 AAA target size). The button border is mid-blue
+       #5a82c4 (luminance ~0.21), which gives ≥3:1 against both the
+       navy button fill and the white apron background. */
+    .map-controls {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(8, 17, 46, 0.25);
+      border-radius: 10px;
+      box-shadow: 0 4px 16px rgba(8, 17, 46, 0.28);
+      padding: 6px;
+      z-index: 30;
+    }
+    .map-controls button {
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      background: var(--c-navy);
+      color: #ffffff;
+      border: 1px solid #5a82c4;
+      border-radius: 6px;
+      /* No per-button box-shadow: the card already has one and a per-button
+         shadow would override the universal :focus-visible focus ring. */
+      cursor: pointer;
+      font-size: 1.05rem;
+      font-weight: 600;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.12s ease, border-color 0.12s ease;
+    }
+    .map-controls button:hover {
+      background: var(--c-blue);     /* noticeably lighter blue */
+      border-color: #ffffff;
+    }
+    .map-controls button:active {
+      background: #102a52;
+      transform: translateY(1px);
+    }
+
+    /* Pan compass: 3×3 grid, empty corners (white card shows through). */
+    .ctl-pad {
+      display: grid;
+      grid-template-columns: repeat(3, 44px);
+      grid-template-rows: repeat(3, 44px);
+      gap: 4px;
+    }
+    .ctl-pad .pad-up    { grid-area: 1 / 2; }
+    .ctl-pad .pad-left  { grid-area: 2 / 1; }
+    .ctl-pad .pad-home  {
+      grid-area: 2 / 2;
+      background: var(--c-blue);
+      border-color: #6da0e6;
+    }
+    .ctl-pad .pad-home:hover {
+      background: #1a55c8;
+      border-color: #95b8ec;
+    }
+    .ctl-pad .pad-right { grid-area: 2 / 3; }
+    .ctl-pad .pad-down  { grid-area: 3 / 2; }
+
+    /* Zoom strip: horizontal row of 3 buttons, matching compass width. */
+    .ctl-zoom {
+      display: grid;
+      grid-template-columns: repeat(3, 44px);
+      gap: 4px;
+    }
+
+    /* Drag cursor on the map stage */
+    .map-stage { cursor: grab; }
+    body.is-dragging .map-stage { cursor: grabbing; }
+    body.edit-pois .map-stage { cursor: default; }
+    .map-stage button,
+    .map-stage [role="button"],
+    .map-stage [tabindex="0"] { cursor: pointer; }
+
+    /* While dragging the map, suppress hover/preview side-effects on
+       markers and gates so we're not rebuilding the panel on every
+       pointermove. The drag itself uses captured pointer events on the
+       stage, which still fire. */
+    body.is-dragging .map-wrapper svg { pointer-events: none; }
+
+    /* Backdrop-filter is GPU-expensive on every map repaint: the panel
+       has to re-blur its background each frame the SVG below moves.
+       Disable it during drag — drop to a near-opaque background instead. */
+    body.is-dragging .left-panel,
+    body.is-dragging .map-controls {
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      background: rgba(255, 255, 255, 0.92);
+    }
+
+    .floor-pill {
+      position: fixed;
+      top: 16px;
+      right: calc(340px + 32px);  /* sits to the left of the POI panel */
+      background: #ffffff;
+      border-radius: 8px;
+      box-shadow: var(--shadow-card);
+      padding: 0.5rem 0.75rem 0.5rem 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--c-text-soft);
+      z-index: 25;
+    }
+    .floor-pill strong {
+      color: var(--c-navy);
+      font-weight: 700;
+    }
+    .floor-pill select {
+      border: none;
+      background: transparent;
+      font-size: 0.85rem;
+      color: var(--c-navy);
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* ========================================================================
+       Footer status row + keyboard hint (compact, low-priority)
+       ======================================================================== */
+    .footer-bar {
+      position: fixed;
+      bottom: 16px;
+      left: 16px;
+      max-width: var(--panel-width);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 15;
+      pointer-events: none;
+    }
+    .footer-bar > * { pointer-events: auto; }
+    .status-line {
+      background: var(--c-card);
+      border: 1px solid var(--c-divider);
+      border-radius: 8px;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.85rem;
+      color: var(--c-text);
+      box-shadow: var(--shadow-soft);
+      min-height: 1.6em;
+    }
+    .status-line:empty { display: none; }
+    .kbd-hint {
+      background: #fffbe6;
+      border: 1px solid #f4e2a4;
+      border-radius: 8px;
+      padding: 0.4rem 0.65rem;
+      font-size: 0.75rem;
+      color: var(--c-text);
+    }
+    .kbd-hint kbd {
+      background: #ffffff;
+      border: 1px solid #c7c7c7;
+      border-radius: 3px;
+      padding: 0 0.3rem;
+      font-family: ui-monospace, monospace;
+      font-size: 0.85em;
+    }
+
+    /* Coord display (developer-only, hidden until enabled) */
+    .coord-display {
+      position: fixed;
+      bottom: 16px;
+      left: calc(var(--panel-width) + 32px);
+      background: rgba(2, 27, 65, 0.85);
+      color: #ffffff;
+      padding: 0.4rem 0.7rem;
+      border-radius: 6px;
+      font-family: ui-monospace, monospace;
+      font-size: 0.75rem;
+      z-index: 12;
+      transition: background 0.2s;
+      display: none;
+    }
+    body.show-coords .coord-display { display: block; }
+
+    /* ========================================================================
+       Map content (POIs, debug, high contrast, edit mode)
+       ======================================================================== */
+    .debug-mode .gate-label {
+      fill: red !important;
+      font-size: 10px !important;
+      font-weight: bold !important;
+    }
+    .debug-mode .gate-label:hover { fill: blue !important; cursor: crosshair; }
+
+    /* Polygon-border visualization: stroke every path in the SVG so the
+       boundaries between polygons are visible. Used for understanding
+       the map's semantic structure (which paths belong to a single
+       physical region) rather than for rendered output. */
+    .show-polygon-borders .map-wrapper svg path {
+      stroke: #ff00ff;
+      stroke-width: 0.15;
+      stroke-opacity: 0.9;
+      vector-effect: non-scaling-stroke;
+    }
+    /* Click-highlighted path during structure inspection */
+    .map-wrapper svg path.struct-highlight {
+      stroke: #00ff00 !important;
+      stroke-width: 0.5 !important;
+      stroke-opacity: 1 !important;
+    }
+    /* When a fill filter is active, dim everything that doesn't match. */
+    .map-wrapper svg path.fill-dimmed {
+      opacity: 0.05;
+    }
+
+    /* Suppress default focus ring on SVG elements; we draw our own focus rect */
+    .map-wrapper svg text:focus,
+    .map-wrapper svg .poi-marker:focus { outline: none; }
+
+    .map-wrapper svg .poi-marker { cursor: pointer; }
+    .map-wrapper svg .poi-marker[hidden] { display: none; }
+    body.edit-pois .map-wrapper svg .poi-marker { cursor: move; }
+    /* The .poi-marker IS the circle now (leaf), so style it directly. */
+    body.edit-pois .map-wrapper svg .poi-marker { stroke: var(--c-focus); stroke-width: 3; }
+
+    .high-contrast .map-wrapper { background: #000; }
+    .high-contrast .map-wrapper svg { filter: invert(1) hue-rotate(180deg); }
+
+    /* Hover/focus tooltip: a sticky pill that sits above the active POI
+       on the map. Stays visible until Esc or a different POI replaces it.
+       Sticky behaviour helps screen-magnifier users pan and zoom to read
+       it. pointer-events: none so it never intercepts marker hover. */
+    .poi-tooltip {
+      position: fixed;
+      max-width: 260px;
+      padding: 0.5rem 0.75rem;
+      background: rgba(255, 255, 255, 0.97);
+      color: var(--c-navy);
+      border: 1px solid var(--c-blue-line);
+      border-radius: 6px;
+      box-shadow: 0 4px 14px rgba(8, 17, 46, 0.22);
+      font-size: 0.95rem;
+      font-weight: 600;
+      line-height: 1.25;
+      z-index: 60;
+      pointer-events: none;
+      transform: translate(-50%, calc(-100% - 10px));
+      white-space: normal;
+    }
+    .poi-tooltip[hidden] { display: none; }
+    .poi-tooltip .poi-tooltip-cat {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      overflow: hidden;
+      margin-top: 0.2rem;
+      font-weight: 400;
+      font-size: 0.8rem;
+      color: var(--c-text-soft);
+    }
+    .poi-tooltip .poi-tooltip-cat:empty { display: none; }
+    /* Tail underneath the bubble */
+    .poi-tooltip::after {
+      content: "";
+      position: absolute;
+      bottom: -7px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0; height: 0;
+      border: 7px solid transparent;
+      border-top-color: rgba(255, 255, 255, 0.97);
+    }
+    body.tooltip-below .poi-tooltip {
+      transform: translate(-50%, calc(0% + 14px));
+    }
+    body.tooltip-below .poi-tooltip::after {
+      bottom: auto;
+      top: -7px;
+      border-top-color: transparent;
+      border-bottom-color: rgba(255, 255, 255, 0.97);
+    }
+
+    /* Active POI / gate highlight: pulsing dark-amber ring around the
+       element currently shown in the detail panel.
+       Stroke #8a3a00 has ~7:1 contrast on white and stays visible on the
+       map's mid-grey/blue regions. The drop-shadow keeps it readable on
+       darker tiles. */
+    .map-wrapper svg .active-highlight {
+      pointer-events: none;
+      fill: none;
+      stroke: #8a3a00;
+      stroke-width: 4;
+      filter: drop-shadow(0 0 5px rgba(255, 200, 80, 0.9));
+      animation: poi-pulse 2.4s ease-in-out infinite;
+    }
+    @keyframes poi-pulse {
+      0%, 100% { stroke-opacity: 1;   stroke-width: 4; }
+      50%      { stroke-opacity: 0.55; stroke-width: 9; }
+    }
+
+    /* Drawn route on the SVG */
+    .map-wrapper svg .route-line {
+      fill: none;
+      stroke: var(--c-navy);
+      stroke-width: 4;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .map-wrapper svg .route-line.accessible {
+      stroke: var(--c-success);
+      stroke-dasharray: 6 4;
+    }
+    .map-wrapper svg .route-endpoint {
+      fill: var(--c-focus);
+      stroke: var(--c-text);
+      stroke-width: 2;
+    }
+
+    /* ========================================================================
+       Responsive: collapse to bottom sheet on narrow viewports
+       ======================================================================== */
+    @media (max-width: 720px) {
+      :root { --panel-width: 100vw; }
+
+      /* Sheet is anchored to the bottom of the viewport. Height is driven
+         by content (auto), capped at 50vh — the body scrolls internally
+         beyond that. The --sheet-height variable is kept in sync via JS
+         (ResizeObserver) so the map stage tracks the actual sheet height. */
+      .left-panel {
+        top: auto;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100vw;
+        height: auto;
+        max-height: 50dvh;
+        border-radius: 16px 16px 0 0;
+        background: rgba(255, 255, 255, 0.96);
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+      }
+
+      /* Floor pill: tighter on mobile */
+      .floor-pill {
+        top: 8px;
+        right: 8px;
+        padding: 0.4rem 0.6rem;
+        font-size: 0.8rem;
+      }
+      .floor-pill select { font-size: 0.8rem; }
+
+      /* Map controls: zoom only (drag pans on touch). Anchor just above
+         the bottom sheet so they always sit inside the visible map area. */
+      .map-controls {
+        bottom: calc(var(--sheet-height, 0px) + 12px);
+        top: auto;
+        right: 12px;
+        transform: none;
+        transition: bottom 0.2s ease;
+      }
+      .ctl-pad { display: none; }
+      .ctl-zoom {
+        grid-template-columns: 44px;
+        grid-template-rows: repeat(3, 44px);
+      }
+
+      .footer-bar { display: none; }
+      .coord-display { display: none !important; }
+
+      /* Touch targets — make sure interactive elements are ≥44px */
+      .chip, .panel-collapse-toggle, .directions-toggle,
+      .secondary-btn, .primary-btn { min-height: 44px; }
+
+      /* Hide kbd hint on touch devices via the footer-bar above */
+    }
+  </style>
+</head>
+<body>
+  <button type="button" id="srHelpBtn" class="skip-link" aria-haspopup="dialog">Help for screen reader users</button>
+  <button type="button" id="kbHelpBtn" class="skip-link" aria-haspopup="dialog">Help for keyboard navigation users</button>
+  <a href="#map-controls-skip-target" class="skip-link">Skip to map controls</a>
+  <div id="pierSkipLinks"></div>
+
+  <dialog id="srHelpModal" class="help-modal" aria-labelledby="srHelpHeading">
+    <div class="help-modal-head">
+      <h2 id="srHelpHeading">Help for screen reader users</h2>
+      <button type="button" class="modal-close" aria-label="Close help">&times;</button>
+    </div>
+    <div class="help-modal-body">
+      <p><strong>Placeholder content.</strong> Replace with real guidance.</p>
+      <ul>
+        <li>This is dummy text for screen-reader-specific advice.</li>
+        <li>Use the rotor to find landmarks: Search, Pier A through E, Map controls.</li>
+        <li>Each pier landmark contains its gates and the points of interest closest to those gates.</li>
+        <li>Selecting a search result opens the details panel and announces the result.</li>
+      </ul>
+      <p>This is placeholder dialog content — content to be written in the next step.</p>
+    </div>
+  </dialog>
+
+  <dialog id="kbHelpModal" class="help-modal" aria-labelledby="kbHelpHeading">
+    <div class="help-modal-head">
+      <h2 id="kbHelpHeading">Help for keyboard navigation users</h2>
+      <button type="button" class="modal-close" aria-label="Close help">&times;</button>
+    </div>
+    <div class="help-modal-body">
+      <p><strong>Placeholder content.</strong> Replace with real guidance.</p>
+      <ul>
+        <li>This is dummy text for keyboard-specific advice.</li>
+        <li>Tab cycles through search → categories → directions → POIs → map controls.</li>
+        <li>Arrow keys pan the map when nothing else is focused.</li>
+        <li>+ and − zoom in and out, 0 resets zoom.</li>
+        <li>Esc closes the open tooltip, then the open panel.</li>
+      </ul>
+      <p>This is placeholder dialog content — content to be written in the next step.</p>
+    </div>
+  </dialog>
+
+  <header class="left-panel" role="banner">
+    <div class="left-panel-head">
+      <span class="brand-mark" aria-hidden="true">YVR</span>
+      <div class="brand-text">
+        <h1>YVR Map</h1>
+        <span class="brand-sub">Vancouver International Airport</span>
+      </div>
+    </div>
+
+    <div class="left-panel-body">
+      <search aria-label="Find places on the map">
+      <form class="search-form" id="searchForm" autocomplete="off">
+        <label for="poi-search">
+          <span>Search the map</span>
+          <span class="search-input-wrap">
+            <span role="combobox"
+                  aria-expanded="false"
+                  aria-owns="poi-suggestions"
+                  aria-haspopup="listbox">
+              <input type="search"
+                     id="poi-search"
+                     name="q"
+                     aria-controls="poi-suggestions"
+                     aria-autocomplete="list"
+                     aria-activedescendant=""
+                     placeholder="Search gates, shops, dining…">
+            </span>
+            <button type="submit">Go<span class="visually-hidden"> and search the map</span></button>
+          </span>
+        </label>
+        <ul id="poi-suggestions"
+            class="suggestions"
+            role="listbox"
+            aria-label="Search suggestions"
+            hidden></ul>
+      </form>
+      </search>
+
+      <div class="panel-actions">
+        <button type="button"
+                id="directionsToggle"
+                class="directions-toggle"
+                aria-expanded="false"
+                aria-controls="directionsPanel">
+          ⬥ Get directions
+        </button>
+      </div>
+
+      <section id="poiPanel" class="poi-section" aria-labelledby="poiPanelTitle" hidden>
+        <div class="poi-section-head">
+          <h2 class="poi-section-h2">
+            <button type="button"
+                    id="poiPanelToggle"
+                    class="poi-section-toggle"
+                    aria-expanded="true"
+                    aria-controls="poiPanelBody">
+              <span id="poiPanelTitle">Details</span>
+              <span class="visually-hidden"> details</span>
+              <span class="poi-section-chevron" aria-hidden="true">▾</span>
+            </button>
+          </h2>
+          <button type="button" class="close-btn" id="poiPanelClose" aria-label="Close details panel">&times;</button>
+        </div>
+        <div id="poiPanelBody" class="poi-section-body">
+          <span class="cat-badge" id="poiPanelBadge"></span>
+          <p id="poiPanelDescription"></p>
+          <dl id="poiPanelMeta"></dl>
+          <div class="poi-actions">
+            <button type="button" id="poiFindOnMap"   class="secondary-btn">Find on map</button>
+            <button type="button" id="poiDirFromHere" class="secondary-btn">Directions from here</button>
+            <button type="button" id="poiDirToHere"   class="secondary-btn">Directions to here</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="directionsPanel" class="directions-panel" aria-labelledby="directionsHeading" hidden inert>
+    <div class="directions-head">
+      <h2 id="directionsHeading">Directions</h2>
+      <button type="button" id="directionsClose" class="directions-close" aria-label="Close directions">&times;</button>
+    </div>
+    <form id="directionsForm" class="directions-form" autocomplete="off">
+      <div class="directions-fields">
+        <label for="dir-from-input" class="dir-field">
+          <span>From</span>
+          <span role="combobox"
+                aria-expanded="false"
+                aria-owns="dir-from-suggestions"
+                aria-haspopup="listbox"
+                style="display:contents;">
+            <input type="search"
+                   id="dir-from-input"
+                   aria-controls="dir-from-suggestions"
+                   aria-autocomplete="list"
+                   aria-activedescendant=""
+                   placeholder="Choose a starting point">
+          </span>
+          <ul id="dir-from-suggestions"
+              class="suggestions"
+              role="listbox"
+              aria-label="From suggestions"
+              hidden></ul>
+        </label>
+
+        <div id="dir-stops" class="dir-stops" aria-live="polite" aria-atomic="false"></div>
+
+        <label for="dir-to-input" class="dir-field">
+          <span>To</span>
+          <span role="combobox"
+                aria-expanded="false"
+                aria-owns="dir-to-suggestions"
+                aria-haspopup="listbox"
+                style="display:contents;">
+            <input type="search"
+                   id="dir-to-input"
+                   aria-controls="dir-to-suggestions"
+                   aria-autocomplete="list"
+                   aria-activedescendant=""
+                   placeholder="Choose a destination">
+          </span>
+          <ul id="dir-to-suggestions"
+              class="suggestions"
+              role="listbox"
+              aria-label="To suggestions"
+              hidden></ul>
+        </label>
+      </div>
+
+      <div class="directions-controls">
+        <button type="button" id="reverseDirectionsBtn" class="secondary-btn" aria-label="Swap From and To locations">⇅ Swap</button>
+        <button type="button" id="addStopBtn"          class="secondary-btn">+ Add stop<span class="visually-hidden"> to route</span></button>
+        <button type="button"
+                id="accessibleRouteToggle"
+                class="chip"
+                aria-pressed="false">
+          Accessible route<span class="visually-hidden"> preference</span>
+        </button>
+        <button type="submit" class="primary-btn">Get directions</button>
+        <button type="button" id="clearDirectionsBtn" class="secondary-btn">Clear<span class="visually-hidden"> directions</span></button>
+      </div>
+    </form>
+
+    <div id="directionsResults" class="directions-results" aria-live="polite" aria-atomic="false"></div>
+
+    <div id="enRoute" class="en-route" hidden aria-labelledby="enRouteHeading">
+      <h3 id="enRouteHeading" tabindex="-1">Step <span id="erCurrent">1</span> of <span id="erTotal">1</span></h3>
+      <p id="erStepText" class="step-text"></p>
+      <p id="erMeta" class="step-meta"></p>
+      <div class="step-controls">
+        <button type="button" id="erPrevBtn" class="secondary-btn">Previous<span class="visually-hidden"> step</span></button>
+        <button type="button" id="erNextBtn" class="primary-btn">Next<span class="visually-hidden"> step</span></button>
+        <button type="button" id="erEndBtn"  class="secondary-btn">End<span class="visually-hidden"> step-by-step</span> navigation</button>
+      </div>
+    </div>
+  </section>
+
+      <button type="button"
+              id="panelCollapseToggle"
+              class="panel-collapse-toggle"
+              aria-expanded="false"
+              aria-controls="panelCollapsible">
+        <span class="pc-label">Show map filters &amp; tools</span>
+        <span class="pc-chevron" aria-hidden="true">▾</span>
+      </button>
+
+      <div id="panelCollapsible" class="panel-collapsible" hidden>
+        <nav class="category-nav" aria-label="Filter map by category">
+          <span class="nav-label" id="cat-label">Show on map</span>
+        </nav>
+
+        <details class="dev-tools-disclosure">
+          <summary>Developer tools</summary>
+          <div class="dev-tools" aria-label="Developer tools">
+            <label>
+              <input type="checkbox" id="debugMode"> Debug Mode
+            </label>
+            <label>
+              <input type="checkbox" id="highContrast"> High Contrast
+            </label>
+            <label>
+              Gate #:
+              <input type="number" id="gateNumber" style="width: 60px;" placeholder="40">
+            </label>
+            <button id="reloadBtn" type="button">Reload<span class="visually-hidden"> map SVG</span></button>
+            <label>
+              <input type="checkbox" id="editPoisMode"> Edit POIs (drag)
+            </label>
+            <button id="dumpPoisBtn" type="button">Copy POI JSON</button>
+            <label>
+              <input type="checkbox" id="showCoordDisplay"> Show coord display
+            </label>
+            <label>
+              <input type="checkbox" id="showPolygonBorders"> Show polygon borders
+            </label>
+            <label>
+              Filter fill:
+              <select id="fillFilter" style="width: 120px;">
+                <option value="">— all —</option>
+              </select>
+            </label>
+          </div>
+        </details>
+      </div>
+
+    </div><!-- /.left-panel-body -->
+  </header><!-- /.left-panel -->
+
+  <main class="map-stage" id="map-region" tabindex="-1">
+    <div class="map-wrapper" id="mapWrapper">
+      <p>Loading map...</p>
+    </div>
+    <!-- Visually-hidden HTML landmarks for screen readers. SVG-internal
+         landmarks (role="region" on <g>) aren't reliably surfaced by
+         VoiceOver, so we mirror them as HTML <nav> elements here. Each
+         nav uses aria-owns to "own" its pier's gate <text> elements
+         from the SVG without moving them. -->
+    <div id="pierLandmarks" class="visually-hidden" aria-hidden="false"></div>
+  </main>
+
+  <div class="floor-pill" aria-label="Map level">
+    <strong>YVR</strong>
+    <label class="visually-hidden" for="mapSelect">Map level</label>
+    <select id="mapSelect">
+      <option value="assets/final/level3-departures.svg">Level 3 — Departures</option>
+    </select>
+  </div>
+
+  <div id="poiTooltip" class="poi-tooltip" role="tooltip" hidden>
+    <span class="poi-tooltip-title"></span>
+    <span class="poi-tooltip-cat"></span>
+  </div>
+
+  <div class="map-controls" id="map-controls-skip-target" tabindex="-1"
+       role="region" aria-label="Map controls">
+    <div class="ctl-pad" role="group" aria-label="Pan map">
+      <button id="panUp"        type="button" class="pad-up"    aria-label="Pan up">↑</button>
+      <button id="panLeft"      type="button" class="pad-left"  aria-label="Pan left">←</button>
+      <button id="resetMapBtn"  type="button" class="pad-home"  aria-label="Reset map: clear route, panels, zoom and pan">⌂</button>
+      <button id="panRight"     type="button" class="pad-right" aria-label="Pan right">→</button>
+      <button id="panDown"      type="button" class="pad-down"  aria-label="Pan down">↓</button>
+    </div>
+    <div class="ctl-zoom" role="group" aria-label="Zoom map">
+      <button id="zoomIn"    type="button" aria-label="Zoom in">+</button>
+      <button id="zoomOut"   type="button" aria-label="Zoom out">−</button>
+      <button id="zoomReset" type="button" aria-label="Reset zoom">⟲</button>
+    </div>
+  </div>
+
+  <div class="footer-bar" aria-hidden="false">
+    <p class="kbd-hint">
+      <strong>Keyboard:</strong>
+      <kbd>Tab</kbd> through gates &amp; POIs · <kbd>Enter</kbd>/<kbd>Space</kbd> to open · <kbd>Esc</kbd> to close · <kbd>+</kbd>/<kbd>-</kbd>/<kbd>0</kbd> to zoom
+    </p>
+    <div class="status-line" id="statusLine" role="status" aria-live="polite" aria-atomic="true"></div>
+  </div>
+
+  <div class="coord-display" id="coordDisplay">x: 0, y: 0</div>
+
+  <script>
+    // ===========================================================================
+    // POI dataset
+    // SVG viewBox is "0 0 792 612". Coordinates are best-effort representative
+    // points across plausible terminal areas; this is a demo dataset.
+    // ===========================================================================
+    const CATEGORIES = {
+      eat:        { label: 'Dine',                color: '#00558A', icon: '\u{1F374}' }, // fork & knife
+      shop:       { label: 'Shop',                color: '#719BBE', icon: '\u{1F6CD}' }, // shopping bag
+      services:   { label: 'Services & Lounges',  color: '#2E5C99', icon: '\u{1F6CB}' }, // couch
+      airlines:   { label: 'Airlines',            color: '#021B41', icon: '\u{2708}'  }, // airplane
+      security:   { label: 'Security Checkpoint', color: '#CE210F', icon: '\u{1F46E}' }, // officer
+      washroom:   { label: 'Washrooms',           color: '#90993D', icon: '\u{1F6BB}' }, // restroom
+      info:       { label: 'Information',         color: '#005B94', icon: 'i'        },
+      water:      { label: 'Water Refill',        color: '#2266DD', icon: '\u{1F4A7}' }, // droplet
+      gate:       { label: 'Gate numbers',        color: '#282561', icon: 'G'        },
+    };
+
+    // ---------- Hand-authored sample routes ----------
+    // Only specific (a,b) pairs are routable; reverses are auto-derived.
+    const ROUTES = [
+      {
+        a: 'p21', b: 'p14',
+        waypoints: [{x:191,y:409},{x:290,y:409},{x:290,y:378}],
+        distance: 'about 100 metres',
+        aToB: [
+          'Start at the Information Desk.',
+          'Walk east along the main check-in concourse for about 100 metres.',
+          'Turn right toward Domestic Security Screening.',
+          'Arrive at Domestic Security Screening.',
+        ],
+      },
+      {
+        a: 'p12', b: 'p14',
+        waypoints: [{x:216.5,y:390.6},{x:290,y:390.6},{x:290.4,y:377.7}],
+        distance: 'about 75 metres',
+        aToB: [
+          'Start at WestJet Check-in.',
+          'Head east along the check-in concourse.',
+          'The Domestic Security Screening entrance is on your right.',
+          'Arrive at Domestic Security Screening.',
+        ],
+      },
+      {
+        a: 'p11', b: 'p15',
+        waypoints: [{x:425.4,y:397.5},{x:471.2,y:397.5},{x:471.2,y:377.7}],
+        distance: 'about 50 metres',
+        aToB: [
+          'Start at Air Canada Check-in.',
+          'Walk east a short distance along the check-in concourse.',
+          'Turn left toward International Security.',
+          'Arrive at International Security.',
+        ],
+      },
+      {
+        a: 'p15', b: 'p9',
+        waypoints: [{x:471.2,y:377.7},{x:471.2,y:443.4},{x:496.7,y:443.4}],
+        distance: 'about 90 metres',
+        aToB: [
+          'Start at International Security.',
+          'After clearing security, follow the concourse south.',
+          'The Plaza Premium Lounge is on your right.',
+          'Arrive at Plaza Premium Lounge.',
+        ],
+      },
+      {
+        a: 'p14', b: 'p1',
+        waypoints: [{x:290.4,y:377.7},{x:246,y:377.7},{x:246,y:407.1}],
+        distance: 'about 60 metres',
+        aToB: [
+          'Start at Domestic Security Screening.',
+          'After clearing security, head west.',
+          'Tim Hortons is on your left.',
+          'Arrive at Tim Hortons.',
+        ],
+      },
+    ];
+
+    const POIS = [
+      { id: "p1",  name: "Tim Hortons",                 category: "eat",      x: 246,   y: 407.1, description: "Coffee, donuts and quick breakfast.",
+        hours: "05:00 – 22:00 daily", website: "https://timhortons.ca", phone: "+1 604 555 0100", tags: ["Wi-Fi", "Cashless", "Quick service"] },
+      { id: "p2",  name: "Vera’s Burger Shack",         category: "eat",      x: 246.9, y: 349.8, description: "West Coast burgers near Pier B.",
+        hours: "06:00 – 23:00 daily", website: "https://verasburgershack.com", phone: "+1 604 555 0102", tags: ["Halal options", "Vegetarian"] },
+      { id: "p3",  name: "Pacific Coast Coffee",        category: "eat",      x: 535.4, y: 291.7, description: "Espresso, pastries, light meals.",
+        hours: "05:30 – 22:00 daily", website: null, phone: "+1 604 555 0103", tags: ["Wi-Fi", "Power outlets"] },
+      { id: "p4",  name: "Globe@YVR Restaurant",        category: "eat",      x: 604,   y: 359.6, description: "Sit-down dining with terminal views.",
+        hours: "11:00 – 22:00 daily", website: "https://globeatyvr.com", phone: "+1 604 555 0104", tags: ["Sit-down", "Bar", "Family-friendly"] },
+      { id: "p5",  name: "Sunglass Hut",                category: "shop",     x: 337.3, y: 383.5, description: "Sunglasses, eyewear accessories.",
+        hours: "06:00 – 22:00 daily", website: "https://sunglasshut.com", phone: "+1 604 555 0105", tags: ["Duty-free eligible"] },
+      { id: "p6",  name: "Hudson News",                 category: "shop",     x: 451,   y: 415.4, description: "News, magazines, snacks, travel essentials.",
+        hours: "Open during airport hours", website: "https://hudsonnews.com", phone: null, tags: ["Snacks", "Travel essentials"] },
+      { id: "p7",  name: "Roots",                       category: "shop",     x: 492.5, y: 252.5, description: "Canadian apparel and gifts.",
+        hours: "07:00 – 21:00 daily", website: "https://roots.com", phone: "+1 604 555 0107", tags: ["Canadian-made", "Gifts"] },
+      { id: "p8",  name: "Aspire Lounge",               category: "services", x: 375.4, y: 390.4, description: "Pay-per-visit airport lounge with refreshments and Wi-Fi.",
+        hours: "05:00 – 23:00 daily", website: "https://executivelounges.com", phone: "+1 604 555 0108", tags: ["Wi-Fi", "Showers", "Bar", "Pay-per-visit"] },
+      { id: "p9",  name: "Plaza Premium Lounge",        category: "services", x: 496.7, y: 443.4, description: "Premium lounge access for eligible travellers.",
+        hours: "05:00 – 24:00 daily", website: "https://plazapremiumlounge.com", phone: "+1 604 555 0109", tags: ["Wi-Fi", "Showers", "Hot food", "Day passes"] },
+      { id: "p10", name: "Spa Utopia",                  category: "services", x: 502.7, y: 292.9, description: "Massage, manicures, relaxation services.",
+        hours: "08:00 – 20:00 daily", website: "https://spautopia.ca", phone: "+1 604 555 0110", tags: ["Massage", "Manicure", "Walk-ins welcome"] },
+      { id: "p11", name: "Air Canada Check-in",         category: "airlines", x: 425.4, y: 397.5, description: "Air Canada check-in counters.",
+        hours: "Per flight schedule", website: "https://aircanada.com", phone: "+1 888 247 2262", tags: ["Bag drop", "Self-service kiosks", "Accessible"] },
+      { id: "p12", name: "WestJet Check-in",            category: "airlines", x: 216.5, y: 390.6, description: "WestJet check-in counters.",
+        hours: "Per flight schedule", website: "https://westjet.com", phone: "+1 888 937 8538", tags: ["Bag drop", "Self-service kiosks"] },
+      { id: "p13", name: "Cathay Pacific Check-in",     category: "airlines", x: 478.7, y: 217.5, description: "Cathay Pacific check-in counters.",
+        hours: "Per flight schedule", website: "https://cathaypacific.com", phone: "+1 800 233 2742", tags: ["International", "Premium counters"] },
+      { id: "p14", name: "Domestic Security Screening", category: "security", x: 290.4, y: 377.7, description: "Security checkpoint for domestic departures.",
+        hours: "04:00 – 23:00 daily", website: null, phone: null, tags: ["CATSA Plus", "Family lane", "Accessible lane"] },
+      { id: "p15", name: "International Security",      category: "security", x: 471.2, y: 377.7, description: "Security checkpoint for international departures.",
+        hours: "04:00 – 24:00 daily", website: null, phone: null, tags: ["CATSA Plus", "Family lane", "Accessible lane"] },
+      { id: "p16", name: "Washroom — Pier A",           category: "washroom", x: 215.8, y: 492.1, description: "Public washrooms near Pier A.",
+        hours: "Open 24 hours", website: null, phone: null, tags: ["Accessible", "Baby change"] },
+      { id: "p17", name: "Washroom — Pier B",           category: "washroom", x: 155,   y: 423.8, description: "Public washrooms near Pier B.",
+        hours: "Open 24 hours", website: null, phone: null, tags: ["Accessible", "Baby change", "All-gender"] },
+      { id: "p18", name: "Washroom — Pier C",           category: "washroom", x: 480,   y: 360,   description: "Public washrooms near Pier C.",
+        hours: "Open 24 hours", website: null, phone: null, tags: ["Accessible", "Baby change"] },
+      { id: "p19", name: "Washroom — Pier D",           category: "washroom", x: 521,   y: 322.7, description: "Public washrooms near Pier D.",
+        hours: "Open 24 hours", website: null, phone: null, tags: ["Accessible", "Baby change", "All-gender"] },
+      { id: "p20", name: "Washroom — Pier E",           category: "washroom", x: 670.6, y: 366,   description: "Public washrooms near Pier E.",
+        hours: "Open 24 hours", website: null, phone: null, tags: ["Accessible", "Baby change"] },
+      { id: "p21", name: "Information Desk",            category: "info",     x: 191,   y: 409,   description: "YVR Customer Care: travel information, lost & found.",
+        hours: "Open 24 hours", website: "https://yvr.ca", phone: "+1 604 207 7077", tags: ["Multilingual", "Lost & found", "Accessible"] },
+      { id: "p22", name: "Accessible Travel Help",      category: "info",     x: 550.2, y: 325.2, description: "Accessibility services: wheelchair assistance, mobility help.",
+        hours: "Open 24 hours", website: "https://yvr.ca/accessibility", phone: "+1 604 207 7077", tags: ["Wheelchair assistance", "Mobility help", "Sign language"] },
+      { id: "p23", name: "Water Bottle Refill — A",     category: "water",    x: 210,   y: 430,   description: "Filtered water bottle refill station.",
+        hours: "Open 24 hours", website: null, phone: null, tags: ["Filtered", "Touchless"] },
+      { id: "p24", name: "Water Bottle Refill — C",     category: "water",    x: 470,   y: 340,   description: "Filtered water bottle refill station.",
+        hours: "Open 24 hours", website: null, phone: null, tags: ["Filtered", "Touchless"] },
+      { id: "p25", name: "Water Bottle Refill — E",     category: "water",    x: 696.3, y: 369.2, description: "Filtered water bottle refill station.",
+        hours: "Open 24 hours", website: null, phone: null, tags: ["Filtered", "Touchless"] },
+    ];
+
+    // ===========================================================================
+    // DOM refs
+    // ===========================================================================
+    const mapWrapper      = document.getElementById('mapWrapper');
+    const mapSelect       = document.getElementById('mapSelect');
+    const debugMode       = document.getElementById('debugMode');
+    const highContrast    = document.getElementById('highContrast');
+    const reloadBtn       = document.getElementById('reloadBtn');
+    const coordDisplay    = document.getElementById('coordDisplay');
+    const zoomIn          = document.getElementById('zoomIn');
+    const zoomOut         = document.getElementById('zoomOut');
+    const zoomReset       = document.getElementById('zoomReset');
+    const searchForm      = document.getElementById('searchForm');
+    const searchInput     = document.getElementById('poi-search');
+    const suggestionsList = document.getElementById('poi-suggestions');
+    const categoryNav     = document.querySelector('.category-nav');
+    const statusLine      = document.getElementById('statusLine');
+    const poiPanel        = document.getElementById('poiPanel');
+    const poiPanelTitle   = document.getElementById('poiPanelTitle');
+    const poiPanelBadge   = document.getElementById('poiPanelBadge');
+    const poiPanelDesc    = document.getElementById('poiPanelDescription');
+    const poiPanelMeta    = document.getElementById('poiPanelMeta');
+    const poiPanelClose   = document.getElementById('poiPanelClose');
+    const poiPanelToggle  = document.getElementById('poiPanelToggle');
+    const poiPanelBody    = document.getElementById('poiPanelBody');
+    const editPoisMode    = document.getElementById('editPoisMode');
+    const dumpPoisBtn     = document.getElementById('dumpPoisBtn');
+    const directionsToggle    = document.getElementById('directionsToggle');
+    const directionsPanel     = document.getElementById('directionsPanel');
+    const directionsClose     = document.getElementById('directionsClose');
+    const directionsForm      = document.getElementById('directionsForm');
+    const dirFromInput        = document.getElementById('dir-from-input');
+    const dirToInput          = document.getElementById('dir-to-input');
+    const dirFromSuggestions  = document.getElementById('dir-from-suggestions');
+    const dirToSuggestions    = document.getElementById('dir-to-suggestions');
+    const dirStopsContainer   = document.getElementById('dir-stops');
+    const accessibleRouteToggle = document.getElementById('accessibleRouteToggle');
+    const reverseDirectionsBtn = document.getElementById('reverseDirectionsBtn');
+    const addStopBtn          = document.getElementById('addStopBtn');
+    const clearDirectionsBtn  = document.getElementById('clearDirectionsBtn');
+    const directionsResults   = document.getElementById('directionsResults');
+    const poiDirFromHere      = document.getElementById('poiDirFromHere');
+    const poiDirToHere        = document.getElementById('poiDirToHere');
+    const poiFindOnMap        = document.getElementById('poiFindOnMap');
+    const resetMapBtn         = document.getElementById('resetMapBtn');
+    const enRoutePanel        = document.getElementById('enRoute');
+    const enRouteHeading      = document.getElementById('enRouteHeading');
+    const erCurrent           = document.getElementById('erCurrent');
+    const erTotal             = document.getElementById('erTotal');
+    const erStepText          = document.getElementById('erStepText');
+    const erMeta              = document.getElementById('erMeta');
+    const erPrevBtn           = document.getElementById('erPrevBtn');
+    const erNextBtn           = document.getElementById('erNextBtn');
+    const erEndBtn            = document.getElementById('erEndBtn');
+
+    const SVG_NS = 'http://www.w3.org/2000/svg';
+
+    let currentZoom = 1.0;
+    let mapPanX = 0;
+    let mapPanY = 0;
+    let svgElement = null;
+    let activeCategories = new Set(Object.keys(CATEGORIES)); // start: all visible
+    let lastFocusedBeforePanel = null;
+    let GATES = []; // populated on map load: [{id:'gate-26', name:'Gate 26', category:'gate', x, y, gate:'26'}]
+
+    // ===========================================================================
+    // Status announcements (also updates visible status line)
+    // ===========================================================================
+    function announce(message) {
+      // Replacing textContent re-fires aria-live="polite"
+      statusLine.textContent = message;
+    }
+
+    // ===========================================================================
+    // Build category chips
+    // ===========================================================================
+    function buildCategoryChips() {
+      // "All" chip first
+      const allChip = document.createElement('button');
+      allChip.type = 'button';
+      allChip.className = 'chip';
+      allChip.dataset.cat = '__all__';
+      allChip.setAttribute('aria-pressed', 'true');
+      allChip.innerHTML = `<span class="chip-dot" aria-hidden="true"></span>All<span class="visually-hidden"> categories filter</span>`;
+      allChip.addEventListener('click', () => toggleCategory('__all__'));
+      categoryNav.appendChild(allChip);
+
+      Object.entries(CATEGORIES).forEach(([key, def]) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'chip';
+        btn.dataset.cat = key;
+        btn.setAttribute('aria-pressed', 'true');
+        btn.style.setProperty('--cat-color', def.color);
+        btn.innerHTML = `<span class="chip-dot" aria-hidden="true"></span>${def.label}<span class="visually-hidden"> filter</span>`;
+        btn.addEventListener('click', () => toggleCategory(key));
+        categoryNav.appendChild(btn);
+      });
+    }
+
+    function toggleCategory(cat) {
+      if (cat === '__all__') {
+        // Toggle: if everything is on, turn everything off; otherwise turn
+        // everything on.
+        const allKeys = Object.keys(CATEGORIES);
+        if (activeCategories.size === allKeys.length) {
+          activeCategories.clear();
+        } else {
+          activeCategories = new Set(allKeys);
+        }
+      } else {
+        if (activeCategories.has(cat)) activeCategories.delete(cat);
+        else activeCategories.add(cat);
+      }
+      updateChipStates();
+      applyCategoryFilter();
+    }
+
+    function updateChipStates() {
+      const chips = categoryNav.querySelectorAll('.chip');
+      const allActive = activeCategories.size === Object.keys(CATEGORIES).length;
+      chips.forEach(chip => {
+        const cat = chip.dataset.cat;
+        if (cat === '__all__') {
+          chip.setAttribute('aria-pressed', allActive ? 'true' : 'false');
+        } else {
+          chip.setAttribute('aria-pressed', activeCategories.has(cat) ? 'true' : 'false');
+        }
+      });
+    }
+
+    function applyCategoryFilter() {
+      if (!svgElement) return;
+
+      // POI markers — toggle the focusable circle AND its decorative icon.
+      // tabindex 0 = in tab order, -1 = filtered out (the rotor will hook
+      // into this same membership mechanism later).
+      let visiblePois = 0;
+      svgElement.querySelectorAll('.poi-marker').forEach(marker => {
+        const cat = marker.dataset.cat;
+        const visible = activeCategories.has(cat);
+        marker.style.display = visible ? '' : 'none';
+        marker.setAttribute('tabindex', visible ? '0' : '-1');
+        if (marker.__icon) marker.__icon.style.display = visible ? '' : 'none';
+        if (visible) visiblePois++;
+      });
+
+      // Gate markers — the focusable transparent circles; toggle each
+      // circle AND its decorative number glyph (hit.__glyph).
+      const gatesOn = activeCategories.has('gate');
+      let visibleGates = 0;
+      svgElement.querySelectorAll('.gate-marker').forEach(hit => {
+        hit.style.display = gatesOn ? '' : 'none';
+        hit.setAttribute('tabindex', gatesOn ? '0' : '-1');
+        if (hit.__glyph) hit.__glyph.style.display = gatesOn ? '' : 'none';
+        if (gatesOn) visibleGates++;
+      });
+
+      announce(
+        `Showing ${visiblePois} of ${POIS.length} points of interest, ` +
+        (gatesOn ? `${visibleGates} gate label${visibleGates === 1 ? '' : 's'} visible.` : 'gate labels hidden.')
+      );
+    }
+
+    // ===========================================================================
+    // Map loading + POI marker injection
+    // ===========================================================================
+    async function loadMap(url) {
+      try {
+        mapWrapper.innerHTML = '<p>Loading...</p>';
+        const response = await fetch(url);
+        const svgText = await response.text();
+        mapWrapper.innerHTML = svgText;
+        svgElement = mapWrapper.querySelector('svg');
+
+        if (svgElement) {
+          // Cover the visible area: scale-and-clip rather than letterboxing.
+          // The user can pan to see content clipped at the edges.
+          svgElement.setAttribute('preserveAspectRatio', 'xMidYMid slice');
+          // Accessible structure — matches the proven OSM-map pattern
+          // (see ~/Documents/Bob/demos/mapping webinar):
+          //   * Focusable map features are LEAF graphics (a gate <text>,
+          //     a POI <circle>) that are DIRECT children of the <svg>.
+          //     Any wrapping <g> ancestor is exposed by Chrome AND
+          //     Firefox as a generic "object" and announced on every
+          //     descendant focus — and ARIA role overrides on SVG
+          //     <g>/<svg> (presentation/none) are simply ignored by both
+          //     engines, so the only fix is to not have group ancestors.
+          //   * The <svg> itself is a clean, NAMED document boundary via
+          //     role="document" + its existing aria-label. Screen
+          //     readers announce it on entry (as the map's name), and a
+          //     leaf graphic inside announces as "<label>, button" with
+          //     no "object" prefix.
+          // Name the SVG as a document boundary, matching the OSM map's
+          // <svg role="document" aria-labelledby=…>. Keep the svg's own
+          // aria-label as the name. Do NOT use role="presentation" here:
+          // Firefox honors it on the <svg> and prunes the subtree from
+          // hit-testing, which kills NVDA's mouse-hover announcements
+          // (Chrome ignores it, so the bug was Firefox-only). It was also
+          // pointless — the "object object" we were chasing was a string
+          // bug ([object Object]) in a gate's aria-label, not these
+          // container roles.
+          svgElement.setAttribute('role', 'document');
+          // Make each gate a focusable leaf circle (no wrapper). Done
+          // BEFORE setupSVGInteraction so its [data-gate] listeners bind.
+          enhanceGates();
+          setupSVGInteraction();
+          // Rasterise BEFORE adding POI markers / route layers so the cached
+          // canvas captures the underlying map only — used later to pick a
+          // contrasting highlight colour for whatever the active POI sits over.
+          rasteriseMap().catch(() => { /* fall back to fixed colour */ });
+          // Order matters: extract gates first so nearestGateTo() works,
+          // then build POI marker elements (detached), then arrange them
+          // interleaved into per-pier groups by proximity. The arrange
+          // step also generates the HTML pier landmarks and skip links.
+          extractGates();
+          injectPOIMarkers();
+          arrangeMapInteractives();
+          applyCategoryFilter();
+          applyZoom();
+        }
+      } catch (error) {
+        mapWrapper.innerHTML = `<p style="color: red;">Error loading map: ${error.message}</p>`;
+      }
+    }
+
+    // Demo flight info — deterministic, generated per gate number.
+    // Gate ranges reflect YVR layout: 1–52 Domestic, 53–75 International, 76–96 USA.
+    const REGIONS = {
+      domestic: {
+        label: 'Domestic',
+        airlines: [
+          ['AC', 'Air Canada'], ['WS', 'WestJet'], ['F8', 'Flair Airlines'],
+          ['PD', 'Porter Airlines'], ['WR', 'WestJet Encore'],
+        ],
+        destinations: [
+          'Toronto (YYZ)', 'Calgary (YYC)', 'Edmonton (YEG)', 'Montreal (YUL)',
+          'Halifax (YHZ)', 'Winnipeg (YWG)', 'Ottawa (YOW)', 'Saskatoon (YXE)',
+          'Victoria (YYJ)', 'Kelowna (YLW)', 'Regina (YQR)', 'Quebec City (YQB)',
+        ],
+      },
+      international: {
+        label: 'International',
+        airlines: [
+          ['AC', 'Air Canada'], ['CX', 'Cathay Pacific'], ['NH', 'ANA'],
+          ['JL', 'JAL'], ['BA', 'British Airways'], ['LH', 'Lufthansa'],
+          ['QF', 'Qantas'], ['KL', 'KLM'], ['KE', 'Korean Air'],
+          ['SQ', 'Singapore Airlines'], ['CI', 'China Airlines'],
+        ],
+        destinations: [
+          'Hong Kong (HKG)', 'Tokyo (NRT)', 'Seoul (ICN)', 'Sydney (SYD)',
+          'London (LHR)', 'Frankfurt (FRA)', 'Mexico City (MEX)',
+          'Amsterdam (AMS)', 'Taipei (TPE)', 'Beijing (PEK)', 'Shanghai (PVG)',
+          'Manila (MNL)', 'Delhi (DEL)', 'Auckland (AKL)',
+        ],
+      },
+      usa: {
+        label: 'USA',
+        airlines: [
+          ['AC', 'Air Canada'], ['WS', 'WestJet'], ['DL', 'Delta'],
+          ['UA', 'United'], ['AA', 'American Airlines'], ['AS', 'Alaska Airlines'],
+          ['B6', 'JetBlue'],
+        ],
+        destinations: [
+          'Los Angeles (LAX)', 'Seattle (SEA)', 'San Francisco (SFO)',
+          'Chicago (ORD)', 'New York (JFK)', 'Las Vegas (LAS)',
+          'Phoenix (PHX)', 'Denver (DEN)', 'Honolulu (HNL)',
+          'Dallas (DFW)', 'Boston (BOS)', 'Portland (PDX)',
+        ],
+      },
+    };
+
+    const STATUSES = [
+      { key: 'on-time',    label: 'On time',     color: '#00662B' },
+      { key: 'boarding',   label: 'Now boarding',color: '#005B94' },
+      { key: 'final-call', label: 'Final call',  color: '#9D3800' },
+      { key: 'delayed',    label: 'Delayed',     color: '#B00000' },
+      { key: 'on-time',    label: 'On time',     color: '#00662B' },
+    ];
+
+    function regionForGate(num) {
+      const n = parseInt(num, 10);
+      if (n <= 52) return 'domestic';
+      if (n <= 75) return 'international';
+      return 'usa';
+    }
+
+    function pierForGate(num) {
+      const n = parseInt(num, 10);
+      if (n <= 12) return 'A';
+      if (n <= 28) return 'B';
+      if (n <= 44) return 'C';
+      if (n <= 69) return 'D';
+      return 'E';
+    }
+
+    // ---------- Spatial context helpers ----------
+    function manhattanDist(a, b) {
+      return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+    }
+    function cardinalDirection(from, to) {
+      const dx = to.x - from.x;
+      const dy = to.y - from.y; // SVG y grows downward = south
+      const ax = Math.abs(dx), ay = Math.abs(dy);
+      if (ax < 5 && ay < 5) return 'right next to';
+      if (ax > ay * 2) return dx > 0 ? 'east' : 'west';
+      if (ay > ax * 2) return dy > 0 ? 'south' : 'north';
+      if (dx > 0 && dy > 0) return 'south-east';
+      if (dx > 0 && dy < 0) return 'north-east';
+      if (dx < 0 && dy > 0) return 'south-west';
+      return 'north-west';
+    }
+    function roundedMetres(d) {
+      // Round to nearest 5 m, with a minimum of 5
+      return Math.max(5, Math.round(d / 5) * 5);
+    }
+    function nearestGateTo(item) {
+      let best = null, bestD = Infinity;
+      for (const g of GATES) {
+        if (item.isGate && g.gate === item.gate) continue;
+        const d = manhattanDist(item, g);
+        if (d < bestD) { bestD = d; best = g; }
+      }
+      return best ? { gate: best, distance: bestD } : null;
+    }
+    function nearbyPOIs(item, limit = 3) {
+      return POIS
+        .filter(p => p.id !== item.id)
+        .map(p => ({ poi: p, distance: manhattanDist(item, p) }))
+        .sort((a, b) => a.distance - b.distance)
+        .slice(0, limit);
+    }
+    function adjacentGates(gate) {
+      const n = parseInt(gate.gate, 10);
+      const out = [];
+      for (const g of GATES) {
+        const m = parseInt(g.gate, 10);
+        if (g.gate !== gate.gate && Math.abs(m - n) <= 2 && pierForGate(m) === gate.pier) {
+          out.push(g);
+        }
+      }
+      out.sort((a, b) => parseInt(a.gate, 10) - parseInt(b.gate, 10));
+      return out;
+    }
+    function regionLabelForRegion(key) {
+      return (REGIONS[key] && REGIONS[key].label) || '';
+    }
+    function describeArea(item) {
+      // Returns a short prose phrase for where this item sits.
+      if (item.isGate) {
+        return `Pier ${item.pier}, ${item.regionLabel} concourse`;
+      }
+      const ng = nearestGateTo(item);
+      if (!ng) return '';
+      const region = regionLabelForRegion(regionForGate(ng.gate.gate));
+      return `near Pier ${ng.gate.pier}, ${region} concourse`;
+    }
+    function describeNearby(item) {
+      // Build a screen-reader-friendly prose listing of nearby POIs.
+      const items = nearbyPOIs(item, 3);
+      if (items.length === 0) return '';
+      const parts = items.map(({ poi, distance }) => {
+        const dir = cardinalDirection(item, poi);
+        const m = roundedMetres(distance);
+        if (dir === 'right next to') return `${poi.name} right beside it`;
+        return `${poi.name} about ${m} metres ${dir}`;
+      });
+      return parts.join('; ') + '.';
+    }
+
+    function gateMockInfo(num) {
+      const n = parseInt(num, 10) || 0;
+      const regionKey = regionForGate(num);
+      const region = REGIONS[regionKey];
+      const [code, airline] = region.airlines[n % region.airlines.length];
+      const flightNum = 100 + (n * 13) % 900;
+      const destination = region.destinations[(n * 7) % region.destinations.length];
+      const status = STATUSES[n % STATUSES.length];
+      const hour = 5 + (n * 3) % 18;
+      const minute = (n * 17) % 60;
+      const time = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+      return {
+        flight: `${code}${flightNum}`,
+        airline,
+        destination,
+        time,
+        status,
+        region: regionKey,
+        regionLabel: region.label,
+      };
+    }
+
+    // Order gates and POIs as a FLAT list of leaf elements directly under
+    // the <svg>, interleaving each POI after its nearest gate. The DOM
+    // order is:  pierA gate1, [poi(s) near gate1], gate2, …, pierB …
+    // which becomes both the Tab order and the screen-reader reading
+    // order (no positive tabindex needed). Also generates per-pier skip
+    // links. No wrapper <g> is created — wrapping groups would be
+    // announced as "object" by Chrome/Firefox on every descendant focus.
+    function arrangeMapInteractives() {
+      if (!svgElement) return;
+
+      // 1. Gather gate <text> elements grouped by pier
+      const piers = { A: [], B: [], C: [], D: [], E: [] };
+      svgElement.querySelectorAll('[data-gate]').forEach(el => {
+        const pier = pierForGate(el.dataset.gate);
+        if (piers[pier]) piers[pier].push(el);
+        if (!el.id) el.id = `gate-svg-${el.dataset.gate}`;
+      });
+
+      // 2. Bucket POIs by their nearest gate (and remember which gate)
+      const poisByPierAndGate = { A: {}, B: {}, C: {}, D: {}, E: {} };
+      POIS.forEach(poi => {
+        const ng = nearestGateTo(poi);
+        if (!ng || !ng.gate) return;
+        const pier = ng.gate.pier;
+        const gnum = ng.gate.gate;
+        if (!poisByPierAndGate[pier]) return;
+        if (!poisByPierAndGate[pier][gnum]) poisByPierAndGate[pier][gnum] = [];
+        poisByPierAndGate[pier][gnum].push(poi);
+      });
+
+      // 3. Per pier, append gates and their nearby POIs DIRECTLY to the
+      //    <svg> (flat — no wrapper group) in interleaved order. DOM
+      //    order is the Tab order and the screen-reader reading order;
+      //    membership in the tab order is toggled per element via
+      //    tabindex in applyCategoryFilter (and, later, the rotor).
+      //    Each POI contributes two leaf siblings: its focusable <circle>
+      //    and its decorative icon <text> (circle.__icon).
+      const navHost  = document.getElementById('pierLandmarks');
+      const skipHost = document.getElementById('pierSkipLinks');
+      if (navHost)  navHost.innerHTML  = '';
+      if (skipHost) skipHost.innerHTML = '';
+
+      for (const p of ['A', 'B', 'C', 'D', 'E']) {
+        const gateList = piers[p].slice();
+        if (!gateList.length) continue;
+        gateList.sort((a, b) => parseInt(a.dataset.gate, 10) - parseInt(b.dataset.gate, 10));
+
+        gateList.forEach(gateEl => {
+          svgElement.appendChild(gateEl);
+          const poisHere = poisByPierAndGate[p][gateEl.dataset.gate] || [];
+          poisHere.forEach(poi => {
+            const m = poiMarkerElements[poi.id];
+            if (m) {
+              svgElement.appendChild(m);
+              if (m.__icon) svgElement.appendChild(m.__icon);
+            }
+          });
+        });
+
+        const lo = gateList[0].dataset.gate;
+        const hi = gateList[gateList.length - 1].dataset.gate;
+        if (skipHost) {
+          const a = document.createElement('a');
+          a.href = `#${gateList[0].id}`;
+          a.className = 'skip-link';
+          a.textContent = `Skip to Pier ${p} gates ${lo}–${hi}`;
+          skipHost.appendChild(a);
+        }
+      }
+
+      // 4. Catch-all: any POI whose nearest gate isn't in a pier still
+      //    gets appended (circle + icon) so it remains focusable.
+      Object.values(poiMarkerElements).forEach(m => {
+        if (!m.parentNode) {
+          svgElement.appendChild(m);
+          if (m.__icon && !m.__icon.parentNode) svgElement.appendChild(m.__icon);
+        }
+      });
+    }
+
+    // Make each gate <text data-gate> a focusable LEAF button.
+    //
+    // The focusable element is the <text> itself — NOT a wrapping <g> —
+    // so a screen reader announces "<label>, button" with no generic
+    // "object" ancestor (Chrome/Firefox expose every SVG <g> ancestor of
+    // a focused node as "object", and ARIA role overrides on SVG <g> are
+    // ignored, so the only reliable cure is to have no group ancestor).
+    // The <text> already carries .gate-label-visible styling
+    // (pointer-events:all, cursor:pointer, :hover/:focus) from the SVG's
+    // own <style>, so it's interactive as-is; we just add the button
+    // semantics. arrangeMapInteractives then relocates these texts to be
+    // DIRECT children of the <svg> in pier/gate order, and
+    // applyCategoryFilter manages tabindex (0 = in tab order, -1 = out).
+    function enhanceGates() {
+      if (!svgElement) return;
+      // The source <g id="gate-labels-visible" aria-label="Gate numbers">
+      // is a named container; strip its name so it isn't announced once
+      // its gate children are relocated out of it. (Also fixed at source.)
+      const labelsGroup = svgElement.querySelector('#gate-labels-visible');
+      if (labelsGroup) labelsGroup.removeAttribute('aria-label');
+
+      svgElement.querySelectorAll('text[data-gate]').forEach((text) => {
+        const num = text.dataset.gate;
+        if (!num) return;
+        const info = gateMockInfo(num);
+        const pier = pierForGate(num);
+        // Information-rich accessible name: pier + gate + airline +
+        // destination + scheduled time + status.
+        const pierPrefix = pier ? `Pier ${pier} ` : '';
+        const ariaLabel =
+          `${pierPrefix}Gate ${num}, ${info.airline} to ${info.destination}, ` +
+          `${info.time}, ${info.status.label}`; // .label! status is an object
+
+
+        // The focusable leaf is a transparent CIRCLE (a SHAPE), exactly
+        // like the OSM map's feature leaves — NOT the <text>. Why:
+        //   * A shape has no text content, so NVDA uses its aria-label
+        //     and announces "<label>, graphic". An SVG <text> announces
+        //     its content ("34") and ignores aria-label.
+        //   * A <text role="button"> also produced the "object object"
+        //     chatter; a plain focusable shape does not.
+        // The visible "34" glyph becomes a decorative sibling.
+        const cx = parseFloat(text.getAttribute('x'));
+        const cy = parseFloat(text.getAttribute('y'));
+        const hit = document.createElementNS(SVG_NS, 'circle');
+        hit.setAttribute('class', 'gate-marker');
+        hit.setAttribute('data-gate', num);
+        hit.setAttribute('aria-label', ariaLabel);
+        hit.setAttribute('tabindex', '-1'); // managed by applyCategoryFilter
+        if (isFinite(cx)) hit.setAttribute('cx', cx);
+        if (isFinite(cy)) hit.setAttribute('cy', cy);
+        hit.setAttribute('r', '9'); // generous hover/touch/focus target
+        hit.setAttribute('fill', 'white');
+        hit.setAttribute('fill-opacity', '0');
+        hit.setAttribute('stroke', 'none');
+        hit.setAttribute('pointer-events', 'all');
+        hit.__glyph = text; // link for filter show/hide
+
+        // Demote the visible number to PURE decoration. The old server
+        // SVG bakes role="button" tabindex="0" aria-label="Gate N" into
+        // each gate <text> (vestigial); strip ALL of it or the text
+        // stays a second focusable "Gate N, button" duplicate alongside
+        // our circle. Out of the a11y tree, not focusable, not a pointer
+        // target (clicks fall through to the circle).
+        text.removeAttribute('data-gate');
+        text.removeAttribute('role');
+        text.removeAttribute('tabindex');
+        text.removeAttribute('aria-label');
+        text.setAttribute('aria-hidden', 'true');
+        text.style.pointerEvents = 'none'; // override .gate-label-visible
+
+        // Append now; arrangeMapInteractives reorders [data-gate] leaves.
+        svgElement.appendChild(hit);
+      });
+    }
+
+    function extractGates() {
+      GATES = [];
+      if (!svgElement) return;
+      const seen = new Set();
+      svgElement.querySelectorAll('[data-gate]').forEach(el => {
+        const num = el.dataset.gate;
+        if (!num || seen.has(num)) return;
+        // [data-gate] is the focusable gate circle (cx/cy); fall back to
+        // x/y in case it's ever a <text>.
+        const x = parseFloat(el.getAttribute('cx') || el.getAttribute('x'));
+        const y = parseFloat(el.getAttribute('cy') || el.getAttribute('y'));
+        if (!isFinite(x) || !isFinite(y)) return;
+        seen.add(num);
+        const info = gateMockInfo(num);
+        GATES.push({
+          id: `gate-${num}`,
+          name: `Gate ${num}`,
+          category: '__gate__',
+          x, y,
+          gate: num,
+          pier: pierForGate(num),
+          isGate: true,
+          ...info,
+        });
+      });
+    }
+
+    // Build POI marker elements but leave them detached. arrangeMapInteractives
+    // inserts them into the DOM (as direct <svg> children) in the right order.
+    //
+    // Each POI is rendered as TWO leaf siblings — never a <g> wrapper:
+    //   * a focusable <circle class="poi-marker" role="button"> (the
+    //     visible coloured dot IS the button — a leaf graphic announces
+    //     as "<label>, button" with no "object" ancestor), and
+    //   * a decorative icon <text> (circle.__icon), aria-hidden and
+    //     pointer-events:none, positioned over the circle.
+    // Both carry an identical transform so they move together (drag).
+    let poiMarkerElements = {};
+    function injectPOIMarkers() {
+      if (!svgElement) return;
+
+      // Remove any existing POI markers/icons (safety on reload)
+      svgElement.querySelectorAll('.poi-marker, .poi-icon, .poi-layer').forEach(n => n.remove());
+      poiMarkerElements = {};
+
+      POIS.forEach(poi => {
+        const def = CATEGORIES[poi.category];
+        if (!def) return;
+
+        const circle = document.createElementNS(SVG_NS, 'circle');
+        circle.setAttribute('class', 'poi-marker');
+        // Focusable NAMED GRAPHIC (no role="button") — see enhanceGates.
+        circle.setAttribute('tabindex', '-1'); // managed by applyCategoryFilter
+        circle.setAttribute('aria-label', `${poi.name}, ${def.label}`);
+        circle.id = `poi-svg-${poi.id}`;
+        circle.dataset.poiId = poi.id;
+        circle.dataset.cat = poi.category;
+        circle.setAttribute('transform', `translate(${poi.x}, ${poi.y})`);
+        circle.setAttribute('cx', '0');
+        circle.setAttribute('cy', '0');
+        circle.setAttribute('r', '10');
+        circle.setAttribute('fill', def.color);
+        circle.setAttribute('stroke', '#ffffff');
+        circle.setAttribute('stroke-width', '2');
+
+        const icon = document.createElementNS(SVG_NS, 'text');
+        icon.setAttribute('class', 'poi-icon');
+        icon.setAttribute('transform', `translate(${poi.x}, ${poi.y})`);
+        icon.setAttribute('text-anchor', 'middle');
+        icon.setAttribute('dominant-baseline', 'central');
+        icon.setAttribute('y', '0.5');
+        icon.setAttribute('fill', '#ffffff');
+        icon.setAttribute('font-size', '11');
+        icon.setAttribute('font-weight', '700');
+        icon.setAttribute('pointer-events', 'none');
+        icon.setAttribute('aria-hidden', 'true');
+        icon.textContent = def.icon;
+
+        circle.__icon = icon; // link for arrange/filter/drag
+
+        // Hover preview only. Activation (click / Enter) is delegated to
+        // the document (see setupFeatureActivation) so the circle carries
+        // no click/keydown listener and Chrome doesn't flag it
+        // "clickable" — the announcement stays a clean "graphic" (the
+        // chosen design: no "button"/"clickable" noise on a dense map).
+        // NOTE: current Firefox has a bug that silences explore-by-touch
+        // and hover for non-interactive SVG graphics — confirmed against
+        // an older Firefox and the unchanged OSM-map demo, so it is a
+        // Firefox regression, not this code. Keyboard focus announces.
+        circle.addEventListener('mouseenter', () => {
+          openPOIPanel(poi, circle, { moveFocus: false });
+        });
+
+        poiMarkerElements[poi.id] = circle;
+      });
+    }
+
+    function setupSVGInteraction() {
+      if (!svgElement) return;
+
+      // SVG-native focus indicator (avoids WebKit outline-repaint bug on transformed SVGs)
+      const focusRect = document.createElementNS(SVG_NS, 'rect');
+      focusRect.setAttribute('fill', 'none');
+      focusRect.setAttribute('stroke', '#000000');
+      focusRect.setAttribute('stroke-width', '3');
+      focusRect.setAttribute('pointer-events', 'none');
+      focusRect.setAttribute('display', 'none');
+      // Decorative focus indicator — never announce it.
+      focusRect.setAttribute('aria-hidden', 'true');
+      focusRect.setAttribute('focusable', 'false');
+      svgElement.appendChild(focusRect);
+
+      svgElement.addEventListener('focusin', (e) => {
+        const target = e.target;
+        if (!target || typeof target.getBBox !== 'function') return;
+        try {
+          const bb = target.getBBox();
+          const pad = 2;
+          let x = bb.x - pad, y = bb.y - pad, w = bb.width + pad * 2, h = bb.height + pad * 2;
+
+          // Apply ONLY the element's own transform attribute (not getCTM, which would
+          // also bake in the viewport-to-viewBox scale and throw the rect off).
+          const tList = target.transform && target.transform.baseVal;
+          if (tList && tList.numberOfItems > 0) {
+            const consolidated = tList.consolidate();
+            const m = consolidated && consolidated.matrix;
+            if (m) {
+              const x1 = m.a * (bb.x - pad)              + m.c * (bb.y - pad)               + m.e;
+              const y1 = m.b * (bb.x - pad)              + m.d * (bb.y - pad)               + m.f;
+              const x2 = m.a * (bb.x + bb.width + pad)   + m.c * (bb.y + bb.height + pad)   + m.e;
+              const y2 = m.b * (bb.x + bb.width + pad)   + m.d * (bb.y + bb.height + pad)   + m.f;
+              x = Math.min(x1, x2);
+              y = Math.min(y1, y2);
+              w = Math.abs(x2 - x1);
+              h = Math.abs(y2 - y1);
+            }
+          }
+
+          focusRect.setAttribute('x', x);
+          focusRect.setAttribute('y', y);
+          focusRect.setAttribute('width', w);
+          focusRect.setAttribute('height', h);
+          focusRect.setAttribute('display', 'inline');
+          svgElement.appendChild(focusRect); // keep on top
+        } catch (_) { /* ignore */ }
+
+        // Also preview the POI panel for whatever just got focus, without moving focus.
+        try {
+          const poiMarker = target.classList && target.classList.contains('poi-marker') ? target : null;
+          if (poiMarker) {
+            const poi = POIS.find(p => p.id === poiMarker.dataset.poiId);
+            if (poi) openPOIPanel(poi, poiMarker, { moveFocus: false });
+          } else if (target.dataset && target.dataset.gate) {
+            const gate = GATES.find(g => g.gate === target.dataset.gate);
+            if (gate) openPOIPanel(gate, target, { moveFocus: false });
+          }
+        } catch (_) { /* ignore */ }
+
+        // If the focused marker is hidden behind the left panel, pan it
+        // into the visible area so keyboard users never lose focus
+        // off-screen. Skip if the user is mid-drag (rare with keyboard).
+        if (!document.body.classList.contains('is-dragging')
+            && !isElementInVisibleMapArea(target)) {
+          scrollMarkerIntoView(target, { mode: 'minimal' });
+        }
+      });
+
+      svgElement.addEventListener('focusout', () => {
+        focusRect.setAttribute('display', 'none');
+      });
+
+      // Track mouse position for coordinates
+      svgElement.addEventListener('mousemove', (e) => {
+        const rect = svgElement.getBoundingClientRect();
+        const viewBox = svgElement.viewBox.baseVal;
+        const x = ((e.clientX - rect.left) / rect.width) * viewBox.width;
+        const y = ((e.clientY - rect.top) / rect.height) * viewBox.height;
+        coordDisplay.textContent = `x: ${x.toFixed(1)}, y: ${y.toFixed(1)}`;
+      });
+
+      // Touch finger-drag exploration: preview the panel for whichever
+      // POI marker or gate is under the finger. Doesn't preventDefault,
+      // so map panning still works.
+      let lastTouchPreviewAt = 0;
+      function previewElementAtPoint(clientX, clientY) {
+        const now = Date.now();
+        if (now - lastTouchPreviewAt < 60) return;
+        lastTouchPreviewAt = now;
+        const el = document.elementFromPoint(clientX, clientY);
+        if (!el || !el.closest) return;
+        const marker = el.closest('.poi-marker');
+        if (marker && marker.dataset.poiId) {
+          const poi = POIS.find(p => p.id === marker.dataset.poiId);
+          if (poi) openPOIPanel(poi, marker, { moveFocus: false });
+          return;
+        }
+        const gateEl = el.closest('[data-gate]');
+        if (gateEl && gateEl.dataset.gate) {
+          const gate = GATES.find(g => g.gate === gateEl.dataset.gate);
+          if (gate) openPOIPanel(gate, gateEl, { moveFocus: false });
+        }
+      }
+      svgElement.addEventListener('touchmove', (e) => {
+        if (!e.touches || e.touches.length === 0) return;
+        const t = e.touches[0];
+        previewElementAtPoint(t.clientX, t.clientY);
+      }, { passive: true });
+      svgElement.addEventListener('touchstart', (e) => {
+        if (!e.touches || e.touches.length === 0) return;
+        const t = e.touches[0];
+        previewElementAtPoint(t.clientX, t.clientY);
+      }, { passive: true });
+
+      // Gate hover preview only. Activation (click / Enter) is delegated
+      // to the document (see setupFeatureActivation), so the gate circle
+      // carries no click/keydown listener and stays a clean "graphic".
+      svgElement.querySelectorAll('[data-gate]').forEach(label => {
+        const num = label.dataset.gate;
+        label.addEventListener('mouseenter', () => {
+          const gate = GATES.find(g => g.gate === num);
+          if (gate) openPOIPanel(gate, label, { moveFocus: false });
+        });
+      });
+
+      // Click anywhere (not on text/poi) to grab dev coords
+      // Dev-only coord grab (click copies x,y to clipboard). A PERMANENT
+      // click handler on the <svg> makes Chrome expose the whole svg as
+      // a generic "clickable" object that NVDA announces around every
+      // focused feature (one of the spurious "object"s). So define it
+      // here but attach it ONLY while the coord-display dev tool is on
+      // (see the showCoordDisplay toggle). Stored on the element so the
+      // toggle can add/remove it; re-attached on (re)load if already on.
+      svgElement._coordGrab = function (e) {
+        if (e.target.tagName === 'text') return;
+        if (e.target.closest && e.target.closest('.poi-marker')) return;
+        const rect = svgElement.getBoundingClientRect();
+        const viewBox = svgElement.viewBox.baseVal;
+        const x = Math.round(((e.clientX - rect.left) / rect.width) * viewBox.width);
+        const y = Math.round(((e.clientY - rect.top) / rect.height) * viewBox.height);
+        const gateNum = document.getElementById('gateNumber').value;
+        const text = gateNum
+          ? `{ gate: ${gateNum}, x: ${x}, y: ${y} },`
+          : `{ x: ${x}, y: ${y} },`;
+        navigator.clipboard.writeText(text);
+        coordDisplay.textContent = `Gate ${gateNum || '?'}: x=${x}, y=${y} (copied!)`;
+        coordDisplay.style.background = '#2a9d2a';
+        setTimeout(() => { coordDisplay.style.background = 'rgba(0,0,0,0.8)'; }, 500);
+      };
+      const _coordToggle = document.getElementById('showCoordDisplay');
+      if (_coordToggle && _coordToggle.checked) {
+        svgElement.addEventListener('click', svgElement._coordGrab);
+      }
+    }
+
+    function applyZoom() {
+      if (svgElement) {
+        svgElement.style.transform = `translate(${mapPanX}px, ${mapPanY}px) scale(${currentZoom})`;
+        svgElement.style.transformOrigin = 'top left';
+      }
+    }
+
+    // ===========================================================================
+    // Generic accessible combobox helper
+    //   input:    <input> element (also functions as combobox via parent role)
+    //   listEl:   <ul role="listbox">
+    //   opts:     { search(query) -> Array<{name, ...}>, onSelect(item, fromKeyboard),
+    //               idPrefix, renderItem(item) -> string innerHTML, onClear() }
+    // Returns: { close, getResults, getActiveIndex }
+    // ===========================================================================
+    function attachCombobox(input, listEl, opts) {
+      let results = [];
+      let activeIndex = -1;
+      let debounce = null;
+      const visualCombobox = input.closest('[role="combobox"]');
+
+      function setExpanded(b) {
+        if (visualCombobox) visualCombobox.setAttribute('aria-expanded', b ? 'true' : 'false');
+      }
+
+      function setActive(i) {
+        const items = listEl.querySelectorAll('[role="option"]');
+        items.forEach(el => el.setAttribute('aria-selected', 'false'));
+        if (i >= 0 && i < items.length) {
+          items[i].setAttribute('aria-selected', 'true');
+          input.setAttribute('aria-activedescendant', items[i].id);
+          items[i].scrollIntoView({ block: 'nearest' });
+        } else {
+          input.setAttribute('aria-activedescendant', '');
+        }
+        activeIndex = i;
+      }
+
+      function close() {
+        listEl.hidden = true;
+        setExpanded(false);
+        input.setAttribute('aria-activedescendant', '');
+        activeIndex = -1;
+      }
+
+      function render() {
+        listEl.innerHTML = '';
+        if (results.length === 0 && input.value.trim()) {
+          const empty = document.createElement('li');
+          empty.className = 'empty';
+          empty.textContent = `No matches for "${input.value}"`;
+          empty.setAttribute('role', 'presentation');
+          listEl.appendChild(empty);
+          listEl.hidden = false;
+          setExpanded(true);
+          input.setAttribute('aria-activedescendant', '');
+          return;
+        }
+        if (results.length === 0) {
+          close();
+          return;
+        }
+        results.forEach((item, i) => {
+          const li = document.createElement('li');
+          li.id = `${opts.idPrefix}-${i}`;
+          li.setAttribute('role', 'option');
+          li.setAttribute('aria-selected', 'false');
+          li.innerHTML = opts.renderItem(item);
+          li.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            select(i, false);
+          });
+          listEl.appendChild(li);
+        });
+        listEl.hidden = false;
+        setExpanded(true);
+      }
+
+      function select(i, fromKeyboard) {
+        const item = results[i];
+        if (!item) return;
+        input.value = item.name;
+        close();
+        opts.onSelect(item, !!fromKeyboard);
+      }
+
+      function update() {
+        const q = input.value.trim().toLowerCase();
+        if (!q) {
+          results = [];
+          render();
+          if (opts.onClear) opts.onClear();
+          return;
+        }
+        results = opts.search(q).slice(0, 8);
+        activeIndex = -1;
+        render();
+        if (opts.onResults) opts.onResults(results, q);
+      }
+
+      input.addEventListener('input', () => {
+        clearTimeout(debounce);
+        debounce = setTimeout(update, 200);
+      });
+
+      input.addEventListener('keydown', (e) => {
+        const items = listEl.querySelectorAll('[role="option"]');
+        if (e.key === 'ArrowDown') {
+          if (items.length === 0) return;
+          e.preventDefault();
+          setActive((activeIndex + 1) % items.length);
+        } else if (e.key === 'ArrowUp') {
+          if (items.length === 0) return;
+          e.preventDefault();
+          setActive((activeIndex - 1 + items.length) % items.length);
+        } else if (e.key === 'Enter') {
+          if (activeIndex >= 0) {
+            e.preventDefault();
+            select(activeIndex, true);
+          }
+        } else if (e.key === 'Escape') {
+          if (!listEl.hidden) {
+            e.preventDefault();
+            close();
+          }
+        }
+      });
+
+      input.addEventListener('blur', () => {
+        setTimeout(close, 150);
+      });
+
+      return {
+        close,
+        getResults: () => results,
+        getActiveIndex: () => activeIndex,
+        selectFirst: () => { if (results.length) select(0, true); },
+        setValue: (v) => { input.value = v; close(); },
+      };
+    }
+
+    function escapeHTML(s) {
+      return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
+    // Screen readers default to reading multi-digit numbers as a quantity
+    // ("AC123" → "A C one hundred twenty three"). Flight numbers should be
+    // spelt out digit by digit. Inserting spaces between every character
+    // forces individual reading.
+    function flightForSR(flight) {
+      return String(flight || '').split('').join(' ');
+    }
+
+    // ===========================================================================
+    // Main search combobox (POIs + gates)
+    // ===========================================================================
+    function findElementForItem(item) {
+      if (!svgElement) return null;
+      if (item.isGate) {
+        return svgElement.querySelector(`[data-gate="${item.gate}"]`);
+      }
+      return svgElement.querySelector(`.poi-marker[data-poi-id="${item.id}"]`);
+    }
+
+    const searchCombo = attachCombobox(searchInput, suggestionsList, {
+      idPrefix: 'poi-opt',
+      search: (q) => {
+        const poiHits = POIS.filter(poi => {
+          if (!activeCategories.has(poi.category)) return false;
+          const hay = `${poi.name} ${CATEGORIES[poi.category].label}`.toLowerCase();
+          return hay.includes(q);
+        });
+        const gateHits = GATES.filter(g =>
+          `${g.name} ${g.flight || ''} ${g.destination || ''} ${g.airline || ''} pier ${g.pier}`
+            .toLowerCase().includes(q)
+        );
+        return poiHits.concat(gateHits);
+      },
+      renderItem: (item) => {
+        const label = item.isGate
+          ? (item.destination ? `Gate · ${item.destination}` : 'Gate')
+          : CATEGORIES[item.category].label;
+        return `<span>${escapeHTML(item.name)}</span><span class="opt-cat">${escapeHTML(label)}</span>`;
+      },
+      onSelect: (item) => {
+        const target = findElementForItem(item);
+        if (target) {
+          scrollMarkerIntoView(target);
+          try { target.focus(); } catch (_) {}
+          openPOIPanel(item, target);
+        }
+      },
+      onResults: (results, q) => {
+        const n = results.length;
+        announce(n === 0
+          ? `No results for "${searchInput.value}".`
+          : `${n} result${n === 1 ? '' : 's'} for "${searchInput.value}". Use arrow keys to browse.`);
+      },
+      onClear: () => announce(''),
+    });
+
+    // Return the visible map region in viewport (client) coordinates, after
+    // subtracting any floating panels (left panel on desktop / bottom sheet
+    // on mobile).
+    function getVisibleMapRect() {
+      const mapContainer = document.getElementById('map-region');
+      const cr = mapContainer.getBoundingClientRect();
+      let left = cr.left, top = cr.top, right = cr.right, bottom = cr.bottom;
+      const panel = document.querySelector('.left-panel');
+      // Note: `offsetParent` is null for position:fixed elements (CSS spec
+      // quirk), so we can't use it as a visibility check. Use the rect's
+      // own dimensions instead.
+      if (panel) {
+        const pr = panel.getBoundingClientRect();
+        if (pr.width > 0 && pr.height > 0) {
+          const widthRatio = pr.width / cr.width;
+          if (widthRatio > 0.85) {
+            // Mobile-ish: panel spans nearly the full width. Decide whether
+            // it's anchored at top or bottom by where its midline sits, and
+            // shrink the visible rect away from that edge accordingly.
+            const panelMid    = (pr.top + pr.bottom) / 2;
+            const viewportMid = (cr.top + cr.bottom) / 2;
+            if (panelMid > viewportMid) {
+              // Bottom sheet — visible map is above the panel
+              bottom = Math.max(cr.top, pr.top - 16);
+            } else {
+              // Top sheet — visible map is below the panel
+              top = Math.min(cr.bottom, pr.bottom + 16);
+            }
+          } else if (pr.right > cr.left && pr.left < cr.right) {
+            // Desktop side panel — visible map is to the right of it
+            left = Math.min(cr.right, pr.right + 16);
+          }
+        }
+      }
+      return { left, top, right, bottom };
+    }
+
+    function isElementInVisibleMapArea(el, padding = 8) {
+      if (!el || typeof el.getBoundingClientRect !== 'function') return true;
+      const er = el.getBoundingClientRect();
+      const v  = getVisibleMapRect();
+      return er.left   >= v.left   + padding
+          && er.right  <= v.right  - padding
+          && er.top    >= v.top    + padding
+          && er.bottom <= v.bottom - padding;
+    }
+
+    // mode = 'centre'  → bring the marker to the centre of the visible area
+    //        'minimal' → pan just enough that the marker clears the edges
+    //                    of the visible area (with a small inset). Auto-pan
+    //                    paths use 'minimal' so users don't get a big jump
+    //                    every time they tab/hover near the panel.
+    function scrollMarkerIntoView(marker, options) {
+      try {
+        if (!svgElement || !marker) return;
+        const mode = (options && options.mode) || 'centre';
+        const v = getVisibleMapRect();
+        const m = marker.getBoundingClientRect();
+
+        let dx = 0, dy = 0;
+        if (mode === 'minimal') {
+          const inset = 32;
+          if (m.left   < v.left   + inset) dx = (v.left   + inset) - m.left;
+          else if (m.right > v.right - inset) dx = (v.right - inset) - m.right;
+          if (m.top    < v.top    + inset) dy = (v.top    + inset) - m.top;
+          else if (m.bottom > v.bottom - inset) dy = (v.bottom - inset) - m.bottom;
+          if (dx === 0 && dy === 0) return; // already comfortably visible
+        } else {
+          const cx = (v.left + v.right) / 2;
+          const cy = (v.top  + v.bottom) / 2;
+          dx = cx - (m.left + m.width  / 2);
+          dy = cy - (m.top  + m.height / 2);
+        }
+
+        mapPanX += dx;
+        mapPanY += dy;
+        svgElement.classList.add('smooth-pan');
+        applyZoom();
+        clearTimeout(scrollMarkerIntoView._t);
+        scrollMarkerIntoView._t = setTimeout(() => {
+          svgElement.classList.remove('smooth-pan');
+        }, 500);
+      } catch (_) { /* ignore */ }
+    }
+
+    // ===========================================================================
+    // POI panel
+    // ===========================================================================
+    const GATE_BADGE_COLOR = '#282561';
+
+    function openPOIPanel(item, originElement, options) {
+      const moveFocus = !options || options.moveFocus !== false;
+      if (moveFocus) {
+        lastFocusedBeforePanel = originElement || document.activeElement;
+      }
+      poiPanelTitle.textContent = item.name;
+      poiPanelTitle.dataset.poiId = item.id;
+
+      if (item.isGate) {
+        // Gate panel
+        poiPanelBadge.textContent = `${item.regionLabel} gate · Pier ${item.pier}`;
+        poiPanelBadge.style.background = GATE_BADGE_COLOR;
+
+        let descHtml =
+          `<p>Next flight: <strong><span aria-label="${escapeHTML(flightForSR(item.flight))}">${escapeHTML(item.flight)}</span></strong> to ${escapeHTML(item.destination)}` +
+          ` <span class="status-pill" style="background:${item.status.color}">${escapeHTML(item.status.label)}</span></p>`;
+
+        // Spatial context for screen-reader users: where it is + adjacent gates + nearby POIs
+        const adj = adjacentGates(item);
+        const ctx = [];
+        ctx.push(`This is a ${item.regionLabel.toLowerCase()} departures gate on Pier ${item.pier}.`);
+        if (adj.length) {
+          ctx.push(`Adjacent gates on this pier: ${adj.map(g => g.name).join(', ')}.`);
+        }
+        const nearby = describeNearby(item);
+        if (nearby) ctx.push(`Nearby points of interest: ${nearby}`);
+        descHtml += `<p class="poi-context">${ctx.map(escapeHTML).join(' ')}</p>`;
+        poiPanelDesc.innerHTML = descHtml;
+
+        const meta = [
+          ['Flight', item.flight],
+          ['Airline', item.airline],
+          ['Destination', item.destination],
+          ['Departure', item.time],
+          ['Status', item.status.label],
+          ['Terminal area', item.regionLabel],
+          ['Pier', item.pier],
+          ['Gate', item.gate],
+        ];
+        poiPanelMeta.innerHTML = meta.map(([k, v]) => {
+          if (k === 'Flight') {
+            return `<dt>${escapeHTML(k)}</dt><dd><span aria-label="${escapeHTML(flightForSR(v))}">${escapeHTML(String(v))}</span></dd>`;
+          }
+          return `<dt>${escapeHTML(k)}</dt><dd>${escapeHTML(String(v))}</dd>`;
+        }).join('');
+        // Only announce when the user EXPLICITLY opens the panel. On a
+        // focus/hover preview (moveFocus:false) the focused gate button
+        // already announces itself — a live-region announce here would
+        // read the gate a second time (the "repeats its text" bug).
+        if (moveFocus) {
+          announce(`Showing details for ${item.name}, ${item.regionLabel}. ${flightForSR(item.flight)} to ${item.destination}, ${item.status.label}.`);
+        }
+      } else {
+        // POI panel
+        const def = CATEGORIES[item.category];
+        poiPanelBadge.textContent = def.label;
+        poiPanelBadge.style.background = def.color;
+
+        let descHtml = item.description ? `<p>${escapeHTML(item.description)}</p>` : '';
+
+        // Spatial context for screen-reader users
+        const ctx = [];
+        const area = describeArea(item);
+        if (area) ctx.push(`Located ${area}.`);
+        const ng = nearestGateTo(item);
+        if (ng) {
+          const m = roundedMetres(ng.distance);
+          const dir = cardinalDirection(item, ng.gate);
+          ctx.push(`The closest gate is ${ng.gate.name}, about ${m} metres ${dir === 'right next to' ? 'away' : dir}.`);
+        }
+        const nearby = describeNearby(item);
+        if (nearby) ctx.push(`Nearby points of interest: ${nearby}`);
+        if (ctx.length) {
+          descHtml += `<p class="poi-context">${ctx.map(escapeHTML).join(' ')}</p>`;
+        }
+
+        if (item.hours) {
+          descHtml += `<p class="poi-hours"><strong>Hours:</strong> ${escapeHTML(item.hours)}</p>`;
+        }
+        if (item.website) {
+          const display = item.website.replace(/^https?:\/\//, '').replace(/\/$/, '');
+          descHtml += `<p class="poi-website"><a href="${escapeHTML(item.website)}" target="_blank" rel="noopener">${escapeHTML(display)}</a> <span class="visually-hidden">(opens in a new tab)</span></p>`;
+        }
+        if (item.phone) {
+          const tel = item.phone.replace(/[^+\d]/g, '');
+          descHtml += `<p class="poi-phone"><a href="tel:${escapeHTML(tel)}">${escapeHTML(item.phone)}</a></p>`;
+        }
+        if (item.tags && item.tags.length) {
+          descHtml += `<div class="poi-tags" role="list" aria-label="Amenities">${
+            item.tags.map(t => `<span class="poi-tag" role="listitem">${escapeHTML(t)}</span>`).join('')
+          }</div>`;
+        }
+        poiPanelDesc.innerHTML = descHtml;
+
+        const meta = [['Category', def.label]];
+        if (item.gate) meta.push(['Near gate', String(item.gate)]);
+        poiPanelMeta.innerHTML = meta.map(([k, v]) =>
+          `<dt>${escapeHTML(k)}</dt><dd>${escapeHTML(v)}</dd>`
+        ).join('');
+        if (moveFocus) {
+          announce(`Showing details for ${item.name}.`);
+        }
+      }
+
+      poiPanel.hidden = false;
+      // Make panel action button names specific to the current POI so a
+      // forms-rotor list reads "Directions from Tim Hortons" rather than
+      // a generic "Directions from here".
+      poiFindOnMap.setAttribute('aria-label', `Find ${item.name} on map`);
+      poiDirFromHere.setAttribute('aria-label', `Directions from ${item.name}`);
+      poiDirToHere.setAttribute('aria-label', `Directions to ${item.name}`);
+      // Auto-expand on any content change (including hover/focus previews)
+      setPOIAccordionExpanded(true);
+      // Highlight the corresponding element on the map and show its tooltip
+      const anchor = findElementForItem(item);
+      setActiveHighlight(anchor);
+      showTooltip(item, anchor || originElement);
+      if (moveFocus) {
+        // First interactive element = the accordion toggle (heading button)
+        poiPanelToggle.focus();
+      }
+
+      // After the panel re-renders (including any growth from showing the
+      // accordion body for the first time), make sure the active marker
+      // hasn't ended up obscured behind the now-larger panel. Two RAFs so
+      // layout has fully settled.
+      if (anchor) {
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          if (document.body.classList.contains('is-dragging')) return;
+          if (!isElementInVisibleMapArea(anchor)) {
+            scrollMarkerIntoView(anchor, { mode: 'minimal' });
+          }
+        }));
+      }
+    }
+
+    function setPOIAccordionExpanded(expanded) {
+      // If collapsing while focus is inside the body, lift focus out first
+      // so that going inert doesn't strand focus on the document body.
+      if (!expanded && poiPanelBody.contains(document.activeElement)) {
+        try { poiPanelToggle.focus(); } catch (_) {}
+      }
+      poiPanelToggle.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+      poiPanelBody.hidden = !expanded;
+      // inert removes the body from the accessibility tree and tab order
+      // even though our CSS keeps it visually displayed for the animation.
+      poiPanelBody.toggleAttribute('inert', !expanded);
+    }
+
+    function closePOIPanel() {
+      if (poiPanel.hidden) return;
+      poiPanel.hidden = true;
+      setActiveHighlight(null);
+      hideTooltip();
+      announce('Details panel closed.');
+      if (lastFocusedBeforePanel && document.contains(lastFocusedBeforePanel)) {
+        try { lastFocusedBeforePanel.focus(); } catch (_) {}
+      }
+      lastFocusedBeforePanel = null;
+    }
+
+    // ---------- Map rasterisation for contrast-aware highlight colour ----------
+    let mapRasterCanvas = null;
+    let mapRasterCtx    = null;
+
+    async function rasteriseMap() {
+      if (!svgElement) return;
+      const svgStr = new XMLSerializer().serializeToString(svgElement);
+      const blob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      try {
+        const img = new Image();
+        await new Promise((res, rej) => {
+          img.onload = res;
+          img.onerror = (e) => rej(e || new Error('image failed'));
+          img.src = url;
+        });
+        const vb = svgElement.viewBox.baseVal;
+        const canvas = document.createElement('canvas');
+        canvas.width  = Math.max(1, Math.round(vb.width));
+        canvas.height = Math.max(1, Math.round(vb.height));
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        // Fill with white first — SVG areas without an explicit fill render
+        // as transparent, and getImageData would return (0,0,0,0) which the
+        // luminance calc would read as black, picking the wrong stroke colour.
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        mapRasterCanvas = canvas;
+        mapRasterCtx    = ctx;
+      } finally {
+        URL.revokeObjectURL(url);
+      }
+    }
+
+    // Sample luminance around (cx, cy) at radius r in viewBox coordinates.
+    // Returns 0–255 average luminance over the sampled pixels, composited
+    // against white where alpha < 1 (matches what the user actually sees on
+    // a white-page background). Returns null if no raster is available.
+    function pickHighlightLuminance(cx, cy, r) {
+      if (!mapRasterCanvas) return null;
+      const W = mapRasterCanvas.width, H = mapRasterCanvas.height;
+      const N = 24;
+      // Read a single ImageData covering the bounding box of the ring,
+      // which is faster than 24 separate getImageData calls.
+      const x0 = Math.max(0, Math.floor(cx - r - 1));
+      const y0 = Math.max(0, Math.floor(cy - r - 1));
+      const x1 = Math.min(W, Math.ceil (cx + r + 1));
+      const y1 = Math.min(H, Math.ceil (cy + r + 1));
+      const w = x1 - x0, h = y1 - y0;
+      if (w <= 0 || h <= 0) return null;
+      let img;
+      try { img = mapRasterCtx.getImageData(x0, y0, w, h); }
+      catch (_) { return null; }
+      const data = img.data;
+      let total = 0, count = 0;
+      for (let i = 0; i < N; i++) {
+        const a = (i / N) * Math.PI * 2;
+        const sx = Math.round(cx + r * Math.cos(a)) - x0;
+        const sy = Math.round(cy + r * Math.sin(a)) - y0;
+        if (sx < 0 || sx >= w || sy < 0 || sy >= h) continue;
+        const idx = (sy * w + sx) * 4;
+        const alpha = data[idx + 3] / 255;
+        // Composite over white
+        const R = data[idx]     * alpha + 255 * (1 - alpha);
+        const G = data[idx + 1] * alpha + 255 * (1 - alpha);
+        const B = data[idx + 2] * alpha + 255 * (1 - alpha);
+        total += 0.299 * R + 0.587 * G + 0.114 * B;
+        count++;
+      }
+      return count ? total / count : null;
+    }
+
+    // ---------- Sticky tooltip on hover/focus ----------
+    const poiTooltip       = document.getElementById('poiTooltip');
+    const poiTooltipTitle  = poiTooltip.querySelector('.poi-tooltip-title');
+    const poiTooltipCat    = poiTooltip.querySelector('.poi-tooltip-cat');
+
+    // Computes and applies the tooltip's screen position based on the
+    // anchor's CURRENT bounding rect. Re-callable on demand.
+    function positionTooltip(anchor) {
+      if (!anchor || !document.contains(anchor)) return;
+      const rect = anchor.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const aboveY = rect.top - 4;
+      const tipH = poiTooltip.offsetHeight + 14;
+      const placeBelow = aboveY - tipH < 8;
+      document.body.classList.toggle('tooltip-below', placeBelow);
+      const tipW = poiTooltip.offsetWidth;
+      const margin = 8;
+      let left = cx;
+      if (left - tipW / 2 < margin) left = tipW / 2 + margin;
+      if (left + tipW / 2 > window.innerWidth - margin) left = window.innerWidth - margin - tipW / 2;
+      const top = placeBelow ? rect.bottom : rect.top;
+      poiTooltip.style.left = `${left}px`;
+      poiTooltip.style.top  = `${top}px`;
+    }
+
+    function showTooltip(item, anchor) {
+      if (!item || !anchor) { hideTooltip(); return; }
+      poiTooltipTitle.textContent = item.name;
+      if (item.isGate) {
+        // Mirror the panel's headline: next flight + status. Wrap the
+        // flight number so screen readers spell it out digit by digit.
+        poiTooltipCat.innerHTML =
+          `Next flight: <span aria-label="${escapeHTML(flightForSR(item.flight))}">${escapeHTML(item.flight)}</span> to ${escapeHTML(item.destination)} (${escapeHTML(item.status.label)})`;
+      } else if (item.description) {
+        poiTooltipCat.textContent = item.description;
+      } else {
+        poiTooltipCat.textContent = '';
+      }
+      poiTooltip.hidden = false;
+      positionTooltip(anchor);
+      // If a smooth-pan animation is in progress (e.g. search-select),
+      // the anchor's screen rect right now reflects the mid-animation
+      // position. Re-position once the animation completes so the tooltip
+      // lines up with the marker's settled location.
+      clearTimeout(showTooltip._reposTimer);
+      showTooltip._reposTimer = setTimeout(() => {
+        if (!poiTooltip.hidden) positionTooltip(anchor);
+      }, 480);
+    }
+
+    function hideTooltip() {
+      poiTooltip.hidden = true;
+      clearTimeout(showTooltip._reposTimer);
+    }
+
+    // Draw a pulsing ring around the SVG element currently shown in the
+    // detail panel. Stroke colour is chosen dynamically so it contrasts
+    // with whatever the marker sits over. Pass null to clear.
+    function setActiveHighlight(element) {
+      if (!svgElement) return;
+      const old = svgElement.querySelector('.active-highlight');
+      if (old) old.remove();
+      if (!element) return;
+      try {
+        const bb = element.getBBox();
+        const pad = 4;
+        let x = bb.x - pad, y = bb.y - pad;
+        let w = bb.width + pad * 2, h = bb.height + pad * 2;
+        // Apply the element's own transform attribute (translate on POI markers)
+        const tList = element.transform && element.transform.baseVal;
+        if (tList && tList.numberOfItems > 0) {
+          const consolidated = tList.consolidate();
+          const m = consolidated && consolidated.matrix;
+          if (m) {
+            const x1 = m.a * (bb.x - pad)              + m.c * (bb.y - pad)              + m.e;
+            const y1 = m.b * (bb.x - pad)              + m.d * (bb.y - pad)              + m.f;
+            const x2 = m.a * (bb.x + bb.width + pad)   + m.c * (bb.y + bb.height + pad)  + m.e;
+            const y2 = m.b * (bb.x + bb.width + pad)   + m.d * (bb.y + bb.height + pad)  + m.f;
+            x = Math.min(x1, x2);
+            y = Math.min(y1, y2);
+            w = Math.abs(x2 - x1);
+            h = Math.abs(y2 - y1);
+          }
+        }
+        const cx = x + w / 2;
+        const cy = y + h / 2;
+        const r  = Math.max(w, h) / 2 + 4;
+        const ring = document.createElementNS(SVG_NS, 'circle');
+        ring.setAttribute('class', 'active-highlight');
+        ring.setAttribute('cx', cx);
+        ring.setAttribute('cy', cy);
+        ring.setAttribute('r', r);
+        ring.setAttribute('aria-hidden', 'true');
+
+        // Pick a contrasting stroke based on the underlying map colour.
+        // Light bg → deep amber + warm halo. Dark bg → bright gold + dark halo.
+        const lum = pickHighlightLuminance(cx, cy, r);
+        if (lum !== null) {
+          if (lum >= 140) {
+            ring.style.stroke = '#8a3a00';
+            ring.style.filter = 'drop-shadow(0 0 6px rgba(255, 200, 80, 0.95))';
+          } else {
+            ring.style.stroke = '#ffd54a';
+            ring.style.filter = 'drop-shadow(0 0 6px rgba(20, 10, 0, 0.95))';
+          }
+        }
+
+        svgElement.appendChild(ring);
+      } catch (_) { /* ignore */ }
+    }
+
+    // ===========================================================================
+    // Event wiring
+    // ===========================================================================
+    mapSelect.addEventListener('change', () => loadMap(mapSelect.value));
+    reloadBtn.addEventListener('click', () => loadMap(mapSelect.value));
+
+    debugMode.addEventListener('change', () => {
+      mapWrapper.classList.toggle('debug-mode', debugMode.checked);
+    });
+
+    highContrast.addEventListener('change', () => {
+      document.body.classList.toggle('high-contrast', highContrast.checked);
+    });
+
+    // ---------- Pan helpers and arrow buttons ----------
+    function panBy(dx, dy) {
+      mapPanX += dx;
+      mapPanY += dy;
+      applyZoom();
+    }
+    const PAN_STEP = 100; // pixels per arrow click
+    document.getElementById('panUp')   .addEventListener('click', () => panBy(0,  PAN_STEP));
+    document.getElementById('panDown') .addEventListener('click', () => panBy(0, -PAN_STEP));
+    document.getElementById('panLeft') .addEventListener('click', () => panBy( PAN_STEP, 0));
+    document.getElementById('panRight').addEventListener('click', () => panBy(-PAN_STEP, 0));
+
+    // Zoom while keeping the currently-shown POI visible. If no panel is open,
+    // zoom around the top-left of the SVG (existing behaviour).
+    function zoomTo(newZoom) {
+      newZoom = Math.max(0.25, Math.min(5, newZoom));
+      // Find the active POI/gate element via the currently-rendered panel
+      const id = poiPanelTitle && poiPanelTitle.dataset.poiId;
+      const item = id && (POIS.find(p => p.id === id) || GATES.find(g => g.id === id));
+      const el = item ? findElementForItem(item) : null;
+      if (!el) {
+        currentZoom = newZoom;
+        applyZoom();
+        return;
+      }
+      // Anchor the zoom on the active marker's screen centre
+      const before = el.getBoundingClientRect();
+      const beforeCx = before.left + before.width / 2;
+      const beforeCy = before.top  + before.height / 2;
+      currentZoom = newZoom;
+      applyZoom();
+      const after = el.getBoundingClientRect();
+      const afterCx = after.left + after.width / 2;
+      const afterCy = after.top  + after.height / 2;
+      mapPanX += (beforeCx - afterCx);
+      mapPanY += (beforeCy - afterCy);
+      applyZoom();
+    }
+
+    zoomIn.addEventListener('click', () => {
+      zoomTo(currentZoom * 1.25);
+    });
+    zoomOut.addEventListener('click', () => {
+      zoomTo(currentZoom / 1.25);
+    });
+    zoomReset.addEventListener('click', () => {
+      // If a POI is showing, zoom-out to 1 around it; otherwise full reset
+      const hasActive = poiPanelTitle && poiPanelTitle.dataset.poiId;
+      if (hasActive) {
+        zoomTo(1);
+      } else {
+        currentZoom = 1;
+        mapPanX = 0;
+        mapPanY = 0;
+        applyZoom();
+      }
+    });
+
+    // Form submit: if a suggestion exists, select it; else announce
+    searchForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const results = searchCombo.getResults();
+      if (results.length > 0) {
+        searchCombo.selectFirst();
+      } else if (searchInput.value.trim()) {
+        announce(`No results for "${searchInput.value}".`);
+      }
+    });
+
+    // POI panel close
+    poiPanelClose.addEventListener('click', closePOIPanel);
+
+    // POI accordion toggle
+    function togglePOIAccordion() {
+      const cur = poiPanelToggle.getAttribute('aria-expanded') === 'true';
+      setPOIAccordionExpanded(!cur);
+    }
+    poiPanelToggle.addEventListener('click', togglePOIAccordion);
+    // Explicit keyboard activation in case the native button click on
+    // Space/Enter is being suppressed by something upstream.
+    poiPanelToggle.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        e.stopPropagation();
+        togglePOIAccordion();
+      }
+    });
+
+    // ===========================================================================
+    // Directions
+    // ===========================================================================
+    let dirFromPoi = null;
+    let dirToPoi = null;
+    const stops = []; // [{ id, poi, input, list, combo, row }]
+    let stopCounter = 0;
+    let lastFocusedBeforeDirections = null;
+    let activeRoute = null; // { segments, accessible, totalMeters, etaMinutes, allSteps }
+    let activeSegmentIndex = 0;
+    let enRouteIndex = -1;
+
+    function dirCorpus() {
+      // POIs + gates, in that order
+      return POIS.concat(GATES);
+    }
+
+    function makeDirCombo(input, list, idPrefix, setter) {
+      return attachCombobox(input, list, {
+        idPrefix,
+        search: (q) => dirCorpus().filter(item => {
+          const label = item.isGate ? 'Gate' : CATEGORIES[item.category].label;
+          return `${item.name} ${label}`.toLowerCase().includes(q);
+        }),
+        renderItem: (item) => {
+          const label = item.isGate ? 'Gate' : CATEGORIES[item.category].label;
+          return `<span>${escapeHTML(item.name)}</span><span class="opt-cat">${escapeHTML(label)}</span>`;
+        },
+        onSelect: (item) => { setter(item); },
+        // Announce the result count the same way the main search does
+        // (via the shared #statusLine live region). Without this the
+        // From/To fields were silent on typing.
+        onResults: (results) => {
+          const n = results.length;
+          announce(n === 0
+            ? `No results for "${input.value}".`
+            : `${n} result${n === 1 ? '' : 's'} for "${input.value}". Use arrow keys to browse.`);
+        },
+        onClear: () => { setter(null); announce(''); },
+      });
+    }
+
+    const dirFromCombo = makeDirCombo(dirFromInput, dirFromSuggestions, 'dir-from-opt',
+                                      (p) => { dirFromPoi = p; });
+    const dirToCombo   = makeDirCombo(dirToInput,   dirToSuggestions,   'dir-to-opt',
+                                      (p) => { dirToPoi   = p; });
+
+    function openDirectionsPanel(focusInto) {
+      if (directionsPanel.hidden) {
+        lastFocusedBeforeDirections = document.activeElement;
+        directionsPanel.hidden = false;
+        directionsPanel.removeAttribute('inert');
+        directionsToggle.setAttribute('aria-expanded', 'true');
+        announce('Directions panel opened.');
+      }
+      if (focusInto === 'from') dirFromInput.focus();
+      else if (focusInto === 'to') dirToInput.focus();
+      else dirFromInput.focus();
+    }
+
+    function closeDirectionsPanel() {
+      if (directionsPanel.hidden) return;
+      clearRouteFromMap();
+      // Lift focus out before going inert
+      if (directionsPanel.contains(document.activeElement)) {
+        try { directionsToggle.focus(); } catch (_) {}
+      }
+      directionsPanel.hidden = true;
+      directionsPanel.setAttribute('inert', '');
+      directionsToggle.setAttribute('aria-expanded', 'false');
+      announce('Directions panel closed.');
+      if (lastFocusedBeforeDirections && document.contains(lastFocusedBeforeDirections)) {
+        try { lastFocusedBeforeDirections.focus(); } catch (_) {}
+      }
+      lastFocusedBeforeDirections = null;
+    }
+
+    // ---------- Panel collapse toggle ----------
+    const panelCollapseToggle = document.getElementById('panelCollapseToggle');
+    const panelCollapsible    = document.getElementById('panelCollapsible');
+    panelCollapseToggle.addEventListener('click', () => {
+      const expanded = panelCollapseToggle.getAttribute('aria-expanded') === 'true';
+      const next = !expanded;
+      panelCollapseToggle.setAttribute('aria-expanded', next ? 'true' : 'false');
+      panelCollapsible.hidden = !next;
+      panelCollapseToggle.querySelector('.pc-label').textContent = next
+        ? 'Hide map filters & tools'
+        : 'Show map filters & tools';
+    });
+
+    directionsToggle.addEventListener('click', () => {
+      if (directionsPanel.hidden) openDirectionsPanel();
+      else closeDirectionsPanel();
+    });
+    directionsClose.addEventListener('click', closeDirectionsPanel);
+
+    // ---------- Multi-stop (waypoints) ----------
+    function addStop(initialPoi) {
+      stopCounter++;
+      const id = `stop-${stopCounter}`;
+      const inputId = `${id}-input`;
+      const listId = `${id}-suggestions`;
+      const row = document.createElement('div');
+      row.className = 'dir-stop-row';
+      row.innerHTML = `
+        <label for="${inputId}" class="dir-field">
+          <span>Stop</span>
+          <span role="combobox"
+                aria-expanded="false"
+                aria-owns="${listId}"
+                aria-haspopup="listbox"
+                style="display:contents;">
+            <input type="search"
+                   id="${inputId}"
+                   aria-controls="${listId}"
+                   aria-autocomplete="list"
+                   aria-activedescendant=""
+                   placeholder="Choose a waypoint">
+          </span>
+          <ul id="${listId}"
+              class="suggestions"
+              role="listbox"
+              aria-label="Stop suggestions"
+              hidden></ul>
+        </label>
+        <button type="button" class="remove-stop-btn" aria-label="Remove this stop">Remove</button>
+      `;
+      const fields = dirToInput.closest('.directions-fields');
+      const toLabel = dirToInput.closest('.dir-field');
+      fields.insertBefore(row, toLabel);
+
+      const input = row.querySelector('input');
+      const list  = row.querySelector('ul');
+      const stopEntry = { id, poi: null, input, list, row };
+      stopEntry.combo = makeDirCombo(input, list, `${id}-opt`, (p) => { stopEntry.poi = p; });
+      stops.push(stopEntry);
+
+      if (initialPoi) {
+        stopEntry.poi = initialPoi;
+        input.value = initialPoi.name;
+      }
+
+      row.querySelector('.remove-stop-btn').addEventListener('click', () => removeStop(id));
+      renumberStopLabels();
+      announce(`Stop ${stops.length} added.`);
+      input.focus();
+    }
+
+    function removeStop(id) {
+      const idx = stops.findIndex(s => s.id === id);
+      if (idx < 0) return;
+      stops[idx].row.remove();
+      stops.splice(idx, 1);
+      renumberStopLabels();
+      announce('Stop removed.');
+    }
+
+    function renumberStopLabels() {
+      stops.forEach((s, i) => {
+        const span = s.row.querySelector('label > span:first-child');
+        if (span) span.textContent = `Stop ${i + 1}`;
+      });
+    }
+
+    addStopBtn.addEventListener('click', () => addStop());
+
+    // ---------- Reverse directions ----------
+    reverseDirectionsBtn.addEventListener('click', () => {
+      const fromVal = dirFromInput.value;
+      const toVal   = dirToInput.value;
+      const fromPoi = dirFromPoi;
+      const toPoi   = dirToPoi;
+      stops.reverse();
+      const fields = dirToInput.closest('.directions-fields');
+      const toLabel = dirToInput.closest('.dir-field');
+      stops.forEach(s => fields.insertBefore(s.row, toLabel));
+      renumberStopLabels();
+      dirFromInput.value = toVal;
+      dirToInput.value   = fromVal;
+      dirFromPoi = toPoi;
+      dirToPoi   = fromPoi;
+      announce('From and To swapped.');
+    });
+
+    // ---------- Route lookup ----------
+    function findRoute(fromId, toId) {
+      for (const r of ROUTES) {
+        if (r.a === fromId && r.b === toId) return { route: r, reversed: false };
+        if (r.b === fromId && r.a === toId) return { route: r, reversed: true  };
+      }
+      return null;
+    }
+
+    function reverseStepsText(_steps, fromName, toName) {
+      return [
+        `Start at ${fromName}.`,
+        'Retrace the route in the opposite direction.',
+        `Arrive at ${toName}.`,
+      ];
+    }
+
+    // 1 viewBox unit ≈ 1 metre on this map.
+    function generateRoute(from, to) {
+      const dx = to.x - from.x;
+      const dy = to.y - from.y;
+      const absX = Math.abs(dx), absY = Math.abs(dy);
+      const xDir = dx >= 0 ? 'east' : 'west';
+      const yDir = dy >= 0 ? 'south' : 'north';
+      const horizontalFirst = absX >= absY;
+      const corner = horizontalFirst ? { x: to.x, y: from.y } : { x: from.x, y: to.y };
+      const waypoints = [{x: from.x, y: from.y}, corner, {x: to.x, y: to.y}];
+      const totalM = Math.round(absX + absY);
+      const aToB = [`Start at ${from.name}.`];
+      if (horizontalFirst) {
+        if (absX >= 5) aToB.push(`Walk ${xDir} approximately ${Math.round(absX)} metres along the concourse.`);
+        if (absY >= 5) aToB.push(`Turn ${yDir} and continue approximately ${Math.round(absY)} metres.`);
+      } else {
+        if (absY >= 5) aToB.push(`Walk ${yDir} approximately ${Math.round(absY)} metres.`);
+        if (absX >= 5) aToB.push(`Turn ${xDir} and continue approximately ${Math.round(absX)} metres.`);
+      }
+      if (aToB.length === 1) aToB.push(`Walk a short distance.`);
+      aToB.push(`Arrive at ${to.name}.`);
+      return {
+        a: from.id, b: to.id, waypoints, distance: `about ${totalM} metres`, aToB,
+      };
+    }
+
+    function buildSegment(fromEp, toEp) {
+      // Use hand-authored if present, otherwise auto-generate
+      const found = findRoute(fromEp.id, toEp.id);
+      let route, reversed = false;
+      if (found) {
+        route = found.route;
+        reversed = found.reversed;
+      } else {
+        route = generateRoute(fromEp, toEp);
+      }
+      const waypoints = reversed ? route.waypoints.slice().reverse() : route.waypoints.slice();
+      const steps = reversed
+        ? reverseStepsText(route.aToB, fromEp.name, toEp.name)
+        : route.aToB.slice();
+      // Compute Manhattan distance from waypoints
+      let meters = 0;
+      for (let i = 1; i < waypoints.length; i++) {
+        meters += Math.abs(waypoints[i].x - waypoints[i-1].x) + Math.abs(waypoints[i].y - waypoints[i-1].y);
+      }
+      meters = Math.round(meters);
+      return {
+        from: fromEp,
+        to: toEp,
+        waypoints,
+        steps,
+        meters,
+      };
+    }
+
+    // Walking-pace estimate in minutes, given metres
+    function etaMinutes(meters) {
+      const PACE_M_PER_MIN = 75; // ~4.5 km/h, casual airport pace
+      return Math.max(1, Math.round(meters / PACE_M_PER_MIN));
+    }
+
+    function formatDistance(meters) {
+      return `${meters} m`;
+    }
+
+    function formatEta(meters) {
+      const mins = etaMinutes(meters);
+      return `${mins} min`;
+    }
+
+    // ---------- Form submit ----------
+    function focusDirectionsResults() {
+      const heading = document.getElementById('directionsResultsHeading');
+      if (heading) heading.focus();
+    }
+
+    directionsForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      // Resolve full ordered list: From, ...stops, To
+      const ordered = [dirFromPoi, ...stops.map(s => s.poi), dirToPoi];
+      if (ordered.some(p => !p)) {
+        renderNoRoute('Fill in From, all stops, and To before getting directions.');
+        focusDirectionsResults();
+        return;
+      }
+      // No consecutive duplicates
+      for (let i = 1; i < ordered.length; i++) {
+        if (ordered[i].id === ordered[i-1].id) {
+          renderNoRoute('Two adjacent points are the same. Choose different locations.');
+          focusDirectionsResults();
+          return;
+        }
+      }
+      // Build segments
+      const segments = [];
+      for (let i = 0; i < ordered.length - 1; i++) {
+        segments.push(buildSegment(ordered[i], ordered[i+1]));
+      }
+      const totalMeters = segments.reduce((sum, s) => sum + s.meters, 0);
+      const allSteps = segments.flatMap((seg, i) =>
+        seg.steps.map(text => ({ text, segmentIndex: i }))
+      );
+      activeRoute = {
+        segments,
+        totalMeters,
+        etaMinutes: etaMinutes(totalMeters),
+        allSteps,
+        accessible: accessibleRouteToggle.getAttribute('aria-pressed') === 'true',
+      };
+      activeSegmentIndex = -1; // -1 = full route shown
+      renderRoute();
+      // Move focus to the start of the rendered instructions so keyboard
+      // and screen-reader users land at the new content rather than
+      // remaining on the submit button.
+      focusDirectionsResults();
+    });
+
+    function renderNoRoute(message) {
+      activeRoute = null;
+      clearRouteFromMap();
+      directionsResults.innerHTML = `<p class="no-route" id="directionsResultsHeading" tabindex="-1">${escapeHTML(message)}</p>`;
+      hideEnRoute();
+      announce(message);
+    }
+
+    function findEndpointById(id) {
+      return POIS.find(p => p.id === id) || GATES.find(g => g.id === id);
+    }
+
+    function renderRoute() {
+      if (!activeRoute) return;
+      const { segments, totalMeters, etaMinutes: eta, accessible, allSteps } = activeRoute;
+      const fromEp = segments[0].from;
+      const toEp   = segments[segments.length - 1].to;
+
+      const segmentsHtml = segments.length > 1
+        ? `
+          <h4 style="margin-top:0.6rem;font-size:0.95rem;color:#20518e;">Route segments</h4>
+          <ul class="segments-list" role="tablist" aria-label="Route segments">
+            <li><button type="button" data-seg="-1" aria-pressed="${activeSegmentIndex === -1}">
+              <span>Full route</span><span class="seg-distance">${escapeHTML(formatDistance(totalMeters))}</span>
+            </button></li>
+            ${segments.map((s, i) => `
+              <li><button type="button" data-seg="${i}" aria-pressed="${activeSegmentIndex === i}">
+                <span>${i + 1}. ${escapeHTML(s.from.name)} → ${escapeHTML(s.to.name)}</span>
+                <span class="seg-distance">${escapeHTML(formatDistance(s.meters))}</span>
+              </button></li>
+            `).join('')}
+          </ul>
+        `
+        : '';
+
+      const stepsToShow = (activeSegmentIndex >= 0)
+        ? segments[activeSegmentIndex].steps
+        : allSteps.map(s => s.text);
+
+      directionsResults.innerHTML = `
+        <h3 id="directionsResultsHeading" tabindex="-1">From ${escapeHTML(fromEp.name)} to ${escapeHTML(toEp.name)}</h3>
+        <p class="summary">
+          ${accessible ? 'Accessible route · ' : ''}
+          ${escapeHTML(formatDistance(totalMeters))} · ${escapeHTML(formatEta(totalMeters))} walking
+          ${segments.length > 1 ? `· ${segments.length} segments` : ''}
+        </p>
+        ${segmentsHtml}
+        <ol>${stepsToShow.map(s => `<li>${escapeHTML(s)}</li>`).join('')}</ol>
+        <div class="step-controls" style="margin-top:0.5rem;">
+          <button type="button" id="startEnRouteBtn" class="primary-btn">Start step-by-step</button>
+        </div>
+      `;
+
+      // Wire segment tabs
+      directionsResults.querySelectorAll('.segments-list button').forEach(btn => {
+        btn.addEventListener('click', () => {
+          activeSegmentIndex = parseInt(btn.dataset.seg, 10);
+          renderRoute();
+          drawRouteOnMap();
+        });
+      });
+      // Wire start en-route
+      const startBtn = document.getElementById('startEnRouteBtn');
+      if (startBtn) startBtn.addEventListener('click', startEnRoute);
+
+      drawRouteOnMap();
+      announce(`Route found: ${segments.length} segment${segments.length === 1 ? '' : 's'}, ${formatDistance(totalMeters)}, about ${formatEta(totalMeters)} walking.`);
+    }
+
+    function drawRouteOnMap() {
+      if (!svgElement || !activeRoute) return;
+      clearRouteFromMap();
+      const { segments, accessible } = activeRoute;
+      const layer = document.createElementNS(SVG_NS, 'g');
+      layer.setAttribute('class', 'route-layer');
+      layer.setAttribute('aria-hidden', 'true');
+
+      segments.forEach((seg, i) => {
+        const polyline = document.createElementNS(SVG_NS, 'polyline');
+        let cls = 'route-line route-segment' + (accessible ? ' accessible' : '');
+        if (activeSegmentIndex === i) cls += ' highlight';
+        else if (activeSegmentIndex !== -1) cls += ' dim';
+        polyline.setAttribute('class', cls);
+        polyline.setAttribute('points', seg.waypoints.map(p => `${p.x},${p.y}`).join(' '));
+        polyline.dataset.segIndex = String(i);
+        layer.appendChild(polyline);
+      });
+
+      // Endpoints (start of first, end of last) plus intermediate stop dots
+      const allPts = [
+        segments[0].waypoints[0],
+        segments[segments.length - 1].waypoints.slice(-1)[0],
+      ];
+      allPts.forEach(pt => {
+        const c = document.createElementNS(SVG_NS, 'circle');
+        c.setAttribute('class', 'route-endpoint');
+        c.setAttribute('cx', pt.x);
+        c.setAttribute('cy', pt.y);
+        c.setAttribute('r', '6');
+        layer.appendChild(c);
+      });
+      for (let i = 0; i < segments.length - 1; i++) {
+        const pt = segments[i].to;
+        const c = document.createElementNS(SVG_NS, 'circle');
+        c.setAttribute('class', 'route-endpoint');
+        c.setAttribute('cx', pt.x);
+        c.setAttribute('cy', pt.y);
+        c.setAttribute('r', '5');
+        layer.appendChild(c);
+      }
+
+      svgElement.appendChild(layer);
+    }
+
+    function clearRouteFromMap() {
+      if (!svgElement) return;
+      const existing = svgElement.querySelector('.route-layer');
+      if (existing) existing.remove();
+    }
+
+    accessibleRouteToggle.addEventListener('click', () => {
+      const pressed = accessibleRouteToggle.getAttribute('aria-pressed') === 'true';
+      const next = !pressed;
+      accessibleRouteToggle.setAttribute('aria-pressed', next ? 'true' : 'false');
+      announce(next ? 'Accessible route preference on.' : 'Accessible route preference off.');
+      if (activeRoute) {
+        activeRoute.accessible = next;
+        renderRoute();
+      }
+    });
+
+    clearDirectionsBtn.addEventListener('click', () => {
+      dirFromPoi = null;
+      dirToPoi = null;
+      dirFromInput.value = '';
+      dirToInput.value = '';
+      dirFromCombo.close();
+      dirToCombo.close();
+      // Remove all stops
+      stops.slice().forEach(s => removeStop(s.id));
+      activeRoute = null;
+      clearRouteFromMap();
+      hideEnRoute();
+      directionsResults.innerHTML = '';
+      announce('Directions cleared.');
+      dirFromInput.focus();
+    });
+
+    // ---------- En-route mode ----------
+    function startEnRoute() {
+      if (!activeRoute || !activeRoute.allSteps.length) return;
+      enRouteIndex = 0;
+      enRoutePanel.hidden = false;
+      renderEnRoute();
+      enRouteHeading.focus();
+      announce('Step-by-step navigation started.');
+    }
+
+    function renderEnRoute() {
+      if (!activeRoute) return;
+      const total = activeRoute.allSteps.length;
+      const cur = activeRoute.allSteps[enRouteIndex];
+      erCurrent.textContent = String(enRouteIndex + 1);
+      erTotal.textContent = String(total);
+      erStepText.textContent = cur.text;
+      const seg = activeRoute.segments[cur.segmentIndex];
+      erMeta.textContent = `Segment ${cur.segmentIndex + 1} of ${activeRoute.segments.length} · ${seg.from.name} → ${seg.to.name}`;
+      erPrevBtn.disabled = enRouteIndex === 0;
+      erNextBtn.disabled = enRouteIndex >= total - 1;
+      // Highlight the current segment on the map
+      activeSegmentIndex = cur.segmentIndex;
+      drawRouteOnMap();
+    }
+
+    function hideEnRoute() {
+      enRoutePanel.hidden = true;
+      enRouteIndex = -1;
+    }
+
+    erPrevBtn.addEventListener('click', () => {
+      if (enRouteIndex > 0) {
+        enRouteIndex--;
+        renderEnRoute();
+        announce(`Step ${enRouteIndex + 1} of ${activeRoute.allSteps.length}.`);
+      }
+    });
+    erNextBtn.addEventListener('click', () => {
+      if (activeRoute && enRouteIndex < activeRoute.allSteps.length - 1) {
+        enRouteIndex++;
+        renderEnRoute();
+        announce(`Step ${enRouteIndex + 1} of ${activeRoute.allSteps.length}.`);
+      }
+    });
+    erEndBtn.addEventListener('click', () => {
+      hideEnRoute();
+      announce('Navigation ended.');
+      activeSegmentIndex = -1;
+      drawRouteOnMap();
+    });
+
+    // ---------- POI-panel directions buttons ----------
+    function getActivePanelItem() {
+      const id = poiPanelTitle.dataset.poiId;
+      if (!id) return null;
+      return findEndpointById(id);
+    }
+
+    poiDirFromHere.addEventListener('click', () => {
+      const item = getActivePanelItem();
+      if (!item) return;
+      dirFromPoi = item;
+      dirFromInput.value = item.name;
+      openDirectionsPanel('to');
+      announce(`${item.name} set as starting point.`);
+    });
+    poiDirToHere.addEventListener('click', () => {
+      const item = getActivePanelItem();
+      if (!item) return;
+      dirToPoi = item;
+      dirToInput.value = item.name;
+      openDirectionsPanel('from');
+      announce(`${item.name} set as destination.`);
+    });
+    poiFindOnMap.addEventListener('click', () => {
+      const item = getActivePanelItem();
+      if (!item) return;
+      const target = findElementForItem(item);
+      if (target) {
+        scrollMarkerIntoView(target);
+        try { target.focus(); } catch (_) {}
+        announce(`${item.name} is centred on the map.`);
+      }
+    });
+
+    // ---------- Reset map ----------
+    resetMapBtn.addEventListener('click', () => {
+      // Clear route, close panels, reset zoom, reset filters
+      activeRoute = null;
+      clearRouteFromMap();
+      hideEnRoute();
+      directionsResults.innerHTML = '';
+      if (!directionsPanel.hidden) closeDirectionsPanel();
+      if (!poiPanel.hidden) closePOIPanel();
+      activeCategories = new Set(Object.keys(CATEGORIES));
+      updateChipStates();
+      applyCategoryFilter();
+      currentZoom = 1.0;
+      mapPanX = 0;
+      mapPanY = 0;
+      applyZoom();
+      announce('Map reset.');
+    });
+
+    // ---------- Edit POIs (drag mode) ----------
+    let dragState = null; // { poi, marker, offsetX, offsetY }
+
+    function svgPointFromEvent(e) {
+      const rect = svgElement.getBoundingClientRect();
+      const vb = svgElement.viewBox.baseVal;
+      return {
+        x: ((e.clientX - rect.left) / rect.width) * vb.width,
+        y: ((e.clientY - rect.top) / rect.height) * vb.height,
+      };
+    }
+
+    editPoisMode.addEventListener('change', () => {
+      document.body.classList.toggle('edit-pois', editPoisMode.checked);
+      // Attach the drag handlers only while editing, so a normal user's
+      // .map-wrapper has no click/mousedown handler (Chrome would
+      // otherwise expose it as a clickable "object" in the a11y tree).
+      if (editPoisMode.checked) {
+        mapWrapper.addEventListener('mousedown', poiDragMouseDown, true);
+        mapWrapper.addEventListener('click', poiDragClickSuppress, true);
+      } else {
+        mapWrapper.removeEventListener('mousedown', poiDragMouseDown, true);
+        mapWrapper.removeEventListener('click', poiDragClickSuppress, true);
+      }
+      if (svgElement) {
+        svgElement.querySelectorAll('.poi-marker').forEach(marker => {
+          // Remove any previous edit-mode <title>
+          const existing = marker.querySelector(':scope > title[data-edit-title]');
+          if (existing) existing.remove();
+          if (editPoisMode.checked) {
+            const poi = POIS.find(p => p.id === marker.dataset.poiId);
+            if (!poi) return;
+            const def = CATEGORIES[poi.category];
+            const title = document.createElementNS(SVG_NS, 'title');
+            title.setAttribute('data-edit-title', '');
+            title.textContent = `${poi.name} — ${def.label}${poi.description ? ': ' + poi.description : ''}`;
+            marker.insertBefore(title, marker.firstChild);
+          }
+        });
+      }
+      announce(editPoisMode.checked
+        ? 'Edit POIs mode on. Drag any marker to reposition it.'
+        : 'Edit POIs mode off.');
+    });
+
+    // POI-drag handlers (dev/edit only). Defined here but attached ONLY
+    // while Edit POIs mode is on (see editPoisMode toggle): a permanent
+    // mousedown/click handler on .map-wrapper makes Chrome expose the
+    // wrapper as a generic "clickable" object that NVDA announces around
+    // every focused feature. Capture phase beats the marker's own click.
+    function poiDragMouseDown(e) {
+      if (!editPoisMode.checked) return;
+      const marker = e.target.closest && e.target.closest('.poi-marker');
+      if (!marker || !svgElement || !svgElement.contains(marker)) return;
+      e.preventDefault();
+      e.stopPropagation();
+      const poiId = marker.dataset.poiId;
+      const poi = POIS.find(p => p.id === poiId);
+      if (!poi) return;
+      const pt = svgPointFromEvent(e);
+      dragState = {
+        poi, marker,
+        offsetX: pt.x - poi.x,
+        offsetY: pt.y - poi.y,
+      };
+    }
+
+    document.addEventListener('mousemove', (e) => {
+      if (!dragState) return;
+      const pt = svgPointFromEvent(e);
+      const newX = +(pt.x - dragState.offsetX).toFixed(1);
+      const newY = +(pt.y - dragState.offsetY).toFixed(1);
+      dragState.poi.x = newX;
+      dragState.poi.y = newY;
+      dragState.marker.setAttribute('transform', `translate(${newX}, ${newY})`);
+      if (dragState.marker.__icon) {
+        dragState.marker.__icon.setAttribute('transform', `translate(${newX}, ${newY})`);
+      }
+      coordDisplay.textContent = `Dragging ${dragState.poi.name}: x=${newX}, y=${newY}`;
+    });
+
+    document.addEventListener('mouseup', () => {
+      if (!dragState) return;
+      announce(`Moved ${dragState.poi.name} to x ${dragState.poi.x}, y ${dragState.poi.y}.`);
+      dragState = null;
+    });
+
+    // Suppress click after drag so we don't open the panel (attached
+    // only in Edit POIs mode — see editPoisMode toggle).
+    function poiDragClickSuppress(e) {
+      if (editPoisMode.checked) {
+        const marker = e.target.closest && e.target.closest('.poi-marker');
+        if (marker) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      }
+    }
+
+    // Dump current POIS as JSON to clipboard
+    dumpPoisBtn.addEventListener('click', async () => {
+      const lines = POIS.map(p => {
+        const parts = [
+          `id: ${JSON.stringify(p.id)}`,
+          `name: ${JSON.stringify(p.name)}`,
+          `category: ${JSON.stringify(p.category)}`,
+          `x: ${p.x}`,
+          `y: ${p.y}`,
+          `description: ${JSON.stringify(p.description || '')}`,
+        ];
+        if (p.gate) parts.push(`gate: ${JSON.stringify(p.gate)}`);
+        return `      { ${parts.join(', ')} },`;
+      }).join('\n');
+      const out = `const POIS = [\n${lines}\n    ];\n`;
+      try {
+        await navigator.clipboard.writeText(out);
+        announce(`Copied ${POIS.length} POIs to clipboard.`);
+      } catch (err) {
+        // Fallback: show in a prompt-like textarea
+        console.log(out);
+        announce('Could not copy to clipboard; POI JSON logged to console.');
+      }
+    });
+
+    // Global keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      // Don't intercept shortcuts when typing in form fields
+      const tag = e.target.tagName;
+      const inField = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
+
+      // Esc with the tooltip showing dismisses just the tooltip first.
+      if (e.key === 'Escape' && !poiTooltip.hidden) {
+        hideTooltip();
+        return;
+      }
+      if (e.key === 'Escape' && !poiPanel.hidden) {
+        closePOIPanel();
+        return;
+      }
+      if (e.key === 'Escape' && !directionsPanel.hidden) {
+        // Don't fight the combobox's own Escape behaviour: only close panel if no listbox is open
+        const anyListOpen = !dirFromSuggestions.hidden || !dirToSuggestions.hidden;
+        if (!anyListOpen) {
+          closeDirectionsPanel();
+          return;
+        }
+      }
+
+      if (inField) return;
+
+      if (e.key === '+' || e.key === '=') {
+        zoomTo(currentZoom * 1.25);
+      } else if (e.key === '-') {
+        zoomTo(currentZoom / 1.25);
+      } else if (e.key === '0') {
+        const hasActive = poiPanelTitle && poiPanelTitle.dataset.poiId;
+        if (hasActive) {
+          zoomTo(1);
+        } else {
+          currentZoom = 1;
+          mapPanX = 0;
+          mapPanY = 0;
+          applyZoom();
+        }
+      }
+    });
+
+    // ===========================================================================
+    // ---------- Map-stage: mouse drag pan + touch pinch zoom ----------
+    (function setupMapInteraction() {
+      const stage = document.getElementById('map-region');
+      if (!stage) return;
+
+      let isDragging = false;
+      let activePointerId = null;
+      let dragStartX = 0, dragStartY = 0;
+      let dragStartPanX = 0, dragStartPanY = 0;
+      let movedDuringDrag = false;
+      const DRAG_THRESHOLD = 4;
+
+      function isInteractiveTarget(t) {
+        if (!t || !t.closest) return false;
+        return !!t.closest('button, a, input, select, label, [tabindex="0"], .poi-marker, [data-gate]');
+      }
+
+      stage.addEventListener('pointerdown', (e) => {
+        if (e.pointerType === 'mouse' && e.button !== 0) return;
+        if (document.body.classList.contains('edit-pois')) return;
+        if (isPinching) return;
+        if (isInteractiveTarget(e.target)) return;
+        // Suppress the synthetic mousedown that would begin a text selection
+        // across SVG text elements.
+        e.preventDefault();
+        isDragging = true;
+        movedDuringDrag = false;
+        activePointerId = e.pointerId;
+        dragStartX = e.clientX;
+        dragStartY = e.clientY;
+        dragStartPanX = mapPanX;
+        dragStartPanY = mapPanY;
+        try { stage.setPointerCapture(e.pointerId); } catch (_) {}
+        // Immediate visual feedback: cursor and backdrop change as soon as
+        // the user presses, before any movement threshold. The threshold
+        // below only gates the actual transform write so a pure click is
+        // a no-op.
+        document.body.classList.add('is-dragging');
+        hideTooltip();
+        // Clear any existing selection so it doesn't keep redrawing during drag
+        const sel = window.getSelection && window.getSelection();
+        if (sel && sel.removeAllRanges) sel.removeAllRanges();
+      });
+
+      let pendingRaf = null;
+      let latestX = 0, latestY = 0;
+      function schedulePanFrame() {
+        if (pendingRaf) return;
+        pendingRaf = requestAnimationFrame(() => {
+          pendingRaf = null;
+          mapPanX = latestX;
+          mapPanY = latestY;
+          applyZoom();
+        });
+      }
+
+      stage.addEventListener('pointermove', (e) => {
+        if (!isDragging || e.pointerId !== activePointerId) return;
+        const dx = e.clientX - dragStartX;
+        const dy = e.clientY - dragStartY;
+        if (!movedDuringDrag && (Math.abs(dx) + Math.abs(dy)) >= DRAG_THRESHOLD) {
+          movedDuringDrag = true;
+        }
+        if (movedDuringDrag) {
+          latestX = dragStartPanX + dx;
+          latestY = dragStartPanY + dy;
+          schedulePanFrame();
+        }
+      });
+
+      function endDrag(e) {
+        if (!isDragging) return;
+        if (e && e.pointerId !== activePointerId) return;
+        isDragging = false;
+        activePointerId = null;
+        document.body.classList.remove('is-dragging');
+      }
+      stage.addEventListener('pointerup', endDrag);
+      stage.addEventListener('pointercancel', endDrag);
+      stage.addEventListener('pointerleave', endDrag);
+
+      // Two-finger pinch zoom
+      var isPinching = false;
+      let pinchStartDist = 0;
+      let pinchStartZoom = 1;
+
+      stage.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 2) {
+          isPinching = true;
+          // Cancel any ongoing drag
+          isDragging = false;
+          document.body.classList.remove('is-dragging');
+          pinchStartDist = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY
+          );
+          pinchStartZoom = currentZoom;
+        }
+      }, { passive: true });
+
+      stage.addEventListener('touchmove', (e) => {
+        if (e.touches.length === 2 && isPinching) {
+          const dist = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY
+          );
+          if (pinchStartDist > 0) {
+            const ratio = dist / pinchStartDist;
+            zoomTo(pinchStartZoom * ratio);
+          }
+          if (e.cancelable) e.preventDefault();
+        }
+      }, { passive: false });
+
+      stage.addEventListener('touchend', (e) => {
+        if (e.touches.length < 2) {
+          isPinching = false;
+        }
+      });
+
+      // Trackpad pinch / Ctrl+wheel: browsers fire a wheel event with
+      // ctrlKey=true. Without intercepting, the browser zooms the whole
+      // page. Translate it into a map zoom instead.
+      stage.addEventListener('wheel', (e) => {
+        if (e.ctrlKey || e.metaKey) {
+          e.preventDefault();
+          // deltaY is negative when pinching out (zoom in)
+          const factor = Math.exp(-e.deltaY * 0.01);
+          zoomTo(currentZoom * factor);
+        }
+      }, { passive: false });
+    })();
+
+    // ---------- Keyboard arrow keys to pan (when nothing else is focused) ----------
+    document.addEventListener('keydown', (e) => {
+      const tag = e.target.tagName;
+      const inField = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
+      if (inField) return;
+      const step = 80;
+      if (e.key === 'ArrowUp')    { panBy(0,  step); e.preventDefault(); }
+      else if (e.key === 'ArrowDown')  { panBy(0, -step); e.preventDefault(); }
+      else if (e.key === 'ArrowLeft')  { panBy( step, 0); e.preventDefault(); }
+      else if (e.key === 'ArrowRight') { panBy(-step, 0); e.preventDefault(); }
+    });
+
+    // ---------- Region cycling (F6 / Shift+F6) ----------
+    // Three top-level regions for keyboard-only users to jump between
+    // without tabbing through the whole page. F6 moves forward through
+    // the cycle, Shift+F6 backward. Each region remembers the last
+    // element that had focus within it, so subsequent cycles return
+    // there rather than to the region's first focusable element.
+    const NAV_REGIONS = [
+      { id: 'panel',    name: 'Main panel',
+        root: () => document.querySelector('.left-panel'),
+        // If a POI is currently being shown in the panel, that title is
+        // the most useful entry point regardless of where panel focus
+        // was last. Otherwise fall through to lastFocus / defaultFocus.
+        preferredFocus: () => {
+          const poiPanel = document.getElementById('poiPanel');
+          return (poiPanel && !poiPanel.hidden)
+            ? document.getElementById('poiPanelToggle')
+            : null;
+        },
+        defaultFocus: () => document.getElementById('poi-search') },
+      { id: 'map',      name: 'Map content',
+        root: () => document.querySelector('.map-stage'),
+        // Prefer the first POI marker; fall back to first focusable gate.
+        defaultFocus: () => document.querySelector('.map-wrapper svg .poi-marker')
+                            || document.querySelector('.map-wrapper svg [data-gate]') },
+      { id: 'controls', name: 'Map controls',
+        root: () => document.querySelector('.map-controls'),
+        defaultFocus: () => document.getElementById('resetMapBtn') },
+    ];
+    const FOCUSABLE_SEL = [
+      'a[href]',
+      'button:not(:disabled)',
+      'input:not(:disabled)',
+      'select:not(:disabled)',
+      'textarea:not(:disabled)',
+      '[tabindex]:not([tabindex="-1"])',
+    ].join(',');
+    const lastFocusInRegion = Object.create(null);
+
+    function findRegionForElement(el) {
+      if (!el) return null;
+      for (const region of NAV_REGIONS) {
+        const root = region.root();
+        if (root && root.contains(el)) return region;
+      }
+      return null;
+    }
+
+    function isUsableFocusable(el) {
+      if (!el || el.disabled) return false;
+      if (el.getAttribute('tabindex') === '-1') return false;
+      // Visibility / inert check
+      if (el.offsetParent === null && getComputedStyle(el).position !== 'fixed') return false;
+      let n = el;
+      while (n && n !== document.body) {
+        if (n.hasAttribute && n.hasAttribute('inert')) return false;
+        if (n.hasAttribute && n.hasAttribute('hidden')) return false;
+        n = n.parentElement;
+      }
+      return true;
+    }
+
+    function firstFocusableIn(root) {
+      if (!root) return null;
+      const candidates = root.querySelectorAll(FOCUSABLE_SEL);
+      for (const el of candidates) {
+        if (isUsableFocusable(el)) return el;
+      }
+      return null;
+    }
+
+    // Track the most recently focused element within each region.
+    document.addEventListener('focusin', (e) => {
+      const region = findRegionForElement(e.target);
+      if (region) lastFocusInRegion[region.id] = e.target;
+    });
+
+    function cycleRegion(direction) {
+      // If a dialog is open, don't yank focus out of it.
+      if (document.querySelector('dialog[open]')) return;
+
+      const here = findRegionForElement(document.activeElement);
+      const startIdx = here ? NAV_REGIONS.indexOf(here) : -1;
+      const len = NAV_REGIONS.length;
+      const nextIdx = ((startIdx + direction) % len + len) % len;
+      const next = NAV_REGIONS[nextIdx];
+
+      // Priority order for picking the focus target in a region:
+      //   1. preferredFocus()  — context-sensitive override (e.g. panel
+      //      region prefers the POI title whenever a POI is showing)
+      //   2. lastFocusInRegion — the element last focused while in this
+      //      region during the current page
+      //   3. defaultFocus()    — the region's documented entry point
+      //   4. firstFocusableIn  — emergency fallback
+      let target = next.preferredFocus && next.preferredFocus();
+      if (!target || !isUsableFocusable(target)) {
+        target = lastFocusInRegion[next.id];
+        if (!target || !document.contains(target) || !isUsableFocusable(target)) {
+          target = (next.defaultFocus && next.defaultFocus()) || null;
+          if (!target || !isUsableFocusable(target)) {
+            target = firstFocusableIn(next.root());
+          }
+        }
+      }
+      if (!target) return;
+      try { target.focus(); } catch (_) { return; }
+      announce(`Moved to ${next.name}.`);
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'F6') return;
+      e.preventDefault();
+      cycleRegion(e.shiftKey ? -1 : 1);
+    });
+
+    // ---------- Delegated feature activation ----------
+    // The gate/POI circles deliberately carry NO click/keydown listeners,
+    // because Chrome flags any element with one as "clickable" and voices
+    // that on every feature — noise on a dense map / explore-by-touch.
+    // They stay clean "graphic"s; we resolve activation here, once, on the
+    // document. (Edit-POIs mode adds its own capture-phase click-suppressor
+    // on .map-wrapper so a drag doesn't open the panel.)
+    function featureFromEl(el) {
+      if (!el || !el.closest) return null;
+      const poiEl = el.closest('.poi-marker');
+      if (poiEl && poiEl.dataset.poiId) {
+        const poi = POIS.find(p => p.id === poiEl.dataset.poiId);
+        if (poi) return { item: poi, el: poiEl };
+      }
+      const gateEl = el.closest('.gate-marker');
+      if (gateEl && gateEl.dataset.gate) {
+        const gate = GATES.find(g => g.gate === gateEl.dataset.gate);
+        if (gate) return { item: gate, el: gateEl };
+      }
+      return null;
+    }
+    document.addEventListener('click', (e) => {
+      const f = featureFromEl(e.target);
+      if (f) { e.stopPropagation(); openPOIPanel(f.item, f.el); }
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      const f = featureFromEl(document.activeElement);
+      if (f) { e.preventDefault(); openPOIPanel(f.item, f.el); }
+    });
+
+
+    // ---------- Help modals ----------
+    const srHelpBtn   = document.getElementById('srHelpBtn');
+    const kbHelpBtn   = document.getElementById('kbHelpBtn');
+    const srHelpModal = document.getElementById('srHelpModal');
+    const kbHelpModal = document.getElementById('kbHelpModal');
+
+    if (srHelpBtn && srHelpModal) {
+      srHelpBtn.addEventListener('click', () => srHelpModal.showModal());
+    }
+    if (kbHelpBtn && kbHelpModal) {
+      kbHelpBtn.addEventListener('click', () => kbHelpModal.showModal());
+    }
+    document.querySelectorAll('.help-modal .modal-close').forEach(btn => {
+      btn.addEventListener('click', () => btn.closest('dialog').close());
+    });
+    // Click on the backdrop (outside the dialog content) closes the dialog.
+    [srHelpModal, kbHelpModal].forEach(dlg => {
+      if (!dlg) return;
+      dlg.addEventListener('click', (e) => {
+        if (e.target === dlg) dlg.close();
+      });
+    });
+
+    // ---------- Coord display toggle ----------
+    const showCoordDisplay = document.getElementById('showCoordDisplay');
+    if (showCoordDisplay) {
+      showCoordDisplay.addEventListener('change', () => {
+        document.body.classList.toggle('show-coords', showCoordDisplay.checked);
+        // Attach/detach the dev coord-grab click on the <svg> with the
+        // toggle, so a normal user's <svg> carries no click handler (and
+        // Chrome doesn't expose it as a clickable "object").
+        if (svgElement && svgElement._coordGrab) {
+          if (showCoordDisplay.checked) {
+            svgElement.addEventListener('click', svgElement._coordGrab);
+          } else {
+            svgElement.removeEventListener('click', svgElement._coordGrab);
+          }
+        }
+      });
+    }
+
+    // ---------- Polygon-border visualization (structural inspection) ----------
+    // Strokes every <path> in the SVG so polygon boundaries are visible.
+    // Click any path to log its index + fill + bounding box to the console.
+    // Optional fill filter dims everything except the chosen colour, letting
+    // you see one semantic-region candidate at a time.
+    const showPolygonBorders = document.getElementById('showPolygonBorders');
+    const fillFilter = document.getElementById('fillFilter');
+    let structHighlighted = null;
+
+    function populateFillFilter() {
+      if (!svgElement || !fillFilter) return;
+      const counts = new Map();
+      svgElement.querySelectorAll('path').forEach((p) => {
+        const f = p.getAttribute('fill') || 'none';
+        counts.set(f, (counts.get(f) || 0) + 1);
+      });
+      // Sort: most-common first, but keep "none" / no-fill at the end.
+      const entries = [...counts.entries()].sort((a, b) => {
+        if (a[0] === 'none') return 1;
+        if (b[0] === 'none') return -1;
+        return b[1] - a[1];
+      });
+      while (fillFilter.options.length > 1) fillFilter.remove(1);
+      entries.forEach(([fill, n]) => {
+        const opt = document.createElement('option');
+        opt.value = fill;
+        opt.textContent = `${fill} (${n})`;
+        fillFilter.appendChild(opt);
+      });
+    }
+
+    function applyFillFilter() {
+      if (!svgElement) return;
+      const want = fillFilter ? fillFilter.value : '';
+      svgElement.querySelectorAll('path').forEach((p) => {
+        if (!want) {
+          p.classList.remove('fill-dimmed');
+          return;
+        }
+        const f = p.getAttribute('fill') || 'none';
+        p.classList.toggle('fill-dimmed', f !== want);
+      });
+    }
+
+    function handleStructClick(e) {
+      const p = e.target.closest('path');
+      if (!p || !svgElement.contains(p)) return;
+      e.preventDefault();
+      e.stopPropagation();
+      if (structHighlighted) structHighlighted.classList.remove('struct-highlight');
+      p.classList.add('struct-highlight');
+      structHighlighted = p;
+      const all = [...svgElement.querySelectorAll('path')];
+      const idx = all.indexOf(p);
+      const fill = p.getAttribute('fill') || 'none';
+      let bbox;
+      try { bbox = p.getBBox(); } catch (_) { bbox = null; }
+      const d = p.getAttribute('d') || '';
+      // Lightweight info object (full d= is often huge; trim for log clarity).
+      const info = {
+        index: idx,
+        fill,
+        bbox: bbox ? {
+          x: +bbox.x.toFixed(2), y: +bbox.y.toFixed(2),
+          w: +bbox.width.toFixed(2), h: +bbox.height.toFixed(2),
+        } : null,
+        dPreview: d.length > 80 ? d.slice(0, 80) + '…' : d,
+        dLength: d.length,
+        element: p,
+      };
+      // eslint-disable-next-line no-console
+      console.log('[polygon]', info);
+    }
+
+    if (showPolygonBorders) {
+      showPolygonBorders.addEventListener('change', () => {
+        const on = showPolygonBorders.checked;
+        document.body.classList.toggle('show-polygon-borders', on);
+        if (on) {
+          populateFillFilter();
+          mapWrapper.addEventListener('click', handleStructClick, true);
+        } else {
+          mapWrapper.removeEventListener('click', handleStructClick, true);
+          if (structHighlighted) {
+            structHighlighted.classList.remove('struct-highlight');
+            structHighlighted = null;
+          }
+          if (fillFilter) fillFilter.value = '';
+          applyFillFilter();
+        }
+      });
+    }
+    if (fillFilter) {
+      fillFilter.addEventListener('change', applyFillFilter);
+    }
+
+    // ---------- Mobile bottom sheet: track its actual rendered height ----------
+    // The sheet's height is content-driven (CSS auto, max-height: 50vh).
+    // The map stage uses `bottom: var(--sheet-height)` so it shrinks to fit
+    // exactly the area above the sheet. We update the variable any time the
+    // sheet's measured height changes (search results, accordion toggles,
+    // viewport changes, etc.) so the map and the sheet stay flush.
+    const leftPanel = document.querySelector('.left-panel');
+    const mobileMQ  = window.matchMedia('(max-width: 720px)');
+    function isMobile() { return mobileMQ.matches; }
+
+    function syncSheetHeightVar() {
+      if (isMobile()) {
+        const h = leftPanel.offsetHeight;
+        document.documentElement.style.setProperty('--sheet-height', `${h}px`);
+      } else {
+        document.documentElement.style.removeProperty('--sheet-height');
+      }
+    }
+
+    // If the panel changes size (e.g. POI accordion expands, directions
+    // opens, filters expand) the currently-active POI/gate may end up
+    // obscured behind it. Track based on what the panel is showing rather
+    // than document focus, so this handles hover and click as well as
+    // keyboard focus.
+    let _panelResizePanTimer = null;
+    function checkActiveAfterPanelResize() {
+      clearTimeout(_panelResizePanTimer);
+      _panelResizePanTimer = setTimeout(() => {
+        const id = poiPanelTitle && poiPanelTitle.dataset.poiId;
+        if (!id || poiPanel.hidden) return;
+        const item = POIS.find(p => p.id === id) || GATES.find(g => g.id === id);
+        if (!item) return;
+        const el = findElementForItem(item);
+        if (!el || !svgElement || !svgElement.contains(el)) return;
+        if (document.body.classList.contains('is-dragging')) return;
+        if (!isElementInVisibleMapArea(el)) {
+          scrollMarkerIntoView(el, { mode: 'minimal' });
+        }
+      }, 60);
+    }
+
+    if (typeof ResizeObserver !== 'undefined') {
+      new ResizeObserver(() => {
+        syncSheetHeightVar();
+        checkActiveAfterPanelResize();
+      }).observe(leftPanel);
+    }
+    window.addEventListener('resize', syncSheetHeightVar);
+    mobileMQ.addEventListener('change', syncSheetHeightVar);
+    syncSheetHeightVar();
+
+    // Init
+    // ===========================================================================
+    buildCategoryChips();
+    loadMap(mapSelect.value);
+  </script>
+</body>
+</html>

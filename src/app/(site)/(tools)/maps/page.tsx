@@ -243,13 +243,14 @@ export default function Maps() {
               </li>
               <li>
                 <Link href="/maps/terminal-map">
-                  <strong>YVR terminal</strong>
+                  <strong>Terminal map</strong>
                 </Link>{" "}
-                &mdash; interior wayfinding for Vancouver
-                International Airport. The most feature-rich demo:
-                gates, security, washrooms, retail, services. The
-                airport-grade demonstration that the approach
-                scales beyond residential subdivisions.
+                &mdash; interior airport-terminal wayfinding (the
+                worked example is YVR&rsquo;s Level 3 departures).
+                The most feature-rich demo: gates, security,
+                washrooms, retail, services. The terminal-grade
+                demonstration that the approach scales beyond
+                residential subdivisions.
               </li>
             </ul>
           </section>
@@ -470,9 +471,9 @@ export default function Maps() {
                 <strong>Context-adapted skip-links.</strong>{" "}
                 Standard skip-to-content / skip-to-map-controls
                 augmented with domain-specific landmarks (e.g.
-                &ldquo;skip to Pier A / B / C / D / E&rdquo; at
-                YVR, with focus moving to the lowest-numbered
-                gate in that pier).
+                &ldquo;skip to Pier A / B / C / D / E&rdquo; in the
+                terminal map, with focus moving to the
+                lowest-numbered gate in that pier).
               </li>
             </ul>
           </section>
@@ -500,8 +501,9 @@ export default function Maps() {
               East Toronto, scaling the single-tile pipeline to a
               full city &mdash; currently in active development,
               with no public demo live yet. Most recently, the{" "}
-              <strong>YVR terminal map</strong> carries the
-              conceptual model into an indoor airport surface. Same
+              <strong>terminal map</strong> carries the conceptual
+              model into an indoor airport surface (worked example:
+              YVR&rsquo;s Level 3 departures). Same
               design vocabulary throughout; materially improved
               engineering and visual quality at each step.
             </p>
@@ -572,7 +574,7 @@ export default function Maps() {
                 + filters + rotor model the family shares.
               </li>
               <li>
-                <Link href="/maps/terminal-map">YVR terminal</Link>{" "}
+                <Link href="/maps/terminal-map">Terminal map</Link>{" "}
                 &mdash; interior wayfinding, airport scale.
               </li>
               <li>

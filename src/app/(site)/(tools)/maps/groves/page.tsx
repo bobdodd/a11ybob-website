@@ -66,12 +66,12 @@ export default function MapsGroves() {
               polar.
             </p>
             <p>
-              The finding generalised. It applies to YVR&rsquo;s
-              gates and washrooms and Guelph&rsquo;s pubs and
-              parks as much as to the Groves&rsquo; residential
-              streets. The simplicity here is what made the
-              generalisation visible; the richer demos use it
-              without re-discovering it.
+              The finding generalised. It applies to a
+              terminal&rsquo;s gates and washrooms and a
+              streetmap&rsquo;s pubs and parks as much as to the
+              Groves&rsquo; residential streets. The simplicity here
+              is what made the generalisation visible; the richer
+              demos use it without re-discovering it.
             </p>
           </section>
 

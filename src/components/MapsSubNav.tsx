@@ -13,7 +13,7 @@ const SUB_PAGES = [
   { href: "/maps", label: "Maps" },
   { href: "/maps/groves", label: "The Groves" },
   { href: "/maps/east-toronto-streetmap", label: "East Toronto streetmap" },
-  { href: "/maps/terminal-map", label: "YVR terminal" },
+  { href: "/maps/terminal-map", label: "Terminal map" },
 ] as const;
 
 export function MapsSubNav() {
