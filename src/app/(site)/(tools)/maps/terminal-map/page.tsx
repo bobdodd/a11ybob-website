@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { CSSProperties } from "react";
 import { MapsSubNav } from "@/components/MapsSubNav";
 import { NewTabLink } from "@/components/NewTabLink";
+import { ImageFigure } from "@/components/ImageFigure";
 
 export default function MapsTerminalMap() {
   return (
@@ -23,19 +24,38 @@ export default function MapsTerminalMap() {
               </small>
             </p>
             <h1>Terminal map</h1>
-            <p className="lede">
-              Interior wayfinding for an airport terminal &mdash; the
-              richest feature inventory of the three demos: gates,
-              security checkpoints, washrooms, retail, services,
-              accessible routes, charging stations, in an environment
-              that fails most of the assumptions consumer mapping
-              tools make. The worked example is a real terminal
-              &mdash; Vancouver International&rsquo;s Level 3
-              departures &mdash; but the demo is here as a generic
-              terminal-wayfinding example; the particular airport is
-              incidental.
-            </p>
           </header>
+
+          <ImageFigure
+            src="/maps/terminal-map-hero.png"
+            alt="The terminal-map demo with Gate 60 selected. A left-hand panel holds a gate-and-shop search field and the selected gate's details — Gate 60, an international departures gate on Pier D, Lufthansa flight LH880 to Hong Kong departing 05:00, on time — above 'Find on map' and 'Directions from here' buttons. The main area renders Level 3 departures as a winding concourse with numbered gate markers, points-of-interest icons, and labelled zones including the International Gates and the U.S. Connections Facility; a pin marks a chosen location and a pan-and-zoom keypad sits at the lower right."
+            frameN={2924}
+            frameD={1664}
+            contain
+            triggerLabel="the terminal-map demo"
+            captionText="The terminal-map demo: a searchable, screen-reader-navigable rendering of Level 3 departures, with per-gate detail and directions in the side panel. The worked example is Vancouver International's Level 3 departures."
+            caption={
+              <>
+                The terminal-map demo: a searchable,
+                screen-reader-navigable rendering of Level 3
+                departures, with per-gate detail and directions in
+                the side panel. The worked example is Vancouver
+                International&rsquo;s Level 3 departures.
+              </>
+            }
+          />
+
+          <p className="lede">
+            Interior wayfinding for an airport terminal &mdash; the
+            richest feature inventory of the three demos: gates,
+            security checkpoints, washrooms, retail, services,
+            accessible routes, charging stations, in an environment
+            that fails most of the assumptions consumer mapping tools
+            make. The worked example is a real terminal &mdash;
+            Vancouver International&rsquo;s Level 3 departures &mdash;
+            but the demo is here as a generic terminal-wayfinding
+            example; the particular airport is incidental.
+          </p>
 
           <section
             className="stack"
