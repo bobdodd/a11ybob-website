@@ -242,7 +242,7 @@ export default function Maps() {
                 is the SVG structure for screen-reader navigation.
               </li>
               <li>
-                <Link href="/maps/yvr">
+                <Link href="/maps/terminal-map">
                   <strong>YVR terminal</strong>
                 </Link>{" "}
                 &mdash; interior wayfinding for Vancouver
@@ -572,7 +572,7 @@ export default function Maps() {
                 + filters + rotor model the family shares.
               </li>
               <li>
-                <Link href="/maps/yvr">YVR terminal</Link>{" "}
+                <Link href="/maps/terminal-map">YVR terminal</Link>{" "}
                 &mdash; interior wayfinding, airport scale.
               </li>
               <li>

@@ -150,7 +150,7 @@ export default function Playgrounds() {
                   wayfinding and the East Toronto streetmap, where
                   the ARIA Landmarks + filters + rotor model first
                   appeared) live at{" "}
-                  <Link href="/maps/yvr">/maps/yvr</Link> and{" "}
+                  <Link href="/maps/terminal-map">/maps/terminal-map</Link> and{" "}
                   <Link href="/maps/east-toronto-streetmap">
                     /maps/east-toronto-streetmap
                   </Link>

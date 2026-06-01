@@ -163,7 +163,7 @@ export default function MapsEastTorontoStreetmap() {
               active development (the direct architectural
               successor, scaling the single-tile pipeline shown
               here to a full city), the{" "}
-              <Link href="/maps/yvr">YVR terminal map</Link>{" "}
+              <Link href="/maps/terminal-map">YVR terminal map</Link>{" "}
               (which carries the same conceptual model into an
               indoor airport surface), and this demo itself, which
               remains live as the architectural reference.
