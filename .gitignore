@@ -50,6 +50,10 @@ IMAGES/
 CLAUDE.md
 AGENTS.md
 
+# reference papers dropped in the repo root for reading —
+# working material, never site content (and often copyrighted)
+/*.pdf
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
