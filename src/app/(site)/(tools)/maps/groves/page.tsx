@@ -49,6 +49,44 @@ export default function MapsGroves() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
+            <h2>Why a raster base, and why that&rsquo;s right here</h2>
+            <p>
+              The later maps in the family draw{" "}
+              <em>everything</em> as addressable SVG, because their
+              job is to let a non-sighted user explore the detailed
+              space itself. The Groves does not work that way, and
+              that is a deliberate, fit-for-purpose choice rather than
+              a shortcoming. Here what matters are the{" "}
+              <strong>pinned points of interest</strong> &mdash; where
+              the properties are in the subdivision &mdash; not the
+              detail of the streets around them. The map renders a
+              raster base for sighted context, and the accessible,
+              interactive layer is the <em>pin overlay</em> drawn on
+              top: only the pins need to be addressable, focusable, and
+              described, because only the pins are what the map is
+              about.
+            </p>
+            <p>
+              This is the family&rsquo;s working principle in
+              miniature: there is no single right way to render an
+              accessible map &mdash; the rendering should follow the
+              job. The Groves answers &ldquo;where are the
+              properties, and what is near each one?&rdquo;; the{" "}
+              <Link href="/maps/east-toronto-streetmap">
+                East Toronto streetmap
+              </Link>{" "}
+              and the{" "}
+              <Link href="/maps/terminal-map">terminal map</Link>{" "}
+              answer &ldquo;help me explore this whole space,&rdquo;
+              and pay the cost of making every feature addressable to
+              do it.
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
             <h2>Why this demo produced the polar finding</h2>
             <p>
               The simplicity is the point. Most accessible-mapping

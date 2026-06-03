@@ -131,6 +131,41 @@ export default function MapsEastTorontoStreetmap() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
+            <h2>A map to explore, not a set of pins</h2>
+            <p>
+              That last distinction is where this demo parts company
+              with the{" "}
+              <Link href="/maps/groves">Groves</Link>. The Groves is
+              about its <em>pinned points of interest</em> &mdash;
+              where the properties are &mdash; so it renders a raster
+              base with an addressable pin overlay, and only the pins
+              need to be reachable. This map has the opposite job:
+              letting a non-sighted user explore the detailed space
+              itself. That is why <em>everything</em> here is drawn as
+              addressable SVG, and why the affordances for navigating a
+              whole map &mdash; ARIA landmarks to group features,
+              category filters to manage clutter, and the rotor to skim
+              one category at a time &mdash; first became necessary,
+              and first appeared, here. When the space itself is the
+              content, the reader needs ways through it; a handful of
+              pins does not.
+            </p>
+            <p>
+              There is no single right answer across the family &mdash;
+              the rendering and the affordances follow the job. The
+              multi-tile Toronto streetmap and the{" "}
+              <Link href="/maps/terminal-map">terminal map</Link>{" "}
+              inherit this map&rsquo;s &ldquo;explore the space&rdquo;
+              brief and the navigation model that goes with it; the
+              terminal map then adds search, routing, level structure,
+              and the <kbd>F6</kbd> region cycle on top.
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
             <h2>Where it came from</h2>
             <p>
               First publicly shown as a 45-minute in-person

@@ -22,10 +22,13 @@ export default function Maps() {
               field has effectively abandoned: real spatial
               cognition for non-sighted users, not turn-by-turn
               navigation. Three working demos across building,
-              subdivision, and city-neighbourhood scales; one
-              shared SVG-tile architecture; one theoretical
-              contribution about how coordinate systems collapse
-              under modality conversion.
+              subdivision, and city-neighbourhood scales &mdash;
+              deliberately different from one another, because there
+              is no one right way to render a map; it depends on what
+              the map is for. What they share is an approach to
+              spatial cognition, and one theoretical contribution
+              about how coordinate systems collapse under modality
+              conversion.
             </p>
           </header>
 
@@ -212,11 +215,28 @@ export default function Maps() {
             <p>
               Each demo is a full-screen interactive map at its own
               URL; the page here is the brief that frames the demo
-              and links out to it. Same design vocabulary across
-              all three: SVG over raster, pin-as-datum at viewport
-              centre, dual-mode interaction (Cartesian via touch,
-              polar via keyboard), rotor for narrowing tab order,
-              F6 landmark cycle.
+              and links out to it. What the three share is the
+              approach to spatial cognition &mdash; pin-as-datum at
+              viewport centre, dual-mode interaction (Cartesian via
+              touch, polar via keyboard) &mdash; not the rendering or
+              the feature set, which differ on purpose.
+            </p>
+            <p>
+              The difference is fit-for-purpose. On{" "}
+              <strong>the Groves</strong>, what matters are the
+              <em> pinned points of interest</em> &mdash; where the
+              properties are &mdash; not the detail of the streets
+              around them; so the Groves renders a raster base with
+              an interactive pin overlay drawn on top, and only the
+              pins need to be addressable. The{" "}
+              <strong>East Toronto streetmap</strong> and the{" "}
+              <strong>terminal map</strong> are about exploring the
+              detailed space itself, so there everything is drawn as
+              addressable SVG, and the richer affordances &mdash;
+              ARIA landmarks, category filters, the rotor, the F6
+              region cycle &mdash; live there rather than on the
+              Groves. There is no one perfect solution; the right
+              rendering follows the job the map is doing.
             </p>
             <ul>
               <li>
@@ -373,15 +393,25 @@ export default function Maps() {
             <h2>Technical foundation</h2>
             <ul>
               <li>
-                <strong>SVG over raster / canvas.</strong>{" "}
+                <strong>
+                  Addressable rendering where the goal is to explore
+                  the space.
+                </strong>{" "}
                 Commercial maps moved to raster tiles for
-                performance; raster is opaque to screen readers.
-                SVG elements are individually addressable,
-                focusable, semantically labellable, scalable
-                without resampling. The choice the field made for
-                performance was the choice you would avoid for
-                accessibility, and the work here makes the
-                opposite choice deliberately.
+                performance; raster is opaque to screen readers. SVG
+                elements are individually addressable, focusable,
+                semantically labellable, scalable without resampling.
+                Where the job is to explore the detailed space &mdash;
+                the East Toronto streetmap, the terminal map, the
+                multi-tile Toronto streetmap &mdash; everything is
+                drawn as SVG, the opposite of the field&rsquo;s
+                performance-driven raster choice. Where the job is to
+                find pinned points of interest rather than explore the
+                surrounding detail &mdash; the Groves &mdash; a raster
+                base carries an <em>addressable</em> pin overlay, and
+                only the pins need to be vector. The accessible layer
+                is always addressable; whether the base is SVG follows
+                the map&rsquo;s purpose, not dogma.
               </li>
               <li>
                 <strong>
