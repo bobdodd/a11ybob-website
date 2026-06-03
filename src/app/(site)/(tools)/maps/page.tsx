@@ -205,6 +205,30 @@ export default function Maps() {
               on spatial cognition specifically. Navigation gets
               the attention. Cognition gets the concession.
             </p>
+            <p>
+              The research literature shows the same split. Manaswi
+              Saha, Jon Froehlich, and colleagues&rsquo;{" "}
+              <a href="https://doi.org/10.1145/3491102.3517460">
+                2022 CHI study
+              </a>{" "}
+              of multi-stakeholder accessibility-map visualizations is
+              careful, empirical, top-venue work &mdash; how
+              policymakers, department officials, advocates, caregivers,
+              and people with mobility impairments make sense of
+              sidewalk-accessibility data across seven map types. Its
+              own stated limitation is the tell: the visualizations,
+              the authors note,{" "}
+              <em>
+                were not designed to support people with different
+                visual abilities
+              </em>
+              , a gap they name explicitly and defer to future work.
+              The <em>data</em> is about accessibility; the{" "}
+              <em>map</em> is not accessible to a non-sighted reader.
+              That deferred piece &mdash; a map a non-sighted person
+              can actually read and reason over &mdash; is where this
+              work starts.
+            </p>
           </section>
 
           <section
