@@ -83,6 +83,17 @@ a {
   white-space: nowrap;
 }
 
+/* The nowrap above is for INLINE phrase links. Card-style links wrap a
+   whole heading + paragraph (e.g. the home page .door tiles), and that
+   block text must still wrap. white-space inherits, so the nowrap leaks
+   into those block children; Safari lets the paragraph's
+   text-wrap: pretty re-enable wrapping, but Firefox keeps the inherited
+   nowrap and the text overflows. Reset block-level descendants of links
+   back to normal wrapping so card links wrap in every browser. */
+a :where(p, h1, h2, h3, h4, h5, h6, li, blockquote, figcaption) {
+  white-space: normal;
+}
+
 a:hover,
 a:focus-visible {
   text-decoration-thickness: 2px;
