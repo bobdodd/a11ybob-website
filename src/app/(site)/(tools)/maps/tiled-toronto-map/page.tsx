@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { MapsSubNav } from "@/components/MapsSubNav";
+import { NewTabLink } from "@/components/NewTabLink";
 
 export default function MapsTiledTorontoMap() {
   return (
@@ -103,13 +104,33 @@ export default function MapsTiledTorontoMap() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
-            <h2>The live demo</h2>
+            <h2>Try the interactive demo</h2>
             <p>
-              The interactive demo is being prepared for hosting here,
-              alongside the other three maps. It has two moving parts
-              &mdash; the viewer and the tile server that feeds it
-              &mdash; so standing it up on the site is a larger step
-              than the single-file demos, and it follows separately.
+              <NewTabLink
+                className="pill"
+                href="/demos/tiled-toronto-map/viewer.html"
+              >
+                Open the tiled Toronto map
+              </NewTabLink>
+            </p>
+            <p className="muted">
+              <small>
+                Once opened, the demo takes over keyboard navigation,
+                focus management, and screen-reader announcements, so
+                it runs on its own surface rather than inside this
+                page &mdash; which is why it opens in a new window.
+                Close it to come back here.
+              </small>
+            </p>
+            <p className="muted">
+              <small>
+                The viewer is a passive client: it fetches the
+                pre-rendered SVG tiles from a separate origin
+                (<code>tiles.a11ybob.com</code>), the way a real
+                deployment would point at a CDN. Allow location access
+                to be placed on the map if you are in downtown Toronto;
+                otherwise it starts from a default location downtown.
+              </small>
             </p>
           </section>
 

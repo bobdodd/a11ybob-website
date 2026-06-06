@@ -1,0 +1,1765 @@
+* {
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px; /* Base font size */
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 1rem;
+    background: #f0f0f0;
+    color: #333;
+}
+
+.screen-reader-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+
+/* Control Sidebar */
+.control-sidebar {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    width: 15rem; /* 240px */
+    max-height: calc(100vh - 2rem);
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    border-radius: 0.5rem;
+    z-index: 90;
+    transition: transform 0.3s ease;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.control-sidebar.collapsed {
+    width: auto;
+    overflow: hidden;
+}
+
+.control-sidebar.collapsed .sidebar-content {
+    display: none;
+}
+
+.control-sidebar.collapsed .sidebar-header {
+    border-bottom: none;
+}
+
+/* Sidebar Header */
+.sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-title {
+    margin: 0;
+    font-size: 0.875rem; /* 14px */
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sidebar-toggle {
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 0.5rem;
+    font-size: 1.25rem;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    margin-left: 0.5rem;
+    flex-shrink: 0;
+}
+
+.sidebar-toggle:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.sidebar-toggle:focus {
+    outline: 2px solid #0066ff;
+    outline-offset: 2px;
+}
+
+.control-sidebar.collapsed .sidebar-toggle .icon {
+    transform: rotate(180deg);
+}
+
+/* Sidebar Content */
+.sidebar-content {
+    padding: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* Control Buttons */
+.control-button {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #ddd;
+    background: #fff;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem; /* 16px - default */
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background 0.15s ease, border-color 0.15s ease;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.control-button:hover {
+    background: #f8f8f8;
+    border-color: #999;
+}
+
+.control-button:focus {
+    outline: 2px solid #0066ff;
+    outline-offset: 2px;
+}
+
+.control-button[aria-pressed="true"] {
+    background: #e3f2fd;
+    color: #0066ff;
+    border-color: #0066ff;
+}
+
+.control-button .icon {
+    font-size: 0.875rem;
+    flex-shrink: 0;
+}
+
+.control-button .label {
+    flex: 1;
+    white-space: nowrap;
+}
+
+/* Accordion Styles */
+.accordion-item {
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.accordion-header {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    background: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background 0.15s ease;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.accordion-header:hover {
+    background: #f8f8f8;
+}
+
+.accordion-header:focus {
+    outline: 2px solid #0066ff;
+    outline-offset: -2px;
+}
+
+.accordion-header .icon {
+    font-size: 0.875rem;
+    flex-shrink: 0;
+}
+
+.accordion-arrow {
+    margin-left: auto;
+    transition: transform 0.2s;
+    font-size: 0.8rem;
+}
+
+.accordion-header[aria-expanded="true"] .accordion-arrow {
+    transform: rotate(180deg);
+}
+
+.accordion-content {
+    padding: 0.5rem 0.75rem;
+    background: #f9f9f9;
+}
+
+.accordion-content fieldset {
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+.accordion-content label {
+    display: block;
+    padding: 0.25rem 0;
+    cursor: pointer;
+    font-size: 0.6875rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.accordion-content label:hover {
+    background: rgba(0, 0, 0, 0.05);
+    padding-left: 0.5rem;
+    margin-left: -0.5rem;
+    margin-right: -0.5rem;
+}
+
+.accordion-content input {
+    margin-right: 0.5rem;
+}
+
+/* Filter and Rotor Categories */
+.filter-category,
+.rotor-category {
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.filter-category:last-child,
+.rotor-category:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.filter-category-title,
+.rotor-category-title {
+    font-size: 0.625rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #333;
+    margin: 0 0 0.25rem 0;
+    letter-spacing: 0.02em;
+}
+
+.filter-category label,
+.rotor-category label {
+    margin-left: 0.5rem;
+    font-size: 0.6875rem;
+}
+
+/* Filter Subcategories */
+.filter-subcategory {
+    margin-bottom: 0.5rem;
+    margin-left: 0.5rem;
+    padding-left: 0.5rem;
+    border-left: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+.filter-subcategory:last-child {
+    margin-bottom: 0;
+}
+
+.filter-subcategory-title {
+    font-size: 0.5625rem;
+    font-weight: 500;
+    color: #333;
+    margin: 0 0 0.25rem 0;
+    text-transform: none;
+}
+
+.filter-subcategory label {
+    margin-left: 0.25rem;
+    font-size: 0.625rem;
+}
+
+/* Filter Accordion Items */
+.filter-accordion-item {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    margin-bottom: 0.25rem;
+    overflow: hidden;
+}
+
+.filter-accordion-item:last-child {
+    margin-bottom: 0;
+}
+
+.filter-accordion-header {
+    width: 100%;
+    padding: 0.375rem 0.5rem;
+    background: #f8f9fa;
+    border: none;
+    cursor: pointer;
+    font-size: 0.6875rem;
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    transition: background 0.15s ease;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.filter-accordion-header:hover {
+    background: #e9ecef;
+}
+
+.filter-accordion-header:focus {
+    outline: 2px solid #0066ff;
+    outline-offset: -2px;
+}
+
+.filter-accordion-header .icon {
+    font-size: 0.75rem;
+    flex-shrink: 0;
+}
+
+.filter-accordion-header .label {
+    flex: 1;
+    font-weight: 500;
+}
+
+.filter-accordion-header .accordion-arrow {
+    margin-left: auto;
+    transition: transform 0.2s;
+    font-size: 0.625rem;
+}
+
+.filter-accordion-header[aria-expanded="true"] .accordion-arrow {
+    transform: rotate(180deg);
+}
+
+.filter-accordion-content {
+    padding: 0.375rem 0.5rem;
+    background: #ffffff;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.filter-accordion-content label {
+    display: block;
+    padding: 0.1875rem 0;
+    cursor: pointer;
+    font-size: 0.625rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.filter-accordion-content label:hover {
+    background: rgba(0, 0, 0, 0.03);
+    padding-left: 0.25rem;
+    margin-left: -0.25rem;
+    margin-right: -0.25rem;
+}
+
+.filter-accordion-content input {
+    margin-right: 0.375rem;
+}
+
+
+main {
+    display: block;
+    height: 100vh;
+    position: relative;
+}
+
+#map-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background: #e5e3df;
+    overflow: hidden;
+    /* Enable touch events for pinch-to-zoom */
+    touch-action: none;
+}
+
+#map-svg {
+    width: 100%;
+    height: 100%;
+    background: #e5e3df;
+}
+
+/* Ensure map tiles render properly */
+#map-tiles {
+    /* Ensure tiles are behind features */
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+#map-tiles image {
+    /* Ensure no borders */
+    border: none;
+    stroke: none;
+    /* Prevent selection highlighting */
+    pointer-events: none;
+}
+
+/* Remove outlines but preserve intentional strokes */
+#map-svg * {
+    outline: none;
+}
+
+/* Remove default focus styles from map features */
+#map-features polygon:focus,
+#map-features polyline:focus,
+#map-features circle:focus {
+    outline: none;
+}
+
+/* Focus outline styling */
+#focus-outline {
+    pointer-events: none;
+    z-index: 1000;
+}
+
+/* Style map features */
+#map-features polygon,
+#map-features polyline,
+#map-features circle {
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+/* Ensure proper rendering order */
+#roads-group {
+    /* Roads should render under buildings */
+}
+
+.road-casing {
+    /* Road casings provide the border */
+    opacity: 0.8;
+}
+
+.road {
+    /* Road surface */
+}
+
+#map-container:focus {
+    outline: 3px solid #4285F4;
+    outline-offset: -3px;
+}
+
+
+/* Navigation styles within accordion */
+
+#destination-search {
+    margin-bottom: 0.75rem;
+}
+
+#destination-search label {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-weight: 600;
+    font-size: 0.75rem;
+}
+
+#destination-search input {
+    width: 100%;
+    padding: 0.375rem 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    margin-bottom: 0.375rem;
+}
+
+#destination-search input:focus {
+    outline: 3px solid #4285F4;
+    outline-offset: 2px;
+    border-color: #4285F4;
+}
+
+#destination-search button {
+    padding: 0.375rem 0.75rem;
+    background: #4285F4;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    width: 100%;
+    transition: background 0.2s;
+}
+
+#destination-search button:hover {
+    background: #3367D6;
+}
+
+#destination-search button:focus {
+    outline: 2px solid #0066ff;
+    outline-offset: 2px;
+}
+
+#directions-list {
+    max-height: 200px;
+    overflow-y: auto;
+    font-size: 0.75rem;
+    line-height: 1.4;
+}
+
+.location-info {
+    position: absolute;
+    bottom: 1rem;
+    left: 1rem;
+    background: #fff;
+    padding: 1rem;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    font-size: 0.9rem;
+}
+
+.location-info p {
+    margin: 0 0 0.5rem 0;
+}
+
+.location-info p:last-child {
+    margin-bottom: 0;
+}
+
+.debug-panel {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    background: #fff;
+    padding: 1rem;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    width: 300px;
+}
+
+.debug-panel h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1rem;
+}
+
+.debug-panel label {
+    display: block;
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+}
+
+.debug-panel input {
+    width: 100%;
+    padding: 0.25rem;
+    margin-bottom: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 2px;
+}
+
+.debug-panel button {
+    padding: 0.5rem 1rem;
+    background: #4285F4;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    body {
+        background: #1a1a1a;
+        color: #e0e0e0;
+    }
+    
+    .control-sidebar {
+        background: rgba(30, 30, 30, 0.95);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    }
+    
+    .sidebar-header {
+        border-bottom-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .sidebar-title {
+        color: #e0e0e0;
+    }
+    
+    .sidebar-toggle {
+        background: transparent;
+        border-color: #555;
+        color: #e0e0e0;
+    }
+    
+    .sidebar-toggle:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: #777;
+    }
+    
+    .control-button,
+    .accordion-item {
+        background: #2a2a2a;
+        border-color: #444;
+        color: #e0e0e0;
+    }
+    
+    .control-button:hover,
+    .accordion-header:hover {
+        background: #333;
+        border-color: #555;
+    }
+    
+    .control-button[aria-pressed="true"] {
+        background: #1976d2;
+        color: #fff;
+        border-color: #1976d2;
+    }
+    
+    .accordion-header {
+        background: #2a2a2a;
+        color: #e0e0e0;
+    }
+    
+    .accordion-content {
+        background: #252525;
+        color: #e0e0e0;
+    }
+    
+    #map-container {
+        background: #1a1a1a;
+    }
+    
+    #map-svg {
+        background: #1a1a1a;
+    }
+    
+    /* Adjust map feature colors for dark mode */
+    .building {
+        fill: #3a3a3a;
+        stroke: #555;
+    }
+    
+    .road {
+        stroke: #4a4a4a;
+    }
+    
+    .road-casing {
+        stroke: #2a2a2a;
+    }
+    
+    .park {
+        fill: #2d4a2d;
+        stroke: #3a5a3a;
+    }
+    
+    .location-info,
+    .debug-panel {
+        background: rgba(30, 30, 30, 0.95);
+        color: #e0e0e0;
+    }
+    
+    input {
+        background: #2a2a2a;
+        color: #e0e0e0;
+        border-color: #555;
+    }
+    
+    input:focus {
+        border-color: #1976d2;
+    }
+    
+    /* Compass navigator dark mode */
+    .nav-button {
+        background: rgba(40, 40, 40, 0.95);
+        border-color: rgba(255, 255, 255, 0.2);
+    }
+    
+    .nav-button:hover {
+        background: rgba(60, 60, 60, 0.95);
+    }
+    
+    .nav-center {
+        background: rgba(40, 40, 40, 0.98);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .nav-zoom {
+        background: linear-gradient(135deg, #2a2a2a 0%, #333 100%);
+    }
+    
+    .nav-zoom:hover {
+        background: linear-gradient(135deg, #333 0%, #3a3a3a 100%);
+    }
+    
+    .nav-center-btn {
+        background: #2a2a2a;
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+    
+    .nav-center-btn:hover {
+        background: #333;
+    }
+}
+
+/* Filter Category Titles - Dark Mode */
+@media (prefers-color-scheme: dark) {
+    .filter-category-title,
+    .rotor-category-title {
+        color: #b0b0b0 !important;
+    }
+    
+    .filter-subcategory-title {
+        color: #a0a0a0 !important;
+    }
+    
+    /* Filter Accordion Items - Dark Mode */
+    .filter-accordion-item {
+        border-color: #444;
+    }
+    
+    .filter-accordion-header {
+        background: #2a2a2a;
+        color: #e0e0e0;
+    }
+    
+    .filter-accordion-header:hover {
+        background: #333;
+    }
+    
+    .filter-accordion-content {
+        background: #252525;
+        color: #e0e0e0;
+        border-top-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .filter-accordion-content label {
+        color: #e0e0e0;
+    }
+    
+    .filter-accordion-content label:hover {
+        background: rgba(255, 255, 255, 0.05);
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    body {
+        background: #000;
+        color: #fff;
+    }
+    
+    .control-sidebar {
+        background: #000;
+        border: 2px solid #fff;
+        box-shadow: none;
+    }
+    
+    .sidebar-header {
+        border-bottom: 2px solid #fff;
+    }
+    
+    .sidebar-toggle,
+    .control-button,
+    .accordion-item {
+        background: #000;
+        border: 2px solid #fff;
+        color: #fff;
+    }
+    
+    .sidebar-toggle:hover,
+    .control-button:hover,
+    .accordion-header:hover {
+        background: #fff;
+        color: #000;
+    }
+    
+    .control-button[aria-pressed="true"] {
+        background: #fff;
+        color: #000;
+    }
+    
+    .accordion-content {
+        background: #000;
+        border-top: 2px solid #fff;
+    }
+    
+    #map-svg {
+        background: #000;
+    }
+    
+    /* High contrast map features */
+    .building {
+        fill: #000;
+        stroke: #fff;
+        stroke-width: 2;
+    }
+    
+    .road {
+        stroke: #fff;
+        stroke-width: 3;
+    }
+    
+    .road-casing {
+        stroke: #000;
+        stroke-width: 5;
+    }
+    
+    .park {
+        fill: #000;
+        stroke: #fff;
+        stroke-width: 2;
+    }
+    
+    .transit-stop,
+    .shop,
+    .school,
+    .worship,
+    .address {
+        fill: #fff;
+        stroke: #000;
+        stroke-width: 2;
+    }
+    
+    /* Focus outlines more prominent */
+    *:focus {
+        outline: 3px solid #ff0;
+        outline-offset: 2px;
+    }
+    
+    /* Compass navigator high contrast */
+    .nav-button {
+        background: #000;
+        border: 2px solid #fff;
+    }
+    
+    .nav-button:hover,
+    .nav-button:focus {
+        background: #fff;
+    }
+    
+    .nav-button:hover svg,
+    .nav-button:focus svg {
+        fill: #000;
+        stroke: #000;
+    }
+    
+    .nav-center {
+        background: #000;
+        border: 2px solid #fff;
+    }
+    
+    .nav-zoom {
+        background: #000;
+        border: 2px solid #fff;
+    }
+    
+    .nav-zoom:hover {
+        background: #fff;
+    }
+    
+    .nav-zoom:hover svg {
+        stroke: #000;
+    }
+    
+    .nav-center-btn {
+        background: #000;
+        border: 2px solid #fff;
+    }
+    
+    .nav-center-btn:hover {
+        background: #fff;
+    }
+    
+    .nav-center-btn:hover svg {
+        fill: #000;
+        stroke: #000;
+    }
+}
+
+/* Filter Accordion High Contrast Support */
+@media (prefers-contrast: high) {
+    /* Filter Category Titles - High Contrast */
+    .filter-category-title,
+    .rotor-category-title,
+    .filter-subcategory-title {
+        color: #fff;
+    }
+    
+    /* Filter Accordion Items - High Contrast */
+    .filter-accordion-item {
+        background: #000;
+        border: 2px solid #fff;
+    }
+    
+    .filter-accordion-header {
+        background: #000;
+        color: #fff;
+        border: none;
+    }
+    
+    .filter-accordion-header:hover {
+        background: #fff;
+        color: #000;
+    }
+    
+    .filter-accordion-content {
+        background: #000;
+        color: #fff;
+        border-top: 2px solid #fff;
+    }
+    
+    .filter-accordion-content label {
+        color: #fff;
+    }
+    
+    .filter-accordion-content label:hover {
+        background: #fff;
+        color: #000;
+    }
+    
+    .filter-accordion-content input {
+        background: #000;
+        border: 1px solid #fff;
+    }
+}
+
+/* Compass Navigator */
+.compass-navigator {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    width: 15rem; /* 240px - expanded for better spacing */
+    height: 15rem;
+    z-index: 80;
+}
+
+.compass-ring {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+/* Direction buttons - positioned absolutely in circle */
+.nav-button {
+    position: absolute;
+    width: 3rem;  /* 48px - exceeds WCAG 2.2 AA minimum */
+    height: 3rem;
+    border: 2px solid rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+}
+
+.nav-button svg {
+    width: 2rem; /* 32px */
+    height: 2rem;
+    fill: #333;
+    stroke: #333;
+    stroke-width: 2;
+    transition: all 0.2s ease;
+}
+
+.nav-button:hover,
+.nav-button:focus {
+    background: #fce4ec;
+    transform: scale(1.1);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    border-color: rgba(233, 30, 99, 0.3);
+}
+
+.nav-button:hover svg,
+.nav-button:focus svg {
+    fill: #e91e63;
+    stroke: #e91e63;
+}
+
+.nav-button:focus,
+.nav-button:hover {
+    outline: none;
+}
+
+.nav-button:focus::after,
+.nav-button:hover::after {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: -6px;
+    right: -6px;
+    bottom: -6px;
+    border: 3px solid #0066ff;
+    border-radius: 50%;
+    opacity: 0;
+    animation: focusPulse 0.3s ease forwards;
+}
+
+@keyframes focusPulse {
+    to {
+        opacity: 1;
+    }
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+    .nav-button {
+        transition: none;
+    }
+    
+    .nav-button svg {
+        transition: none;
+    }
+    
+    .nav-button:hover,
+    .nav-button:focus {
+        transform: none;
+    }
+    
+    .nav-button:focus::after,
+    .nav-button:hover::after {
+        animation: none;
+        opacity: 1;
+    }
+}
+
+/* Position each button around the circle - sunburst pattern */
+.nav-n {
+    top: 0.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.nav-n:hover {
+    transform: translateX(-50%) scale(1.1);
+}
+
+.nav-n:focus {
+    transform: translateX(-50%);
+}
+
+.nav-ne {
+    top: 15%;
+    right: 15%;
+}
+
+.nav-e {
+    top: 50%;
+    right: 0.5rem;
+    transform: translateY(-50%);
+}
+
+.nav-e:hover {
+    transform: translateY(-50%) scale(1.1);
+}
+
+.nav-e:focus {
+    transform: translateY(-50%);
+}
+
+.nav-se {
+    bottom: 15%;
+    right: 15%;
+}
+
+.nav-s {
+    bottom: 0.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.nav-s:hover {
+    transform: translateX(-50%) scale(1.1);
+}
+
+.nav-s:focus {
+    transform: translateX(-50%);
+}
+
+.nav-sw {
+    bottom: 15%;
+    left: 15%;
+}
+
+.nav-w {
+    top: 50%;
+    left: 0.5rem;
+    transform: translateY(-50%);
+}
+
+.nav-w:hover {
+    transform: translateY(-50%) scale(1.1);
+}
+
+.nav-w:focus {
+    transform: translateY(-50%);
+}
+
+.nav-nw {
+    top: 15%;
+    left: 15%;
+}
+
+/* Ensure reduced motion works for positioned buttons */
+@media (prefers-reduced-motion: reduce) {
+    .nav-n:hover, .nav-n:focus {
+        transform: translateX(-50%);
+    }
+    .nav-e:hover, .nav-e:focus {
+        transform: translateY(-50%);
+    }
+    .nav-s:hover, .nav-s:focus {
+        transform: translateX(-50%);
+    }
+    .nav-w:hover, .nav-w:focus {
+        transform: translateY(-50%);
+    }
+}
+
+/* Center control area */
+.nav-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 7rem; /* 112px - larger for better icon sizing */
+    height: 7rem;
+    border-radius: 50%;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Zoom controls - semi-circular halves */
+.nav-zoom {
+    position: absolute;
+    width: 7rem; /* 112px - matches nav-center */
+    height: 3.5rem; /* 56px - half of width */
+    border: 2px solid rgba(233, 30, 99, 0.3);
+    background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.nav-zoom-in {
+    top: 0;
+    border-radius: 3.5rem 3.5rem 0 0;
+    border-bottom: 1px solid rgba(233, 30, 99, 0.1);
+}
+
+.nav-zoom-out {
+    bottom: 0;
+    border-radius: 0 0 3.5rem 3.5rem;
+    border-top: 1px solid rgba(233, 30, 99, 0.1);
+}
+
+.nav-zoom svg {
+    width: 1.5rem; /* 24px */
+    height: 1.5rem;
+    stroke: #333;
+    stroke-width: 2;
+    fill: none;
+}
+
+.nav-zoom-in svg {
+    transform: translateY(-30%);
+}
+
+.nav-zoom-out svg {
+    transform: translateY(30%);
+}
+
+.nav-zoom:hover {
+    background: linear-gradient(135deg, #f8bbd0 0%, #f48fb1 100%);
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.2);
+}
+
+
+.nav-zoom:focus,
+.nav-zoom:hover {
+    outline: none;
+}
+
+/* Disabled state for zoom buttons */
+.nav-zoom.disabled,
+.nav-zoom[aria-disabled="true"] {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: linear-gradient(135deg, #e0e0e0 0%, #d0d0d0 100%);
+}
+
+.nav-zoom.disabled:hover,
+.nav-zoom[aria-disabled="true"]:hover {
+    background: linear-gradient(135deg, #e0e0e0 0%, #d0d0d0 100%);
+    box-shadow: none;
+}
+
+.nav-zoom.disabled svg,
+.nav-zoom[aria-disabled="true"] svg {
+    stroke: #999;
+}
+
+/* High contrast mode disabled styles */
+@media (prefers-contrast: high) {
+    .nav-zoom.disabled,
+    .nav-zoom[aria-disabled="true"] {
+        opacity: 0.6;
+        background: #666;
+        border-color: #999;
+    }
+    
+    .nav-zoom.disabled svg,
+    .nav-zoom[aria-disabled="true"] svg {
+        stroke: #999;
+    }
+}
+
+/* Zoom button outline divs */
+.zoom-in-outline,
+.zoom-out-outline {
+    position: absolute;
+    width: 7rem;
+    height: 3.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    box-shadow: inset 0 0 0 3px #0066ff;
+}
+
+.zoom-in-outline {
+    top: 0;
+    border-radius: 3.5rem 3.5rem 0 0;
+    clip-path: inset(2px 2px 0 2px);
+}
+
+.zoom-out-outline {
+    bottom: 0;
+    border-radius: 0 0 3.5rem 3.5rem;
+    clip-path: inset(0 2px 2px 2px);
+}
+
+/* Show outlines on hover/focus of corresponding buttons */
+.nav-zoom-in:hover ~ .zoom-in-outline,
+.nav-zoom-in:focus ~ .zoom-in-outline {
+    opacity: 1;
+}
+
+.nav-zoom-out:hover ~ .zoom-out-outline,
+.nav-zoom-out:focus ~ .zoom-out-outline {
+    opacity: 1;
+}
+
+/* Remove zoom outline divs - not needed with new layout */
+
+/* Center location button */
+.nav-center-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 3rem; /* 48px - slightly larger */
+    height: 3rem;
+    border-radius: 50%;
+    border: 2px solid rgba(233, 30, 99, 0.3);
+    background: white;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-center-btn svg {
+    width: 1.25rem; /* 20px */
+    height: 1.25rem;
+    fill: #333;
+    stroke: #333;
+}
+
+.nav-center-btn:hover {
+    background: #fce4ec;
+    border-color: #e91e63;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+.nav-center-btn:focus,
+.nav-center-btn:hover {
+    outline: none;
+}
+
+.nav-center-btn:focus::after,
+.nav-center-btn:hover::after {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: -6px;
+    right: -6px;
+    bottom: -6px;
+    border: 3px solid #0066ff;
+    border-radius: 50%;
+    opacity: 0;
+    animation: focusPulse 0.3s ease forwards;
+}
+
+/* Respect reduced motion for all animated elements */
+@media (prefers-reduced-motion: reduce) {
+    .nav-zoom {
+        transition: none;
+    }
+    
+    .nav-center-btn {
+        transition: none;
+    }
+    
+}
+
+/* Decorative compass rose background - sunburst effect */
+.compass-navigator::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: radial-gradient(circle at center, 
+        transparent 35%, 
+        rgba(233, 30, 99, 0.03) 40%, 
+        rgba(233, 30, 99, 0.06) 55%, 
+        rgba(233, 30, 99, 0.08) 70%, 
+        rgba(233, 30, 99, 0.1) 100%);
+    pointer-events: none;
+}
+
+/* Add subtle connecting lines for sunburst effect */
+.compass-navigator::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    height: 90%;
+    background-image: 
+        linear-gradient(to top, rgba(233, 30, 99, 0.1) 1px, transparent 1px),
+        linear-gradient(to right, rgba(233, 30, 99, 0.1) 1px, transparent 1px),
+        linear-gradient(45deg, rgba(233, 30, 99, 0.1) 1px, transparent 1px),
+        linear-gradient(-45deg, rgba(233, 30, 99, 0.1) 1px, transparent 1px);
+    background-size: 100% 50%, 50% 100%, 71% 71%, 71% 71%;
+    background-position: center;
+    background-repeat: no-repeat;
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+    .sidebar-title {
+        font-size: 0.875rem;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Scale down nav buttons on smaller screens */
+    .nav-button {
+        width: 2.75rem; /* 44px - WCAG minimum */
+        height: 2.75rem;
+    }
+    
+    .nav-center {
+        width: 6rem;
+        height: 6rem;
+    }
+    
+    .nav-zoom {
+        width: 6rem;
+        height: 3rem;
+    }
+    
+    .zoom-in-outline,
+    .zoom-out-outline {
+        width: 6rem;
+        height: 3rem;
+    }
+    
+    .nav-zoom-in,
+    .zoom-in-outline {
+        border-radius: 3rem 3rem 0 0;
+    }
+    
+    .nav-zoom-out,
+    .zoom-out-outline {
+        border-radius: 0 0 3rem 3rem;
+    }
+    .control-sidebar {
+        width: 15rem;
+    }
+    
+    .control-sidebar.collapsed {
+        width: 2.5rem;
+    }
+    
+    /* Adjust compass navigator position */
+    .compass-navigator {
+        width: 12rem; /* 192px - still larger than before */
+        height: 12rem;
+        right: 0.5rem;
+        bottom: 0.5rem;
+    }
+    
+    
+    .location-info {
+        font-size: 0.8rem;
+        padding: 0.5rem;
+        left: 60px; /* Account for collapsed sidebar */
+    }
+}
+
+/* Small screens */
+@media (max-width: 600px) {
+    .control-sidebar {
+        width: 100%;
+        max-width: 280px;
+    }
+    
+    .control-sidebar.collapsed {
+        width: 2.5rem;
+    }
+    
+    /* Stack buttons vertically on very small screens */
+    .control-button .label,
+    .accordion-header .label {
+        font-size: 0.8125rem;
+    }
+    
+    /* Move compass to top right on mobile */
+    .compass-navigator {
+        bottom: auto;
+        top: 0.5rem;
+        width: 10rem; /* 160px - maintain WCAG compliance */
+        height: 10rem;
+    }
+    
+    .location-info {
+        bottom: 0.5rem;
+        left: 0.5rem;
+        right: 0.5rem;
+        max-width: none;
+    }
+}
+
+/* Landscape orientation */
+@media (max-height: 600px) and (orientation: landscape) {
+    .control-sidebar {
+        width: 220px;
+    }
+    
+    .sidebar-header {
+        padding: 0.5rem;
+    }
+    
+    .sidebar-content {
+        padding: 0.5rem;
+        gap: 0.4rem;
+    }
+    
+    .control-button,
+    .accordion-header {
+        padding: 0.4rem 0.5rem;
+    }
+    
+    /* Smaller compass in landscape */
+    .compass-navigator {
+        width: 11rem; /* 176px - still meets WCAG */
+        height: 11rem;
+    }
+    
+    .location-info {
+        font-size: 0.75rem;
+        padding: 0.4rem;
+    }
+}
+
+/* Very small screens */
+@media (max-width: 400px) {
+    .control-sidebar {
+        font-size: 0.85rem;
+    }
+    
+    .control-button,
+    .accordion-header {
+        padding: 0.6rem 0.75rem;
+        gap: 0.6rem;
+    }
+    
+    .control-button .icon,
+    .accordion-header .icon {
+        font-size: 1rem;
+    }
+    
+    /* Even smaller compass on tiny screens */
+    .compass-navigator {
+        width: 9rem; /* 144px - minimum for WCAG compliance */
+        height: 9rem;
+    }
+}
+
+/* Map container takes full width */
+#map-container {
+    margin-left: 0;
+    width: 100%;
+}
+
+/* Clear All Button */
+.clear-all-rotor {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 0.5rem;
+    border: 1px solid #dc3545;
+    background: #fff;
+    color: #dc3545;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.15s ease;
+}
+
+.clear-all-rotor:hover {
+    background: #dc3545;
+    color: #fff;
+}
+
+.clear-all-rotor:focus {
+    outline: 2px solid #dc3545;
+    outline-offset: 2px;
+}
+
+/* Filter Sub-Accordion Items (Nested) */
+.filter-sub-accordion-item {
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 3px;
+    margin-bottom: 0.1875rem;
+    overflow: hidden;
+}
+
+.filter-sub-accordion-item:last-child {
+    margin-bottom: 0;
+}
+
+.filter-sub-accordion-header {
+    width: 100%;
+    padding: 0.25rem 0.375rem;
+    background: #f0f0f0;
+    border: none;
+    cursor: pointer;
+    font-size: 0.5625rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    transition: background 0.15s ease;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.filter-sub-accordion-header:hover {
+    background: #e8e8e8;
+}
+
+.filter-sub-accordion-header:focus {
+    outline: 2px solid #0066ff;
+    outline-offset: -2px;
+}
+
+.filter-sub-accordion-header .icon {
+    font-size: 0.625rem;
+    flex-shrink: 0;
+}
+
+.filter-sub-accordion-header .label {
+    flex: 1;
+    font-weight: 500;
+}
+
+.filter-sub-accordion-header .accordion-arrow {
+    margin-left: auto;
+    transition: transform 0.2s;
+    font-size: 0.5rem;
+}
+
+.filter-sub-accordion-header[aria-expanded="true"] .accordion-arrow {
+    transform: rotate(180deg);
+}
+
+.filter-sub-accordion-content {
+    padding: 0.25rem 0.375rem;
+    background: #fafafa;
+    border-top: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+.filter-sub-accordion-content label {
+    display: block;
+    padding: 0.125rem 0;
+    cursor: pointer;
+    font-size: 0.5625rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-left: 0.75rem;
+}
+
+.filter-sub-accordion-content label:hover {
+    background: rgba(0, 0, 0, 0.02);
+    padding-left: 0.1875rem;
+    margin-left: 0.5625rem;
+    margin-right: -0.1875rem;
+}
+
+.filter-sub-accordion-content input {
+    margin-right: 0.25rem;
+}
+
+
+/* Filter Sub-Accordion Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .filter-sub-accordion-item {
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .filter-sub-accordion-header {
+        background: #1a1a1a;
+        color: #e0e0e0;
+    }
+    
+    .filter-sub-accordion-header:hover {
+        background: #333;
+    }
+    
+    .filter-sub-accordion-content {
+        background: #1a1a1a;
+        color: #e0e0e0;
+        border-top-color: rgba(255, 255, 255, 0.05);
+    }
+    
+    .filter-sub-accordion-content label {
+        color: #e0e0e0;
+    }
+    
+    .filter-sub-accordion-content label:hover {
+        background: rgba(255, 255, 255, 0.03);
+    }
+}
+
+/* Filter Sub-Accordion High Contrast Support */
+@media (prefers-contrast: high) {
+    .filter-sub-accordion-item {
+        background: #000;
+        border: 1px solid #fff;
+    }
+    
+    .filter-sub-accordion-header {
+        background: #000;
+        color: #fff;
+    }
+    
+    .filter-sub-accordion-header:hover {
+        background: #fff;
+        color: #000;
+    }
+    
+    .filter-sub-accordion-content {
+        background: #000;
+        color: #fff;
+        border-top: 1px solid #fff;
+    }
+    
+    .filter-sub-accordion-content label {
+        color: #fff;
+    }
+    
+    .filter-sub-accordion-content label:hover {
+        background: #fff;
+        color: #000;
+    }
+    
+    .filter-sub-accordion-content input {
+        background: #000;
+        border: 1px solid #fff;
+    }
+}
+
+
+
+/* WCAG debug visualization */
+[data-wcag-visible="false"] {
+    opacity: 0.3 \!important;
+    stroke: #ff0000 \!important;
+    stroke-width: 2 \!important;
+    stroke-dasharray: 5, 5 \!important;
+}
+
+[data-wcag-visible="true"] {
+    stroke: #00ff00 \!important;
+    stroke-width: 2 \!important;
+}
+
+/* Avatar styles */
+.map-avatar {
+    cursor: pointer;
+    z-index: 500;
+}
+
+.map-avatar:focus {
+    outline: 3px solid #0066ff;
+    outline-offset: 4px;
+    border-radius: 50%;
+}
+
+/* Avatar pulse animation */
+@keyframes avatarPulse {
+    0% {
+        r: 20;
+        opacity: 0.6;
+    }
+    100% {
+        r: 40;
+        opacity: 0;
+    }
+}
+
+.avatar-pulse {
+    pointer-events: none;
+}
