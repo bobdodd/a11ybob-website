@@ -166,6 +166,22 @@ export async function getReviewById(id: string): Promise<Review | null> {
   return serialiseHit(String(doc._id), doc);
 }
 
+/** Every review id (+ last-updated) for the sitemap. Projects only the two
+ *  fields the sitemap needs, so it stays cheap across the whole collection. */
+export async function listReviewsForSitemap(): Promise<
+  { id: string; updated?: string }[]
+> {
+  const db = await getDb();
+  const docs = await db
+    .collection("reviews")
+    .find({}, { projection: { _id: 1, updated: 1 } })
+    .toArray();
+  return docs.map((d) => ({
+    id: String(d._id),
+    updated: typeof d.updated === "string" ? d.updated : undefined,
+  }));
+}
+
 function serialiseHit(id: string, src: Record<string, unknown>): Review {
   return {
     _id: id,
