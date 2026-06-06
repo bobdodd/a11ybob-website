@@ -246,11 +246,11 @@ export default function Maps() {
               the feature set, which differ on purpose.
             </p>
             <p>
-              The difference is fit-for-purpose. On{" "}
-              <strong>the Groves</strong>, what matters are the
-              <em> pinned points of interest</em> &mdash; where the
-              properties are &mdash; not the detail of the streets
-              around them; so the Groves renders a raster base with
+              The difference is fit-for-purpose. In the{" "}
+              <strong>search and map pin demo</strong>, what matters
+              are the <em>pinned points of interest</em> &mdash; where
+              the properties are &mdash; not the detail of the streets
+              around them; so it renders a raster base with
               an interactive pin overlay drawn on top, and only the
               pins need to be addressable. The{" "}
               <strong>East Toronto streetmap</strong> and the{" "}
@@ -258,17 +258,17 @@ export default function Maps() {
               detailed space itself, so there everything is drawn as
               addressable SVG, and the richer affordances &mdash;
               ARIA landmarks, category filters, the rotor, the F6
-              region cycle &mdash; live there rather than on the
-              Groves. There is no one perfect solution; the right
+              region cycle &mdash; live there rather than in the pin
+              demo. There is no one perfect solution; the right
               rendering follows the job the map is doing.
             </p>
             <ul>
               <li>
-                <Link href="/maps/groves">
-                  <strong>The Groves subdivision</strong>
+                <Link href="/maps/search-and-map-pins">
+                  <strong>Search and map pin demo</strong>
                 </Link>{" "}
                 &mdash; the simplest, and the demo that produced
-                the theoretical finding. By far the most 
+                the theoretical finding. By far the most
                 stripped-down: residential streets, no interior detail. The
                 simplicity is what exposed the asymmetry between
                 visual scanning and blind navigation.
@@ -431,8 +431,9 @@ export default function Maps() {
                 drawn as SVG, the opposite of the field&rsquo;s
                 performance-driven raster choice. Where the job is to
                 find pinned points of interest rather than explore the
-                surrounding detail &mdash; the Groves &mdash; a raster
-                base carries an <em>addressable</em> pin overlay, and
+                surrounding detail &mdash; the search and map pin demo
+                &mdash; a raster base carries an <em>addressable</em>{" "}
+                pin overlay, and
                 only the pins need to be vector. The accessible layer
                 is always addressable; whether the base is SVG follows
                 the map&rsquo;s purpose, not dogma.
@@ -539,10 +540,10 @@ export default function Maps() {
             <h2>The seven-year arc</h2>
             <p>
               The arc begins with the{" "}
-              <strong>Groves subdivision</strong>, built out of a
-              client request for accessible spatial information
-              about a residential development &mdash; the work that
-              produced the polar-coordinate finding. The{" "}
+              <strong>search and map pin demo</strong>: accessible
+              spatial information about a residential subdivision
+              &mdash; the work that produced the polar-coordinate
+              finding. The{" "}
               <strong>East Toronto streetmap</strong> followed:
               first publicly shown at a 45-minute in-person session
               at the 2019 Guelph Accessibility Conference (a
@@ -615,8 +616,8 @@ export default function Maps() {
             <h2>Reading on</h2>
             <ul>
               <li>
-                <Link href="/maps/groves">
-                  The Groves subdivision
+                <Link href="/maps/search-and-map-pins">
+                  Search and map pin demo
                 </Link>{" "}
                 &mdash; simplest demo, polar finding origin.
               </li>

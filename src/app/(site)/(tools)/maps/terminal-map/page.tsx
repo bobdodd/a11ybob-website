@@ -384,8 +384,10 @@ export default function MapsTerminalMap() {
               Selecting a search result on a map is not like selecting
               a conventional web result, where many results resolve to
               one linked target and the page navigates there. On a map
-              the behaviour is context-sensitive. On the{" "}
-              <Link href="/maps/groves">Groves map</Link>, selecting a
+              the behaviour is context-sensitive. In the{" "}
+              <Link href="/maps/search-and-map-pins">
+                search and map pin demo
+              </Link>, selecting a
               property highlights it and adds it to the map&rsquo;s tab
               order with a live-region announcement, but focus stays in
               the results so the user can add several properties before

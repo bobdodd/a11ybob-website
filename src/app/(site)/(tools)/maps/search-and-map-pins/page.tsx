@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { CSSProperties } from "react";
 import { MapsSubNav } from "@/components/MapsSubNav";
 
-export default function MapsGroves() {
+export default function MapsSearchAndMapPins() {
   return (
     <main id="main" className="site-main">
       <div className="center">
@@ -21,13 +21,13 @@ export default function MapsGroves() {
                 <Link href="/maps">&larr; Maps</Link>
               </small>
             </p>
-            <h1>The Groves subdivision</h1>
+            <h1>Search and map pin demo</h1>
             <p className="lede">
-              By far the most stripped-down of the three demos.
-              Residential streets in Buckhorn, Ontario; no interior
-              buildings; no feature inventory beyond the road
-              network. The simplicity is precisely what made the
-              modality-conversion finding visible.
+              By far the most stripped-down of the three demos. The
+              residential streets of a typical North American urban
+              subdivision; no interior buildings; no feature inventory
+              beyond the road network. The simplicity is precisely what
+              made the modality-conversion finding visible.
             </p>
           </header>
 
@@ -37,11 +37,10 @@ export default function MapsGroves() {
           >
             <h2>What it is</h2>
             <p>
-              A streetmap of The Groves subdivision in Buckhorn,
-              built in 2022. PNG-based map underneath, with a
-              checkbox-curated pin overlay above. Cartesian via
-              touch, polar on tap. Pin-as-datum at the centre of
-              the viewport.
+              A streetmap of a residential subdivision. PNG-based map
+              underneath, with a checkbox-curated pin overlay above.
+              Cartesian via touch, polar on tap. Pin-as-datum at the
+              centre of the viewport.
             </p>
           </section>
 
@@ -54,7 +53,7 @@ export default function MapsGroves() {
               The later maps in the family draw{" "}
               <em>everything</em> as addressable SVG, because their
               job is to let a non-sighted user explore the detailed
-              space itself. The Groves does not work that way, and
+              space itself. This demo does not work that way, and
               that is a deliberate, fit-for-purpose choice rather than
               a shortcoming. Here what matters are the{" "}
               <strong>pinned points of interest</strong> &mdash; where
@@ -70,7 +69,7 @@ export default function MapsGroves() {
               This is the family&rsquo;s working principle in
               miniature: there is no single right way to render an
               accessible map &mdash; the rendering should follow the
-              job. The Groves answers &ldquo;where are the
+              job. This demo answers &ldquo;where are the
               properties, and what is near each one?&rdquo;; the{" "}
               <Link href="/maps/east-toronto-streetmap">
                 East Toronto streetmap
@@ -106,8 +105,8 @@ export default function MapsGroves() {
             <p>
               The finding generalised. It applies to a
               terminal&rsquo;s gates and washrooms and a
-              streetmap&rsquo;s pubs and parks as much as to the
-              Groves&rsquo; residential streets. The simplicity here
+              streetmap&rsquo;s pubs and parks as much as to this
+              demo&rsquo;s residential streets. The simplicity here
               is what made the generalisation visible; the richer
               demos use it without re-discovering it.
             </p>
@@ -154,7 +153,7 @@ export default function MapsGroves() {
               hosting.
               Pending the in-progress migration off SiteGround
               onto the OVH VPS, after which the demo moves to{" "}
-              <code>maps-groves.a11ybob.com</code> and the link
+              <code>maps-search-pins.a11ybob.com</code> and the link
               here updates.
             </p>
             <p className="muted">

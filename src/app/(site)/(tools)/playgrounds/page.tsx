@@ -114,12 +114,14 @@ export default function Playgrounds() {
               style={{ "--space": "var(--s0)" } as CSSProperties}
             >
               <h2>
-                <Link href="/maps/groves">Accessible maps demo</Link>
+                <Link href="/maps/search-and-map-pins">
+                  Search and map pin demo
+                </Link>
               </h2>
               <p>
                 The simplest of the three accessible-maps demos
-                &mdash; The Groves subdivision in Buckhorn,
-                Ontario. Residential streets, no interior
+                &mdash; the residential streets of a typical North
+                American subdivision, no interior
                 features; the cognitive load is stripped down so
                 the dual-mode interaction can be felt directly.
                 Cartesian via touch (the finger gives spatial

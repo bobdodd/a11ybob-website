@@ -135,7 +135,9 @@ export default function MapsEastTorontoStreetmap() {
             <p>
               That last distinction is where this demo parts company
               with the{" "}
-              <Link href="/maps/groves">Groves</Link>. The Groves is
+              <Link href="/maps/search-and-map-pins">
+                search and map pin demo
+              </Link>. That demo is
               about its <em>pinned points of interest</em> &mdash;
               where the properties are &mdash; so it renders a raster
               base with an addressable pin overlay, and only the pins
@@ -185,7 +187,9 @@ export default function MapsEastTorontoStreetmap() {
             </p>
             <p>
               The lineage reads in three steps. The{" "}
-              <Link href="/maps/groves">Groves subdivision work</Link>{" "}
+              <Link href="/maps/search-and-map-pins">
+                search and map pin demo
+              </Link>{" "}
               came first &mdash; it introduced the
               Cartesian-to-polar verbal description of space (the
               vocabulary the rotor still uses: &ldquo;1 o&rsquo;clock,
