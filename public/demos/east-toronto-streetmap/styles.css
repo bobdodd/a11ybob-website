@@ -1,0 +1,198 @@
+/* CSS Styles */
+
+.screen-reader-only {
+    clip: rect(1px, 1px, 1px, 1px);
+    height: 1px;
+    width: 1px;
+    overflow: hidden;
+    position: absolute !important;
+    color: black;
+    background-color: white;
+}
+
+* {
+    font-family: Arial, hevetica, Verdana, sans-serif;
+    color: black;
+}
+
+.skip-to-content {
+    padding: 6px;
+    position: absolute;
+    top: -7rem;
+    left: 0px;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    padding-left:1rem;
+    padding-right:1rem;
+    margin-left: 0.2rem;
+    border-right: 1px solid white;
+    border-bottom: 1px solid white;
+    border-bottom-right-radius: 2rem;
+    color: white;
+    font-size: xx-large;
+    font-weight: bold;
+    background-color: #000090;
+    text-decoration: underline;
+    -webkit-transition: top 1s ease-out, background 1s linear;
+    transition: top 1s ease-out, background 1s linear;
+    z-index: 100;
+}
+
+a.skip-to-content:focus {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    outline: 0;
+    -webkit-transition: top .1s ease-in, background .5s linear;
+    transition: top .1s ease-in, background .5s linear;
+}
+
+a.skip-to-content:hover {
+    color: white;
+    background-color: #000090;
+}
+
+header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+h1 {
+    display: flex;
+    gap: 0.3em;
+}
+h1 span {
+   /*  min-width: 21ch;  */
+}
+
+#mainMenuNav {
+}
+
+main {
+    display: flex;
+    gap: 0.3em;
+    align-items: flex-start;
+}
+
+
+#searchBlock {
+    border: 1px solid black;
+    border-radius: 1.5rem;
+    padding-left: 1.5em;
+    padding-right: 1.5em;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    margin-top:0;
+
+}
+
+#searchBlock form {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+#searchBlock input::placeholder {
+     color: #5B7487;
+}
+
+#searchBox {
+}
+
+#searchButton {
+    margin:0;
+    padding:0;
+    border:none;
+}
+
+#searchResults {
+}
+
+#mainMenuList {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    color: #1E3A8A;
+}
+
+.mainMenuItem a {
+    text-decoration: none;
+    padding-left: 1em;
+    padding-right: 1em;
+    font-size: x-large;
+    font-weight:bolder;
+    color: #1E3A8A;
+}  
+
+#map {
+    background-color: whitesmoke;
+    margin: 0;
+    padding:0;
+    overflow: hidden;
+}
+
+#mapSection {
+    width: 100%;
+}
+
+.waterline {
+    
+}
+
+#control-height {
+    height: 100vh;
+    width: 0;
+    position: absolute;
+}
+
+.addressOutline {
+
+}
+;/'[[']']]'
+main {
+    position: relative;
+}
+
+.rightSideBar {
+    position: fixed;
+    top: 10px;
+    right: 16px;
+    font-size:large;
+    z-index: 100;    
+    display: flex;
+    flex-direction: column;
+    background-color: lavender;
+    border: 1px solid gray;
+    padding: 3px;
+}
+
+.filterBox {
+    font-size:large;
+    display: flex;
+    flex-direction: column;
+    background-color: lavender;
+    border: 1px solid gray;
+    padding: 3px;
+}
+
+.rotorBox {
+    font-size:large;
+    display: flex;
+    flex-direction: column;
+    background-color: lavender;
+    border: 1px solid gray;
+    padding: 3px;
+}
+
+
+.filterButton {
+
+}
+
+.filterCheckbox {
+}

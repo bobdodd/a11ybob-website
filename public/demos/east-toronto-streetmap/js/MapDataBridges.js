@@ -1,0 +1,13 @@
+const bridges =
+{
+    "type": "FeatureCollection",
+    "name": "bridges",
+    "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+    "features": [
+        { "type": "Feature", "properties": { "osm_id": 35927901, "bridge": "yes", "layer": "1", "highway": "footway", "railway": null, "surface": null, "name": null, "footway": "sidewalk", "frequency": null, "gauge": null, "voltage": null, "electrified": null, "lit": null, "embedded_rails": null, "maxspeed": null, "lanes": null, "built_date": null }, "geometry": { "type": "LineString", "coordinates": [[-79.3005527, 43.6849576], [-79.3007032, 43.6853098], [-79.3008475, 43.6856379], [-79.3014051, 43.6869912], [-79.3014161, 43.6870202]] } },
+        { "type": "Feature", "properties": { "osm_id": 683213661, "bridge": "yes", "layer": "1", "highway": null, "railway": "tram", "surface": null, "name": null, "footway": null, "frequency": "0", "gauge": "1495", "voltage": "600", "electrified": "contact_line", "lit": null, "embedded_rails": null, "maxspeed": null, "lanes": null, "built_date": null }, "geometry": { "type": "LineString", "coordinates": [[-79.3013232, 43.6870209], [-79.3004745, 43.6849754]] } },
+        { "type": "Feature", "properties": { "osm_id": 24398998, "bridge": "yes", "layer": "1", "highway": "tertiary", "railway": null, "surface": "asphalt", "name": "Main Street", "footway": null, "frequency": null, "gauge": null, "voltage": null, "electrified": null, "lit": "yes", "embedded_rails": "tram", "maxspeed": "40", "lanes": "4", "built_date": null }, "geometry": { "type": "LineString", "coordinates": [[-79.3004575, 43.6849791], [-79.3013063, 43.6870244]] } },
+        { "type": "Feature", "properties": { "osm_id": 24398997, "bridge": "yes", "layer": "1", "highway": null, "railway": "tram", "surface": null, "name": null, "footway": null, "frequency": "0", "gauge": "1495", "voltage": "600", "electrified": "contact_line", "lit": null, "embedded_rails": null, "maxspeed": null, "lanes": null, "built_date": "1922" }, "geometry": { "type": "LineString", "coordinates": [[-79.3004393, 43.6849825], [-79.3012865, 43.687028]] } },
+        { "type": "Feature", "properties": { "osm_id": 35927903, "bridge": "yes", "layer": "1", "highway": "footway", "railway": null, "surface": null, "name": null, "footway": "sidewalk", "frequency": null, "gauge": null, "voltage": null, "electrified": null, "lit": null, "embedded_rails": null, "maxspeed": null, "lanes": null, "built_date": null }, "geometry": { "type": "LineString", "coordinates": [[-79.3003594, 43.6849999], [-79.3006459, 43.6856895], [-79.3009302, 43.6863859], [-79.3011216, 43.6868374], [-79.3011721, 43.6869575], [-79.3012046, 43.687032]] } }
+    ]
+};

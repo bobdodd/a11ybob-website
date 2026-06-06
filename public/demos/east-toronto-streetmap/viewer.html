@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>ally map</title>
+    <link rel="stylesheet" href="styles.css">
+
+
+</head>
+
+<body>
+
+    <main>
+        <h1 class="screen-reader-only">Upper beach, Toronto</h1>
+
+        <div class="rightSideBar">
+
+            <nav aria-labelledby="mapFiltersHeading">
+                <h2 class="screen-reader-only" id="mapFiltersHeading">Map filters</h2>
+                <div class="filterBox">
+                    <button class="filterButton">Filters</button>
+                    <div class="filterList">
+                        <div>
+                            <input class="filterCheckbox" type="checkbox" id="checkboxBuildings"
+                                name="checkboxBuildings" checked tabindex="" 0">
+                            <label for="checkboxBuildings">Buildings</label>
+                        </div>
+                        <div>
+                            <input class="filterCheckbox" type="checkbox" id="checkboxTransit" name="checkboxTransit"
+                                checked tabindex="" 0">
+                            <label for="checkboxTransit">Transit stops</label>
+                        </div>
+                        <div>
+                            <input class="filterCheckbox" type="checkbox" id="checkboxShops" name="checkboxShops"
+                                checked tabindex="" 0">
+                            <label for="checkboxShops">Shops</label>
+                        </div>
+                        <div>
+                            <input class="filterCheckbox" type="checkbox" id="checkboxAddresses"
+                                name="checkboxAddresses" checked tabindex="" 0">
+                            <label for="checkboxAddresses">Addresses</label>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <nav aria-labelledby="rotorHeading">
+                <h2 class="screen-reader-only" id="rotorHeading">Rotor</h2>
+                <div class="rotorBox">
+                    <button class="rotorButton">Rotor</button>
+                    <div class="RotorList">
+
+                        <fieldset>
+                            <legend>Options:</legend>
+
+                            <div>
+                                <input type="radio" id="rotorNone" name="rotor" value="none" checked>
+                                <label for="rotorNone">No selection</label>
+                            </div>
+
+                            <div>
+                                <input type="radio" id="rotorTransit" name="rotor" value="transit" >
+                                <label for="rotorTransit">Transit Stops</label>
+                            </div>
+
+                            <div>
+                                <input type="radio" id="rotorShops" name="rotor" value="shops">
+                                <label for="rotorShops">Shops</label>
+                            </div>
+
+                            <div>
+                                <input type="radio" id="rotorSchools" name="rotor" value="schools">
+                                <label for="rotorSchools">Schools</label>
+                            </div>
+
+                            <div>
+                                <input type="radio" id="rotorWorship" name="rotor" value="worship">
+                                <label for="rotorWorship">Worship</label>
+                            </div>
+                            <div>
+                                <input type="radio" id="rotorParks" name="rotor" value="parks">
+                                <label for="rotorParks">Parks</label>
+                            </div>
+                            <div>
+                                <input type="radio" id="rotorDragon" name="rotor" value="dragon">
+                                <label for="rotorDragon">Dragon</label>
+                            </div>
+
+                        </fieldset>
+                    </div>
+                </div>
+            </nav>
+
+        </div>
+
+
+        <section id="mapSection" aria-labelledby="mapHeading">
+            <nav aria-labelledby="mapHeading">
+                <h2 id="mapHeading" class="screen-reader-only">Map of Upper Beach and Surrounding Area</h2>
+                <!-- 
+                    Map area from OSM: top: 43.6857, bottom: 43.6773, left: -79.3006,  right: -79.2806
+                    Width = 0.0200 
+                    Height = 0.0084
+                    bl = -79.3006, 43.6773
+                    tl = -79.3006, 43.6857
+                    tr = -79.2806, 43.6857
+                    br = -79.2806, 43.6773
+                    proportion = 2.38 or 0.42
+
+                    Map 800 x 336   (800)                                                
+
+                    Formula for (x,y) = (x+79.3006, 336 + y - 43.6773)
+                -->
+                <div id="dummyDiv"></div>
+
+                <!-- <svg role="document" aria-labelledby="mapHeading" focusable="true" onload="onLoad()" id="map"
+                    width="100" height="800" viewBox="0 0 100 800" fill="none" xmlns="http://www.w3.org/2000/svg"
+                    xmlns:xlink="http://www.w3.org/1999/xlink" xml:lang="en"> -->
+
+                <svg role="document" aria-labelledby="mapHeading" focusable="true" onload="onLoad()" id="map"
+                    width="100" height="800" viewBox="80 80 100 800" fill="none" xmlns="http://www.w3.org/2000/svg"
+                    xmlns:xlink="http://www.w3.org/1999/xlink" xml:lang="en">
+                    <!-- <title>Map of Upper Beach Surrounding Area</title> -->
+
+                    <script type="text/ecmascript" href="./js/Constants.js"></script>
+
+                    <script type="text/ecmascript" href="./js/MapDataAddresses.js"></script>
+                    <script type="text/ecmascript" href="./js/MapDataAmenityPoints.js"></script>
+                    <script type="text/ecmascript" href="./js/MapDataAmenityPolygons.js"></script>
+                    <script type="text/ecmascript" href="./js/MapDataBuildings.js"></script>
+                    <script type="text/ecmascript" href="./js/MapDataWaterLines.js"></script>
+                    <script type="text/ecmascript" href="./js/MapDataLandcover.js"></script>
+                    <script type="text/ecmascript" href="./js/MapDataRailways.js"></script>
+                    <script type="text/ecmascript" href="./js/MapDataRoads.js"></script>
+                    <script type="text/ecmascript" href="./js/MapDataStations.js"></script>
+                    <script type="text/ecmascript" href="./js/MapDataForests.js"></script>
+                    <script type="text/ecmascript" href="./js/MapDataBridges.js"></script>
+
+                    <script type="text/ecmascript" href="./js/OsmId.js"></script>
+                    <script type="text/ecmascript" href="./js/TrafficSignal.js"></script>
+                    <script type="text/ecmascript" href="./js/TransitOperator.js"></script>
+                    <script type="text/ecmascript" href="./js/BusStop.js"></script>
+                    <script type="text/ecmascript" href="./js/Shop.js"></script>
+                    <script type="text/ecmascript" href="./js/Sport.js"></script>
+                    <script type="text/ecmascript" href="./js/SocialFacility.js"></script>
+                    <script type="text/ecmascript" href="./js/Leisure.js"></script>
+                    <script type="text/ecmascript" href="./js/Building.js"></script>
+                    <script type="text/ecmascript" href="./js/Address.js"></script>
+                    <script type="text/ecmascript" href="./js/NamedRoad.js"></script>
+                    <script type="text/ecmascript" href="./js/Road.js"></script>
+
+                    <script type="text/ecmascript" href="./js/Geometry.js"></script>
+
+                    <script type="text/ecmascript" href="./js/MapDrawing.js"></script>
+
+
+                    <script type="text/ecmascript">
+                        //<![CDATA[
+
+                        /**
+                        * Returns back a NodeList of focusable elements
+                        * that exist within the passed parent HTMLElement, or
+                        * an empty array if no parent passed.
+                        *
+                        * @param {HTMLElement} parent HTML element
+                        * @returns {(NodeList|Array)} The focusable elements that we can find
+                        */
+                       const getAllFocusableElements = parent => {
+                         if (!parent) {
+                           console.warn('You need to pass a parent HTMLElement');
+                           return []; // Return array so length queries will work
+                         }
+                       
+                         return parent.querySelectorAll(
+                            'g[role="button"]:not([disabled])'
+                           //'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"]):not([disabled]), details:not([disabled]), summary:not(:disabled)'
+                         );
+                       };
+                       
+
+                        var keyboardEvent = document.createEvent('KeyboardEvent');
+                        var initMethod = typeof keyboardEvent.initKeyboardEvent !== 'undefined' ? 'initKeyboardEvent' : 'initKeyEvent';
+                        
+                        keyboardEvent[initMethod](
+                          'keydown', // event type: keydown, keyup, keypress
+                          true, // bubbles
+                          true, // cancelable
+                          window, // view: should be window
+                          false, // ctrlKey
+                          false, // altKey
+                          false, // shiftKey
+                          false, // metaKey
+                          9, // keyCode: unsigned long - the virtual key code, else 0
+                          0, // charCode: unsigned long - the Unicode character associated with the depressed key, else 0
+                        );
+                        //<button onclick="document.dispatchEvent(keyboardEvent)">Tab</button>
+
+                        var lastActiveElement = document.activeElement;
+
+                        function detectBlur() {
+                            // Do logic related to blur using document.activeElement;
+                            // You can do change detection too using lastActiveElement as a history
+                        }
+                
+                        function isSameActiveElement() {
+                            var currentActiveElement = document.activeElement;
+                            if(lastActiveElement != currentActiveElement) {
+                                lastActiveElement = currentActiveElement;
+                                return false;
+                            }
+                
+                            return true;
+                        }
+                
+                        function detectFocus() {
+                            // Add logic to detect focus and to see if it has changed or not from the lastActiveElement. 
+                        }
+                
+                        function attachEvents() {
+                            window.addEventListener ? window.addEventListener('focus', detectFocus, true) : window.attachEvent('onfocusout', detectFocus);                  
+                            window.addEventListener ? window.addEventListener('blur', detectBlur, true) : window.attachEvent('onblur', detectBlur);
+                        }
+                
+                
+                        function emulateTab() {
+
+                            const map = document.querySelector('#map');
+
+                            /*
+                            const focusableButtons = map.querySelectorAll('*[tabindex]');
+                            let found = false;
+                            let i=0;
+                            for (i=0; i < focusableButtons.length; ++i) {
+                                if (focusableButtons[i] == document.activeElement) {
+                                    alert('found it!');
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            */
+
+                            console.log(lastActiveElement);
+
+
+
+                        }
+
+                        document.addEventListener("DOMContentLoaded", function () {
+                            doStuff();
+                            attachEvents();
+
+                        });
+                    
+                        function doStuff() {
+
+                            Geometry.initMapGeometery();
+                            MapDrawing.drawMap();
+
+                            let checkbox = document.querySelector('#checkboxBuildings');
+                            checkbox.addEventListener('change', function () {
+                                const buildings = document.querySelectorAll(".buidingOutline");
+                                if (this.checked) {
+                                    buildings.forEach(function (bldg) {
+                                        bldg.style.visibility = 'visible';
+                                    });
+
+                                    let lr = document.getElementById("liveRegion");
+                                    lr.textContent = "Buildings added to map";
+
+
+                                } else {
+                                    buildings.forEach(function (bldg) {
+                                        bldg.style.visibility = 'hidden';
+                                    });
+                                    let lr = document.getElementById("liveRegion");
+                                    lr.textContent = "Buildings removed from map";
+                                }
+
+                            });
+
+                            checkbox = document.querySelector('#checkboxTransit');
+                            checkbox.addEventListener('change', function () {
+                                const stops = document.querySelectorAll(".stationOutline");
+                                if (this.checked) {
+                                    stops.forEach(function (stop) {
+                                        stop.style.visibility = 'visible';
+
+                                    });
+
+                                    let lr = document.getElementById("liveRegion");
+                                    lr.textContent = "Stops added to map";
+
+                                } else {
+                                    stops.forEach(function (stop) {
+                                        stop.style.visibility = 'hidden';
+                                    });
+
+                                    let lr = document.getElementById("liveRegion");
+                                    lr.textContent = "Stops removed from map";
+
+                                }
+                            });
+
+                            checkbox = document.querySelector('#checkboxShops');
+                            checkbox.addEventListener('change', function () {
+                                const shops = document.querySelectorAll(".shopOutline");
+                                if (this.checked) {
+                                    shops.forEach(function (shop) {
+                                        shop.style.visibility = 'visible';
+                                    });
+
+                                    let lr = document.getElementById("liveRegion");
+                                    lr.textContent = "Shops added to map";
+
+                                } else {
+                                    shops.forEach(function (shop) {
+                                        shop.style.visibility = 'hidden';
+                                    });
+
+                                    let lr = document.getElementById("liveRegion");
+                                    lr.textContent = "Shops removed from map";
+
+                                }
+                            });
+
+                            checkbox = document.querySelector('#checkboxAddresses');
+                            checkbox.addEventListener('change', function () {
+                                const addrs = document.querySelectorAll(".addressOutline");
+                                if (this.checked) {
+                                    addrs.forEach(function (addr) {
+                                        addr.style.visibility = 'visible';
+                                    });
+
+                                    let lr = document.getElementById("liveRegion");
+                                    lr.textContent = "Addresses added to map";
+
+                                } else {
+                                    addrs.forEach(function (addr) {
+                                        addr.style.visibility = 'hidden';
+                                    });
+
+                                    let lr = document.getElementById("liveRegion");
+                                    lr.textContent = "Addresses removed from map";
+
+                                }
+                            });
+
+                            // Listen for changes to rotor
+                            var radios = document.querySelectorAll('input[type=radio][name="rotor"]');
+                            radios.forEach(radio => radio.addEventListener('change', () => 
+                                MapDrawing.setTabOrder()
+                            ));
+                            MapDrawing.setTabOrder(); // Inital value from radio
+
+
+                        }
+
+                        function pointInPolygon(polygon, point) {
+                            let odd = false;
+                            for (let i = 0, j = polygon.length - 1; i < polygon.length; i++) {
+                                if (((polygon[i][1] > point[1]) !== (polygon[j][1] > point[1]))
+                                    && (point[0] < ((polygon[j][0] - polygon[i][0]) * (point[1] - polygon[i][1]) / (polygon[j][1] - polygon[i][1]) + polygon[i][0]))) {
+                                    odd = !odd;
+                                }
+                                j = i;
+                            }
+                            return odd;
+                        }
+
+                        //////////////////////////////////////////////////////////////////////////
+                        // User Events
+                        //////////////////////////////////////////////////////////////////////////                        
+
+
+
+                        ///////////////////////////////////////////////////////
+                        // Amenity Mappings
+                        ///////////////////////////////////////////////////////
+
+                        function createAmenityMappings() {
+                            const amenityFeatures = amenityPoints.features;
+                            amenityFeatures.forEach(feature => {
+                                const properties = feature.properties;
+
+                                if (properties.highway === 'traffic_signals') {
+                                    const id = properties.osm_id;
+                                    const geom = feature.geometry;
+                                    if (geom.type === 'Point') {
+                                        const coords = geom.coordinates;
+                                        const ts = new TrafficSignal(id, coords[0], coords[1]);
+                                    }
+                                }
+
+                                if (properties.highway === 'bus_stop') {
+                                    const id = properties.osm_id;
+                                    const operator = properties.operator;
+                                    const publicTransport = properties.public_transport;
+                                    const shelter = properties.shelter;
+                                    const bus = properties.bus;
+                                    const network = properties.network;
+                                    const network_wikidata = properties["network:wikidata"];
+                                    const network_wikipedia = properties["network:wikipedia"];
+                                    const trafficSignals = properties.traffic_signals;
+                                    const name = properties.name;
+                                    const wheelchair = properties.wheelchair;
+                                    const routeRef = properties.route_ref;
+                                    const wheelchairDescription = properties["wheelchair:description"];
+                                    const tram = properties.tram;
+                                    const ref = properties.ref;
+
+                                    const geom = feature.geometry;
+                                    if (geom.type === 'Point') {
+                                        const coords = geom.coordinates;
+                                        const ts = new BusStop(id, coords[0], coords[1], operator, publicTransport, shelter, bus, network, network_wikidata, network_wikipedia, trafficSignals, name, wheelchair, routeRef, wheelchairDescription, tram, ref);
+                                    }
+                                }
+
+                                if (properties.shop !== null) {
+                                    const id = properties.osm_id;
+                                    const type = properties.shop;
+                                    const houseNumber = properties["addr:housenumber"];
+                                    const name = properties.name;
+                                    const city = properties["addr:city"];
+                                    const street = properties["addr:street"];
+                                    const openingHours = properties.opening_hours;
+                                    const takeaway = properties.takeaway;
+                                    const dispensing = properties.dispensing;
+                                    const healthcare = properties.healthcare;
+                                    const beauty = properties.beauty;
+                                    const website = properties.website;
+                                    const healthcareSpeciality = properties["healthcare:speciality"];
+                                    const postcode = properties["addr:postcode"];
+                                    const phone = properties.phone;
+                                    const unit = properties["addr:unit"];
+                                    const province = properties["addr:province"];
+                                    const outdoorSeating = properties.outdoor_seating;
+                                    const delivery = properties.delivery;
+
+                                    const geom = feature.geometry;
+                                    if (geom.type === 'Point') {
+                                        const coords = geom.coordinates;
+                                        const shop = new Shop(id, coords[0], coords[1], type, houseNumber, name, city, street, openingHours, takeaway, dispensing, healthcare, beauty, website, healthcareSpeciality, postcode, phone, unit, province, outdoorSeating, delivery);
+
+                                    }
+                                }
+
+                            });
+                        }
+
+                        ///////////////////////////////////////////////////////////////
+                        // Building Mappings
+                        ///////////////////////////////////////////////////////////////
+                        function createBuildingMappings() {
+                            const buildingFeatures = buildings.features;
+                            buildingFeatures.forEach(feature => {
+                                const properties = feature.properties;
+                                const type = properties.building;
+                                const houseNumber = properties["addr:housenumber"];
+                                const name = properties.name;
+                                const operator = properties.operator;
+                                const sport = properties.sport;
+                                const leisure = properties.leisure;
+                                const city = properties["addr:city"];
+                                const street = properties["addr:street"];
+                                const postcode = properties["addr:postcode"];
+                                const socialFacility = properties.social_facility;
+                                const phone = properties.phone;
+                                const socialFacilityFor = properties["social_facility:for"];
+
+                                const geom = feature.geometry;
+                                let coords;
+                                if (geom.type === 'Polygon') {
+                                    const id = properties.osm_id;
+                                    coords = geom.coordinates;
+                                    const building = new Building(id, coords, type, houseNumber, name, operator, sport, leisure, city, street, postcode, socialFacility, phone, socialFacilityFor);
+                                }
+                            });
+                        }
+
+
+                        ///////////////////////////////////////////////////////////////
+                        // Address Mappings
+                        ///////////////////////////////////////////////////////////////
+                        function createAddressMappings() {
+                            const addressFeatures = addresses.features;
+                            addressFeatures.forEach(feature => {
+
+                                const properties = feature.properties;
+                                const id = properties.osm_id;
+                                const unit = properties["addr:unit"];
+                                const houseNumber = properties["addr:housenumber"];
+                                const street = properties["addr:street"];
+                                const city = properties["addr:city"];
+                                const postcode = properties["addr:postcode"];
+                                const phone = properties.phone;
+
+                                const geom = feature.geometry;
+                                if (geom.type === 'Point') {
+                                    const coords = geom.coordinates;
+                                    const addr = new Address(id, coords[0], coords[1], unit, houseNumber, city, street, postcode, phone);
+                                }
+
+                            });
+                        }
+
+
+                        ///////////////////////////////////////////////////////////////
+                        // Road Mappings
+                        ///////////////////////////////////////////////////////////////
+                        function createRoadMappings() {
+                            const roadFeatures = roads.features;
+                            roadFeatures.forEach(feature => {
+
+                                const properties = feature.properties;
+                                const id = properties.osm_id;
+                                const type = properties.highway;
+                                const name = properties.name;
+                                const oneway = properties.oneway;
+                                const service = properties.service;
+                                const foot = properties.foot;
+                                const motorcar = properties.motorcar;
+                                const bicycle = properties.bicycle;
+                                const footway = properties.footway;
+                                const maxspeed = properties.maxspeed;
+                                const lanes = properties.lanes;
+                                const sidewalk = properties.sidewalk;
+
+                                const geom = feature.geometry;
+                                if (geom.type === 'LineString') {
+                                    const coords = geom.coordinates;
+                                    const road = new Road(id, coords, type, name, oneway, service, foot, motorcar, bicycle, footway, maxspeed, lanes, sidewalk);
+                                }
+
+                            });
+                        }
+
+                        function onLoad() {
+
+                            /////////////////////////////////////////////////////////////
+                            // Mouse Events
+                            /////////////////////////////////////////////////////////////
+
+                            window.mouseData = {
+                                "mode": MODE_DEFAULT,
+                                "startX": -1,
+                                "startY": -1,
+                                "endX": -1,
+                                "endY": -1
+                            };
+
+                            const sidebar = document.querySelector("#leftSidebar");
+                            /*
+                            sidebar.addEventListener('mouseleave', (event) => {
+                                console.log('Mouse LEAVE');
+                                const sidebar = document.querySelector("#leftSidebar");
+                                sidebar.style.cursor = "auto";
+                                window.mouseData.mode = MODE_DEFAULT;
+
+                            });
+
+                            sidebar.addEventListener('mouseenter', (event) => {
+                                console.log('Mouse ENTER');
+                            });
+
+
+                            sidebar.addEventListener('mouseover', (event) => {
+                                console.log('Mouse OVER');
+                                return;
+                                // Width can only be adjusted in desktop mode
+                                if (window.mouseData.mode === MODE_MOBILE) return;
+
+                                switch (window.mouseData.mode) {
+                                    case MODE_DEFAULT:
+
+                                        const sidebar = document.querySelector("#leftSidebar");
+                                        const rect = sidebar.getBoundingClientRect();
+                                        if (event.clientX >= (rect.right - (rect.width / 10))) {
+                                            sidebar.style.cursor = "col-resize";
+                                            window.mouseData.mode = MODE_HOVERING;
+                                            console.log('Start HOVERING');
+                                        }
+
+                                        break;
+
+                                    case MODE_HOVERING:
+                                        break;
+
+                                    case MODE_DRAGGING:
+                                        break;
+                                }
+                            });
+
+
+                            sidebar.addEventListener('mousemove', (event) => {
+                                console.log('Mouse MOVE');
+
+                                const sidebar = document.querySelector("#leftSidebar");
+                                const rect = sidebar.getBoundingClientRect();
+                                switch (window.mouseData.mode) {
+
+                                    case MODE_DEFAULT:
+                                        window.mouseData.mode = MODE_HOVERING;
+                                    // fall thru
+
+                                    case MODE_HOVERING:
+                                        if (event.clientX >= (rect.right - (rect.width / 10))) {
+                                            sidebar.style.cursor = "e-resize";
+                                        }
+                                        else {
+                                            sidebar.style.cursor = "auto";
+                                        }
+                                        break;
+
+
+                                    case MODE_DRAGGING:
+
+                                        const dx = event.clientX - mouseData.startX;
+                                        const dy = event.clientY - mouseData.startY;
+
+                                        //sidebar.style.width = '' + rect.width+dx
+                                        sidebar.style.minWidth = '0';
+
+                                        const compStyles = window.getComputedStyle(sidebar);
+                                        const currentWidth = compStyles.getPropertyValue('width').slice(0, -2);
+                                        const newWidth = (Number(currentWidth) + dx) + 'px';
+                                        const n1 = newWidth + 'px';
+                                        //n1 += dx;
+                                        console.log("n1: " + n1);
+
+                                        console.log('currentWidth: ' + currentWidth);
+                                        console.log('newWidth: ' + newWidth);
+                                        sidebar.style.width = newWidth;
+                                        sidebar.style.minWidth = newWidth;
+                                        console.log('Dragged by ' + dx);
+                                        mouseData.startX = event.clientX;
+                                        mouseData.startY = event.clientY;
+
+                                        break;
+
+                                }
+
+                                return;
+
+                                // Width can only be adjusted in desktop mode
+                                if (window.mouseData.mode === MODE_MOBILE) return;
+
+
+                                switch (window.mouseData.mode) {
+                                    case MODE_DEFAULT:
+                                        break;
+
+                                    case MODE_HOVERING:
+
+                                        if (event.clientX < (rect.right - (rect.width / 10))) {
+                                            sidebar.style.cursor = "auto";
+                                            window.mouseData.mode = MODE_DEFAULT;
+                                            console.log('Stop HOVERING');
+                                        }
+                                        break;
+
+                                    case MODE_DRAGGING:
+                                        
+                                        const dx = event.clientX - mouseData.startX;
+                                        const dy = event.clientY - mouseData.startY;
+    
+                                        sidebar.setAttribute('width', rect.width+dx);
+    
+                                        mouseData.startX = event.clientX;
+                                        mouseData.startY = event.clientY;
+                                        
+                                        break;
+
+                                }
+                            });
+
+
+                            sidebar.addEventListener('mousedown', (event) => {
+                                console.log('Mouse DOWN');
+
+                                switch (window.mouseData.mode) {
+
+                                    case MODE_HOVERING:
+                                        const sidebar = document.querySelector("#leftSidebar");
+                                        const rect = sidebar.getBoundingClientRect();
+                                        if (event.clientX >= (rect.right - (rect.width / 10))) {
+                                            sidebar.style.cursor = "move";
+                                            window.mouseData.mode = MODE_DRAGGING;
+                                            window.mouseData.startX = event.clientX;
+                                            window.mouseData.startY = event.clientY;
+                                            console.log('Start DRAGGING');
+
+                                        }
+                                        else {
+                                            //sidebar.style.cursor = "auto";
+                                            //window.mouseData.mode = MODE_DEFAULT;    
+                                        }
+
+                                        break;
+                                }
+
+                                return;
+
+                                // Width can only be adjusted in desktop mode
+                                if (window.mouseData.mode === MODE_MOBILE) return;
+
+
+                                const sidebar = document.querySelector("#leftSidebar");
+                                const rect = sidebar.getBoundingClientRect();
+                                switch (window.mouseData.mode) {
+                                    case MODE_DEFAULT:
+                                        break;
+
+                                    case MODE_HOVERING:
+                                        if (event.clientX >= (rect.right - (rect.width / 10))) {
+                                            sidebar.style.cursor = "e-resize";
+                                            window.mouseData.mode = MODE_DRAGGING;
+                                            window.mouseData.startX = event.clientX;
+                                            window.mouseData.startY = event.clientY;
+                                        }
+                                        else {
+                                            sidebar.style.cursor = "auto";
+                                            window.mouseData.mode = MODE_DEFAULT;
+                                        }
+
+                                        break;
+
+                                    case MODE_DRAGGING:
+
+                                        // Shouldn't happen
+                                        sidebar.style.cursor = "e-auto";
+                                        window.mouseData.mode = MODE_DEFAULT;
+
+                                        break;
+
+                                }
+                            });
+
+
+
+                            sidebar.addEventListener('mouseup', (event) => {
+                                console.log('Mouse UP');
+                                window.mouseData.mode = MODE_DEFAULT;
+                                const sidebar = document.querySelector("#leftSidebar");
+                                sidebar.style.cursor = "auto";
+                                return;
+
+                                // Width can only be adjusted in desktop mode
+                                if (window.mouseData.mode === MODE_MOBILE) return;
+
+                                const rect = sidebar.getBoundingClientRect();
+                                switch (window.mouseData.mode) {
+                                    case MODE_DEFAULT:
+                                        break;
+
+                                    case MODE_HOVERING:
+                                        break;
+
+                                    case MODE_DRAGGING:
+
+                                        window.mouseData.endX = event.clientX;
+                                        window.mouseData.endY = event.clientY;
+
+                                        if (event.clientX >= (rect.right - (rect.width / 10))) {
+                                            sidebar.style.cursor = "col-resize";
+                                            window.mouseData.mode = MODE_HOVERING;
+                                            return;
+                                        }
+                                        else {
+                                            sidebar.style.cursor = "auto";
+                                            window.mouseData.mode = MODE_DEFAULT;
+                                        }
+
+                                        break;
+
+                                }
+
+                            });
+
+
+
+                            sidebar.addEventListener('mouseout', (event) => {
+                                console.log('Mouse OUT');
+                                return;
+
+                                // Width can only be adjusted in desktop mode
+                                if (window.mouseData.mode != MODE_MOBILE) return;
+
+                                window.mouseData.mode = MODE_DEFAULT;
+
+                                const sidebar = document.querySelector("#leftSidebar");
+                                console.log("Mouse Out");
+                            });
+*/
+
+                            const map = document.querySelector("#map");
+                            map.addEventListener("click", Geometry.mouseToMapOnClick);
+
+                            const mapSection = document.querySelector("#mapSection");
+                            const sectionHt = mapSection.offsetHeight;
+
+                            //const leftSidebar = document.querySelector("#leftSidebar");
+                            //const sidebarHt = leftSidebar.offsetHeight;
+
+                            const header = document.querySelector("#header");
+                            //const headerHt = header.offsetHeight;
+                            const headerHt = 0;
+
+                            let ht;
+                            const main = document.querySelector("main");
+                            if (window.innerHeight > window.innerWidth) {
+                                // Portrait
+                                ht = window.innerHeight - headerHt - 70;
+                                main.style.flexDirection = 'column';
+                            }
+                            else {
+                                // landscape
+                                //const searchHt = document.getElementById('leftSidebar').offsetHeight;
+                                const searchHt = 300;
+                                ht = Math.max((window.innerHeight - headerHt - 20), searchHt);
+                                //main.style.flexDirection = 'row';
+
+                            }
+
+                            let dummyDiv = document.querySelector("#dummyDiv");
+                            const mapWidth = dummyDiv.offsetWidth;
+                            map.setAttribute("width", mapWidth);
+                            map.setAttribute("height", ht);
+                            map.setAttribute("viewBox", "0 0 " + mapWidth + " " + ht);
+
+
+                            window.onresize = MapDrawing.resizeMap;
+
+                            createAddressMappings();
+                            createAmenityMappings();
+                            createBuildingMappings();
+                            createRoadMappings();
+
+                            /*
+                            document.querySelector("#baseMap").addEventListener("click", baseMapOnClick);
+                            document.querySelector("#baseMap").addEventListener("wheel", baseMapOnWheel);
+                            document.querySelector("#baseMap").addEventListener("mousedown", baseMapMouseDown);
+                            document.querySelector("#baseMap").addEventListener("mouseup", baseMapMouseUp);
+                            document.querySelector("#baseMap").addEventListener("mouseout", baseMapMouseOut);
+                            document.querySelector("#baseMap").addEventListener("mousemove", baseMapMouseMove);
+  
+                            document.querySelector("#lot27").addEventListener("click", displayLot27);
+                            
+                            createPins(document.querySelector("#MapPins"));
+                            createMapControls(document.querySelector("#MapControlsAndFilters"), 720, 50);
+                            */
+
+                            //drawMap();
+                        }
+                        //]]>
+                    </script>
+                </svg>
+            </nav>
+        </section> <!-- map -->
+    </main>
+    <div role="region" id="liveRegion" aria-live="polite">
+</body>
+
+</html>
