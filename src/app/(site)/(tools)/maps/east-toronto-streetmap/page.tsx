@@ -59,8 +59,11 @@ export default function MapsEastTorontoStreetmap() {
               suppress categories, and the rotor to skim a
               category fast &mdash; became the family resemblance
               that the three later maps in the lineage share: the
-              multi-tile, fully-rendered Toronto streetmap
-              currently in active development, the terminal map,
+              fully-rendered{" "}
+              <Link href="/maps/tiled-toronto-map">
+                tiled Toronto map
+              </Link>
+              , the terminal map,
               and this east Toronto demo where the model
               originated.
             </p>
@@ -101,9 +104,11 @@ export default function MapsEastTorontoStreetmap() {
                 The pipeline that processes OSM data into many
                 pre-rendered SVG tiles served from Bob&rsquo;s own
                 tile server, with the viewer fetching tiles as the
-                viewport pans, is the contribution of the
-                in-development multi-tile Toronto streetmap. It
-                isn&rsquo;t part of this single-tile demo.
+                viewport pans, is the contribution of the{" "}
+                <Link href="/maps/tiled-toronto-map">
+                  tiled Toronto map
+                </Link>
+                . It isn&rsquo;t part of this single-tile demo.
               </small>
             </p>
           </section>
@@ -155,8 +160,11 @@ export default function MapsEastTorontoStreetmap() {
             </p>
             <p>
               There is no single right answer across the family &mdash;
-              the rendering and the affordances follow the job. The
-              multi-tile Toronto streetmap and the{" "}
+              the rendering and the affordances follow the job. The{" "}
+              <Link href="/maps/tiled-toronto-map">
+                tiled Toronto map
+              </Link>{" "}
+              and the{" "}
               <Link href="/maps/terminal-map">terminal map</Link>{" "}
               inherit this map&rsquo;s &ldquo;explore the space&rdquo;
               brief and the navigation model that goes with it; the
@@ -199,8 +207,11 @@ export default function MapsEastTorontoStreetmap() {
               came second &mdash; the conceptual model of ARIA
               Landmarks + filters + rotor that the family of maps
               now shares. The three maps that inherit the model:
-              the multi-tile Toronto streetmap currently under
-              active development (the direct architectural
+              the{" "}
+              <Link href="/maps/tiled-toronto-map">
+                tiled Toronto map
+              </Link>{" "}
+              (the direct architectural
               successor, scaling the single-tile pipeline shown
               here to a full city), the{" "}
               <Link href="/maps/terminal-map">terminal map</Link>{" "}

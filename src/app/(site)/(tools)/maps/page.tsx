@@ -286,6 +286,16 @@ export default function Maps() {
                 is the SVG structure for screen-reader navigation.
               </li>
               <li>
+                <Link href="/maps/tiled-toronto-map">
+                  <strong>Tiled Toronto map</strong>
+                </Link>{" "}
+                &mdash; the architectural successor to East Toronto,
+                taken to city scale: pre-rendered SVG tiles from a
+                custom tile server, and a live, context-aware viewer
+                with far more content. The live demo is still being
+                prepared.
+              </li>
+              <li>
                 <Link href="/maps/terminal-map">
                   <strong>Terminal map</strong>
                 </Link>{" "}
@@ -427,7 +437,7 @@ export default function Maps() {
                 semantically labellable, scalable without resampling.
                 Where the job is to explore the detailed space &mdash;
                 the East Toronto streetmap, the terminal map, the
-                multi-tile Toronto streetmap &mdash; everything is
+                tiled Toronto map &mdash; everything is
                 drawn as SVG, the opposite of the field&rsquo;s
                 performance-driven raster choice. Where the job is to
                 find pinned points of interest rather than explore the
@@ -450,8 +460,11 @@ export default function Maps() {
                 assets &mdash; the East Toronto streetmap, for
                 instance, is a single SVG generated from one
                 long-ago OSM extract; the data isn&rsquo;t
-                refreshed. The multi-tile Toronto streetmap
-                currently in development extends the same
+                refreshed. The{" "}
+                <Link href="/maps/tiled-toronto-map">
+                  tiled Toronto map
+                </Link>{" "}
+                extends the same
                 principle to a city: OSM data is processed offline
                 into 0.01&deg; geographic squares (~1km&sup2;),
                 each rendered as a compressed SVG.gz file with
@@ -551,11 +564,12 @@ export default function Maps() {
               rendering of an east Toronto streetmap) and the demo
               that introduced the ARIA Landmarks + filters + rotor
               model the family of maps now shares. The{" "}
-              <strong>multi-tile Toronto streetmap</strong>{" "}
+              <strong>tiled Toronto map</strong>{" "}
               followed as the direct architectural successor of
               East Toronto, scaling the single-tile pipeline to a
-              full city &mdash; currently in active development,
-              with no public demo live yet. Most recently, the{" "}
+              full city with its own SVG tile server &mdash; it has
+              its own page now, though the live demo is still being
+              prepared. Most recently, the{" "}
               <strong>terminal map</strong> carries the conceptual
               model into an indoor airport surface (worked example:
               YVR&rsquo;s Level 3 departures). Same
@@ -627,6 +641,13 @@ export default function Maps() {
                 </Link>{" "}
                 &mdash; 2019 origin; introduced the ARIA Landmarks
                 + filters + rotor model the family shares.
+              </li>
+              <li>
+                <Link href="/maps/tiled-toronto-map">
+                  Tiled Toronto map
+                </Link>{" "}
+                &mdash; East Toronto taken to city scale; pre-rendered
+                SVG tiles from a custom server, live and context-aware.
               </li>
               <li>
                 <Link href="/maps/terminal-map">Terminal map</Link>{" "}
