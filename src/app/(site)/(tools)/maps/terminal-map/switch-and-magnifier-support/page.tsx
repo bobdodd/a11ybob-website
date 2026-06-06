@@ -244,7 +244,7 @@ export default function SwitchAndMagnifierSupport() {
               </li>
               <li>
                 <Link href="/maps">Maps</Link> &mdash; the wider
-                accessible-maps work.
+                accessible maps work.
               </li>
             </ul>
           </section>

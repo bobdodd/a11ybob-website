@@ -33,7 +33,7 @@ export default function Now() {
                 Action Language playground
               </Link>{" "}
               with four worked examples, the{" "}
-              <Link href="/maps">accessible-maps</Link>{" "}
+              <Link href="/maps">accessible maps</Link>{" "}
               four-page section with the seven-year body of work
               and the polar-coordinate finding, the{" "}
               <Link href="/automated-testing">automated-testing</Link>{" "}

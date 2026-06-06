@@ -492,7 +492,7 @@ export default function Maps() {
             <p>
               The concepts below are{" "}
               <strong>distributed across the demos</strong>: this
-              is the current state-of-play of the accessible-maps
+              is the current state-of-play of the accessible maps
               work as a whole, not a feature list any single demo
               implements end-to-end. Each demo carries some
               subset, and each new demo has been the surface on

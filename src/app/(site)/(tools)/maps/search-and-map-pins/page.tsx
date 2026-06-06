@@ -171,10 +171,11 @@ export default function MapsSearchAndMapPins() {
             <h2>Source</h2>
             <p>
               GPL-3.0. Source:{" "}
-              <a href="https://github.com/bobdodd/accessible-maps">
-                github.com/bobdodd/accessible-maps
+              <a href="https://github.com/bobdodd/search-and-map-pins">
+                github.com/bobdodd/search-and-map-pins
               </a>
-              .
+              . A single self-contained HTML file; the base map and
+              all assets are original work.
             </p>
           </section>
         </div>

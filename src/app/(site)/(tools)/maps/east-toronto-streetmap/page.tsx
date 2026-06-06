@@ -242,11 +242,14 @@ export default function MapsEastTorontoStreetmap() {
             <h2>Source</h2>
             <p>
               GPL-3.0. Source:{" "}
-              <a href="https://github.com/bobdodd/accessible-maps">
-                github.com/bobdodd/accessible-maps
+              <a href="https://github.com/bobdodd/east-toronto-streetmap">
+                github.com/bobdodd/east-toronto-streetmap
               </a>
-              . The tile-generation Python pipeline and the web-app
-              source are both part of the public artefact.
+              . The web-app source and the full OpenStreetMap-derived
+              data pipeline &mdash; the raw <code>map.osm</code>{" "}
+              extract, the shapefile exports, and the GeoJSON layers
+              &mdash; are part of the public artefact; the map data is
+              &copy; OpenStreetMap contributors, under ODbL.
             </p>
           </section>
 

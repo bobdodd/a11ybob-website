@@ -565,7 +565,7 @@ export default function MapsTerminalMap() {
               </li>
               <li>
                 <Link href="/maps">Maps</Link> &mdash; the wider
-                accessible-maps work this demo belongs to.
+                accessible maps work this demo belongs to.
               </li>
             </ul>
           </section>
@@ -580,10 +580,13 @@ export default function MapsTerminalMap() {
               <a href="https://github.com/bobdodd/terminal-map">
                 github.com/bobdodd/terminal-map
               </a>
-              . The terminal map has its own repository; the other two
-              demos live in{" "}
-              <a href="https://github.com/bobdodd/accessible-maps">
-                accessible-maps
+              . The terminal map has its own repository, as do the{" "}
+              <a href="https://github.com/bobdodd/east-toronto-streetmap">
+                east Toronto streetmap
+              </a>{" "}
+              and the{" "}
+              <a href="https://github.com/bobdodd/search-and-map-pins">
+                search and map pin demo
               </a>
               .
             </p>

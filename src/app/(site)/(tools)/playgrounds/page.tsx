@@ -119,7 +119,7 @@ export default function Playgrounds() {
                 </Link>
               </h2>
               <p>
-                The simplest of the three accessible-maps demos
+                The simplest of the three accessible maps demos
                 &mdash; the residential streets of a typical North
                 American subdivision, no interior
                 features; the cognitive load is stripped down so
@@ -173,7 +173,7 @@ export default function Playgrounds() {
               than a static description, the running code is what
               ships. Each playground above runs a real engine in
               the browser &mdash; the Paradise analyser, the Action
-              Language threaded-interpreter, the accessible-maps
+              Language threaded-interpreter, the accessible maps
               SVG-rendered viewer with its four-population
               interaction model. The reader does not have to take
               the page&rsquo;s word for what the engine does; they
