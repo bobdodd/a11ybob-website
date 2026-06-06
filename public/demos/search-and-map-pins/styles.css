@@ -1,0 +1,502 @@
+﻿* {
+    font-family: Arial, hevetica, Verdana, sans-serif;
+    color: white;
+}
+
+
+a:hover, a:focus, input:hover, input:focus, button:hover, button:focus, button:active, g:focus {
+    outline: 3px solid #007EAB;
+    outline-offset: 2px;
+}
+
+body {
+    margin-left: 1rem;
+    margin-right: 1rem;
+}
+
+h1, p {
+    color: white;
+}
+
+input {
+    color: #1E3A8A !important;
+}
+
+
+.screen-reader-only {
+    clip: rect(1px, 1px, 1px, 1px);
+    height: 1px;
+    width: 1px;
+    overflow: hidden;
+    position: absolute !important;
+    color: black;
+    background-color: white;
+}
+
+.noPaddingNoMargin {
+    padding: none;
+    margin:none;
+}
+
+a.skip-to-content {
+    padding: 6px;
+    position: absolute;
+    top: -7rem;
+    left: 0px;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    padding-left:1rem;
+    padding-right:1rem;
+    margin-left: 0.2rem;
+    border-right: 1px solid white;
+    border-bottom: 1px solid white;
+    border-bottom-right-radius: 2rem;
+    color: white;
+    font-size: xx-large;
+    font-weight: bold;
+    background-color: #000090;
+    text-decoration: underline;
+    -webkit-transition: top 1s ease-out, background 1s linear;
+    transition: top 1s ease-out, background 1s linear;
+    z-index: 100;
+}
+
+a.skip-to-content:focus {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    outline: 0;
+    -webkit-transition: top .1s ease-in, background .5s linear;
+    transition: top .1s ease-in, background .5s linear;
+}
+
+a.skip-to-content:hover {
+    color: white;
+    background-color: #000090;
+}
+
+.header-container {
+    padding-top: 1em;
+}
+
+
+.header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    padding-top: 1.5rem;
+    padding-bottom: 1rem;
+
+}
+
+#brookfieldLogo {
+    width: 200px;
+}
+
+#searchBlock {
+    height: 2em;
+    border: 1px solid black;
+    border-radius: 2em;
+    padding-left: 1.5em;
+    padding-right: 1.5em;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    margin-top: -1.5em;
+    min-width: 20em;
+}
+
+#searchBox {
+}
+
+#searchBlock form {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+#searchBlock input::placeholder {
+     color: #5B7487;
+}
+
+#searchButton {
+    margin:0;
+    padding:0;
+    border:none;
+}
+
+#mainMenuList {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    color: #1E3A8A;
+}
+
+.mainMenuItem a {
+    text-decoration: none;
+    padding-left: 1em;
+    padding-right: 1em;
+    font-size: x-large;
+    font-weight:bolder;
+    color: #1E3A8A;
+}
+
+#leftPanel {
+    width: 40em;
+    vertical-align: top;
+    z-index: 10;
+    position: absolute;
+    left: 0;
+    top: 6.5em;
+ 
+}
+
+#leftPanel div {
+}
+
+#hero {
+    display: flex;
+    justify-content: space-between;
+    gap: 2rem;
+    padding-right: 1rem;
+    background-color: #012A5E;
+    min-width: 42em;
+}
+
+#grovesHero {
+    background-image: url(./commons.jpg);
+    background-size: cover;
+    background-clip: padding-box;
+    background-repeat: no-repeat;
+    min-width: 12em;
+}
+
+#breadcrumb {
+    color: white;
+    padding-top: 1rem;
+}
+
+#breadcrumb a {
+    color: white;
+    outline-color: white;
+}
+
+#community {
+    color: #E7B962;
+}
+
+#communityFilters {
+    padding-top:2rem;
+}
+
+#facilitiesList {
+    list-style-type: none;
+    display: flex;
+    gap: 1em;
+    padding: none;
+    margin: none;
+}
+
+#heroFooter {
+    display: flex;
+    padding-bottom: 1em;
+}
+
+#heroFooter address {
+    padding-left: none;
+    margin-left: none;
+    padding-top: 0.45em;
+}
+
+#heroFooter a {
+    outline-color: white;
+    font-size:small;
+}
+
+#learnMoreAboutTheGroves {
+    background-color: transparent;
+    border: 1px solid white;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    padding-left: 2em;
+    padding-right: 2em;
+    border-radius: 2em;
+    margin-left: 2em;
+}
+
+#learnMoreAboutTheGroves:focus,
+#learnMoreAboutTheGroves:hover {
+    color: black;
+    background-color: white;
+    outline-color: white;
+}
+
+#searchFilters {
+    background-color: white;
+    border: 1px solid white;
+    color: #012A5E;
+    min-width: 42em;
+    padding-right: 0.9rem;
+    padding-top: 1rem;
+    margin:0;
+}
+
+#searchFilters ul {
+    list-style-type: none;
+    padding: 0;
+    padding-left: 0.5rem;
+    margin: 0;
+    display: flex;
+    justify-content: space-around;
+    gap:20px;
+    color: #1E3A8A;
+}
+
+#searchFilters button {
+    color: #012A5E;
+    width: 7rem;
+    height: 8rem;
+}
+
+.collectionImage {
+    width: 4rem;
+    height:4rem;
+    border: 1px solid blue;
+    border-radius: 50%;
+    float:left;
+}
+
+.communityFilterList {
+    display: flex;
+    justify-content: space-around;
+}
+
+button.communityFilterButton {
+    width: 15rem !important;
+    display:flex;
+    align-items:center;
+    margin-bottom:2rem;
+}
+
+.cfbGrp * {
+    color: #012A5E;
+}
+
+.cfbCollName {
+    font-size: x-large;
+}
+
+#resultsBlock {
+    padding: 0rem;
+    margin-top: -2rem;
+    margin-left: -2rem;
+    padding-top:0;
+}
+
+#resultsList {
+    list-style-type: none;
+}
+
+#resultsFilters {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #012A5E;
+    margin: 0;
+    margin-right: -2rem;
+    margin-left: -2rem;
+    padding-left: 5rem;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    background-color: white;
+    width: 100%;
+    margin-bottom: -2rem;
+}
+
+#resultsFilters fieldset {
+    padding-left: 4rem;
+    border: none;
+}
+
+#resultsFilters legend {
+    color: #012A5E;
+}
+
+#resultsFilters label {
+    color: #012A5E;
+}
+
+#sortResults {
+    margin-right: 5rem;
+    color: #012A5E;
+}
+
+#sortResults option {
+    color: #012A5E;
+}
+
+.searchResultsHeading {
+    width: 100%;
+    border: none;
+    background-color: white;
+    color: #012A5E !important;
+    padding-left: 1em;
+}
+
+.searchResultsHeading h2 {
+    margin:0;
+    padding:0;
+}
+
+
+.property {
+    background-color: white;
+    color: #012A5E;
+    min-width: 42.7em;
+    margin-left: 0.2em;
+}
+
+.property button {
+    border: 1px solid black !important;
+}
+
+.property  img {
+   margin-top: 1.5rem;
+   margin-left: 1.5rem;
+   margin-bottom:1.5rem;
+}
+
+.streetAddress {
+    color: #012A5E !important;
+    font-size: x-large;
+    font-weight: bold;
+}
+
+.cityName {
+    color: #012A5E !important;
+}
+
+
+.prop {
+    display: flex;
+    gap: 1rem;
+}
+
+.collectionAndLotNo {
+    color: #012A5E !important;
+    text-align:left;
+    display:flex;
+    gap:1rem;
+    align-items:flex-end;
+    padding-top:1rem;
+    padding-bottom: 0.3rem;
+}
+
+.collectionAndLotNo * {
+    color: #012A5E !important;
+}
+
+.collection {
+    font-size: large;
+    font-weight: bold;
+}
+
+.lotNo {
+    padding-top:0.2rem;
+}
+
+.houseSpecs {
+    padding-bottom: 0.5rem;
+}
+
+.houseSpecs ul {
+    list-style-type: none;
+    display: flex;
+    gap: 1rem;
+    justify-content:flex-start;
+    align-items: flex-end;
+    margin-left: 0;
+    padding-left: 0;
+}
+
+.houseSpecs ul * {
+    color: #012A5E;
+ }
+
+.propertyThumbnail {
+    max-width: 10rem;
+    max-height: 10rem;
+    border: 1px solid blue;
+}
+
+.property button {
+    width: 92%;
+    border: 1px solid white;
+    border-radius: 3rem;
+    margin: 1em;
+    margin-left: 2em;
+}
+
+.priceLine {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding-top: 0.2rem;
+}
+
+.housePrice {
+    display: flex;
+    flex-direction: column;
+}
+
+div.moveIn,
+.pricedAt,
+.actualPrice,
+.housePrice {
+    color: #012A5E;
+}
+
+.moveIn {
+    border: 1px solid #012A5E;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.pricedAt {
+    text-align: right;
+}
+
+.actualPrice {
+    font-size: x-large;
+    font-weight: bold;
+    text-align: right;
+    padding-bottom: 0.5rem;
+}
+
+.sq {
+    vertical-align: super;
+    font-size: small;
+}
+
+#caf {
+	float:right;
+	
+}
+
+#MapControlsAndFilters{
+	display: flex;
+	justify-content:flex-end;
+}
+
+.lot27,
+.lot28,
+.lot32,
+.king,
+.borregos,
+.marketplace,
+.ymca,
+.whittierUnionHS,
+.whittierHS {
+	display:none;
+}

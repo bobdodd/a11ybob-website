@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { MapsSubNav } from "@/components/MapsSubNav";
+import { NewTabLink } from "@/components/NewTabLink";
 
 export default function MapsSearchAndMapPins() {
   return (
@@ -143,25 +144,22 @@ export default function MapsSearchAndMapPins() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
-            <h2>Try it</h2>
+            <h2>Try the interactive demo</h2>
             <p>
-              The live demo currently lives at{" "}
-              <a href="https://bobd76.sg-host.com">
-                bobd76.sg-host.com
-              </a>{" "}
-              alongside the East Toronto streetmap on the same
-              hosting.
-              Pending the in-progress migration off SiteGround
-              onto the OVH VPS, after which the demo moves to{" "}
-              <code>maps-search-pins.a11ybob.com</code> and the link
-              here updates.
+              <NewTabLink
+                className="pill"
+                href="/demos/search-and-map-pins/viewer.html"
+              >
+                Open the search and map pin demo
+              </NewTabLink>
             </p>
             <p className="muted">
               <small>
-                The demo takes over keyboard navigation, focus
-                management, and screen-reader announcements once
-                opened; that is why it lives at its own URL rather
-                than as an iframe on this page.
+                Once opened, the demo takes over keyboard navigation,
+                focus management, and screen-reader announcements, so
+                it runs on its own surface rather than inside this
+                page &mdash; which is why it opens in a new window.
+                Close it to come back here.
               </small>
             </p>
           </section>
