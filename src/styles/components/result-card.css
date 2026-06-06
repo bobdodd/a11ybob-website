@@ -15,6 +15,21 @@
   margin-block: 0;
 }
 
+/* Title and term links wrap. The global a{white-space:nowrap} keeps an
+ * inline *phrase* link from fragmenting mid-phrase, but a result-card
+ * title (or glossary term) is a block-level link standing in for a
+ * heading — its text comes from the corpus (review titles, article
+ * titles, terms) and can be long enough to overflow the column, with no
+ * way to reword it shorter. So these links wrap like the headings they
+ * represent. This is the per-instance override base.css anticipates, not
+ * a change to the global rule; the components layer beats base, so no
+ * !important is needed. Words still break only at spaces — no mid-word
+ * breaking, honouring the site's no-hyphenation rule. */
+.result-card-heading a,
+.result-card-term a {
+  white-space: normal;
+}
+
 /* Card paragraphs — flush so each line uses Stack spacing instead
  * of UA margin. */
 .result-card > p {
