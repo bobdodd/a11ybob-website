@@ -11,6 +11,7 @@ import type { CSSProperties } from "react";
 import type { ArticleHit } from "@/lib/articles";
 import type { Review } from "@/lib/reviews";
 import type { GlossaryEntry } from "@/lib/glossary";
+import type { Experience } from "@/lib/experiences";
 import { renderSnippet } from "@/lib/searchHighlight";
 import { tierLabel } from "@/lib/searchTier";
 
@@ -74,6 +75,70 @@ export function ArticleResultCard({
                   .join(" · ")}
               </small>
             )}
+          </p>
+        )}
+
+        {searching && contentFragments.length > 0 && (
+          <div
+            className="result-card-snippet"
+            dangerouslySetInnerHTML={{
+              __html: contentFragments.map(renderSnippet).join(" … "),
+            }}
+          />
+        )}
+      </article>
+    </li>
+  );
+}
+
+/* ───── Experience ──────────────────────────────────────────────── */
+
+export function ExperienceResultCard({
+  hit,
+  q,
+  headingLevel: H = "h2",
+}: {
+  hit: Experience;
+  q?: string;
+  headingLevel?: HeadingLevel;
+}) {
+  const searching = Boolean(q);
+  const href = q
+    ? `/writing/experience/${hit.slug}?q=${encodeURIComponent(q)}`
+    : `/writing/experience/${hit.slug}`;
+  const titleHtml =
+    searching && hit.highlights?.title?.[0]
+      ? renderSnippet(hit.highlights.title[0])
+      : null;
+  const contentFragments = hit.highlights?.content ?? [];
+
+  return (
+    <li>
+      <article
+        className="result-card stack"
+        style={{ "--space": "var(--s-1)" } as CSSProperties}
+      >
+        <H className="result-card-heading">
+          <Link href={href}>
+            {titleHtml ? (
+              <span dangerouslySetInnerHTML={{ __html: titleHtml }} />
+            ) : (
+              hit.title
+            )}
+          </Link>
+        </H>
+
+        {(hit.publishedAt || hit.tags.length > 0) && (
+          <p>
+            <small className="muted">
+              {[
+                hit.publishedAt &&
+                  new Date(hit.publishedAt).toISOString().slice(0, 10),
+                hit.tags.length > 0 && hit.tags.slice(0, 5).join(" · "),
+              ]
+                .filter(Boolean)
+                .join(" · ")}
+            </small>
           </p>
         )}
 

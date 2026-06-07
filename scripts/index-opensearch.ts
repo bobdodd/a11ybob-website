@@ -100,6 +100,18 @@ const articlesMapping = {
   },
 };
 
+const experiencesMapping = {
+  properties: {
+    title: textWithKeyword(512),
+    slug: { type: "keyword" },
+    tags: lowercaseKeyword,
+    content: text(),
+    publishedAt: dateField,
+    updatedAt: dateField,
+    suggest: completion,
+  },
+};
+
 type IndexDoc = { id: string; source: Record<string, unknown> };
 
 async function buildReviews(db: Db): Promise<IndexDoc[]> {
@@ -134,6 +146,29 @@ function suggestInputsForGlossary(doc: Record<string, unknown>): string[] {
     ? doc.aka.filter((s): s is string => typeof s === "string" && s.length > 0)
     : [];
   return [term, ...aka].filter((s): s is string => Boolean(s));
+}
+
+// Experiences: published only. Flat docs (no versioning).
+async function buildExperiences(db: Db): Promise<IndexDoc[]> {
+  const docs = await db
+    .collection("experiences")
+    .find({ status: "published" })
+    .toArray();
+  return docs.map((doc) => {
+    const { _id, ...rest } = doc;
+    return {
+      id: String(_id),
+      source: {
+        slug: rest.slug,
+        title: rest.title,
+        content: rest.content,
+        tags: rest.tags ?? [],
+        publishedAt: rest.publishedAt ?? rest.createdAt,
+        updatedAt: rest.updatedAt,
+        suggest: typeof rest.title === "string" && rest.title ? [rest.title] : [],
+      },
+    };
+  });
 }
 
 // Articles: published only. Joins the current version's content.
@@ -180,6 +215,7 @@ const corpora = [
   { name: "reviews", mapping: reviewsMapping, build: buildReviews },
   { name: "glossary", mapping: glossaryMapping, build: buildGlossary },
   { name: "articles", mapping: articlesMapping, build: buildArticles },
+  { name: "experiences", mapping: experiencesMapping, build: buildExperiences },
 ] as const;
 
 async function main() {

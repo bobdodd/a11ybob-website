@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { CSSProperties } from "react";
 import { searchGlossary } from "@/lib/glossary";
 import { searchArticles } from "@/lib/articles";
+import { searchExperiences } from "@/lib/experiences";
 import { searchReviews } from "@/lib/reviews";
 import { buildSearchStatus } from "@/lib/searchStatus";
 import { Pagination } from "@/components/Pagination";
@@ -10,6 +11,7 @@ import { FilterBar } from "@/components/FilterBar";
 import { PrimarySection } from "@/components/PrimarySection";
 import {
   ArticleResultCard,
+  ExperienceResultCard,
   ReviewResultCard,
   GlossaryResultCard,
 } from "@/components/ResultCards";
@@ -24,6 +26,7 @@ type Search = {
   letter?: string;
   category?: string;
   page?: string;
+  experiences?: string;
   articles?: string;
   reviews?: string;
 };
@@ -38,23 +41,29 @@ export default async function Glossary({
   const letter = params.letter?.trim().toUpperCase() || undefined;
   const category = params.category?.trim() || undefined;
   const page = params.page ? parseInt(params.page, 10) || 1 : 1;
+  const includeExperiences = params.experiences === "1";
   const includeArticles = params.articles === "1";
   const includeReviews = params.reviews === "1";
 
-  const [result, articlesExtra, reviewsExtra] = await Promise.all([
-    searchGlossary({ q, letter, category, page }),
-    q && includeArticles
-      ? searchArticles({ q, perPage: EXTRA_PREVIEW })
-      : null,
-    q && includeReviews
-      ? searchReviews({ q, perPage: EXTRA_PREVIEW })
-      : null,
-  ]);
+  const [result, experiencesExtra, articlesExtra, reviewsExtra] =
+    await Promise.all([
+      searchGlossary({ q, letter, category, page }),
+      q && includeExperiences
+        ? searchExperiences({ q, perPage: EXTRA_PREVIEW })
+        : null,
+      q && includeArticles
+        ? searchArticles({ q, perPage: EXTRA_PREVIEW })
+        : null,
+      q && includeReviews
+        ? searchReviews({ q, perPage: EXTRA_PREVIEW })
+        : null,
+    ]);
 
   const sp = new URLSearchParams();
   if (q) sp.set("q", q);
   if (letter) sp.set("letter", letter);
   if (category) sp.set("category", category);
+  if (includeExperiences) sp.set("experiences", "1");
   if (includeArticles) sp.set("articles", "1");
   if (includeReviews) sp.set("reviews", "1");
   const baseUrl = `/writing/glossary${sp.toString() ? `?${sp}` : ""}`;
@@ -70,6 +79,8 @@ export default async function Glossary({
             <p>
               <small>
                 <Link href="/writing">← Writing</Link>
+                {" · "}
+                <Link href="/writing/experience">Experience</Link>
                 {" · "}
                 <Link href="/writing/reviews">Reviews →</Link>
               </small>
@@ -88,6 +99,12 @@ export default async function Glossary({
             hint="Searches glossary terms, their aliases, and definitions."
             label="Search the glossary"
             includes={[
+              {
+                name: "experiences",
+                label: "+ Experience",
+                checked: includeExperiences,
+                href: q ? toggleHref(baseUrl, "experiences") : undefined,
+              },
               {
                 name: "articles",
                 label: "+ Articles",
@@ -137,6 +154,10 @@ export default async function Glossary({
                       q,
                       primary: { total: result.total, noun: "glossary term" },
                       extras: [
+                        experiencesExtra && {
+                          total: experiencesExtra.total,
+                          noun: "experience piece",
+                        },
                         articlesExtra && {
                           total: articlesExtra.total,
                           noun: "article",
@@ -151,7 +172,7 @@ export default async function Glossary({
               </p>
 
               <PrimarySection
-                wrap={Boolean(articlesExtra || reviewsExtra)}
+                wrap={Boolean(experiencesExtra || articlesExtra || reviewsExtra)}
                 heading={`Glossary · ${result.total === 0 ? "no matches" : `${result.total} match${result.total === 1 ? "" : "es"}`}`}
               >
                 <FilterBar
@@ -169,7 +190,7 @@ export default async function Glossary({
                   ]}
                 />
 
-                {!(articlesExtra || reviewsExtra) && (
+                {!(experiencesExtra || articlesExtra || reviewsExtra) && (
                   <h2 className="search-results-heading">Search results</h2>
                 )}
 
@@ -210,6 +231,33 @@ export default async function Glossary({
                   position="bottom"
                 />
               </PrimarySection>
+
+              {experiencesExtra && (
+                <details className="extra-section" open>
+                  <summary>
+                    <h2>
+                      Experience · {experiencesExtra.total === 0 ? "no matches" : `${experiencesExtra.total} match${experiencesExtra.total === 1 ? "" : "es"}`}
+                    </h2>
+                  </summary>
+                  {experiencesExtra.hits.length > 0 && (
+                    <ul
+                      className="list-flat stack"
+                      style={{ "--space": "var(--s2)" } as CSSProperties}
+                    >
+                      {experiencesExtra.hits.map((hit) => (
+                        <ExperienceResultCard key={hit._id} hit={hit} q={q} headingLevel="h3" />
+                      ))}
+                    </ul>
+                  )}
+                  {experiencesExtra.total > experiencesExtra.hits.length && (
+                    <p>
+                      <Link href={`/writing/experience?q=${encodeURIComponent(q!)}`}>
+                        See all {experiencesExtra.total} matching experience pieces →
+                      </Link>
+                    </p>
+                  )}
+                </details>
+              )}
 
               {articlesExtra && (
                 <details className="extra-section" open>

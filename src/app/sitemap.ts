@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { listPublishedArticles } from "@/lib/articles";
 import { listReviewsForSitemap } from "@/lib/reviews";
+import { listExperiencesForSitemap } from "@/lib/experiences";
 
 const BASE = "https://a11ybob.com";
 
@@ -56,6 +57,7 @@ const STATIC_PATHS = [
   "tools",
   "work",
   "writing",
+  "writing/experience",
   "writing/glossary",
   "writing/reviews",
 ];
@@ -99,6 +101,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   } catch {
     /* skip reviews on error */
+  }
+
+  // Experience pieces.
+  try {
+    for (const exp of await listExperiencesForSitemap()) {
+      entries.push({
+        url: `${BASE}/writing/experience/${exp.slug}`,
+        ...(exp.updated ? { lastModified: exp.updated } : {}),
+      });
+    }
+  } catch {
+    /* skip experiences on error */
   }
 
   return entries;
