@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARIA Roles Accessible Names Test - Part 3</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 30px;
+            max-width: 1200px;
+        }
+        .test-case {
+            margin-bottom: 40px;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .warning-box {
+            background-color: #fff3cd;
+            border: 1px solid #ffeeba;
+            border-left: 5px solid #ffc107;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .comparison-table {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 15px 0;
+        }
+        .comparison-table h4 {
+            width: 100%;
+            margin-bottom: 5px;
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 5px;
+        }
+        .comparison-table ul {
+            margin-top: 0;
+        }
+        .example-code {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 10px;
+            border-radius: 3px;
+            margin-top: 10px;
+            margin-bottom: 15px;
+        }
+        .example-code pre {
+            margin: 0;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        .pass {
+            background-color: #e6f7e6;
+            border-left: 5px solid #28a745;
+        }
+        .fail {
+            background-color: #fbeeee;
+            border-left: 5px solid #dc3545;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 5px solid #ffc107;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #444;
+            margin-top: 40px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        h3 {
+            color: #555;
+            margin: 0 0 10px 0;
+        }
+        .code {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            margin-top: 10px;
+            overflow-x: auto;
+        }
+        .role-container {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .interactive-element {
+            display: block;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>ARIA Roles Accessible Names Test - Part 3</h1>
+    <p><strong>Test cases: 16 passing, 36 failing (52 total)</strong></p>
+    <p>This page contains test cases for validating accessible names for various ARIA roles. Each role section provides passing and failing examples to help with accessible name computation testing.</p>
+    
+    <div class="role-container">
+        <h2>1. Meter (role="meter")</h2>
+        <p>These tests validate accessible names for elements with role="meter". Meters are used to represent scalar measurements with a known range.</p>
+        
+        <div class="warning-box">
+            <h3>⚠️ Understanding the Meter Role</h3>
+            <p>According to the WAI-ARIA specification, the <code>role="meter"</code> represents a scalar measurement within a known range, similar to an HTML <code>&lt;meter&gt;</code> element. Key implementation requirements include:</p>
+            <ul>
+                <li>The meter must have an accessible name via <code>aria-label</code> or <code>aria-labelledby</code></li>
+                <li>It should use <code>aria-valuemin</code>, <code>aria-valuemax</code>, and <code>aria-valuenow</code> to communicate its values</li>
+                <li>Optionally, <code>aria-valuetext</code> can provide a human-readable text alternative of the value</li>
+                <li>Visual presentation should indicate the meter's value within its range</li>
+                <li>The meter widget itself should not be focusable or interactive (it's a read-only indicator)</li>
+            </ul>
+            <p><strong>Important:</strong> While HTML provides a native <code>&lt;meter&gt;</code> element that should be used when possible, the ARIA meter role is needed when creating custom meter widgets or retrofitting existing elements.</p>
+        </div>
+        
+        <h3>Passing Examples</h3>
+        
+        <div class="test-case pass">
+            <h3>Meter with aria-label</h3>
+            <p>This div with role="meter" has a descriptive aria-label providing an accessible name.</p>
+            <div class="a11yTestPass" role="meter" id="meter-aria-label-pass"  aria-label="Battery Level" aria-valuemin="0" aria-valuemax="100" aria-valuenow="75">
+                <div style="width: 200px; height: 20px; background-color: #eee; border-radius: 10px; overflow: hidden;">
+                    <div style="width: 75%; height: 100%; background-color: #4CAF50;"></div>
+                </div>
+            </div>
+            <p class="code">&lt;div role="meter" id="meter-aria-label-pass" class="a11yTestPass" aria-label="Battery Level" aria-valuemin="0" aria-valuemax="100" aria-valuenow="75"&gt;
+    &lt;div style="width: 200px; height: 20px; background-color: #eee; border-radius: 10px; overflow: hidden;"&gt;
+        &lt;div style="width: 75%; height: 100%; background-color: #4CAF50;"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case pass">
+            <h3>Meter with aria-labelledby</h3>
+            <p>This div with role="meter" uses aria-labelledby to reference another element for its accessible name.</p>
+            <h4 id="disk-usage-label">Disk Usage</h4>
+            <div class="a11yTestPass" role="meter" id="meter-aria-labelledby-pass"  aria-labelledby="disk-usage-label" aria-valuemin="0" aria-valuemax="100" aria-valuenow="65" aria-valuetext="65% used">
+                <div style="width: 200px; height: 20px; background-color: #eee; border-radius: 10px; overflow: hidden;">
+                    <div style="width: 65%; height: 100%; background-color: #2196F3;"></div>
+                </div>
+            </div>
+            <p class="code">&lt;h4 id="disk-usage-label"&gt;Disk Usage&lt;/h4&gt;
+&lt;div role="meter" id="meter-aria-labelledby-pass" class="a11yTestPass" aria-labelledby="disk-usage-label" aria-valuemin="0" aria-valuemax="100" aria-valuenow="65" aria-valuetext="65% used"&gt;
+    &lt;div style="width: 200px; height: 20px; background-color: #eee; border-radius: 10px; overflow: hidden;"&gt;
+        &lt;div style="width: 65%; height: 100%; background-color: #2196F3;"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <h3>Failing Examples</h3>
+        
+        <div class="test-case fail">
+            <h3>Meter with No Accessible Name</h3>
+            <p>This div with role="meter" lacks an accessible name, making it difficult for screen reader users to understand its purpose.</p>
+            <div class="a11yTestFail" role="meter" id="meter-no-name-fail"  aria-valuemin="0" aria-valuemax="100" aria-valuenow="30">
+                <div style="width: 200px; height: 20px; background-color: #eee; border-radius: 10px; overflow: hidden;">
+                    <div style="width: 30%; height: 100%; background-color: #FF9800;"></div>
+                </div>
+            </div>
+            <p class="code">&lt;div role="meter" id="meter-no-name-fail" class="a11yTestFail" aria-valuemin="0" aria-valuemax="100" aria-valuenow="30"&gt;
+    &lt;div style="width: 200px; height: 20px; background-color: #eee; border-radius: 10px; overflow: hidden;"&gt;
+        &lt;div style="width: 30%; height: 100%; background-color: #FF9800;"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Meter with Empty aria-label</h3>
+            <p>This div with role="meter" has an empty aria-label, which provides no accessible name.</p>
+            <div class="a11yTestFail" role="meter" id="meter-empty-label-fail"  aria-label="" aria-valuemin="0" aria-valuemax="100" aria-valuenow="45">
+                <div style="width: 200px; height: 20px; background-color: #eee; border-radius: 10px; overflow: hidden;">
+                    <div style="width: 45%; height: 100%; background-color: #673AB7;"></div>
+                </div>
+            </div>
+            <p class="code">&lt;div role="meter" id="meter-empty-label-fail" class="a11yTestFail" aria-label="" aria-valuemin="0" aria-valuemax="100" aria-valuenow="45"&gt;
+    &lt;div style="width: 200px; height: 20px; background-color: #eee; border-radius: 10px; overflow: hidden;"&gt;
+        &lt;div style="width: 45%; height: 100%; background-color: #673AB7;"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Meter with Whitespace-only aria-label</h3>
+            <p>This div with role="meter" has an aria-label with only whitespace, which provides no accessible name.</p>
+            <div class="a11yTestFail" role="meter" id="meter-whitespace-label-fail"  aria-label="   " aria-valuemin="0" aria-valuemax="100" aria-valuenow="60">
+                <div style="width: 200px; height: 20px; background-color: #eee; border-radius: 10px; overflow: hidden;">
+                    <div style="width: 60%; height: 100%; background-color: #E91E63;"></div>
+                </div>
+            </div>
+            <p class="code">&lt;div role="meter" id="meter-whitespace-label-fail" class="a11yTestFail" aria-label="   " aria-valuemin="0" aria-valuemax="100" aria-valuenow="60"&gt;
+    &lt;div style="width: 200px; height: 20px; background-color: #eee; border-radius: 10px; overflow: hidden;"&gt;
+        &lt;div style="width: 60%; height: 100%; background-color: #E91E63;"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Meter with Punctuation-only aria-label</h3>
+            <p>This div with role="meter" has an aria-label with only punctuation, which provides no meaningful accessible name.</p>
+            <div class="a11yTestFail" role="meter" id="meter-punctuation-label-fail"  aria-label="..." aria-valuemin="0" aria-valuemax="100" aria-valuenow="85">
+                <div style="width: 200px; height: 20px; background-color: #eee; border-radius: 10px; overflow: hidden;">
+                    <div style="width: 85%; height: 100%; background-color: #009688;"></div>
+                </div>
+            </div>
+            <p class="code">&lt;div role="meter" id="meter-punctuation-label-fail" class="a11yTestFail" aria-label="..." aria-valuemin="0" aria-valuemax="100" aria-valuenow="85"&gt;
+    &lt;div style="width: 200px; height: 20px; background-color: #eee; border-radius: 10px; overflow: hidden;"&gt;
+        &lt;div style="width: 85%; height: 100%; background-color: #009688;"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Meter with Broken aria-labelledby</h3>
+            <p>This div with role="meter" references a non-existent element ID with aria-labelledby, which prevents an accessible name from being created.</p>
+            <div class="a11yTestFail" role="meter" id="meter-broken-labelledby-fail"  aria-labelledby="non-existent-meter-id" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+                <div style="width: 200px; height: 20px; background-color: #eee; border-radius: 10px; overflow: hidden;">
+                    <div style="width: 50%; height: 100%; background-color: #795548;"></div>
+                </div>
+            </div>
+            <p class="code">&lt;div role="meter" id="meter-broken-labelledby-fail" class="a11yTestFail" aria-labelledby="non-existent-meter-id" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"&gt;
+    &lt;div style="width: 200px; height: 20px; background-color: #eee; border-radius: 10px; overflow: hidden;"&gt;
+        &lt;div style="width: 50%; height: 100%; background-color: #795548;"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Meter with Empty Reference via aria-labelledby</h3>
+            <p>This div with role="meter" references an element with no content via aria-labelledby, causing the accessible name computation to fail.</p>
+            <span id="empty-meter-label"></span>
+            <div class="a11yTestFail" role="meter" id="meter-empty-reference-labelledby-fail"  aria-labelledby="empty-meter-label" aria-valuemin="0" aria-valuemax="100" aria-valuenow="25">
+                <div style="width: 200px; height: 20px; background-color: #eee; border-radius: 10px; overflow: hidden;">
+                    <div style="width: 25%; height: 100%; background-color: #F44336;"></div>
+                </div>
+            </div>
+            <p class="code">&lt;span id="empty-meter-label"&gt;&lt;/span&gt;
+&lt;div role="meter" id="meter-empty-reference-labelledby-fail" class="a11yTestFail" aria-labelledby="empty-meter-label" aria-valuemin="0" aria-valuemax="100" aria-valuenow="25"&gt;
+    &lt;div style="width: 200px; height: 20px; background-color: #eee; border-radius: 10px; overflow: hidden;"&gt;
+        &lt;div style="width: 25%; height: 100%; background-color: #F44336;"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Meter with Whitespace-only Reference via aria-labelledby</h3>
+            <p>This div with role="meter" references an element that has only whitespace via aria-labelledby, causing the accessible name computation to fail.</p>
+            <span id="whitespace-meter-label">   </span>
+            <div class="a11yTestFail" role="meter" id="meter-whitespace-reference-labelledby-fail"  aria-labelledby="whitespace-meter-label" aria-valuemin="0" aria-valuemax="100" aria-valuenow="90">
+                <div style="width: 200px; height: 20px; background-color: #eee; border-radius: 10px; overflow: hidden;">
+                    <div style="width: 90%; height: 100%; background-color: #3F51B5;"></div>
+                </div>
+            </div>
+            <p class="code">&lt;span id="whitespace-meter-label"&gt;   &lt;/span&gt;
+&lt;div role="meter" id="meter-whitespace-reference-labelledby-fail" class="a11yTestFail" aria-labelledby="whitespace-meter-label" aria-valuemin="0" aria-valuemax="100" aria-valuenow="90"&gt;
+    &lt;div style="width: 200px; height: 20px; background-color: #eee; border-radius: 10px; overflow: hidden;"&gt;
+        &lt;div style="width: 90%; height: 100%; background-color: #3F51B5;"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Meter with Punctuation-only Reference via aria-labelledby</h3>
+            <p>This div with role="meter" references an element that has only punctuation via aria-labelledby, causing the accessible name computation to fail.</p>
+            <span id="punctuation-meter-label">...</span>
+            <div class="a11yTestFail" role="meter" id="meter-punctuation-reference-labelledby-fail"  aria-labelledby="punctuation-meter-label" aria-valuemin="0" aria-valuemax="100" aria-valuenow="40">
+                <div style="width: 200px; height: 20px; background-color: #eee; border-radius: 10px; overflow: hidden;">
+                    <div style="width: 40%; height: 100%; background-color: #00BCD4;"></div>
+                </div>
+            </div>
+            <p class="code">&lt;span id="punctuation-meter-label"&gt;...&lt;/span&gt;
+&lt;div role="meter" id="meter-punctuation-reference-labelledby-fail" class="a11yTestFail" aria-labelledby="punctuation-meter-label" aria-valuemin="0" aria-valuemax="100" aria-valuenow="40"&gt;
+    &lt;div style="width: 200px; height: 20px; background-color: #eee; border-radius: 10px; overflow: hidden;"&gt;
+        &lt;div style="width: 40%; height: 100%; background-color: #00BCD4;"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+    </div>
+    
+    <div class="role-container">
+        <h2>2. Toolbar (role="toolbar")</h2>
+        <p>These tests validate accessible names for elements with role="toolbar". Toolbars are containers for groups of buttons or other interactive controls.</p>
+        
+        <div class="warning-box">
+            <h3>⚠️ Understanding the Toolbar Role</h3>
+            <p>According to the WAI-ARIA Authoring Practices Guide (APG), the <code>role="toolbar"</code> is a container for grouping a set of commonly used controls. Key implementation requirements include:</p>
+            <ul>
+                <li>The toolbar should have an accessible name via <code>aria-label</code> or <code>aria-labelledby</code></li>
+                <li>It should contain buttons, toggle buttons, or other interactive controls</li>
+                <li>It may use <code>aria-orientation</code> to indicate its orientation (horizontal by default)</li>
+                <li>Keyboard support must allow navigation between items using arrow keys</li>
+                <li>Related items can be grouped using <code>role="group"</code> with proper labeling</li>
+            </ul>
+            <p><strong>Important:</strong> A toolbar is different from a menubar in that it is always visible and contains buttons, while a menubar contains dropdown menus. Toolbars are commonly used in document editing software, drawing applications, and other interfaces with many user actions.</p>
+        </div>
+        
+        <h3>Passing Examples</h3>
+        
+        <div class="test-case pass">
+            <h3>Toolbar with aria-label</h3>
+            <p>This div with role="toolbar" has a descriptive aria-label providing an accessible name.</p>
+            <div class="a11yTestPass" role="toolbar" id="toolbar-aria-label-pass"  aria-label="Text Formatting" aria-orientation="horizontal">
+                <button aria-pressed="false" type="button">Bold</button>
+                <button aria-pressed="false" type="button">Italic</button>
+                <button aria-pressed="false" type="button">Underline</button>
+                <span role="separator"></span>
+                <button type="button">Left</button>
+                <button type="button">Center</button>
+                <button type="button">Right</button>
+            </div>
+            <p class="code">&lt;div role="toolbar" id="toolbar-aria-label-pass" class="a11yTestPass" aria-label="Text Formatting" aria-orientation="horizontal"&gt;
+    &lt;button aria-pressed="false" type="button"&gt;Bold&lt;/button&gt;
+    &lt;button aria-pressed="false" type="button"&gt;Italic&lt;/button&gt;
+    &lt;button aria-pressed="false" type="button"&gt;Underline&lt;/button&gt;
+    &lt;span role="separator"&gt;&lt;/span&gt;
+    &lt;button type="button"&gt;Left&lt;/button&gt;
+    &lt;button type="button"&gt;Center&lt;/button&gt;
+    &lt;button type="button"&gt;Right&lt;/button&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case pass">
+            <h3>Toolbar with aria-labelledby</h3>
+            <p>This div with role="toolbar" uses aria-labelledby to reference another element for its accessible name.</p>
+            <h4 id="drawing-tools-label">Drawing Tools</h4>
+            <div class="a11yTestPass" role="toolbar" id="toolbar-aria-labelledby-pass"  aria-labelledby="drawing-tools-label" aria-orientation="horizontal">
+                <div role="group" aria-label="Shapes">
+                    <button type="button">Rectangle</button>
+                    <button type="button">Circle</button>
+                    <button type="button">Line</button>
+                </div>
+                <span role="separator"></span>
+                <div role="group" aria-label="Colors">
+                    <button type="button">Red</button>
+                    <button type="button">Green</button>
+                    <button type="button">Blue</button>
+                </div>
+            </div>
+            <p class="code">&lt;h4 id="drawing-tools-label"&gt;Drawing Tools&lt;/h4&gt;
+&lt;div role="toolbar" id="toolbar-aria-labelledby-pass" class="a11yTestPass" aria-labelledby="drawing-tools-label" aria-orientation="horizontal"&gt;
+    &lt;div role="group" aria-label="Shapes"&gt;
+        &lt;button type="button"&gt;Rectangle&lt;/button&gt;
+        &lt;button type="button"&gt;Circle&lt;/button&gt;
+        &lt;button type="button"&gt;Line&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;span role="separator"&gt;&lt;/span&gt;
+    &lt;div role="group" aria-label="Colors"&gt;
+        &lt;button type="button"&gt;Red&lt;/button&gt;
+        &lt;button type="button"&gt;Green&lt;/button&gt;
+        &lt;button type="button"&gt;Blue&lt;/button&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <h3>Failing Examples</h3>
+        
+        <div class="test-case fail">
+            <h3>Toolbar with No Accessible Name</h3>
+            <p>This div with role="toolbar" lacks an accessible name, making it difficult for screen reader users to understand its purpose.</p>
+            <div class="a11yTestFail" role="toolbar" id="toolbar-no-name-fail"  aria-orientation="horizontal">
+                <button type="button">Cut</button>
+                <button type="button">Copy</button>
+                <button type="button">Paste</button>
+                <span role="separator"></span>
+                <button type="button">Delete</button>
+            </div>
+            <p class="code">&lt;div role="toolbar" id="toolbar-no-name-fail" class="a11yTestFail" aria-orientation="horizontal"&gt;
+    &lt;button type="button"&gt;Cut&lt;/button&gt;
+    &lt;button type="button"&gt;Copy&lt;/button&gt;
+    &lt;button type="button"&gt;Paste&lt;/button&gt;
+    &lt;span role="separator"&gt;&lt;/span&gt;
+    &lt;button type="button"&gt;Delete&lt;/button&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Toolbar with Empty aria-label</h3>
+            <p>This div with role="toolbar" has an empty aria-label, which provides no accessible name.</p>
+            <div class="a11yTestFail" role="toolbar" id="toolbar-empty-label-fail"  aria-label="" aria-orientation="horizontal">
+                <button type="button">New</button>
+                <button type="button">Open</button>
+                <button type="button">Save</button>
+                <span role="separator"></span>
+                <button type="button">Print</button>
+            </div>
+            <p class="code">&lt;div role="toolbar" id="toolbar-empty-label-fail" class="a11yTestFail" aria-label="" aria-orientation="horizontal"&gt;
+    &lt;button type="button"&gt;New&lt;/button&gt;
+    &lt;button type="button"&gt;Open&lt;/button&gt;
+    &lt;button type="button"&gt;Save&lt;/button&gt;
+    &lt;span role="separator"&gt;&lt;/span&gt;
+    &lt;button type="button"&gt;Print&lt;/button&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Toolbar with Whitespace-only aria-label</h3>
+            <p>This div with role="toolbar" has an aria-label with only whitespace, which provides no accessible name.</p>
+            <div class="a11yTestFail" role="toolbar" id="toolbar-whitespace-label-fail"  aria-label="   " aria-orientation="horizontal">
+                <button type="button">Undo</button>
+                <button type="button">Redo</button>
+                <span role="separator"></span>
+                <button type="button">Find</button>
+                <button type="button">Replace</button>
+            </div>
+            <p class="code">&lt;div role="toolbar" id="toolbar-whitespace-label-fail" class="a11yTestFail" aria-label="   " aria-orientation="horizontal"&gt;
+    &lt;button type="button"&gt;Undo&lt;/button&gt;
+    &lt;button type="button"&gt;Redo&lt;/button&gt;
+    &lt;span role="separator"&gt;&lt;/span&gt;
+    &lt;button type="button"&gt;Find&lt;/button&gt;
+    &lt;button type="button"&gt;Replace&lt;/button&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Toolbar with Punctuation-only aria-label</h3>
+            <p>This div with role="toolbar" has an aria-label with only punctuation, which provides no meaningful accessible name.</p>
+            <div class="a11yTestFail" role="toolbar" id="toolbar-punctuation-label-fail"  aria-label="..." aria-orientation="horizontal">
+                <button type="button">Zoom In</button>
+                <button type="button">Zoom Out</button>
+                <button type="button">Fit</button>
+                <span role="separator"></span>
+                <button type="button">Fullscreen</button>
+            </div>
+            <p class="code">&lt;div role="toolbar" id="toolbar-punctuation-label-fail" class="a11yTestFail" aria-label="..." aria-orientation="horizontal"&gt;
+    &lt;button type="button"&gt;Zoom In&lt;/button&gt;
+    &lt;button type="button"&gt;Zoom Out&lt;/button&gt;
+    &lt;button type="button"&gt;Fit&lt;/button&gt;
+    &lt;span role="separator"&gt;&lt;/span&gt;
+    &lt;button type="button"&gt;Fullscreen&lt;/button&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Toolbar with Broken aria-labelledby</h3>
+            <p>This div with role="toolbar" references a non-existent element ID with aria-labelledby, which prevents an accessible name from being created.</p>
+            <div class="a11yTestFail" role="toolbar" id="toolbar-broken-labelledby-fail"  aria-labelledby="non-existent-toolbar-id" aria-orientation="vertical">
+                <button type="button">Insert Image</button>
+                <button type="button">Insert Table</button>
+                <button type="button">Insert Chart</button>
+                <span role="separator"></span>
+                <button type="button">Insert Link</button>
+            </div>
+            <p class="code">&lt;div role="toolbar" id="toolbar-broken-labelledby-fail" class="a11yTestFail" aria-labelledby="non-existent-toolbar-id" aria-orientation="vertical"&gt;
+    &lt;button type="button"&gt;Insert Image&lt;/button&gt;
+    &lt;button type="button"&gt;Insert Table&lt;/button&gt;
+    &lt;button type="button"&gt;Insert Chart&lt;/button&gt;
+    &lt;span role="separator"&gt;&lt;/span&gt;
+    &lt;button type="button"&gt;Insert Link&lt;/button&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Toolbar with Empty Reference via aria-labelledby</h3>
+            <p>This div with role="toolbar" references an element with no content via aria-labelledby, causing the accessible name computation to fail.</p>
+            <span id="empty-toolbar-label"></span>
+            <div class="a11yTestFail" role="toolbar" id="toolbar-empty-reference-labelledby-fail"  aria-labelledby="empty-toolbar-label" aria-orientation="horizontal">
+                <button type="button">Page Setup</button>
+                <button type="button">Margins</button>
+                <button type="button">Orientation</button>
+                <span role="separator"></span>
+                <button type="button">Size</button>
+            </div>
+            <p class="code">&lt;span id="empty-toolbar-label"&gt;&lt;/span&gt;
+&lt;div role="toolbar" id="toolbar-empty-reference-labelledby-fail" class="a11yTestFail" aria-labelledby="empty-toolbar-label" aria-orientation="horizontal"&gt;
+    &lt;button type="button"&gt;Page Setup&lt;/button&gt;
+    &lt;button type="button"&gt;Margins&lt;/button&gt;
+    &lt;button type="button"&gt;Orientation&lt;/button&gt;
+    &lt;span role="separator"&gt;&lt;/span&gt;
+    &lt;button type="button"&gt;Size&lt;/button&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Toolbar with Whitespace-only Reference via aria-labelledby</h3>
+            <p>This div with role="toolbar" references an element that has only whitespace via aria-labelledby, causing the accessible name computation to fail.</p>
+            <span id="whitespace-toolbar-label">   </span>
+            <div class="a11yTestFail" role="toolbar" id="toolbar-whitespace-reference-labelledby-fail"  aria-labelledby="whitespace-toolbar-label" aria-orientation="horizontal">
+                <button type="button">Bullets</button>
+                <button type="button">Numbering</button>
+                <button type="button">Indent</button>
+                <button type="button">Outdent</button>
+            </div>
+            <p class="code">&lt;span id="whitespace-toolbar-label"&gt;   &lt;/span&gt;
+&lt;div role="toolbar" id="toolbar-whitespace-reference-labelledby-fail" class="a11yTestFail" aria-labelledby="whitespace-toolbar-label" aria-orientation="horizontal"&gt;
+    &lt;button type="button"&gt;Bullets&lt;/button&gt;
+    &lt;button type="button"&gt;Numbering&lt;/button&gt;
+    &lt;button type="button"&gt;Indent&lt;/button&gt;
+    &lt;button type="button"&gt;Outdent&lt;/button&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Toolbar with Punctuation-only Reference via aria-labelledby</h3>
+            <p>This div with role="toolbar" references an element that has only punctuation via aria-labelledby, causing the accessible name computation to fail.</p>
+            <span id="punctuation-toolbar-label">...</span>
+            <div class="a11yTestFail" role="toolbar" id="toolbar-punctuation-reference-labelledby-fail"  aria-labelledby="punctuation-toolbar-label" aria-orientation="horizontal">
+                <button type="button">Header</button>
+                <button type="button">Footer</button>
+                <span role="separator"></span>
+                <button type="button">Date</button>
+                <button type="button">Time</button>
+            </div>
+            <p class="code">&lt;span id="punctuation-toolbar-label"&gt;...&lt;/span&gt;
+&lt;div role="toolbar" id="toolbar-punctuation-reference-labelledby-fail" class="a11yTestFail" aria-labelledby="punctuation-toolbar-label" aria-orientation="horizontal"&gt;
+    &lt;button type="button"&gt;Header&lt;/button&gt;
+    &lt;button type="button"&gt;Footer&lt;/button&gt;
+    &lt;span role="separator"&gt;&lt;/span&gt;
+    &lt;button type="button"&gt;Date&lt;/button&gt;
+    &lt;button type="button"&gt;Time&lt;/button&gt;
+&lt;/div&gt;</p>
+        </div>
+    </div>
+    
+    <div class="role-container">
+        <h2>3. Tree (treeview pattern)</h2>
+        <p>These tests validate accessible names for elements with role="tree" and role="treeitem". Trees are hierarchical lists that allow users to navigate through and select nested content.</p>
+        
+        <div class="warning-box">
+            <h3>⚠️ Understanding the Tree Role</h3>
+            <p>According to the WAI-ARIA Authoring Practices Guide (APG), a <code>role="tree"</code> represents a hierarchical list with nested groups that can be collapsed and expanded. Key implementation requirements include:</p>
+            <ul>
+                <li>The tree container must have an accessible name via <code>aria-label</code> or <code>aria-labelledby</code></li>
+                <li>It contains elements with <code>role="treeitem"</code></li>
+                <li>Parent treeitems should use <code>aria-expanded</code> to indicate their state</li>
+                <li>Each treeitem may use <code>aria-level</code>, <code>aria-setsize</code>, and <code>aria-posinset</code> to define its position in the hierarchy</li>
+                <li>Only one treeitem should be in the tab sequence at a time</li>
+                <li>Keyboard navigation must allow for both vertical traversal and expanding/collapsing nodes</li>
+            </ul>
+            <p><strong>Important:</strong> Trees are often used for navigation menus, file systems, site maps, or other hierarchical data structures where users need to navigate through multiple levels of information.</p>
+        </div>
+        
+        <h3>Passing Examples</h3>
+        
+        <div class="test-case pass">
+            <h3>Tree with aria-label</h3>
+            <p>This div with role="tree" has a descriptive aria-label providing an accessible name.</p>
+            <div class="a11yTestPass" role="tree" id="tree-aria-label-pass"  aria-label="File Explorer" tabindex="0">
+                <div role="treeitem" aria-expanded="true" aria-level="1">Documents
+                    <div role="group">
+                        <div role="treeitem" aria-level="2">Reports</div>
+                        <div role="treeitem" aria-expanded="true" aria-level="2">Projects
+                            <div role="group">
+                                <div role="treeitem" aria-level="3">Project A</div>
+                                <div role="treeitem" aria-level="3">Project B</div>
+                            </div>
+                        </div>
+                        <div role="treeitem" aria-level="2">Presentations</div>
+                    </div>
+                </div>
+                <div role="treeitem" aria-expanded="false" aria-level="1">Pictures</div>
+                <div role="treeitem" aria-expanded="false" aria-level="1">Music</div>
+            </div>
+            <p class="code">&lt;div role="tree" id="tree-aria-label-pass" class="a11yTestPass" aria-label="File Explorer" tabindex="0"&gt;
+    &lt;div role="treeitem" aria-expanded="true" aria-level="1"&gt;Documents
+        &lt;div role="group"&gt;
+            &lt;div role="treeitem" aria-level="2"&gt;Reports&lt;/div&gt;
+            &lt;div role="treeitem" aria-expanded="true" aria-level="2"&gt;Projects
+                &lt;div role="group"&gt;
+                    &lt;div role="treeitem" aria-level="3"&gt;Project A&lt;/div&gt;
+                    &lt;div role="treeitem" aria-level="3"&gt;Project B&lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+            &lt;div role="treeitem" aria-level="2"&gt;Presentations&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div role="treeitem" aria-expanded="false" aria-level="1"&gt;Pictures&lt;/div&gt;
+    &lt;div role="treeitem" aria-expanded="false" aria-level="1"&gt;Music&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case pass">
+            <h3>Tree with aria-labelledby</h3>
+            <p>This div with role="tree" uses aria-labelledby to reference another element for its accessible name.</p>
+            <h4 id="site-structure-label">Site Structure</h4>
+            <div class="a11yTestPass" role="tree" id="tree-aria-labelledby-pass"  aria-labelledby="site-structure-label" tabindex="0">
+                <div role="treeitem" aria-expanded="true" aria-level="1">Home
+                    <div role="group">
+                        <div role="treeitem" aria-level="2">About Us</div>
+                        <div role="treeitem" aria-expanded="true" aria-level="2">Products
+                            <div role="group">
+                                <div role="treeitem" aria-level="3">Hardware</div>
+                                <div role="treeitem" aria-level="3">Software</div>
+                                <div role="treeitem" aria-level="3">Services</div>
+                            </div>
+                        </div>
+                        <div role="treeitem" aria-level="2">Contact</div>
+                    </div>
+                </div>
+                <div role="treeitem" aria-expanded="false" aria-level="1">Blog</div>
+                <div role="treeitem" aria-expanded="false" aria-level="1">Support</div>
+            </div>
+            <p class="code">&lt;h4 id="site-structure-label"&gt;Site Structure&lt;/h4&gt;
+&lt;div role="tree" id="tree-aria-labelledby-pass" class="a11yTestPass" aria-labelledby="site-structure-label" tabindex="0"&gt;
+    &lt;div role="treeitem" aria-expanded="true" aria-level="1"&gt;Home
+        &lt;div role="group"&gt;
+            &lt;div role="treeitem" aria-level="2"&gt;About Us&lt;/div&gt;
+            &lt;div role="treeitem" aria-expanded="true" aria-level="2"&gt;Products
+                &lt;div role="group"&gt;
+                    &lt;div role="treeitem" aria-level="3"&gt;Hardware&lt;/div&gt;
+                    &lt;div role="treeitem" aria-level="3"&gt;Software&lt;/div&gt;
+                    &lt;div role="treeitem" aria-level="3"&gt;Services&lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+            &lt;div role="treeitem" aria-level="2"&gt;Contact&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div role="treeitem" aria-expanded="false" aria-level="1"&gt;Blog&lt;/div&gt;
+    &lt;div role="treeitem" aria-expanded="false" aria-level="1"&gt;Support&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case pass">
+            <h3>Treeitem with aria-label</h3>
+            <p>This div with role="treeitem" has a descriptive aria-label providing an accessible name that enhances the default text content.</p>
+            <div role="tree" aria-label="Organization Chart">
+                <div class="a11yTestPass" role="treeitem" id="treeitem-aria-label-pass"  aria-label="Executive Team (7 members)" aria-expanded="true" aria-level="1">Executive Team
+                    <div role="group">
+                        <div role="treeitem" aria-level="2">CEO</div>
+                        <div role="treeitem" aria-level="2">CFO</div>
+                        <div role="treeitem" aria-level="2">CTO</div>
+                    </div>
+                </div>
+            </div>
+            <p class="code">&lt;div role="tree" aria-label="Organization Chart"&gt;
+    &lt;div role="treeitem" id="treeitem-aria-label-pass" class="a11yTestPass" aria-label="Executive Team (7 members)" aria-expanded="true" aria-level="1"&gt;Executive Team
+        &lt;div role="group"&gt;
+            &lt;div role="treeitem" aria-level="2"&gt;CEO&lt;/div&gt;
+            &lt;div role="treeitem" aria-level="2"&gt;CFO&lt;/div&gt;
+            &lt;div role="treeitem" aria-level="2"&gt;CTO&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <h3>Failing Examples</h3>
+        
+        <div class="test-case fail">
+            <h3>Tree with No Accessible Name</h3>
+            <p>This div with role="tree" lacks an accessible name, making it difficult for screen reader users to understand its purpose.</p>
+            <div class="a11yTestFail" role="tree" id="tree-no-name-fail"  tabindex="0">
+                <div role="treeitem" aria-expanded="true" aria-level="1">Categories
+                    <div role="group">
+                        <div role="treeitem" aria-level="2">Electronics</div>
+                        <div role="treeitem" aria-level="2">Clothing</div>
+                        <div role="treeitem" aria-level="2">Home & Garden</div>
+                    </div>
+                </div>
+                <div role="treeitem" aria-expanded="false" aria-level="1">Brands</div>
+                <div role="treeitem" aria-expanded="false" aria-level="1">Deals</div>
+            </div>
+            <p class="code">&lt;div role="tree" id="tree-no-name-fail" class="a11yTestFail" tabindex="0"&gt;
+    &lt;div role="treeitem" aria-expanded="true" aria-level="1"&gt;Categories
+        &lt;div role="group"&gt;
+            &lt;div role="treeitem" aria-level="2"&gt;Electronics&lt;/div&gt;
+            &lt;div role="treeitem" aria-level="2"&gt;Clothing&lt;/div&gt;
+            &lt;div role="treeitem" aria-level="2"&gt;Home &amp; Garden&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div role="treeitem" aria-expanded="false" aria-level="1"&gt;Brands&lt;/div&gt;
+    &lt;div role="treeitem" aria-expanded="false" aria-level="1"&gt;Deals&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Tree with Empty aria-label</h3>
+            <p>This div with role="tree" has an empty aria-label, which provides no accessible name.</p>
+            <div class="a11yTestFail" role="tree" id="tree-empty-label-fail"  aria-label="" tabindex="0">
+                <div role="treeitem" aria-expanded="true" aria-level="1">Departments
+                    <div role="group">
+                        <div role="treeitem" aria-level="2">HR</div>
+                        <div role="treeitem" aria-level="2">Finance</div>
+                        <div role="treeitem" aria-level="2">Engineering</div>
+                    </div>
+                </div>
+                <div role="treeitem" aria-expanded="false" aria-level="1">Teams</div>
+                <div role="treeitem" aria-expanded="false" aria-level="1">Locations</div>
+            </div>
+            <p class="code">&lt;div role="tree" id="tree-empty-label-fail" class="a11yTestFail" aria-label="" tabindex="0"&gt;
+    &lt;div role="treeitem" aria-expanded="true" aria-level="1"&gt;Departments
+        &lt;div role="group"&gt;
+            &lt;div role="treeitem" aria-level="2"&gt;HR&lt;/div&gt;
+            &lt;div role="treeitem" aria-level="2"&gt;Finance&lt;/div&gt;
+            &lt;div role="treeitem" aria-level="2"&gt;Engineering&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div role="treeitem" aria-expanded="false" aria-level="1"&gt;Teams&lt;/div&gt;
+    &lt;div role="treeitem" aria-expanded="false" aria-level="1"&gt;Locations&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Tree with Whitespace-only aria-label</h3>
+            <p>This div with role="tree" has an aria-label with only whitespace, which provides no accessible name.</p>
+            <div class="a11yTestFail" role="tree" id="tree-whitespace-label-fail"  aria-label="   " tabindex="0">
+                <div role="treeitem" aria-expanded="true" aria-level="1">Years
+                    <div role="group">
+                        <div role="treeitem" aria-level="2">2023</div>
+                        <div role="treeitem" aria-level="2">2024</div>
+                        <div role="treeitem" aria-level="2">2025</div>
+                    </div>
+                </div>
+                <div role="treeitem" aria-expanded="false" aria-level="1">Quarters</div>
+                <div role="treeitem" aria-expanded="false" aria-level="1">Months</div>
+            </div>
+            <p class="code">&lt;div role="tree" id="tree-whitespace-label-fail" class="a11yTestFail" aria-label="   " tabindex="0"&gt;
+    &lt;div role="treeitem" aria-expanded="true" aria-level="1"&gt;Years
+        &lt;div role="group"&gt;
+            &lt;div role="treeitem" aria-level="2"&gt;2023&lt;/div&gt;
+            &lt;div role="treeitem" aria-level="2"&gt;2024&lt;/div&gt;
+            &lt;div role="treeitem" aria-level="2"&gt;2025&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div role="treeitem" aria-expanded="false" aria-level="1"&gt;Quarters&lt;/div&gt;
+    &lt;div role="treeitem" aria-expanded="false" aria-level="1"&gt;Months&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Tree with Punctuation-only aria-label</h3>
+            <p>This div with role="tree" has an aria-label with only punctuation, which provides no meaningful accessible name.</p>
+            <div class="a11yTestFail" role="tree" id="tree-punctuation-label-fail"  aria-label="..." tabindex="0">
+                <div role="treeitem" aria-expanded="true" aria-level="1">Settings
+                    <div role="group">
+                        <div role="treeitem" aria-level="2">General</div>
+                        <div role="treeitem" aria-level="2">Security</div>
+                        <div role="treeitem" aria-level="2">Advanced</div>
+                    </div>
+                </div>
+                <div role="treeitem" aria-expanded="false" aria-level="1">Themes</div>
+                <div role="treeitem" aria-expanded="false" aria-level="1">Extensions</div>
+            </div>
+            <p class="code">&lt;div role="tree" id="tree-punctuation-label-fail" class="a11yTestFail" aria-label="..." tabindex="0"&gt;
+    &lt;div role="treeitem" aria-expanded="true" aria-level="1"&gt;Settings
+        &lt;div role="group"&gt;
+            &lt;div role="treeitem" aria-level="2"&gt;General&lt;/div&gt;
+            &lt;div role="treeitem" aria-level="2"&gt;Security&lt;/div&gt;
+            &lt;div role="treeitem" aria-level="2"&gt;Advanced&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div role="treeitem" aria-expanded="false" aria-level="1"&gt;Themes&lt;/div&gt;
+    &lt;div role="treeitem" aria-expanded="false" aria-level="1"&gt;Extensions&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Tree with Broken aria-labelledby</h3>
+            <p>This div with role="tree" references a non-existent element ID with aria-labelledby, which prevents an accessible name from being created.</p>
+            <div class="a11yTestFail" role="tree" id="tree-broken-labelledby-fail"  aria-labelledby="non-existent-tree-id" tabindex="0">
+                <div role="treeitem" aria-expanded="true" aria-level="1">Folders
+                    <div role="group">
+                        <div role="treeitem" aria-level="2">Inbox</div>
+                        <div role="treeitem" aria-level="2">Sent</div>
+                        <div role="treeitem" aria-level="2">Drafts</div>
+                    </div>
+                </div>
+                <div role="treeitem" aria-expanded="false" aria-level="1">Labels</div>
+                <div role="treeitem" aria-expanded="false" aria-level="1">Archive</div>
+            </div>
+            <p class="code">&lt;div role="tree" id="tree-broken-labelledby-fail" class="a11yTestFail" aria-labelledby="non-existent-tree-id" tabindex="0"&gt;
+    &lt;div role="treeitem" aria-expanded="true" aria-level="1"&gt;Folders
+        &lt;div role="group"&gt;
+            &lt;div role="treeitem" aria-level="2"&gt;Inbox&lt;/div&gt;
+            &lt;div role="treeitem" aria-level="2"&gt;Sent&lt;/div&gt;
+            &lt;div role="treeitem" aria-level="2"&gt;Drafts&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div role="treeitem" aria-expanded="false" aria-level="1"&gt;Labels&lt;/div&gt;
+    &lt;div role="treeitem" aria-expanded="false" aria-level="1"&gt;Archive&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Tree with Empty Reference via aria-labelledby</h3>
+            <p>This div with role="tree" references an element with no content via aria-labelledby, causing the accessible name computation to fail.</p>
+            <span id="empty-tree-label"></span>
+            <div class="a11yTestFail" role="tree" id="tree-empty-reference-labelledby-fail"  aria-labelledby="empty-tree-label" tabindex="0">
+                <div role="treeitem" aria-expanded="true" aria-level="1">Projects
+                    <div role="group">
+                        <div role="treeitem" aria-level="2">Active</div>
+                        <div role="treeitem" aria-level="2">Completed</div>
+                        <div role="treeitem" aria-level="2">Archived</div>
+                    </div>
+                </div>
+                <div role="treeitem" aria-expanded="false" aria-level="1">Tasks</div>
+                <div role="treeitem" aria-expanded="false" aria-level="1">Team</div>
+            </div>
+            <p class="code">&lt;span id="empty-tree-label"&gt;&lt;/span&gt;
+&lt;div role="tree" id="tree-empty-reference-labelledby-fail" class="a11yTestFail" aria-labelledby="empty-tree-label" tabindex="0"&gt;
+    &lt;div role="treeitem" aria-expanded="true" aria-level="1"&gt;Projects
+        &lt;div role="group"&gt;
+            &lt;div role="treeitem" aria-level="2"&gt;Active&lt;/div&gt;
+            &lt;div role="treeitem" aria-level="2"&gt;Completed&lt;/div&gt;
+            &lt;div role="treeitem" aria-level="2"&gt;Archived&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div role="treeitem" aria-expanded="false" aria-level="1"&gt;Tasks&lt;/div&gt;
+    &lt;div role="treeitem" aria-expanded="false" aria-level="1"&gt;Team&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Tree with Whitespace-only Reference via aria-labelledby</h3>
+            <p>This div with role="tree" references an element that has only whitespace via aria-labelledby, causing the accessible name computation to fail.</p>
+            <span id="whitespace-tree-label">   </span>
+            <div class="a11yTestFail" role="tree" id="tree-whitespace-reference-labelledby-fail"  aria-labelledby="whitespace-tree-label" tabindex="0">
+                <div role="treeitem" aria-expanded="true" aria-level="1">Components
+                    <div role="group">
+                        <div role="treeitem" aria-level="2">Buttons</div>
+                        <div role="treeitem" aria-level="2">Forms</div>
+                        <div role="treeitem" aria-level="2">Cards</div>
+                    </div>
+                </div>
+                <div role="treeitem" aria-expanded="false" aria-level="1">Layouts</div>
+                <div role="treeitem" aria-expanded="false" aria-level="1">Utilities</div>
+            </div>
+            <p class="code">&lt;span id="whitespace-tree-label"&gt;   &lt;/span&gt;
+&lt;div role="tree" id="tree-whitespace-reference-labelledby-fail" class="a11yTestFail" aria-labelledby="whitespace-tree-label" tabindex="0"&gt;
+    &lt;div role="treeitem" aria-expanded="true" aria-level="1"&gt;Components
+        &lt;div role="group"&gt;
+            &lt;div role="treeitem" aria-level="2"&gt;Buttons&lt;/div&gt;
+            &lt;div role="treeitem" aria-level="2"&gt;Forms&lt;/div&gt;
+            &lt;div role="treeitem" aria-level="2"&gt;Cards&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div role="treeitem" aria-expanded="false" aria-level="1"&gt;Layouts&lt;/div&gt;
+    &lt;div role="treeitem" aria-expanded="false" aria-level="1"&gt;Utilities&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Tree with Punctuation-only Reference via aria-labelledby</h3>
+            <p>This div with role="tree" references an element that has only punctuation via aria-labelledby, causing the accessible name computation to fail.</p>
+            <span id="punctuation-tree-label">...</span>
+            <div class="a11yTestFail" role="tree" id="tree-punctuation-reference-labelledby-fail"  aria-labelledby="punctuation-tree-label" tabindex="0">
+                <div role="treeitem" aria-expanded="true" aria-level="1">Chapters
+                    <div role="group">
+                        <div role="treeitem" aria-level="2">Introduction</div>
+                        <div role="treeitem" aria-level="2">Chapter 1</div>
+                        <div role="treeitem" aria-level="2">Chapter 2</div>
+                    </div>
+                </div>
+                <div role="treeitem" aria-expanded="false" aria-level="1">Appendix</div>
+                <div role="treeitem" aria-expanded="false" aria-level="1">References</div>
+            </div>
+            <p class="code">&lt;span id="punctuation-tree-label"&gt;...&lt;/span&gt;
+&lt;div role="tree" id="tree-punctuation-reference-labelledby-fail" class="a11yTestFail" aria-labelledby="punctuation-tree-label" tabindex="0"&gt;
+    &lt;div role="treeitem" aria-expanded="true" aria-level="1"&gt;Chapters
+        &lt;div role="group"&gt;
+            &lt;div role="treeitem" aria-level="2"&gt;Introduction&lt;/div&gt;
+            &lt;div role="treeitem" aria-level="2"&gt;Chapter 1&lt;/div&gt;
+            &lt;div role="treeitem" aria-level="2"&gt;Chapter 2&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div role="treeitem" aria-expanded="false" aria-level="1"&gt;Appendix&lt;/div&gt;
+    &lt;div role="treeitem" aria-expanded="false" aria-level="1"&gt;References&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Treeitem with Empty aria-label</h3>
+            <p>This div with role="treeitem" has an empty aria-label, which overrides its text content and provides no accessible name.</p>
+            <div role="tree" aria-label="Project Structure">
+                <div class="a11yTestFail" role="treeitem" id="treeitem-empty-label-fail"  aria-label="" aria-expanded="true" aria-level="1">Source Code
+                    <div role="group">
+                        <div role="treeitem" aria-level="2">src</div>
+                        <div role="treeitem" aria-level="2">lib</div>
+                        <div role="treeitem" aria-level="2">tests</div>
+                    </div>
+                </div>
+            </div>
+            <p class="code">&lt;div role="tree" aria-label="Project Structure"&gt;
+    &lt;div role="treeitem" id="treeitem-empty-label-fail" class="a11yTestFail" aria-label="" aria-expanded="true" aria-level="1"&gt;Source Code
+        &lt;div role="group"&gt;
+            &lt;div role="treeitem" aria-level="2"&gt;src&lt;/div&gt;
+            &lt;div role="treeitem" aria-level="2"&gt;lib&lt;/div&gt;
+            &lt;div role="treeitem" aria-level="2"&gt;tests&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+    </div>
+    
+    <div class="role-container">
+        <h2>4. Accessible Names with Tabindex (Non-Standard Patterns)</h2>
+        <p>These tests validate accessible names for elements that use tabindex to make them focusable, even when the ARIA role is incorrect or non-interactive. This tests whether screen readers can announce something meaningful when focusing these elements.</p>
+        
+        <div class="warning-box">
+            <h3>⚠️ Understanding Tabindex and Accessible Names</h3>
+            <p>When elements have <code>tabindex="0"</code> or <code>tabindex="-1"</code>, they become programmatically focusable, which means screen readers may announce them. Having an accessible name for these elements is important even if the role is incorrect or non-standard:</p>
+            <ul>
+                <li><code>tabindex="0"</code> adds the element to the tab sequence, allowing users to focus it with keyboard navigation</li>
+                <li><code>tabindex="-1"</code> makes the element programmatically focusable but not in the tab sequence (usually for focus management)</li>
+                <li>Elements with incorrect or non-interactive roles still need accessible names when they're focusable</li>
+                <li>The lack of an accessible name on a focusable element can result in confusing or meaningless announcements</li>
+            </ul>
+            <p><strong>Important:</strong> While these tests validate accessible name computation, they do NOT represent best practices for ARIA usage. In production code, always use the correct ARIA roles that match the element's purpose and behavior.</p>
+        </div>
+        
+        <h3>Passing Examples</h3>
+        
+        <div class="test-case pass">
+            <h3>Tabindex="0" with aria-label on Non-Interactive Role</h3>
+            <p>This div has a non-interactive role but is in the tab sequence and has an accessible name.</p>
+            <div role="separator" tabindex="0" id="tabindex-0-aria-label-pass" class="a11yTestPass" aria-label="Section Divider">
+                <hr>
+            </div>
+            <p class="code">&lt;div role="separator" tabindex="0" id="tabindex-0-aria-label-pass" class="a11yTestPass" aria-label="Section Divider"&gt;
+    &lt;hr&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case pass">
+            <h3>Tabindex="-1" with aria-label on Non-Interactive Role</h3>
+            <p>This div has a non-interactive role but is programmatically focusable and has an accessible name.</p>
+            <div class="a11yTestPass" role="img" tabindex="-1" id="tabindex-n1-aria-label-pass"  aria-label="Decorative Background">
+                <div style="width: 200px; height: 30px; background-color: #f5f5f5;"></div>
+            </div>
+            <p class="code">&lt;div role="img" tabindex="-1" id="tabindex-n1-aria-label-pass" class="a11yTestPass" aria-label="Decorative Background"&gt;
+    &lt;div style="width: 200px; height: 30px; background-color: #f5f5f5;"&gt;&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case pass">
+            <h3>Tabindex="0" with aria-labelledby on Non-Interactive Role</h3>
+            <p>This div has a non-interactive role but is in the tab sequence and gets its accessible name from another element.</p>
+            <h4 id="section-heading">Important Information</h4>
+            <div class="a11yTestPass" role="region" tabindex="0" id="tabindex-0-aria-labelledby-pass"  aria-labelledby="section-heading">
+                <p>This section contains critical information about the system.</p>
+            </div>
+            <p class="code">&lt;h4 id="section-heading"&gt;Important Information&lt;/h4&gt;
+&lt;div role="region" tabindex="0" id="tabindex-0-aria-labelledby-pass" class="a11yTestPass" aria-labelledby="section-heading"&gt;
+    &lt;p&gt;This section contains critical information about the system.&lt;/p&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case pass">
+            <h3>Tabindex="-1" with Invalid Role but Accessible Name</h3>
+            <p>This div uses an invalid ARIA role but has tabindex="-1" and an accessible name.</p>
+            <div class="a11yTestPass" role="not-a-real-role" tabindex="-1" id="invalid-role-with-name-pass"  aria-label="Custom Element">
+                <p>This element has an invalid role but is still programmatically focusable.</p>
+            </div>
+            <p class="code">&lt;div role="not-a-real-role" tabindex="-1" id="invalid-role-with-name-pass" class="a11yTestPass" aria-label="Custom Element"&gt;
+    &lt;p&gt;This element has an invalid role but is still programmatically focusable.&lt;/p&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <h3>Failing Examples</h3>
+        
+        <div class="test-case fail">
+            <h3>Tabindex="0" with No Accessible Name</h3>
+            <p>This div is in the tab sequence but lacks an accessible name, making it unclear to screen reader users what they're focusing on.</p>
+            <div class="a11yTestFail" role="group" tabindex="0" id="tabindex-0-no-name-fail">
+                <p>This group is focusable but has no accessible name.</p>
+            </div>
+            <p class="code">&lt;div role="group" tabindex="0" id="tabindex-0-no-name-fail"&gt;
+    &lt;p&gt;This group is focusable but has no accessible name.&lt;/p&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Tabindex="-1" with No Accessible Name</h3>
+            <p>This div is programmatically focusable but lacks an accessible name, making it unclear to screen reader users what they're focusing on.</p>
+            <div class="a11yTestFail" role="region" tabindex="-1" id="tabindex-n1-no-name-fail">
+                <p>This region is programmatically focusable but has no accessible name.</p>
+            </div>
+            <p class="code">&lt;div role="region" tabindex="-1" id="tabindex-n1-no-name-fail"&gt;
+    &lt;p&gt;This region is programmatically focusable but has no accessible name.&lt;/p&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Tabindex="0" with Empty aria-label</h3>
+            <p>This div is in the tab sequence but has an empty aria-label, providing no accessible name.</p>
+            <div class="a11yTestFail" role="none" tabindex="0" id="tabindex-0-empty-label-fail"  aria-label="">
+                <p>This element has no semantic role but is focusable with an empty accessible name.</p>
+            </div>
+            <p class="code">&lt;div role="none" tabindex="0" id="tabindex-0-empty-label-fail" class="a11yTestFail" aria-label=""&gt;
+    &lt;p&gt;This element has no semantic role but is focusable with an empty accessible name.&lt;/p&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Tabindex="-1" with Whitespace-only aria-label</h3>
+            <p>This div is programmatically focusable but has an aria-label with only whitespace, providing no accessible name.</p>
+            <div class="a11yTestFail" role="presentation" tabindex="-1" id="tabindex-n1-whitespace-label-fail"  aria-label="   ">
+                <p>This element has a presentation role but is focusable with a whitespace-only accessible name.</p>
+            </div>
+            <p class="code">&lt;div role="presentation" tabindex="-1" id="tabindex-n1-whitespace-label-fail" class="a11yTestFail" aria-label="   "&gt;
+    &lt;p&gt;This element has a presentation role but is focusable with a whitespace-only accessible name.&lt;/p&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Tabindex="0" with Punctuation-only aria-label</h3>
+            <p>This div is in the tab sequence but has an aria-label with only punctuation, providing no meaningful accessible name.</p>
+            <div class="a11yTestFail" role="status" tabindex="0" id="tabindex-0-punctuation-label-fail"  aria-label="...">
+                <p>This status region is focusable but has a punctuation-only accessible name.</p>
+            </div>
+            <p class="code">&lt;div role="status" tabindex="0" id="tabindex-0-punctuation-label-fail" class="a11yTestFail" aria-label="..."&gt;
+    &lt;p&gt;This status region is focusable but has a punctuation-only accessible name.&lt;/p&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Tabindex="-1" with Broken aria-labelledby</h3>
+            <p>This div is programmatically focusable but references a non-existent element ID with aria-labelledby, preventing an accessible name from being created.</p>
+            <div class="a11yTestFail" role="complementary" tabindex="-1" id="tabindex-n1-broken-labelledby-fail"  aria-labelledby="non-existent-label-id">
+                <p>This complementary section is focusable but has a broken aria-labelledby reference.</p>
+            </div>
+            <p class="code">&lt;div role="complementary" tabindex="-1" id="tabindex-n1-broken-labelledby-fail" class="a11yTestFail" aria-labelledby="non-existent-label-id"&gt;
+    &lt;p&gt;This complementary section is focusable but has a broken aria-labelledby reference.&lt;/p&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Tabindex="0" with Empty Reference via aria-labelledby</h3>
+            <p>This div is in the tab sequence but references an element with no content via aria-labelledby, causing the accessible name computation to fail.</p>
+            <span id="empty-tabindex-label"></span>
+            <div class="a11yTestFail" role="contentinfo" tabindex="0" id="tabindex-0-empty-reference-labelledby-fail"  aria-labelledby="empty-tabindex-label">
+                <p>This contentinfo section is focusable but has an empty aria-labelledby reference.</p>
+            </div>
+            <p class="code">&lt;span id="empty-tabindex-label"&gt;&lt;/span&gt;
+&lt;div role="contentinfo" tabindex="0" id="tabindex-0-empty-reference-labelledby-fail" class="a11yTestFail" aria-labelledby="empty-tabindex-label"&gt;
+    &lt;p&gt;This contentinfo section is focusable but has an empty aria-labelledby reference.&lt;/p&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Native Element with tabindex="-1" but No Accessible Name</h3>
+            <p>This article element is programmatically focusable but lacks an accessible name.</p>
+            <article class="a11yTestFail" tabindex="-1" id="native-element-tabindex-n1-no-name-fail">
+                <p>This article is programmatically focusable but has no accessible name.</p>
+            </article>
+            <p class="code">&lt;article tabindex="-1" id="native-element-tabindex-n1-no-name-fail"&gt;
+    &lt;p&gt;This article is programmatically focusable but has no accessible name.&lt;/p&gt;
+&lt;/article&gt;</p>
+        </div>
+    </div>
+
+    <footer>
+        <p>This test page is designed to validate accessible names in ARIA role elements according to WCAG 4.1.2 (Name, Role, Value) and the W3C's accessible name computation algorithm.</p>
+        <p>The tests focus on specialized ARIA roles (meter, toolbar, tree) and elements with tabindex that require accessible names for proper screen reader identification.</p>
+        <p><strong>Note on test categories:</strong></p>
+        <ul>
+            <li><span style="color:#28a745">✓ Passing:</span> Fully accessible, follows best practices for accessible name computation</li>
+            <li><span style="color:#dc3545">✗ Failing:</span> Inaccessible, violates WCAG requirements for accessible names</li>
+        </ul>
+    </footer>
+</body>
+</html>

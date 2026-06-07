@@ -1,0 +1,2552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARIA Roles Accessible Names Test - Part 2</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 30px;
+            max-width: 1200px;
+        }
+        .test-case {
+            margin-bottom: 40px;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .warning-box {
+            background-color: #fff3cd;
+            border: 1px solid #ffeeba;
+            border-left: 5px solid #ffc107;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .comparison-table {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 15px 0;
+        }
+        .comparison-table h4 {
+            width: 100%;
+            margin-bottom: 5px;
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 5px;
+        }
+        .comparison-table ul {
+            margin-top: 0;
+        }
+        .example-code {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 10px;
+            border-radius: 3px;
+            margin-top: 10px;
+            margin-bottom: 15px;
+        }
+        .example-code pre {
+            margin: 0;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        .pass {
+            background-color: #e6f7e6;
+            border-left: 5px solid #28a745;
+        }
+        .fail {
+            background-color: #fbeeee;
+            border-left: 5px solid #dc3545;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 5px solid #ffc107;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #444;
+            margin-top: 40px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        h3 {
+            color: #555;
+            margin: 0 0 10px 0;
+        }
+        .code {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            margin-top: 10px;
+            overflow-x: auto;
+        }
+        .role-container {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .interactive-element {
+            display: block;
+            margin: 10px 0;
+        }
+        /* Styles for custom ARIA controls */
+        [role="button"] {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: 500;
+        }
+        [role="slider"] {
+            width: 300px;
+            height: 20px;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            position: relative;
+            margin: 20px 0;
+            border: 1px solid #ccc;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        [role="slider"] .slider-thumb {
+            width: 20px;
+            height: 20px;
+            background-color: #007bff;
+            border-radius: 50%;
+            position: absolute;
+            top: 0;
+            border: 1px solid #0056b3;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        [role="spinbutton"] {
+            display: flex;
+            align-items: center;
+            border: 1px solid #ccc;
+            width: fit-content;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        [role="spinbutton"] .value {
+            padding: 8px 12px;
+            min-width: 50px;
+            text-align: center;
+        }
+        [role="spinbutton"] .spinner-btn {
+            padding: 8px;
+            background-color: #f0f0f0;
+            cursor: pointer;
+            user-select: none;
+        }
+        [role="switch"] {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+            background-color: #ccc;
+            border-radius: 34px;
+            cursor: pointer;
+        }
+        [role="switch"] .switch-thumb {
+            position: absolute;
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            border-radius: 50%;
+            transition: 0.2s;
+        }
+        [role="switch"][aria-checked="true"] {
+            background-color: #2196F3;
+        }
+        [role="switch"][aria-checked="true"] .switch-thumb {
+            transform: translateX(26px);
+        }
+        [role="tablist"] {
+            display: flex;
+            border-bottom: 1px solid #ccc;
+        }
+        [role="tab"] {
+            padding: 10px 15px;
+            margin-right: 5px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-bottom: none;
+            border-radius: 4px 4px 0 0;
+            cursor: pointer;
+            position: relative;
+        }
+        [role="tab"][aria-selected="true"] {
+            background-color: #fff;
+            border-bottom: 1px solid #fff;
+            margin-bottom: -1px;
+            font-weight: bold;
+        }
+        [role="tab"][aria-selected="true"]::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background-color: #006acb;
+            border-radius: 3px 3px 0 0;
+        }
+        [role="tabpanel"] {
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-top: none;
+        }
+        [role="dialog"] {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin: 20px auto;
+            max-width: 500px;
+        }
+        [role="menu"] {
+            display: inline-block;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            min-width: 180px;
+        }
+        [role="menuitem"] {
+            padding: 8px 16px;
+            cursor: pointer;
+        }
+        [role="menuitem"]:hover {
+            background-color: #f5f5f5;
+        }
+        [role="menubar"] {
+            display: flex;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+        }
+        [role="menubar"] [role="menuitem"] {
+            padding: 10px 15px;
+            border-right: 1px solid #ccc;
+        }
+        [role="listbox"] {
+            border: 1px solid #ccc;
+            background-color: #fff;
+            width: 200px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        [role="option"] {
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+        [role="option"]:hover {
+            background-color: #f5f5f5;
+        }
+        [role="option"][aria-selected="true"] {
+            background-color: #e6f7ff;
+        }
+        [role="tree"] {
+            border: 1px solid #ccc;
+            width: 250px;
+            padding: 10px;
+        }
+        [role="treeitem"] {
+            padding: 5px;
+            cursor: pointer;
+        }
+        [role="treeitem"][aria-expanded="true"] + [role="group"] {
+            margin-left: 20px;
+        }
+        [role="toolbar"] {
+            display: flex;
+            background-color: #f0f0f0;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        [role="toolbar"] [role="button"] {
+            margin-right: 5px;
+        }
+        [role="combobox"] {
+            position: relative;
+        }
+        .combobox-input {
+            width: 200px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        [role="disclosure"] {
+            cursor: pointer;
+            padding: 10px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            width: 100%;
+            text-align: left;
+            margin-bottom: 5px;
+        }
+        [role="disclosure"] + div {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-top: none;
+            margin-top: -5px;
+        }
+        /* FAQ styles from part 1 */
+        .faq-list {
+            max-width: 800px;
+            margin: 20px 0;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .faq-item {
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+        .faq-question {
+            padding: 15px;
+            background-color: #f5f5f5;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .faq-question:hover {
+            background-color: #eee;
+        }
+        .faq-answer {
+            padding: 0 15px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .faq-question[aria-expanded="true"] + .faq-answer {
+            max-height: 200px;
+            padding: 15px;
+        }
+        .faq-icon {
+            font-size: 1.2em;
+            transition: transform 0.3s;
+        }
+        .faq-question[aria-expanded="true"] .faq-icon {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+<body>
+    <h1>ARIA Roles Accessible Names Test - Part 2</h1>
+    <p><strong>Test cases: 24 passing, 64 failing (88 total)</strong></p>
+    <p>This page continues the test cases for accessible names in ARIA role elements according to the WCAG accessible name computation algorithm.</p>
+    
+    <div class="role-container">toolbar
+        <h2>10. Toolbar (role="toolbar")</h2>
+        <p>These tests validate accessible names for elements with role="toolbar".</p>
+        
+        <div class="warning-box">
+            <h3>⚠️ When to Use role="toolbar" Instead of &lt;nav&gt;</h3>
+            <p>The <code>&lt;nav&gt;</code> element and <code>role="toolbar"</code> serve different purposes in web accessibility:</p>
+            
+            <div class="comparison-table">
+                <h4>Use <code>&lt;nav&gt;</code> When:</h4>
+                <ul>
+                    <li>Creating primary navigation menus</li>
+                    <li>Defining site-wide navigation</li>
+                    <li>Indicating a major section of navigation links</li>
+                    <li>Providing hierarchical page structure</li>
+                </ul>
+                
+                <div class="example-code">
+                    <p>Example:</p>
+                    <pre>&lt;nav&gt;
+  &lt;ul&gt;
+    &lt;li&gt;&lt;a href="/"&gt;Home&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/about"&gt;About&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="/contact"&gt;Contact&lt;/a&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/nav&gt;</pre>
+                </div>
+                
+                <h4>Use <code>role="toolbar"</code> When:</h4>
+                <ul>
+                    <li>Creating a set of action buttons that affect content</li>
+                    <li>Grouping related controls in a single focused area</li>
+                    <li>Providing editing or manipulation functions (not navigation)</li>
+                    <li>Implementing editor-like interfaces with multiple controls</li>
+                </ul>
+                
+                <div class="example-code">
+                    <p>Example:</p>
+                    <pre>&lt;div role="toolbar" aria-label="Text formatting options"&gt;
+  &lt;button aria-pressed="false"&gt;Bold&lt;/button&gt;
+  &lt;button aria-pressed="false"&gt;Italic&lt;/button&gt;
+  &lt;button aria-pressed="false"&gt;Underline&lt;/button&gt;
+&lt;/div&gt;</pre>
+                </div>
+            </div>
+            
+            <p><strong>Important:</strong> The key difference is that <code>&lt;nav&gt;</code> is for moving between pages or sections, while <code>role="toolbar"</code> is for presenting action buttons that perform operations on content.</p>
+            
+            <p><strong>Common Mistake:</strong> Using <code>role="toolbar"</code> for site navigation instead of the semantic <code>&lt;nav&gt;</code> element. This can confuse assistive technology users and lead to navigation difficulties.</p>
+        </div>
+        
+        <h3>Passing Examples - Toolbar</h3>
+        
+        <div class="test-case pass">
+            <h3>Toolbar with aria-label</h3>
+            <p>This div with role="toolbar" has an aria-label attribute that serves as its accessible name.</p>
+            <div class="a11yTestPass" role="toolbar" id="toolbar-aria-label-pass"  aria-label="Text Formatting">
+                <div role="button" tabindex="0">Bold</div>
+                <div role="button" tabindex="-1">Italic</div>
+                <div role="button" tabindex="-1">Underline</div>
+            </div>
+            <p class="code">&lt;div role="toolbar" id="toolbar-aria-label-pass" class="a11yTestPass" aria-label="Text Formatting"&gt;
+    &lt;div role="button" tabindex="0"&gt;Bold&lt;/div&gt;
+    &lt;div role="button" tabindex="-1"&gt;Italic&lt;/div&gt;
+    &lt;div role="button" tabindex="-1"&gt;Underline&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case pass">
+            <h3>Toolbar with aria-labelledby</h3>
+            <p>This div with role="toolbar" uses aria-labelledby to reference a heading as its accessible name.</p>
+            <h4 id="document-toolbar-heading">Document Tools</h4>
+            <div class="a11yTestPass" role="toolbar" id="toolbar-aria-labelledby-pass"  aria-labelledby="document-toolbar-heading">
+                <div role="button" tabindex="0">Save</div>
+                <div role="button" tabindex="-1">Print</div>
+                <div role="button" tabindex="-1">Share</div>
+            </div>
+            <p class="code">&lt;h4 id="document-toolbar-heading"&gt;Document Tools&lt;/h4&gt;
+&lt;div role="toolbar" id="toolbar-aria-labelledby-pass" class="a11yTestPass" aria-labelledby="document-toolbar-heading"&gt;
+    &lt;div role="button" tabindex="0"&gt;Save&lt;/div&gt;
+    &lt;div role="button" tabindex="-1"&gt;Print&lt;/div&gt;
+    &lt;div role="button" tabindex="-1"&gt;Share&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <h3>Failing Examples - Toolbar</h3>
+        
+        <div class="test-case fail">
+            <h3>Toolbar without Accessible Name</h3>
+            <p>This div with role="toolbar" has no accessible name - no aria-label or aria-labelledby.</p>
+            <div class="a11yTestFail a11yTest a11yTestFail" role="toolbar" id="toolbar-no-label-fail"  >
+                <div role="button" tabindex="0">Cut</div>
+                <div role="button" tabindex="-1">Copy</div>
+                <div role="button" tabindex="-1">Paste</div>
+            </div>
+            <p class="code">&lt;div role="toolbar" id="toolbar-no-label-fail"&gt;
+    &lt;div role="button" tabindex="0"&gt;Cut&lt;/div&gt;
+    &lt;div role="button" tabindex="-1"&gt;Copy&lt;/div&gt;
+    &lt;div role="button" tabindex="-1"&gt;Paste&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Toolbar with Empty aria-label</h3>
+            <p>This div with role="toolbar" has an aria-label attribute, but it's empty, providing no accessible name.</p>
+            <div class="a11yTestFail a11yTest a11yTestFail" role="toolbar" id="toolbar-empty-aria-label-fail"   aria-label="">
+                <div role="button" tabindex="0">Zoom In</div>
+                <div role="button" tabindex="-1">Zoom Out</div>
+                <div role="button" tabindex="-1">Reset</div>
+            </div>
+            <p class="code">&lt;div role="toolbar" id="toolbar-empty-aria-label-fail" class="a11yTestFail" aria-label=""&gt;
+    &lt;div role="button" tabindex="0"&gt;Zoom In&lt;/div&gt;
+    &lt;div role="button" tabindex="-1"&gt;Zoom Out&lt;/div&gt;
+    &lt;div role="button" tabindex="-1"&gt;Reset&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Toolbar with Whitespace-only aria-label</h3>
+            <p>This div with role="toolbar" has an aria-label attribute that contains only whitespace, which is effectively empty.</p>
+            <div  class="a11yTestFail a11yTest a11yTestFail" role="toolbar" id="toolbar-whitespace-aria-label-fail"   aria-label="   ">
+                <div role="button" tabindex="0">Undo</div>
+                <div role="button" tabindex="-1">Redo</div>
+                <div role="button" tabindex="-1">Apply</div>
+            </div>
+            <p class="code">&lt;div role="toolbar" id="toolbar-whitespace-aria-label-fail" class="a11yTestFail" aria-label="   "&gt;
+    &lt;div role="button" tabindex="0"&gt;Undo&lt;/div&gt;
+    &lt;div role="button" tabindex="-1"&gt;Redo&lt;/div&gt;
+    &lt;div role="button" tabindex="-1"&gt;Apply&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Toolbar with Punctuation-only aria-label</h3>
+            <p>This div with role="toolbar" has an aria-label with only punctuation, which is not a meaningful accessible name.</p>
+            <div  class="a11yTestFail a11yTest a11yTestFail" role="toolbar" id="toolbar-punctuation-aria-label-fail"   aria-label="...">
+                <div role="button" tabindex="0">Format</div>
+                <div role="button" tabindex="-1">Align</div>
+                <div role="button" tabindex="-1">Style</div>
+            </div>
+            <p class="code">&lt;div role="toolbar" id="toolbar-punctuation-aria-label-fail" class="a11yTestFail" aria-label="..."&gt;
+    &lt;div role="button" tabindex="0"&gt;Format&lt;/div&gt;
+    &lt;div role="button" tabindex="-1"&gt;Align&lt;/div&gt;
+    &lt;div role="button" tabindex="-1"&gt;Style&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Toolbar with Broken aria-labelledby</h3>
+            <p>This div with role="toolbar" references a non-existent element ID with aria-labelledby.</p>
+            <div class="a11yTestFail a11yTest a11yTestFail" role="toolbar" id="toolbar-broken-labelledby-fail"   aria-labelledby="non-existent-toolbar-id">
+                <div role="button" tabindex="0">Insert</div>
+                <div role="button" tabindex="-1">Delete</div>
+                <div role="button" tabindex="-1">Replace</div>
+            </div>
+            <p class="code">&lt;div role="toolbar" id="toolbar-broken-labelledby-fail" class="a11yTestFail" aria-labelledby="non-existent-toolbar-id"&gt;
+    &lt;div role="button" tabindex="0"&gt;Insert&lt;/div&gt;
+    &lt;div role="button" tabindex="-1"&gt;Delete&lt;/div&gt;
+    &lt;div role="button" tabindex="-1"&gt;Replace&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Toolbar with Empty Reference via aria-labelledby</h3>
+            <p>This div with role="toolbar" references an element that has no content via aria-labelledby.</p>
+            <span id="empty-toolbar-label"></span>
+            <div class="a11yTestFail" role="toolbar" id="toolbar-empty-reference-labelledby-fail"  aria-labelledby="empty-toolbar-label">
+                <div role="button" tabindex="0">Crop</div>
+                <div role="button" tabindex="-1">Rotate</div>
+                <div role="button" tabindex="-1">Flip</div>
+            </div>
+            <p class="code">&lt;span id="empty-toolbar-label"&gt;&lt;/span&gt;
+&lt;div role="toolbar" id="toolbar-empty-reference-labelledby-fail" class="a11yTestFail" aria-labelledby="empty-toolbar-label"&gt;
+    &lt;div role="button" tabindex="0"&gt;Crop&lt;/div&gt;
+    &lt;div role="button" tabindex="-1"&gt;Rotate&lt;/div&gt;
+    &lt;div role="button" tabindex="-1"&gt;Flip&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Toolbar with Whitespace-only Reference via aria-labelledby</h3>
+            <p>This div with role="toolbar" references an element that has only whitespace via aria-labelledby.</p>
+            <span id="whitespace-toolbar-label">   </span>
+            <div class="a11yTestFail" role="toolbar" id="toolbar-whitespace-reference-labelledby-fail"  aria-labelledby="whitespace-toolbar-label">
+                <div role="button" tabindex="0">Add</div>
+                <div role="button" tabindex="-1">Edit</div>
+                <div role="button" tabindex="-1">Remove</div>
+            </div>
+            <p class="code">&lt;span id="whitespace-toolbar-label"&gt;   &lt;/span&gt;
+&lt;div role="toolbar" id="toolbar-whitespace-reference-labelledby-fail" class="a11yTestFail" aria-labelledby="whitespace-toolbar-label"&gt;
+    &lt;div role="button" tabindex="0"&gt;Add&lt;/div&gt;
+    &lt;div role="button" tabindex="-1"&gt;Edit&lt;/div&gt;
+    &lt;div role="button" tabindex="-1"&gt;Remove&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Toolbar with Punctuation-only Reference via aria-labelledby</h3>
+            <p>This div with role="toolbar" references an element that has only punctuation via aria-labelledby.</p>
+            <span id="punctuation-toolbar-label">...</span>
+            <div class="a11yTestFail" role="toolbar" id="toolbar-punctuation-reference-labelledby-fail"  aria-labelledby="punctuation-toolbar-label">
+                <div role="button" tabindex="0">Import</div>
+                <div role="button" tabindex="-1">Export</div>
+                <div role="button" tabindex="-1">Download</div>
+            </div>
+            <p class="code">&lt;span id="punctuation-toolbar-label"&gt;...&lt;/span&gt;
+&lt;div role="toolbar" id="toolbar-punctuation-reference-labelledby-fail" class="a11yTestFail" aria-labelledby="punctuation-toolbar-label"&gt;
+    &lt;div role="button" tabindex="0"&gt;Import&lt;/div&gt;
+    &lt;div role="button" tabindex="-1"&gt;Export&lt;/div&gt;
+    &lt;div role="button" tabindex="-1"&gt;Download&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+    </div>
+    
+    <div class="role-container">
+        <h2>11. Menubar (role="menubar")</h2>
+        <p>These tests validate accessible names for elements with role="menubar".</p>
+        
+        <h3>Passing Examples - Menubar</h3>
+        
+        <div class="test-case pass">
+            <h3>Menubar with aria-label</h3>
+            <p>This div with role="menubar" has an aria-label attribute that serves as its accessible name.</p>
+            <div class="a11yTestPass" role="menubar" id="menubar-aria-label-pass"  aria-label="Main Navigation">
+                <div role="menuitem" tabindex="0">Home</div>
+                <div role="menuitem" tabindex="-1">Products</div>
+                <div role="menuitem" tabindex="-1">Services</div>
+                <div role="menuitem" tabindex="-1">About</div>
+            </div>
+            <p class="code">&lt;div role="menubar" id="menubar-aria-label-pass" class="a11yTestPass" aria-label="Main Navigation"&gt;
+    &lt;div role="menuitem" tabindex="0"&gt;Home&lt;/div&gt;
+    &lt;div role="menuitem" tabindex="-1"&gt;Products&lt;/div&gt;
+    &lt;div role="menuitem" tabindex="-1"&gt;Services&lt;/div&gt;
+    &lt;div role="menuitem" tabindex="-1"&gt;About&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case pass">
+            <h3>Menubar with aria-labelledby</h3>
+            <p>This div with role="menubar" uses aria-labelledby to reference a heading as its accessible name.</p>
+            <h4 id="site-menubar-heading">Site Navigation</h4>
+            <div class="a11yTestPass" role="menubar" id="menubar-aria-labelledby-pass"  aria-labelledby="site-menubar-heading">
+                <div role="menuitem" tabindex="0">Dashboard</div>
+                <div role="menuitem" tabindex="-1">Reports</div>
+                <div role="menuitem" tabindex="-1">Settings</div>
+                <div role="menuitem" tabindex="-1">Help</div>
+            </div>
+            <p class="code">&lt;h4 id="site-menubar-heading"&gt;Site Navigation&lt;/h4&gt;
+&lt;div role="menubar" id="menubar-aria-labelledby-pass" class="a11yTestPass" aria-labelledby="site-menubar-heading"&gt;
+    &lt;div role="menuitem" tabindex="0"&gt;Dashboard&lt;/div&gt;
+    &lt;div role="menuitem" tabindex="-1"&gt;Reports&lt;/div&gt;
+    &lt;div role="menuitem" tabindex="-1"&gt;Settings&lt;/div&gt;
+    &lt;div role="menuitem" tabindex="-1"&gt;Help&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <h3>Failing Examples - Menubar</h3>
+        
+        <div class="test-case fail">
+            <h3>Menubar without Accessible Name</h3>
+            <p>This div with role="menubar" has no accessible name - no aria-label or aria-labelledby.</p>
+            <div class="a11yTestFail a11yTest a11yTestFail" role="menubar" id="menubar-no-label-fail"  >
+                <div role="menuitem" tabindex="0">File</div>
+                <div role="menuitem" tabindex="-1">Edit</div>
+                <div role="menuitem" tabindex="-1">View</div>
+                <div role="menuitem" tabindex="-1">Tools</div>
+            </div>
+            <p class="code">&lt;div role="menubar" id="menubar-no-label-fail"&gt;
+    &lt;div role="menuitem" tabindex="0"&gt;File&lt;/div&gt;
+    &lt;div role="menuitem" tabindex="-1"&gt;Edit&lt;/div&gt;
+    &lt;div role="menuitem" tabindex="-1"&gt;View&lt;/div&gt;
+    &lt;div role="menuitem" tabindex="-1"&gt;Tools&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Menubar with Empty aria-label</h3>
+            <p>This div with role="menubar" has an aria-label attribute, but it's empty, providing no accessible name.</p>
+            <div class="a11yTestFail" role="menubar" id="menubar-empty-aria-label-fail"  aria-label="">
+                <div role="menuitem" tabindex="0">Accounts</div>
+                <div role="menuitem" tabindex="-1">Billing</div>
+                <div role="menuitem" tabindex="-1">Support</div>
+            </div>
+            <p class="code">&lt;div role="menubar" id="menubar-empty-aria-label-fail" class="a11yTestFail" aria-label=""&gt;
+    &lt;div role="menuitem" tabindex="0"&gt;Accounts&lt;/div&gt;
+    &lt;div role="menuitem" tabindex="-1"&gt;Billing&lt;/div&gt;
+    &lt;div role="menuitem" tabindex="-1"&gt;Support&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Menubar with Whitespace-only aria-label</h3>
+            <p>This div with role="menubar" has an aria-label attribute that contains only whitespace, which is effectively empty.</p>
+            <div class="a11yTestFail" role="menubar" id="menubar-whitespace-aria-label-fail"  aria-label="   ">
+                <div role="menuitem" tabindex="0">News</div>
+                <div role="menuitem" tabindex="-1">Articles</div>
+                <div role="menuitem" tabindex="-1">Videos</div>
+            </div>
+            <p class="code">&lt;div role="menubar" id="menubar-whitespace-aria-label-fail" class="a11yTestFail" aria-label="   "&gt;
+    &lt;div role="menuitem" tabindex="0"&gt;News&lt;/div&gt;
+    &lt;div role="menuitem" tabindex="-1"&gt;Articles&lt;/div&gt;
+    &lt;div role="menuitem" tabindex="-1"&gt;Videos&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Menubar with Punctuation-only aria-label</h3>
+            <p>This div with role="menubar" has an aria-label with only punctuation, which is not a meaningful accessible name.</p>
+            <div class="a11yTestFail" role="menubar" id="menubar-punctuation-aria-label-fail"  aria-label="...">
+                <div role="menuitem" tabindex="0">Projects</div>
+                <div role="menuitem" tabindex="-1">Tasks</div>
+                <div role="menuitem" tabindex="-1">Team</div>
+            </div>
+            <p class="code">&lt;div role="menubar" id="menubar-punctuation-aria-label-fail" class="a11yTestFail" aria-label="..."&gt;
+    &lt;div role="menuitem" tabindex="0"&gt;Projects&lt;/div&gt;
+    &lt;div role="menuitem" tabindex="-1"&gt;Tasks&lt;/div&gt;
+    &lt;div role="menuitem" tabindex="-1"&gt;Team&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Menubar with Broken aria-labelledby</h3>
+            <p>This div with role="menubar" references a non-existent element ID with aria-labelledby.</p>
+            <div class="a11yTestFail" role="menubar" id="menubar-broken-labelledby-fail"  aria-labelledby="non-existent-menubar-id">
+                <div role="menuitem" tabindex="0">Music</div>
+                <div role="menuitem" tabindex="-1">Podcasts</div>
+                <div role="menuitem" tabindex="-1">Audiobooks</div>
+            </div>
+            <p class="code">&lt;div role="menubar" id="menubar-broken-labelledby-fail" class="a11yTestFail" aria-labelledby="non-existent-menubar-id"&gt;
+    &lt;div role="menuitem" tabindex="0"&gt;Music&lt;/div&gt;
+    &lt;div role="menuitem" tabindex="-1"&gt;Podcasts&lt;/div&gt;
+    &lt;div role="menuitem" tabindex="-1"&gt;Audiobooks&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Menubar with Empty Reference via aria-labelledby</h3>
+            <p>This div with role="menubar" references an element that has no content via aria-labelledby.</p>
+            <span id="empty-menubar-label"></span>
+            <div class="a11yTestFail" role="menubar" id="menubar-empty-reference-labelledby-fail"  aria-labelledby="empty-menubar-label">
+                <div role="menuitem" tabindex="0">Categories</div>
+                <div role="menuitem" tabindex="-1">Tags</div>
+                <div role="menuitem" tabindex="-1">Authors</div>
+            </div>
+            <p class="code">&lt;span id="empty-menubar-label"&gt;&lt;/span&gt;
+&lt;div role="menubar" id="menubar-empty-reference-labelledby-fail" class="a11yTestFail" aria-labelledby="empty-menubar-label"&gt;
+    &lt;div role="menuitem" tabindex="0"&gt;Categories&lt;/div&gt;
+    &lt;div role="menuitem" tabindex="-1"&gt;Tags&lt;/div&gt;
+    &lt;div role="menuitem" tabindex="-1"&gt;Authors&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Menubar with Whitespace-only Reference via aria-labelledby</h3>
+            <p>This div with role="menubar" references an element that has only whitespace via aria-labelledby.</p>
+            <span id="whitespace-menubar-label">   </span>
+            <div class="a11yTestFail" role="menubar" id="menubar-whitespace-reference-labelledby-fail"  aria-labelledby="whitespace-menubar-label">
+                <div role="menuitem" tabindex="0">Gallery</div>
+                <div role="menuitem" tabindex="-1">Albums</div>
+                <div role="menuitem" tabindex="-1">Collections</div>
+            </div>
+            <p class="code">&lt;span id="whitespace-menubar-label"&gt;   &lt;/span&gt;
+&lt;div role="menubar" id="menubar-whitespace-reference-labelledby-fail" class="a11yTestFail" aria-labelledby="whitespace-menubar-label"&gt;
+    &lt;div role="menuitem" tabindex="0"&gt;Gallery&lt;/div&gt;
+    &lt;div role="menuitem" tabindex="-1"&gt;Albums&lt;/div&gt;
+    &lt;div role="menuitem" tabindex="-1"&gt;Collections&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Menubar with Punctuation-only Reference via aria-labelledby</h3>
+            <p>This div with role="menubar" references an element that has only punctuation via aria-labelledby.</p>
+            <span id="punctuation-menubar-label">...</span>
+            <div class="a11yTestFail" role="menubar" id="menubar-punctuation-reference-labelledby-fail"  aria-labelledby="punctuation-menubar-label">
+                <div role="menuitem" tabindex="0">Design</div>
+                <div role="menuitem" tabindex="-1">Code</div>
+                <div role="menuitem" tabindex="-1">Preview</div>
+            </div>
+            <p class="code">&lt;span id="punctuation-menubar-label"&gt;...&lt;/span&gt;
+&lt;div role="menubar" id="menubar-punctuation-reference-labelledby-fail" class="a11yTestFail" aria-labelledby="punctuation-menubar-label"&gt;
+    &lt;div role="menuitem" tabindex="0"&gt;Design&lt;/div&gt;
+    &lt;div role="menuitem" tabindex="-1"&gt;Code&lt;/div&gt;
+    &lt;div role="menuitem" tabindex="-1"&gt;Preview&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+    </div>
+    
+    <div class="role-container">
+        <h2>12. Feed (role="feed")</h2>
+        <p>These tests validate accessible names for elements with role="feed". The feed pattern is used for dynamically updated content like social media feeds or news streams.</p>
+        
+        <div class="warning-box">
+            <h3>⚠️ Understanding the Feed Role</h3>
+            <p>The <code>role="feed"</code> is designed for scrollable content that dynamically loads and should:</p>
+            <ul>
+                <li>Contain <code>role="article"</code> elements as its children</li>
+                <li>Use proper keyboard navigation techniques</li>
+                <li>Include clear accessible names to help users identify the content</li>
+                <li>Handle focus management properly when loading new content</li>
+            </ul>
+            <p><strong>Important:</strong> Feed elements require proper labeling so users understand what type of content is being presented.</p>
+        </div>
+        
+        <h3>Passing Examples - Feed</h3>
+        
+        <div class="test-case pass">
+            <h3>Feed with aria-label</h3>
+            <p>This div with role="feed" has an aria-label attribute that serves as its accessible name.</p>
+            <div class="a11yTestPass" role="feed" id="feed-aria-label-pass"  aria-label="Latest News Updates">
+                <div role="article">
+                    <h3>Web Accessibility Guidelines Updated</h3>
+                    <p>The W3C has released new updates to the Web Content Accessibility Guidelines.</p>
+                    <time>May 2, 2025</time>
+                </div>
+                <div role="article">
+                    <h3>New Screen Reader Features Announced</h3>
+                    <p>Major screen reader vendors unveiled new features to improve web navigation.</p>
+                    <time>May 1, 2025</time>
+                </div>
+            </div>
+            <p class="code">&lt;div role="feed" id="feed-aria-label-pass" class="a11yTestPass" aria-label="Latest News Updates"&gt;
+    &lt;div role="article"&gt;
+        &lt;h3&gt;Web Accessibility Guidelines Updated&lt;/h3&gt;
+        &lt;p&gt;The W3C has released new updates to the Web Content Accessibility Guidelines.&lt;/p&gt;
+        &lt;time&gt;May 2, 2025&lt;/time&gt;
+    &lt;/div&gt;
+    &lt;div role="article"&gt;
+        &lt;h3&gt;New Screen Reader Features Announced&lt;/h3&gt;
+        &lt;p&gt;Major screen reader vendors unveiled new features to improve web navigation.&lt;/p&gt;
+        &lt;time&gt;May 1, 2025&lt;/time&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case pass">
+            <h3>Feed with aria-labelledby</h3>
+            <p>This div with role="feed" uses aria-labelledby to reference a heading as its accessible name.</p>
+            <h3 id="social-feed-heading">Social Media Updates</h3>
+            <div class="a11yTestPass" role="feed" id="feed-aria-labelledby-pass"  aria-labelledby="social-feed-heading">
+                <div role="article">
+                    <h4>Alex Chen</h4>
+                    <p>Just published my new article on accessibility testing tools!</p>
+                    <time>3 hours ago</time>
+                </div>
+                <div role="article">
+                    <h4>Jamie Taylor</h4>
+                    <p>Looking for recommendations on keyboard-accessible UI components.</p>
+                    <time>5 hours ago</time>
+                </div>
+            </div>
+            <p class="code">&lt;h3 id="social-feed-heading"&gt;Social Media Updates&lt;/h3&gt;
+&lt;div role="feed" id="feed-aria-labelledby-pass" class="a11yTestPass" aria-labelledby="social-feed-heading"&gt;
+    &lt;div role="article"&gt;
+        &lt;h4&gt;Alex Chen&lt;/h4&gt;
+        &lt;p&gt;Just published my new article on accessibility testing tools!&lt;/p&gt;
+        &lt;time&gt;3 hours ago&lt;/time&gt;
+    &lt;/div&gt;
+    &lt;div role="article"&gt;
+        &lt;h4&gt;Jamie Taylor&lt;/h4&gt;
+        &lt;p&gt;Looking for recommendations on keyboard-accessible UI components.&lt;/p&gt;
+        &lt;time&gt;5 hours ago&lt;/time&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <h3>Failing Examples - Feed</h3>
+        
+        <div class="test-case fail">
+            <h3>Feed without Accessible Name</h3>
+            <p>This div with role="feed" has no accessible name - no aria-label or aria-labelledby.</p>
+            <div class="a11yTestFail a11yTest a11yTestFail" role="feed" id="feed-no-label-fail"  >
+                <div role="article">
+                    <h3>Upcoming Accessibility Events</h3>
+                    <p>Check out these events focused on digital accessibility.</p>
+                    <time>May 3, 2025</time>
+                </div>
+                <div role="article">
+                    <h3>Webinar: ARIA Best Practices</h3>
+                    <p>Join our experts for a deep dive into ARIA implementation.</p>
+                    <time>May 5, 2025</time>
+                </div>
+            </div>
+            <p class="code">&lt;div role="feed" id="feed-no-label-fail"&gt;
+    &lt;div role="article"&gt;
+        &lt;h3&gt;Upcoming Accessibility Events&lt;/h3&gt;
+        &lt;p&gt;Check out these events focused on digital accessibility.&lt;/p&gt;
+        &lt;time&gt;May 3, 2025&lt;/time&gt;
+    &lt;/div&gt;
+    &lt;div role="article"&gt;
+        &lt;h3&gt;Webinar: ARIA Best Practices&lt;/h3&gt;
+        &lt;p&gt;Join our experts for a deep dive into ARIA implementation.&lt;/p&gt;
+        &lt;time&gt;May 5, 2025&lt;/time&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Feed with Empty aria-label</h3>
+            <p>This div with role="feed" has an aria-label attribute, but it's empty, providing no accessible name.</p>
+            <div class="a11yTestFail" role="feed" id="feed-empty-aria-label-fail"  aria-label="">
+                <div role="article">
+                    <h3>New Accessibility Tools Released</h3>
+                    <p>Several new tools for automated accessibility testing launched this week.</p>
+                    <time>2 days ago</time>
+                </div>
+                <div role="article">
+                    <h3>Case Study: Website Remediation</h3>
+                    <p>Learn how a major retailer improved their accessibility compliance.</p>
+                    <time>3 days ago</time>
+                </div>
+            </div>
+            <p class="code">&lt;div role="feed" id="feed-empty-aria-label-fail" class="a11yTestFail" aria-label=""&gt;
+    &lt;div role="article"&gt;
+        &lt;h3&gt;New Accessibility Tools Released&lt;/h3&gt;
+        &lt;p&gt;Several new tools for automated accessibility testing launched this week.&lt;/p&gt;
+        &lt;time&gt;2 days ago&lt;/time&gt;
+    &lt;/div&gt;
+    &lt;div role="article"&gt;
+        &lt;h3&gt;Case Study: Website Remediation&lt;/h3&gt;
+        &lt;p&gt;Learn how a major retailer improved their accessibility compliance.&lt;/p&gt;
+        &lt;time&gt;3 days ago&lt;/time&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Feed with Whitespace-only aria-label</h3>
+            <p>This div with role="feed" has an aria-label attribute that contains only whitespace, which is effectively empty.</p>
+            <div class="a11yTestFail" role="feed" id="feed-whitespace-aria-label-fail"  aria-label="   ">
+                <div role="article">
+                    <h3>Accessibility Conformance Reports</h3>
+                    <p>New guidelines for creating effective VPAT reports have been published.</p>
+                    <time>Last week</time>
+                </div>
+                <div role="article">
+                    <h3>Mobile Accessibility Tips</h3>
+                    <p>Best practices for ensuring your mobile applications are accessible.</p>
+                    <time>2 weeks ago</time>
+                </div>
+            </div>
+            <p class="code">&lt;div role="feed" id="feed-whitespace-aria-label-fail" class="a11yTestFail" aria-label="   "&gt;
+    &lt;div role="article"&gt;
+        &lt;h3&gt;Accessibility Conformance Reports&lt;/h3&gt;
+        &lt;p&gt;New guidelines for creating effective VPAT reports have been published.&lt;/p&gt;
+        &lt;time&gt;Last week&lt;/time&gt;
+    &lt;/div&gt;
+    &lt;div role="article"&gt;
+        &lt;h3&gt;Mobile Accessibility Tips&lt;/h3&gt;
+        &lt;p&gt;Best practices for ensuring your mobile applications are accessible.&lt;/p&gt;
+        &lt;time&gt;2 weeks ago&lt;/time&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Feed with Punctuation-only aria-label</h3>
+            <p>This div with role="feed" has an aria-label with only punctuation, which is not a meaningful accessible name.</p>
+            <div class="a11yTestFail" role="feed" id="feed-punctuation-aria-label-fail"  aria-label="...">
+                <div role="article">
+                    <h3>Keyboard Navigation Workshop</h3>
+                    <p>Join our virtual workshop on creating keyboard accessible interfaces.</p>
+                    <time>June 10, 2025</time>
+                </div>
+                <div role="article">
+                    <h3>Screen Reader Compatibility Testing</h3>
+                    <p>Methods for testing your applications with popular screen readers.</p>
+                    <time>June 15, 2025</time>
+                </div>
+            </div>
+            <p class="code">&lt;div role="feed" id="feed-punctuation-aria-label-fail" class="a11yTestFail" aria-label="..."&gt;
+    &lt;div role="article"&gt;
+        &lt;h3&gt;Keyboard Navigation Workshop&lt;/h3&gt;
+        &lt;p&gt;Join our virtual workshop on creating keyboard accessible interfaces.&lt;/p&gt;
+        &lt;time&gt;June 10, 2025&lt;/time&gt;
+    &lt;/div&gt;
+    &lt;div role="article"&gt;
+        &lt;h3&gt;Screen Reader Compatibility Testing&lt;/h3&gt;
+        &lt;p&gt;Methods for testing your applications with popular screen readers.&lt;/p&gt;
+        &lt;time&gt;June 15, 2025&lt;/time&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Feed with Broken aria-labelledby</h3>
+            <p>This div with role="feed" references a non-existent element ID with aria-labelledby.</p>
+            <div class="a11yTestFail" role="feed" id="feed-broken-labelledby-fail"  aria-labelledby="non-existent-feed-id">
+                <div role="article">
+                    <h3>Color Contrast Checker Tool</h3>
+                    <p>A new tool for verifying color contrast compliance has been released.</p>
+                    <time>April 28, 2025</time>
+                </div>
+                <div role="article">
+                    <h3>Accessible Form Design</h3>
+                    <p>Guidelines for creating forms that are accessible to all users.</p>
+                    <time>April 25, 2025</time>
+                </div>
+            </div>
+            <p class="code">&lt;div role="feed" id="feed-broken-labelledby-fail" class="a11yTestFail" aria-labelledby="non-existent-feed-id"&gt;
+    &lt;div role="article"&gt;
+        &lt;h3&gt;Color Contrast Checker Tool&lt;/h3&gt;
+        &lt;p&gt;A new tool for verifying color contrast compliance has been released.&lt;/p&gt;
+        &lt;time&gt;April 28, 2025&lt;/time&gt;
+    &lt;/div&gt;
+    &lt;div role="article"&gt;
+        &lt;h3&gt;Accessible Form Design&lt;/h3&gt;
+        &lt;p&gt;Guidelines for creating forms that are accessible to all users.&lt;/p&gt;
+        &lt;time&gt;April 25, 2025&lt;/time&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Feed with Empty Reference via aria-labelledby</h3>
+            <p>This div with role="feed" references an element that has no content via aria-labelledby.</p>
+            <span id="empty-feed-label"></span>
+            <div class="a11yTestFail" role="feed" id="feed-empty-reference-labelledby-fail"  aria-labelledby="empty-feed-label">
+                <div role="article">
+                    <h3>PDF Accessibility Standards</h3>
+                    <p>Updated guidelines for creating accessible PDF documents.</p>
+                    <time>1 month ago</time>
+                </div>
+                <div role="article">
+                    <h3>Video Captioning Best Practices</h3>
+                    <p>How to create effective captions for video content.</p>
+                    <time>1 month ago</time>
+                </div>
+            </div>
+            <p class="code">&lt;span id="empty-feed-label"&gt;&lt;/span&gt;
+&lt;div role="feed" id="feed-empty-reference-labelledby-fail" class="a11yTestFail" aria-labelledby="empty-feed-label"&gt;
+    &lt;div role="article"&gt;
+        &lt;h3&gt;PDF Accessibility Standards&lt;/h3&gt;
+        &lt;p&gt;Updated guidelines for creating accessible PDF documents.&lt;/p&gt;
+        &lt;time&gt;1 month ago&lt;/time&gt;
+    &lt;/div&gt;
+    &lt;div role="article"&gt;
+        &lt;h3&gt;Video Captioning Best Practices&lt;/h3&gt;
+        &lt;p&gt;How to create effective captions for video content.&lt;/p&gt;
+        &lt;time&gt;1 month ago&lt;/time&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Feed with Whitespace-only Reference via aria-labelledby</h3>
+            <p>This div with role="feed" references an element that has only whitespace via aria-labelledby.</p>
+            <span id="whitespace-feed-label">   </span>
+            <div class="a11yTestFail" aria-labelledby="whitespace-feed-label">
+                <div role="article">
+                    <h3>ARIA Landmarks Overview</h3>
+                    <p>Understanding how to properly implement ARIA landmarks for better navigation.</p>
+                    <time>2 months ago</time>
+                </div>
+                <div role="article">
+                    <h3>Focus Management Techniques</h3>
+                    <p>Best practices for managing focus in interactive web applications.</p>
+                    <time>2 months ago</time>
+                </div>
+            </div>
+            <p class="code">&lt;span id="whitespace-feed-label"&gt;   &lt;/span&gt;
+&lt;div role="feed" id="feed-whitespace-reference-labelledby-fail" class="a11yTestFail" aria-labelledby="whitespace-feed-label"&gt;
+    &lt;div role="article"&gt;
+        &lt;h3&gt;ARIA Landmarks Overview&lt;/h3&gt;
+        &lt;p&gt;Understanding how to properly implement ARIA landmarks for better navigation.&lt;/p&gt;
+        &lt;time&gt;2 months ago&lt;/time&gt;
+    &lt;/div&gt;
+    &lt;div role="article"&gt;
+        &lt;h3&gt;Focus Management Techniques&lt;/h3&gt;
+        &lt;p&gt;Best practices for managing focus in interactive web applications.&lt;/p&gt;
+        &lt;time&gt;2 months ago&lt;/time&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Feed with Punctuation-only Reference via aria-labelledby</h3>
+            <p>This div with role="feed" references an element that has only punctuation via aria-labelledby.</p>
+            <span id="punctuation-feed-label">...</span>
+            <div class="a11yTestFail" role="feed" id="feed-punctuation-reference-labelledby-fail"  aria-labelledby="punctuation-feed-label">
+                <div role="article">
+                    <h3>Accessibility Testing Tools Comparison</h3>
+                    <p>A detailed comparison of popular accessibility testing tools and their features.</p>
+                    <time>Q1 2025</time>
+                </div>
+                <div role="article">
+                    <h3>Inclusive Design Principles</h3>
+                    <p>How to incorporate inclusive design principles into your development process.</p>
+                    <time>Q2 2025</time>
+                </div>
+            </div>
+            <p class="code">&lt;span id="punctuation-feed-label"&gt;...&lt;/span&gt;
+&lt;div role="feed" id="feed-punctuation-reference-labelledby-fail" class="a11yTestFail" aria-labelledby="punctuation-feed-label"&gt;
+    &lt;div role="article"&gt;
+        &lt;h3&gt;Accessibility Testing Tools Comparison&lt;/h3&gt;
+        &lt;p&gt;A detailed comparison of popular accessibility testing tools and their features.&lt;/p&gt;
+        &lt;time&gt;Q1 2025&lt;/time&gt;
+    &lt;/div&gt;
+    &lt;div role="article"&gt;
+        &lt;h3&gt;Inclusive Design Principles&lt;/h3&gt;
+        &lt;p&gt;How to incorporate inclusive design principles into your development process.&lt;/p&gt;
+        &lt;time&gt;Q2 2025&lt;/time&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+    </div>
+    
+    <div class="role-container">
+        <h2>13. Radio (role="radio")</h2>
+        <p>These tests validate accessible names for elements with role="radio". Radio buttons allow users to select a single option from a set of choices.</p>
+        
+        <div class="warning-box">
+            <h3>⚠️ Understanding the Radio Role</h3>
+            <p>According to the ARIA Authoring Practices Guide (APG), the <code>role="radio"</code> is used to create a selectable input in a radio group where only one option can be selected. Key implementation requirements include:</p>
+            <ul>
+                <li>Radio buttons must be contained within a <code>radiogroup</code> element or an element with <code>role="radiogroup"</code></li>
+                <li>Use <code>aria-checked="true"</code> for the selected radio button and <code>aria-checked="false"</code> for unselected ones</li>
+                <li>Each radio button must have an accessible name via <code>aria-label</code> or <code>aria-labelledby</code></li>
+                <li>The entire radiogroup should have a label that describes the purpose of the group</li>
+                <li>The radio buttons should be navigable via keyboard (using arrow keys)</li>
+            </ul>
+            <p><strong>Important:</strong> When possible, use the native HTML <code>&lt;input type="radio"&gt;</code> elements instead of ARIA roles for better compatibility and accessibility.</p>
+        </div>
+        
+        <h3>Passing Examples - Radio</h3>
+        
+        <div class="test-case pass">
+            <h3>Radio with aria-label</h3>
+            <p>This div with role="radio" has an aria-label attribute that serves as its accessible name.</p>
+            <div role="radiogroup" aria-label="Subscription Options">
+                <div class="a11yTestPass" role="radio" id="radio-aria-label-pass"  aria-label="Monthly Plan" aria-checked="false" tabindex="0"></div>
+                <div>Monthly subscription ($9.99/month)</div>
+            </div>
+            <p class="code">&lt;div role="radiogroup" aria-label="Subscription Options"&gt;
+    &lt;div role="radio" id="radio-aria-label-pass" class="a11yTestPass" aria-label="Monthly Plan" aria-checked="false" tabindex="0"&gt;&lt;/div&gt;
+    &lt;div&gt;Monthly subscription ($9.99/month)&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case pass">
+            <h3>Radio with aria-labelledby</h3>
+            <p>This div with role="radio" uses aria-labelledby to reference another element as its accessible name.</p>
+            <div class="a11yTestPass" role="radiogroup" aria-label="Payment Methods">
+                <div id="credit-card-label">Credit Card</div>
+                <div role="radio" id="radio-aria-labelledby-pass" class="a11yTestPass" aria-labelledby="credit-card-label" aria-checked="true" tabindex="0"></div>
+                <div>Pay with Visa, Mastercard, or American Express</div>
+            </div>
+            <p class="code">&lt;div role="radiogroup" aria-label="Payment Methods"&gt;
+    &lt;div id="credit-card-label"&gt;Credit Card&lt;/div&gt;
+    &lt;div role="radio" id="radio-aria-labelledby-pass" class="a11yTestPass" aria-labelledby="credit-card-label" aria-checked="true" tabindex="0"&gt;&lt;/div&gt;
+    &lt;div&gt;Pay with Visa, Mastercard, or American Express&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <h3>Failing Examples - Radio</h3>
+        
+        <div class="test-case fail">
+            <h3>Radio without Accessible Name</h3>
+            <p>This div with role="radio" has no accessible name - no aria-label or aria-labelledby.</p>
+            <div role="radiogroup" aria-label="Delivery Options">
+                <div class="a11yTestFail" role="radio" id="radio-no-label-fail"  aria-checked="false" tabindex="0"></div>
+                <div>Standard Delivery (3-5 business days)</div>
+            </div>
+            <p class="code">&lt;div role="radiogroup" aria-label="Delivery Options"&gt;
+    &lt;div role="radio" id="radio-no-label-fail" class="a11yTestFail" aria-checked="false" tabindex="0"&gt;&lt;/div&gt;
+    &lt;div&gt;Standard Delivery (3-5 business days)&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Radio with Empty aria-label</h3>
+            <p>This div with role="radio" has an aria-label attribute, but it's empty, providing no accessible name.</p>
+            <div role="radiogroup" aria-label="Notification Preferences">
+                <div class="a11yTestFail" role="radio" id="radio-empty-aria-label-fail"  aria-label="" aria-checked="false" tabindex="0"></div>
+                <div>Email notifications</div>
+            </div>
+            <p class="code">&lt;div role="radiogroup" aria-label="Notification Preferences"&gt;
+    &lt;div role="radio" id="radio-empty-aria-label-fail" class="a11yTestFail" aria-label="" aria-checked="false" tabindex="0"&gt;&lt;/div&gt;
+    &lt;div&gt;Email notifications&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Radio with Whitespace-only aria-label</h3>
+            <p>This div with role="radio" has an aria-label attribute that contains only whitespace, which is effectively empty.</p>
+            <div role="radiogroup" aria-label="Theme Preferences">
+                <div class="a11yTestFail" role="radio" id="radio-whitespace-aria-label-fail"  aria-label="   " aria-checked="false" tabindex="0"></div>
+                <div>Dark Mode</div>
+            </div>
+            <p class="code">&lt;div role="radiogroup" aria-label="Theme Preferences"&gt;
+    &lt;div role="radio" id="radio-whitespace-aria-label-fail" class="a11yTestFail" aria-label="   " aria-checked="false" tabindex="0"&gt;&lt;/div&gt;
+    &lt;div&gt;Dark Mode&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Radio with Punctuation-only aria-label</h3>
+            <p>This div with role="radio" has an aria-label with only punctuation, which is not a meaningful accessible name.</p>
+            <div role="radiogroup" aria-label="Account Type">
+                <div class="a11yTestFail" role="radio" id="radio-punctuation-aria-label-fail"  aria-label="..." aria-checked="false" tabindex="0"></div>
+                <div>Personal Account</div>
+            </div>
+            <p class="code">&lt;div role="radiogroup" aria-label="Account Type"&gt;
+    &lt;div role="radio" id="radio-punctuation-aria-label-fail" class="a11yTestFail" aria-label="..." aria-checked="false" tabindex="0"&gt;&lt;/div&gt;
+    &lt;div&gt;Personal Account&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Radio with Broken aria-labelledby</h3>
+            <p>This div with role="radio" references a non-existent element ID with aria-labelledby.</p>
+            <div role="radiogroup" aria-label="Size Selection">
+                <div class="a11yTestFail" role="radio" id="radio-broken-labelledby-fail"  aria-labelledby="non-existent-radio-id" aria-checked="false" tabindex="0"></div>
+                <div>Medium Size</div>
+            </div>
+            <p class="code">&lt;div role="radiogroup" aria-label="Size Selection"&gt;
+    &lt;div role="radio" id="radio-broken-labelledby-fail" class="a11yTestFail" aria-labelledby="non-existent-radio-id" aria-checked="false" tabindex="0"&gt;&lt;/div&gt;
+    &lt;div&gt;Medium Size&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Radio with Empty Reference via aria-labelledby</h3>
+            <p>This div with role="radio" references an element that has no content via aria-labelledby.</p>
+            <span id="empty-radio-label"></span>
+            <div role="radiogroup" aria-label="Contact Preferences">
+                <div class="a11yTestFail" role="radio" id="radio-empty-reference-labelledby-fail"  aria-labelledby="empty-radio-label" aria-checked="false" tabindex="0"></div>
+                <div>Phone Contact</div>
+            </div>
+            <p class="code">&lt;span id="empty-radio-label"&gt;&lt;/span&gt;
+&lt;div role="radiogroup" aria-label="Contact Preferences"&gt;
+    &lt;div role="radio" id="radio-empty-reference-labelledby-fail" class="a11yTestFail" aria-labelledby="empty-radio-label" aria-checked="false" tabindex="0"&gt;&lt;/div&gt;
+    &lt;div&gt;Phone Contact&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Radio with Whitespace-only Reference via aria-labelledby</h3>
+            <p>This div with role="radio" references an element that has only whitespace via aria-labelledby.</p>
+            <span id="whitespace-radio-label">   </span>
+            <div role="radiogroup" aria-label="Privacy Settings">
+                <div class="a11yTestFail" role="radio" id="radio-whitespace-reference-labelledby-fail"  aria-labelledby="whitespace-radio-label" aria-checked="false" tabindex="0"></div>
+                <div>Allow data sharing with partners</div>
+            </div>
+            <p class="code">&lt;span id="whitespace-radio-label"&gt;   &lt;/span&gt;
+&lt;div role="radiogroup" aria-label="Privacy Settings"&gt;
+    &lt;div role="radio" id="radio-whitespace-reference-labelledby-fail" class="a11yTestFail" aria-labelledby="whitespace-radio-label" aria-checked="false" tabindex="0"&gt;&lt;/div&gt;
+    &lt;div&gt;Allow data sharing with partners&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Radio with Punctuation-only Reference via aria-labelledby</h3>
+            <p>This div with role="radio" references an element that has only punctuation via aria-labelledby.</p>
+            <span id="punctuation-radio-label">...</span>
+            <div role="radiogroup" aria-label="Shipping Options">
+                <div class="a11yTestFail" role="radio" id="radio-punctuation-reference-labelledby-fail"  aria-labelledby="punctuation-radio-label" aria-checked="false" tabindex="0"></div>
+                <div>Express Shipping (1-2 business days)</div>
+            </div>
+            <p class="code">&lt;span id="punctuation-radio-label"&gt;...&lt;/span&gt;
+&lt;div role="radiogroup" aria-label="Shipping Options"&gt;
+    &lt;div role="radio" id="radio-punctuation-reference-labelledby-fail" class="a11yTestFail" aria-labelledby="punctuation-radio-label" aria-checked="false" tabindex="0"&gt;&lt;/div&gt;
+    &lt;div&gt;Express Shipping (1-2 business days)&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+    </div>
+    
+    <div class="role-container">
+        <h2>14. Treegrid (role="treegrid")</h2>
+        <p>These tests validate accessible names for elements with role="treegrid". Treegrids combine the features of both trees and grids, allowing for hierarchical data to be presented in rows and columns.</p>
+        
+        <div class="warning-box">
+            <h3>⚠️ Understanding the Treegrid Role</h3>
+            <p>According to the ARIA Authoring Practices Guide (APG), the <code>role="treegrid"</code> widget presents tabular information that also has a hierarchical structure. Key implementation requirements include:</p>
+            <ul>
+                <li>The treegrid should have an accessible name via <code>aria-label</code> or <code>aria-labelledby</code></li>
+                <li>Each row in the treegrid should have <code>role="row"</code></li>
+                <li>Cells within each row should have <code>role="gridcell"</code></li>
+                <li>Parent rows that can be expanded/collapsed should have <code>aria-expanded</code> set appropriately</li>
+                <li>Proper keyboard navigation (arrow keys for navigation, Enter to expand/collapse)</li>
+                <li>Use <code>aria-level</code>, <code>aria-setsize</code>, and <code>aria-posinset</code> for hierarchy information</li>
+            </ul>
+            <p><strong>Important:</strong> Treegrids are complex widgets that require careful implementation to ensure proper accessibility. They should include both row and column headers for proper navigation and identification of data cells.</p>
+        </div>
+        
+        <h3>Passing Examples - Treegrid</h3>
+        
+        <div class="test-case pass">
+            <h3>Treegrid with aria-label</h3>
+            <p>This div with role="treegrid" has an aria-label attribute that serves as its accessible name.</p>
+            <div class="a11yTestPass" role="treegrid" id="treegrid-aria-label-pass"  aria-label="File Explorer" aria-rowcount="3">
+                <div role="row" aria-level="1" aria-expanded="true">
+                    <div role="gridcell">Documents</div>
+                    <div role="gridcell">Folder</div>
+                    <div role="gridcell">Yesterday</div>
+                </div>
+                <div role="row" aria-level="2">
+                    <div role="gridcell">Report.pdf</div>
+                    <div role="gridcell">PDF</div>
+                    <div role="gridcell">Yesterday</div>
+                </div>
+                <div role="row" aria-level="1">
+                    <div role="gridcell">Pictures</div>
+                    <div role="gridcell">Folder</div>
+                    <div role="gridcell">Last week</div>
+                </div>
+            </div>
+            <p class="code">&lt;div role="treegrid" id="treegrid-aria-label-pass" class="a11yTestPass" aria-label="File Explorer" aria-rowcount="3"&gt;
+    &lt;div role="row" aria-level="1" aria-expanded="true"&gt;
+        &lt;div role="gridcell"&gt;Documents&lt;/div&gt;
+        &lt;div role="gridcell"&gt;Folder&lt;/div&gt;
+        &lt;div role="gridcell"&gt;Yesterday&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div role="row" aria-level="2"&gt;
+        &lt;div role="gridcell"&gt;Report.pdf&lt;/div&gt;
+        &lt;div role="gridcell"&gt;PDF&lt;/div&gt;
+        &lt;div role="gridcell"&gt;Yesterday&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div role="row" aria-level="1"&gt;
+        &lt;div role="gridcell"&gt;Pictures&lt;/div&gt;
+        &lt;div role="gridcell"&gt;Folder&lt;/div&gt;
+        &lt;div role="gridcell"&gt;Last week&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case pass">
+            <h3>Treegrid with aria-labelledby</h3>
+            <p>This div with role="treegrid" uses aria-labelledby to reference a heading as its accessible name.</p>
+            <h3 id="employee-directory-heading">Employee Directory</h3>
+            <div class="a11yTestPass" role="treegrid" id="treegrid-aria-labelledby-pass"  aria-labelledby="employee-directory-heading" aria-rowcount="3">
+                <div role="row" aria-level="1" aria-expanded="true">
+                    <div role="gridcell">Engineering</div>
+                    <div role="gridcell">15 members</div>
+                    <div role="gridcell">Mike Johnson</div>
+                </div>
+                <div role="row" aria-level="2">
+                    <div role="gridcell">Frontend</div>
+                    <div role="gridcell">8 members</div>
+                    <div role="gridcell">Sarah Lee</div>
+                </div>
+                <div role="row" aria-level="1">
+                    <div role="gridcell">Marketing</div>
+                    <div role="gridcell">12 members</div>
+                    <div role="gridcell">John Smith</div>
+                </div>
+            </div>
+            <p class="code">&lt;h3 id="employee-directory-heading"&gt;Employee Directory&lt;/h3&gt;
+&lt;div role="treegrid" id="treegrid-aria-labelledby-pass" class="a11yTestPass" aria-labelledby="employee-directory-heading" aria-rowcount="3"&gt;
+    &lt;div role="row" aria-level="1" aria-expanded="true"&gt;
+        &lt;div role="gridcell"&gt;Engineering&lt;/div&gt;
+        &lt;div role="gridcell"&gt;15 members&lt;/div&gt;
+        &lt;div role="gridcell"&gt;Mike Johnson&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div role="row" aria-level="2"&gt;
+        &lt;div role="gridcell"&gt;Frontend&lt;/div&gt;
+        &lt;div role="gridcell"&gt;8 members&lt;/div&gt;
+        &lt;div role="gridcell"&gt;Sarah Lee&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div role="row" aria-level="1"&gt;
+        &lt;div role="gridcell"&gt;Marketing&lt;/div&gt;
+        &lt;div role="gridcell"&gt;12 members&lt;/div&gt;
+        &lt;div role="gridcell"&gt;John Smith&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <h3>Failing Examples - Treegrid</h3>
+        
+        <div class="test-case fail">
+            <h3>Treegrid without Accessible Name</h3>
+            <p>This div with role="treegrid" has no accessible name - no aria-label or aria-labelledby.</p>
+            <div class="a11yTestFail" role="treegrid" id="treegrid-no-label-fail"  aria-rowcount="3">
+                <div role="row" aria-level="1" aria-expanded="true">
+                    <div role="gridcell">Project Alpha</div>
+                    <div role="gridcell">In Progress</div>
+                    <div role="gridcell">May 15, 2025</div>
+                </div>
+                <div role="row" aria-level="2">
+                    <div role="gridcell">Task 1</div>
+                    <div role="gridcell">Completed</div>
+                    <div role="gridcell">May 10, 2025</div>
+                </div>
+                <div role="row" aria-level="1">
+                    <div role="gridcell">Project Beta</div>
+                    <div role="gridcell">Not Started</div>
+                    <div role="gridcell">June 1, 2025</div>
+                </div>
+            </div>
+            <p class="code">&lt;div role="treegrid" id="treegrid-no-label-fail" class="a11yTestFail" aria-rowcount="3"&gt;
+    &lt;div role="row" aria-level="1" aria-expanded="true"&gt;
+        &lt;div role="gridcell"&gt;Project Alpha&lt;/div&gt;
+        &lt;div role="gridcell"&gt;In Progress&lt;/div&gt;
+        &lt;div role="gridcell"&gt;May 15, 2025&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div role="row" aria-level="2"&gt;
+        &lt;div role="gridcell"&gt;Task 1&lt;/div&gt;
+        &lt;div role="gridcell"&gt;Completed&lt;/div&gt;
+        &lt;div role="gridcell"&gt;May 10, 2025&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div role="row" aria-level="1"&gt;
+        &lt;div role="gridcell"&gt;Project Beta&lt;/div&gt;
+        &lt;div role="gridcell"&gt;Not Started&lt;/div&gt;
+        &lt;div role="gridcell"&gt;June 1, 2025&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Treegrid with Empty aria-label</h3>
+            <p>This div with role="treegrid" has an aria-label attribute, but it's empty, providing no accessible name.</p>
+            <div class="a11yTestFail" role="treegrid" id="treegrid-empty-aria-label-fail"  aria-label="" aria-rowcount="3">
+                <div role="row" aria-level="1" aria-expanded="true">
+                    <div role="gridcell">Q1 2025</div>
+                    <div role="gridcell">$1.2M</div>
+                    <div role="gridcell">+15%</div>
+                </div>
+                <div role="row" aria-level="2">
+                    <div role="gridcell">January</div>
+                    <div role="gridcell">$400K</div>
+                    <div role="gridcell">+10%</div>
+                </div>
+                <div role="row" aria-level="1">
+                    <div role="gridcell">Q2 2025</div>
+                    <div role="gridcell">$1.5M</div>
+                    <div role="gridcell">+20%</div>
+                </div>
+            </div>
+            <p class="code">&lt;div role="treegrid" id="treegrid-empty-aria-label-fail" class="a11yTestFail" aria-label="" aria-rowcount="3"&gt;
+    &lt;div role="row" aria-level="1" aria-expanded="true"&gt;
+        &lt;div role="gridcell"&gt;Q1 2025&lt;/div&gt;
+        &lt;div role="gridcell"&gt;$1.2M&lt;/div&gt;
+        &lt;div role="gridcell"&gt;+15%&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div role="row" aria-level="2"&gt;
+        &lt;div role="gridcell"&gt;January&lt;/div&gt;
+        &lt;div role="gridcell"&gt;$400K&lt;/div&gt;
+        &lt;div role="gridcell"&gt;+10%&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div role="row" aria-level="1"&gt;
+        &lt;div role="gridcell"&gt;Q2 2025&lt;/div&gt;
+        &lt;div role="gridcell"&gt;$1.5M&lt;/div&gt;
+        &lt;div role="gridcell"&gt;+20%&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Treegrid with Whitespace-only aria-label</h3>
+            <p>This div with role="treegrid" has an aria-label attribute that contains only whitespace, which is effectively empty.</p>
+            <div class="a11yTestFail" role="treegrid" id="treegrid-whitespace-aria-label-fail"  aria-label="   " aria-rowcount="3">
+                <div role="row" aria-level="1" aria-expanded="true">
+                    <div role="gridcell">North Region</div>
+                    <div role="gridcell">$850K</div>
+                    <div role="gridcell">+5%</div>
+                </div>
+                <div role="row" aria-level="2">
+                    <div role="gridcell">Store #1201</div>
+                    <div role="gridcell">$350K</div>
+                    <div role="gridcell">+8%</div>
+                </div>
+                <div role="row" aria-level="1">
+                    <div role="gridcell">South Region</div>
+                    <div role="gridcell">$920K</div>
+                    <div role="gridcell">+7%</div>
+                </div>
+            </div>
+            <p class="code">&lt;div role="treegrid" id="treegrid-whitespace-aria-label-fail" class="a11yTestFail" aria-label="   " aria-rowcount="3"&gt;
+    &lt;div role="row" aria-level="1" aria-expanded="true"&gt;
+        &lt;div role="gridcell"&gt;North Region&lt;/div&gt;
+        &lt;div role="gridcell"&gt;$850K&lt;/div&gt;
+        &lt;div role="gridcell"&gt;+5%&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div role="row" aria-level="2"&gt;
+        &lt;div role="gridcell"&gt;Store #1201&lt;/div&gt;
+        &lt;div role="gridcell"&gt;$350K&lt;/div&gt;
+        &lt;div role="gridcell"&gt;+8%&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div role="row" aria-level="1"&gt;
+        &lt;div role="gridcell"&gt;South Region&lt;/div&gt;
+        &lt;div role="gridcell"&gt;$920K&lt;/div&gt;
+        &lt;div role="gridcell"&gt;+7%&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Treegrid with Punctuation-only aria-label</h3>
+            <p>This div with role="treegrid" has an aria-label with only punctuation, which is not a meaningful accessible name.</p>
+            <div class="a11yTestFail" role="treegrid" id="treegrid-punctuation-aria-label-fail"  aria-label="..." aria-rowcount="3">
+                <div role="row" aria-level="1" aria-expanded="true">
+                    <div role="gridcell">Desktop</div>
+                    <div role="gridcell">128 GB</div>
+                    <div role="gridcell">8 items</div>
+                </div>
+                <div role="row" aria-level="2">
+                    <div role="gridcell">Documents</div>
+                    <div role="gridcell">42 GB</div>
+                    <div role="gridcell">15 items</div>
+                </div>
+                <div role="row" aria-level="1">
+                    <div role="gridcell">Downloads</div>
+                    <div role="gridcell">36 GB</div>
+                    <div role="gridcell">12 items</div>
+                </div>
+            </div>
+            <p class="code">&lt;div role="treegrid" id="treegrid-punctuation-aria-label-fail" class="a11yTestFail" aria-label="..." aria-rowcount="3"&gt;
+    &lt;div role="row" aria-level="1" aria-expanded="true"&gt;
+        &lt;div role="gridcell"&gt;Desktop&lt;/div&gt;
+        &lt;div role="gridcell"&gt;128 GB&lt;/div&gt;
+        &lt;div role="gridcell"&gt;8 items&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div role="row" aria-level="2"&gt;
+        &lt;div role="gridcell"&gt;Documents&lt;/div&gt;
+        &lt;div role="gridcell"&gt;42 GB&lt;/div&gt;
+        &lt;div role="gridcell"&gt;15 items&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div role="row" aria-level="1"&gt;
+        &lt;div role="gridcell"&gt;Downloads&lt;/div&gt;
+        &lt;div role="gridcell"&gt;36 GB&lt;/div&gt;
+        &lt;div role="gridcell"&gt;12 items&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Treegrid with Broken aria-labelledby</h3>
+            <p>This div with role="treegrid" references a non-existent element ID with aria-labelledby.</p>
+            <div class="a11yTestFail" role="treegrid" id="treegrid-broken-labelledby-fail"  aria-labelledby="non-existent-treegrid-id" aria-rowcount="3">
+                <div role="row" aria-level="1" aria-expanded="true">
+                    <div role="gridcell">Product Category</div>
+                    <div role="gridcell">Inventory</div>
+                    <div role="gridcell">Status</div>
+                </div>
+                <div role="row" aria-level="2">
+                    <div role="gridcell">Electronics</div>
+                    <div role="gridcell">450 units</div>
+                    <div role="gridcell">In Stock</div>
+                </div>
+                <div role="row" aria-level="1">
+                    <div role="gridcell">Clothing</div>
+                    <div role="gridcell">820 units</div>
+                    <div role="gridcell">In Stock</div>
+                </div>
+            </div>
+            <p class="code">&lt;div role="treegrid" id="treegrid-broken-labelledby-fail" class="a11yTestFail" aria-labelledby="non-existent-treegrid-id" aria-rowcount="3"&gt;
+    &lt;div role="row" aria-level="1" aria-expanded="true"&gt;
+        &lt;div role="gridcell"&gt;Product Category&lt;/div&gt;
+        &lt;div role="gridcell"&gt;Inventory&lt;/div&gt;
+        &lt;div role="gridcell"&gt;Status&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div role="row" aria-level="2"&gt;
+        &lt;div role="gridcell"&gt;Electronics&lt;/div&gt;
+        &lt;div role="gridcell"&gt;450 units&lt;/div&gt;
+        &lt;div role="gridcell"&gt;In Stock&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div role="row" aria-level="1"&gt;
+        &lt;div role="gridcell"&gt;Clothing&lt;/div&gt;
+        &lt;div role="gridcell"&gt;820 units&lt;/div&gt;
+        &lt;div role="gridcell"&gt;In Stock&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Treegrid with Empty Reference via aria-labelledby</h3>
+            <p>This div with role="treegrid" references an element that has no content via aria-labelledby.</p>
+            <span id="empty-treegrid-label"></span>
+            <div class="a11yTestFail" role="treegrid" id="treegrid-empty-reference-labelledby-fail"  aria-labelledby="empty-treegrid-label" aria-rowcount="3">
+                <div role="row" aria-level="1" aria-expanded="true">
+                    <div role="gridcell">Asia</div>
+                    <div role="gridcell">1.2B</div>
+                    <div role="gridcell">45%</div>
+                </div>
+                <div role="row" aria-level="2">
+                    <div role="gridcell">China</div>
+                    <div role="gridcell">780M</div>
+                    <div role="gridcell">28%</div>
+                </div>
+                <div role="row" aria-level="1">
+                    <div role="gridcell">Europe</div>
+                    <div role="gridcell">740M</div>
+                    <div role="gridcell">27%</div>
+                </div>
+            </div>
+            <p class="code">&lt;span id="empty-treegrid-label"&gt;&lt;/span&gt;
+&lt;div role="treegrid" id="treegrid-empty-reference-labelledby-fail" class="a11yTestFail" aria-labelledby="empty-treegrid-label" aria-rowcount="3"&gt;
+    &lt;div role="row" aria-level="1" aria-expanded="true"&gt;
+        &lt;div role="gridcell"&gt;Asia&lt;/div&gt;
+        &lt;div role="gridcell"&gt;1.2B&lt;/div&gt;
+        &lt;div role="gridcell"&gt;45%&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div role="row" aria-level="2"&gt;
+        &lt;div role="gridcell"&gt;China&lt;/div&gt;
+        &lt;div role="gridcell"&gt;780M&lt;/div&gt;
+        &lt;div role="gridcell"&gt;28%&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div role="row" aria-level="1"&gt;
+        &lt;div role="gridcell"&gt;Europe&lt;/div&gt;
+        &lt;div role="gridcell"&gt;740M&lt;/div&gt;
+        &lt;div role="gridcell"&gt;27%&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Treegrid with Whitespace-only Reference via aria-labelledby</h3>
+            <p>This div with role="treegrid" references an element that has only whitespace via aria-labelledby.</p>
+            <span id="whitespace-treegrid-label">   </span>
+            <div class="a11yTestFail" role="treegrid" id="treegrid-whitespace-reference-labelledby-fail"  aria-labelledby="whitespace-treegrid-label" aria-rowcount="3">
+                <div role="row" aria-level="1" aria-expanded="true">
+                    <div role="gridcell">Music</div>
+                    <div role="gridcell">1,250 files</div>
+                    <div role="gridcell">8.2 GB</div>
+                </div>
+                <div role="row" aria-level="2">
+                    <div role="gridcell">Rock</div>
+                    <div role="gridcell">450 files</div>
+                    <div role="gridcell">3.1 GB</div>
+                </div>
+                <div role="row" aria-level="1">
+                    <div role="gridcell">Videos</div>
+                    <div role="gridcell">120 files</div>
+                    <div role="gridcell">24.5 GB</div>
+                </div>
+            </div>
+            <p class="code">&lt;span id="whitespace-treegrid-label"&gt;   &lt;/span&gt;
+&lt;div role="treegrid" id="treegrid-whitespace-reference-labelledby-fail" class="a11yTestFail" aria-labelledby="whitespace-treegrid-label" aria-rowcount="3"&gt;
+    &lt;div role="row" aria-level="1" aria-expanded="true"&gt;
+        &lt;div role="gridcell"&gt;Music&lt;/div&gt;
+        &lt;div role="gridcell"&gt;1,250 files&lt;/div&gt;
+        &lt;div role="gridcell"&gt;8.2 GB&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div role="row" aria-level="2"&gt;
+        &lt;div role="gridcell"&gt;Rock&lt;/div&gt;
+        &lt;div role="gridcell"&gt;450 files&lt;/div&gt;
+        &lt;div role="gridcell"&gt;3.1 GB&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div role="row" aria-level="1"&gt;
+        &lt;div role="gridcell"&gt;Videos&lt;/div&gt;
+        &lt;div role="gridcell"&gt;120 files&lt;/div&gt;
+        &lt;div role="gridcell"&gt;24.5 GB&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Treegrid with Punctuation-only Reference via aria-labelledby</h3>
+            <p>This div with role="treegrid" references an element that has only punctuation via aria-labelledby.</p>
+            <span id="punctuation-treegrid-label">...</span>
+            <div class="a11yTestFail" role="treegrid" id="treegrid-punctuation-reference-labelledby-fail"  aria-labelledby="punctuation-treegrid-label" aria-rowcount="3">
+                <div role="row" aria-level="1" aria-expanded="true">
+                    <div role="gridcell">2024</div>
+                    <div role="gridcell">$2.4M</div>
+                    <div role="gridcell">Completed</div>
+                </div>
+                <div role="row" aria-level="2">
+                    <div role="gridcell">Q4</div>
+                    <div role="gridcell">$650K</div>
+                    <div role="gridcell">Completed</div>
+                </div>
+                <div role="row" aria-level="1">
+                    <div role="gridcell">2025</div>
+                    <div role="gridcell">$3.2M</div>
+                    <div role="gridcell">In Progress</div>
+                </div>
+            </div>
+            <p class="code">&lt;span id="punctuation-treegrid-label"&gt;...&lt;/span&gt;
+&lt;div role="treegrid" id="treegrid-punctuation-reference-labelledby-fail" class="a11yTestFail" aria-labelledby="punctuation-treegrid-label" aria-rowcount="3"&gt;
+    &lt;div role="row" aria-level="1" aria-expanded="true"&gt;
+        &lt;div role="gridcell"&gt;2024&lt;/div&gt;
+        &lt;div role="gridcell"&gt;$2.4M&lt;/div&gt;
+        &lt;div role="gridcell"&gt;Completed&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div role="row" aria-level="2"&gt;
+        &lt;div role="gridcell"&gt;Q4&lt;/div&gt;
+        &lt;div role="gridcell"&gt;$650K&lt;/div&gt;
+        &lt;div role="gridcell"&gt;Completed&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div role="row" aria-level="1"&gt;
+        &lt;div role="gridcell"&gt;2025&lt;/div&gt;
+        &lt;div role="gridcell"&gt;$3.2M&lt;/div&gt;
+        &lt;div role="gridcell"&gt;In Progress&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <h3>Gridcell aria-labelledby Test in Treegrid</h3>
+        <p>This test validates a potential issue with gridcells in a treegrid that use aria-labelledby incorrectly. Note that unlike many other ARIA roles, gridcells are not required to have an accessible name - they can be blank.</p>
+        
+        <div class="test-case fail">
+            <h3>Gridcell with Broken aria-labelledby</h3>
+            <p>This div with role="gridcell" references a non-existent element ID with aria-labelledby, which can cause unexpected behavior in screen readers even though gridcells don't require accessible names.</p>
+            <div class="a11yTestFail" role="treegrid" aria-label="Gridcell Broken Labelledby Test">
+                <div role="row">
+                    <div role="gridcell" id="gridcell-broken-labelledby-fail" class="a11yTestFail" aria-labelledby="non-existent-gridcell-id">Market Share</div>
+                </div>
+            </div>
+            <p class="code">&lt;div role="treegrid" aria-label="Gridcell Broken Labelledby Test"&gt;
+    &lt;div role="row"&gt;
+        &lt;div role="gridcell" id="gridcell-broken-labelledby-fail" class="a11yTestFail" aria-labelledby="non-existent-gridcell-id"&gt;Market Share&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+    </div>
+    
+    <div class="role-container">
+        <h2>15. Alert (role="alert")</h2>
+        <p>These tests validate specific issues with the alert role. Note that alert containers, like gridcells, do not require an accessible name since their content typically serves that purpose.</p>
+        
+        <div class="warning-box">
+            <h3>⚠️ Understanding the Alert Role</h3>
+            <p>According to the ARIA Authoring Practices Guide (APG), the <code>role="alert"</code> is intended for brief, important messages that need to be communicated to users immediately. Key implementation details include:</p>
+            <ul>
+                <li>Alerts are a type of live region with <code>aria-live="assertive"</code> and <code>aria-atomic="true"</code> implicitly set</li>
+                <li>Screen readers interrupt other processes to announce alerts immediately</li>
+                <li>Alerts should be used sparingly to avoid overwhelming users</li>
+                <li>Alerts should not automatically disappear</li>
+                <li>Alerts should not require keyboard focus</li>
+            </ul>
+            <p><strong>Important:</strong> Alerts should only be used for important, time-sensitive information and should not be overused. For notifications that aren't as critical, consider using <code>role="status"</code> instead.</p>
+        </div>
+        
+        <div class="test-case pass">
+            <h3>Alert with Descriptive Content</h3>
+            <p>This is an alert container with meaningful content that will be announced by screen readers.</p>
+            <div class="a11yTestPass" role="alert" id="alert-content-pass">
+                <p>Important: Your session will expire in 5 minutes.</p>
+            </div>
+            <p class="code">&lt;div role="alert" id="alert-content-pass"&gt;
+    &lt;p&gt;Important: Your session will expire in 5 minutes.&lt;/p&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Alert with Empty Content</h3>
+            <p>This alert has no content, making it ineffective as an alert since nothing will be announced.</p>
+            <div class="a11yTestFail" role="alert" id="alert-empty-content-fail" ></div>
+            <p class="code">&lt;div role="alert" id="alert-empty-content-fail" class="a11yTestFail"&gt;&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Alert with Whitespace-only Content</h3>
+            <p>This alert contains only whitespace, which is effectively empty and will not provide useful information when announced.</p>
+            <div class="a11yTestFail" role="alert" id="alert-whitespace-content-fail" >   </div>
+            <p class="code">&lt;div role="alert" id="alert-whitespace-content-fail" class="a11yTestFail"&gt;   &lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Alert with Punctuation-only Content</h3>
+            <p>This alert contains only punctuation, which does not provide meaningful information when announced.</p>
+            <div class="a11yTestFail" role="alert" id="alert-punctuation-content-fail" >...</div>
+            <p class="code">&lt;div role="alert" id="alert-punctuation-content-fail" class="a11yTestFail"&gt;...&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Alert with Broken aria-labelledby</h3>
+            <p>This alert references a non-existent element ID with aria-labelledby, which can cause unexpected behavior in screen readers.</p>
+            <div class="a11yTestFail" role="alert" id="alert-broken-labelledby-fail"  aria-labelledby="non-existent-alert-id">
+                <p>There was a problem saving your changes.</p>
+            </div>
+            <p class="code">&lt;div role="alert" id="alert-broken-labelledby-fail" class="a11yTestFail" aria-labelledby="non-existent-alert-id"&gt;
+    &lt;p&gt;There was a problem saving your changes.&lt;/p&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Alert with Empty Reference via aria-labelledby</h3>
+            <p>This alert references an element with no content via aria-labelledby, causing the accessible name computation to fail.</p>
+            <span id="empty-alert-label"></span>
+            <div class="a11yTestFail" role="alert" id="alert-empty-reference-labelledby-fail"  aria-labelledby="empty-alert-label">
+                <p>Form validation failed. Please check your entries.</p>
+            </div>
+            <p class="code">&lt;span id="empty-alert-label"&gt;&lt;/span&gt;
+&lt;div role="alert" id="alert-empty-reference-labelledby-fail" class="a11yTestFail" aria-labelledby="empty-alert-label"&gt;
+    &lt;p&gt;Form validation failed. Please check your entries.&lt;/p&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Alert with Whitespace-only Reference via aria-labelledby</h3>
+            <p>This alert references an element with only whitespace via aria-labelledby, causing the accessible name computation to fail.</p>
+            <span id="whitespace-alert-label">   </span>
+            <div class="a11yTestFail" role="alert" id="alert-whitespace-reference-labelledby-fail"  aria-labelledby="whitespace-alert-label">
+                <p>Network connection lost. Attempting to reconnect...</p>
+            </div>
+            <p class="code">&lt;span id="whitespace-alert-label"&gt;   &lt;/span&gt;
+&lt;div role="alert" id="alert-whitespace-reference-labelledby-fail" class="a11yTestFail" aria-labelledby="whitespace-alert-label"&gt;
+    &lt;p&gt;Network connection lost. Attempting to reconnect...&lt;/p&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Alert with Punctuation-only Reference via aria-labelledby</h3>
+            <p>This alert references an element with only punctuation via aria-labelledby, causing the accessible name computation to fail.</p>
+            <span id="punctuation-alert-label">...</span>
+            <div class="a11yTestFail" role="alert" id="alert-punctuation-reference-labelledby-fail"  aria-labelledby="punctuation-alert-label">
+                <p>Password changed successfully.</p>
+            </div>
+            <p class="code">&lt;span id="punctuation-alert-label"&gt;...&lt;/span&gt;
+&lt;div role="alert" id="alert-punctuation-reference-labelledby-fail" class="a11yTestFail" aria-labelledby="punctuation-alert-label"&gt;
+    &lt;p&gt;Password changed successfully.&lt;/p&gt;
+&lt;/div&gt;</p>
+        </div>
+    </div>
+    
+    <div class="role-container">
+        <h2>16. Grid (role="grid")</h2>
+        <p>These tests validate accessible names for elements with role="grid". Grids are interactive widgets for tabular information that enable keyboard navigation.</p>
+        
+        <div class="warning-box">
+            <h3>⚠️ Understanding the Grid Role</h3>
+            <p>According to the ARIA Authoring Practices Guide (APG), the <code>role="grid"</code> provides a widget for tabular information that needs to be navigable via keyboard. Key implementation requirements include:</p>
+            <ul>
+                <li>The grid must have an accessible name via <code>aria-label</code> or <code>aria-labelledby</code></li>
+                <li>Grid contains elements with <code>role="row"</code></li>
+                <li>Rows contain <code>role="gridcell"</code>, <code>role="columnheader"</code>, or <code>role="rowheader"</code> elements</li>
+                <li>Only one focusable element should be in the tab sequence</li>
+                <li>Arrow keys should be used for navigation between cells</li>
+            </ul>
+            <p><strong>Important:</strong> Grids can be built using either native <code>&lt;table&gt;</code> elements with appropriate ARIA roles or using <code>&lt;div&gt;</code> elements with explicit ARIA roles. When using tables, the native semantics must be overridden with explicit roles.</p>
+        </div>
+        
+        <h3>Passing Examples</h3>
+        
+        <div class="test-case pass">
+            <h3>Grid with aria-label (Table-based)</h3>
+            <p>This table with role="grid" has a descriptive aria-label providing an accessible name.</p>
+            <table class="a11yTestPass" role="grid" id="grid-aria-label-pass"  aria-label="Employee Information">
+                <tr role="row">
+                    <th role="columnheader">Name</th>
+                    <th role="columnheader">Department</th>
+                    <th role="columnheader">Status</th>
+                </tr>
+                <tr role="row">
+                    <td role="gridcell">John Smith</td>
+                    <td role="gridcell">Engineering</td>
+                    <td role="gridcell">Active</td>
+                </tr>
+                <tr role="row">
+                    <td role="gridcell">Maria Garcia</td>
+                    <td role="gridcell">Marketing</td>
+                    <td role="gridcell">Active</td>
+                </tr>
+            </table>
+            <p class="code">&lt;table role="grid" id="grid-aria-label-pass" class="a11yTestPass" aria-label="Employee Information"&gt;
+    &lt;tr role="row"&gt;
+        &lt;th role="columnheader"&gt;Name&lt;/th&gt;
+        &lt;th role="columnheader"&gt;Department&lt;/th&gt;
+        &lt;th role="columnheader"&gt;Status&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr role="row"&gt;
+        &lt;td role="gridcell"&gt;John Smith&lt;/td&gt;
+        &lt;td role="gridcell"&gt;Engineering&lt;/td&gt;
+        &lt;td role="gridcell"&gt;Active&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr role="row"&gt;
+        &lt;td role="gridcell"&gt;Maria Garcia&lt;/td&gt;
+        &lt;td role="gridcell"&gt;Marketing&lt;/td&gt;
+        &lt;td role="gridcell"&gt;Active&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/table&gt;</p>
+        </div>
+        
+        <div class="test-case pass">
+            <h3>Grid with aria-labelledby (Div-based)</h3>
+            <p>This div with role="grid" uses aria-labelledby to reference another element for its accessible name.</p>
+            <h4 id="project-grid-heading">Project Status Grid</h4>
+            <div class="a11yTestPass" role="grid" id="grid-aria-labelledby-pass"  aria-labelledby="project-grid-heading">
+                <div role="row">
+                    <div role="columnheader">Project</div>
+                    <div role="columnheader">Progress</div>
+                    <div role="columnheader">Due Date</div>
+                </div>
+                <div role="row">
+                    <div role="gridcell">Website Redesign</div>
+                    <div role="gridcell">75%</div>
+                    <div role="gridcell">May 15, 2025</div>
+                </div>
+                <div role="row">
+                    <div role="gridcell">Mobile App</div>
+                    <div role="gridcell">40%</div>
+                    <div role="gridcell">June 30, 2025</div>
+                </div>
+            </div>
+            <p class="code">&lt;h4 id="project-grid-heading"&gt;Project Status Grid&lt;/h4&gt;
+&lt;div role="grid" id="grid-aria-labelledby-pass" class="a11yTestPass" aria-labelledby="project-grid-heading"&gt;
+    &lt;div role="row"&gt;
+        &lt;div role="columnheader"&gt;Project&lt;/div&gt;
+        &lt;div role="columnheader"&gt;Progress&lt;/div&gt;
+        &lt;div role="columnheader"&gt;Due Date&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div role="row"&gt;
+        &lt;div role="gridcell"&gt;Website Redesign&lt;/div&gt;
+        &lt;div role="gridcell"&gt;75%&lt;/div&gt;
+        &lt;div role="gridcell"&gt;May 15, 2025&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div role="row"&gt;
+        &lt;div role="gridcell"&gt;Mobile App&lt;/div&gt;
+        &lt;div role="gridcell"&gt;40%&lt;/div&gt;
+        &lt;div role="gridcell"&gt;June 30, 2025&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <h3>Failing Examples</h3>
+        
+        <div class="test-case fail">
+            <h3>Grid with No Accessible Name</h3>
+            <p>This table with role="grid" lacks an accessible name, which can make it difficult for screen reader users to identify its purpose.</p>
+            <table class="a11yTestFail" role="grid" id="grid-no-name-fail">
+                <tr role="row">
+                    <th role="columnheader">Country</th>
+                    <th role="columnheader">Capital</th>
+                    <th role="columnheader">Population</th>
+                </tr>
+                <tr role="row">
+                    <td role="gridcell">Canada</td>
+                    <td role="gridcell">Ottawa</td>
+                    <td role="gridcell">38 million</td>
+                </tr>
+                <tr role="row">
+                    <td role="gridcell">France</td>
+                    <td role="gridcell">Paris</td>
+                    <td role="gridcell">67 million</td>
+                </tr>
+            </table>
+            <p class="code">&lt;table role="grid" id="grid-no-name-fail"&gt;
+    &lt;tr role="row"&gt;
+        &lt;th role="columnheader"&gt;Country&lt;/th&gt;
+        &lt;th role="columnheader"&gt;Capital&lt;/th&gt;
+        &lt;th role="columnheader"&gt;Population&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr role="row"&gt;
+        &lt;td role="gridcell"&gt;Canada&lt;/td&gt;
+        &lt;td role="gridcell"&gt;Ottawa&lt;/td&gt;
+        &lt;td role="gridcell"&gt;38 million&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr role="row"&gt;
+        &lt;td role="gridcell"&gt;France&lt;/td&gt;
+        &lt;td role="gridcell"&gt;Paris&lt;/td&gt;
+        &lt;td role="gridcell"&gt;67 million&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/table&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Grid with Empty aria-label</h3>
+            <p>This div with role="grid" has an empty aria-label, which provides no accessible name.</p>
+            <div class="a11yTestFail" role="grid" id="grid-empty-label-fail"  aria-label="">
+                <div role="row">
+                    <div role="columnheader">Quarter</div>
+                    <div role="columnheader">Revenue</div>
+                    <div role="columnheader">Growth</div>
+                </div>
+                <div role="row">
+                    <div role="gridcell">Q1 2025</div>
+                    <div role="gridcell">$1.2M</div>
+                    <div role="gridcell">4.2%</div>
+                </div>
+                <div role="row">
+                    <div role="gridcell">Q2 2025</div>
+                    <div role="gridcell">$1.5M</div>
+                    <div role="gridcell">5.8%</div>
+                </div>
+            </div>
+            <p class="code">&lt;div role="grid" id="grid-empty-label-fail" class="a11yTestFail" aria-label=""&gt;
+    &lt;div role="row"&gt;
+        &lt;div role="columnheader"&gt;Quarter&lt;/div&gt;
+        &lt;div role="columnheader"&gt;Revenue&lt;/div&gt;
+        &lt;div role="columnheader"&gt;Growth&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div role="row"&gt;
+        &lt;div role="gridcell"&gt;Q1 2025&lt;/div&gt;
+        &lt;div role="gridcell"&gt;$1.2M&lt;/div&gt;
+        &lt;div role="gridcell"&gt;4.2%&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div role="row"&gt;
+        &lt;div role="gridcell"&gt;Q2 2025&lt;/div&gt;
+        &lt;div role="gridcell"&gt;$1.5M&lt;/div&gt;
+        &lt;div role="gridcell"&gt;5.8%&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Grid with Whitespace-only aria-label</h3>
+            <p>This table with role="grid" has an aria-label with only whitespace, which provides no accessible name.</p>
+            <table class="a11yTestFail" role="grid" id="grid-whitespace-label-fail"  aria-label="   ">
+                <tr role="row">
+                    <th role="columnheader">Product</th>
+                    <th role="columnheader">Price</th>
+                    <th role="columnheader">Stock</th>
+                </tr>
+                <tr role="row">
+                    <td role="gridcell">Laptop</td>
+                    <td role="gridcell">$1,299</td>
+                    <td role="gridcell">45</td>
+                </tr>
+                <tr role="row">
+                    <td role="gridcell">Monitor</td>
+                    <td role="gridcell">$349</td>
+                    <td role="gridcell">78</td>
+                </tr>
+            </table>
+            <p class="code">&lt;table role="grid" id="grid-whitespace-label-fail" class="a11yTestFail" aria-label="   "&gt;
+    &lt;tr role="row"&gt;
+        &lt;th role="columnheader"&gt;Product&lt;/th&gt;
+        &lt;th role="columnheader"&gt;Price&lt;/th&gt;
+        &lt;th role="columnheader"&gt;Stock&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr role="row"&gt;
+        &lt;td role="gridcell"&gt;Laptop&lt;/td&gt;
+        &lt;td role="gridcell"&gt;$1,299&lt;/td&gt;
+        &lt;td role="gridcell"&gt;45&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr role="row"&gt;
+        &lt;td role="gridcell"&gt;Monitor&lt;/td&gt;
+        &lt;td role="gridcell"&gt;$349&lt;/td&gt;
+        &lt;td role="gridcell"&gt;78&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/table&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Grid with Punctuation-only aria-label</h3>
+            <p>This div with role="grid" has an aria-label with only punctuation, which provides no meaningful accessible name.</p>
+            <div class="a11yTestFail" role="grid" id="grid-punctuation-label-fail"  aria-label="...">
+                <div role="row">
+                    <div role="columnheader">Task</div>
+                    <div role="columnheader">Assignee</div>
+                    <div role="columnheader">Deadline</div>
+                </div>
+                <div role="row">
+                    <div role="gridcell">Documentation</div>
+                    <div role="gridcell">Sarah</div>
+                    <div role="gridcell">May 10</div>
+                </div>
+                <div role="row">
+                    <div role="gridcell">Testing</div>
+                    <div role="gridcell">Michael</div>
+                    <div role="gridcell">May 15</div>
+                </div>
+            </div>
+            <p class="code">&lt;div role="grid" id="grid-punctuation-label-fail" class="a11yTestFail" aria-label="..."&gt;
+    &lt;div role="row"&gt;
+        &lt;div role="columnheader"&gt;Task&lt;/div&gt;
+        &lt;div role="columnheader"&gt;Assignee&lt;/div&gt;
+        &lt;div role="columnheader"&gt;Deadline&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div role="row"&gt;
+        &lt;div role="gridcell"&gt;Documentation&lt;/div&gt;
+        &lt;div role="gridcell"&gt;Sarah&lt;/div&gt;
+        &lt;div role="gridcell"&gt;May 10&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div role="row"&gt;
+        &lt;div role="gridcell"&gt;Testing&lt;/div&gt;
+        &lt;div role="gridcell"&gt;Michael&lt;/div&gt;
+        &lt;div role="gridcell"&gt;May 15&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Grid with Broken aria-labelledby</h3>
+            <p>This table with role="grid" references a non-existent element ID with aria-labelledby, which prevents an accessible name from being created.</p>
+            <table class="a11yTestFail" role="grid" id="grid-broken-labelledby-fail"  aria-labelledby="non-existent-grid-id">
+                <tr role="row">
+                    <th role="columnheader">Book Title</th>
+                    <th role="columnheader">Author</th>
+                    <th role="columnheader">Publication Year</th>
+                </tr>
+                <tr role="row">
+                    <td role="gridcell">The Great Gatsby</td>
+                    <td role="gridcell">F. Scott Fitzgerald</td>
+                    <td role="gridcell">1925</td>
+                </tr>
+                <tr role="row">
+                    <td role="gridcell">To Kill a Mockingbird</td>
+                    <td role="gridcell">Harper Lee</td>
+                    <td role="gridcell">1960</td>
+                </tr>
+            </table>
+            <p class="code">&lt;table role="grid" id="grid-broken-labelledby-fail" class="a11yTestFail" aria-labelledby="non-existent-grid-id"&gt;
+    &lt;tr role="row"&gt;
+        &lt;th role="columnheader"&gt;Book Title&lt;/th&gt;
+        &lt;th role="columnheader"&gt;Author&lt;/th&gt;
+        &lt;th role="columnheader"&gt;Publication Year&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr role="row"&gt;
+        &lt;td role="gridcell"&gt;The Great Gatsby&lt;/td&gt;
+        &lt;td role="gridcell"&gt;F. Scott Fitzgerald&lt;/td&gt;
+        &lt;td role="gridcell"&gt;1925&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr role="row"&gt;
+        &lt;td role="gridcell"&gt;To Kill a Mockingbird&lt;/td&gt;
+        &lt;td role="gridcell"&gt;Harper Lee&lt;/td&gt;
+        &lt;td role="gridcell"&gt;1960&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/table&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Grid with Empty Reference via aria-labelledby</h3>
+            <p>This div with role="grid" references an element with no content via aria-labelledby, causing the accessible name computation to fail.</p>
+            <span id="empty-grid-label"></span>
+            <div class="a11yTestFail" role="grid" id="grid-empty-reference-labelledby-fail"  aria-labelledby="empty-grid-label">
+                <div role="row">
+                    <div role="columnheader">Metric</div>
+                    <div role="columnheader">Value</div>
+                    <div role="columnheader">Change</div>
+                </div>
+                <div role="row">
+                    <div role="gridcell">Site Visits</div>
+                    <div role="gridcell">12,543</div>
+                    <div role="gridcell">+15%</div>
+                </div>
+                <div role="row">
+                    <div role="gridcell">Bounce Rate</div>
+                    <div role="gridcell">28%</div>
+                    <div role="gridcell">-3%</div>
+                </div>
+            </div>
+            <p class="code">&lt;span id="empty-grid-label"&gt;&lt;/span&gt;
+&lt;div role="grid" id="grid-empty-reference-labelledby-fail" class="a11yTestFail" aria-labelledby="empty-grid-label"&gt;
+    &lt;div role="row"&gt;
+        &lt;div role="columnheader"&gt;Metric&lt;/div&gt;
+        &lt;div role="columnheader"&gt;Value&lt;/div&gt;
+        &lt;div role="columnheader"&gt;Change&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div role="row"&gt;
+        &lt;div role="gridcell"&gt;Site Visits&lt;/div&gt;
+        &lt;div role="gridcell"&gt;12,543&lt;/div&gt;
+        &lt;div role="gridcell"&gt;+15%&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div role="row"&gt;
+        &lt;div role="gridcell"&gt;Bounce Rate&lt;/div&gt;
+        &lt;div role="gridcell"&gt;28%&lt;/div&gt;
+        &lt;div role="gridcell"&gt;-3%&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Grid with Whitespace-only Reference via aria-labelledby</h3>
+            <p>This table with role="grid" references an element that has only whitespace via aria-labelledby, causing the accessible name computation to fail.</p>
+            <span id="whitespace-grid-label">   </span>
+            <table class="a11yTestFail" role="grid" id="grid-whitespace-reference-labelledby-fail"  aria-labelledby="whitespace-grid-label">
+                <tr role="row">
+                    <th role="columnheader">Team</th>
+                    <th role="columnheader">Wins</th>
+                    <th role="columnheader">Losses</th>
+                </tr>
+                <tr role="row">
+                    <td role="gridcell">Eagles</td>
+                    <td role="gridcell">12</td>
+                    <td role="gridcell">5</td>
+                </tr>
+                <tr role="row">
+                    <td role="gridcell">Bears</td>
+                    <td role="gridcell">8</td>
+                    <td role="gridcell">9</td>
+                </tr>
+            </table>
+            <p class="code">&lt;span id="whitespace-grid-label"&gt;   &lt;/span&gt;
+&lt;table role="grid" id="grid-whitespace-reference-labelledby-fail" class="a11yTestFail" aria-labelledby="whitespace-grid-label"&gt;
+    &lt;tr role="row"&gt;
+        &lt;th role="columnheader"&gt;Team&lt;/th&gt;
+        &lt;th role="columnheader"&gt;Wins&lt;/th&gt;
+        &lt;th role="columnheader"&gt;Losses&lt;/th&gt;
+    &lt;/tr&gt;
+    &lt;tr role="row"&gt;
+        &lt;td role="gridcell"&gt;Eagles&lt;/td&gt;
+        &lt;td role="gridcell"&gt;12&lt;/td&gt;
+        &lt;td role="gridcell"&gt;5&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr role="row"&gt;
+        &lt;td role="gridcell"&gt;Bears&lt;/td&gt;
+        &lt;td role="gridcell"&gt;8&lt;/td&gt;
+        &lt;td role="gridcell"&gt;9&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/table&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Grid with Punctuation-only Reference via aria-labelledby</h3>
+            <p>This div with role="grid" references an element that has only punctuation via aria-labelledby, causing the accessible name computation to fail.</p>
+            <span id="punctuation-grid-label">...</span>
+            <div class="a11yTestFail" role="grid" id="grid-punctuation-reference-labelledby-fail"  aria-labelledby="punctuation-grid-label">
+                <div role="row">
+                    <div role="columnheader">Course</div>
+                    <div role="columnheader">Instructor</div>
+                    <div role="columnheader">Credits</div>
+                </div>
+                <div role="row">
+                    <div role="gridcell">Mathematics 101</div>
+                    <div role="gridcell">Dr. Johnson</div>
+                    <div role="gridcell">3</div>
+                </div>
+                <div role="row">
+                    <div role="gridcell">History 215</div>
+                    <div role="gridcell">Prof. Williams</div>
+                    <div role="gridcell">4</div>
+                </div>
+            </div>
+            <p class="code">&lt;span id="punctuation-grid-label"&gt;...&lt;/span&gt;
+&lt;div role="grid" id="grid-punctuation-reference-labelledby-fail" class="a11yTestFail" aria-labelledby="punctuation-grid-label"&gt;
+    &lt;div role="row"&gt;
+        &lt;div role="columnheader"&gt;Course&lt;/div&gt;
+        &lt;div role="columnheader"&gt;Instructor&lt;/div&gt;
+        &lt;div role="columnheader"&gt;Credits&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div role="row"&gt;
+        &lt;div role="gridcell"&gt;Mathematics 101&lt;/div&gt;
+        &lt;div role="gridcell"&gt;Dr. Johnson&lt;/div&gt;
+        &lt;div role="gridcell"&gt;3&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div role="row"&gt;
+        &lt;div role="gridcell"&gt;History 215&lt;/div&gt;
+        &lt;div role="gridcell"&gt;Prof. Williams&lt;/div&gt;
+        &lt;div role="gridcell"&gt;4&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+    </div>
+    
+    <div class="role-container">
+        <h2>17. Menubar (role="menubar")</h2>
+        <p>These tests validate accessible names for elements with role="menubar" and its related roles (menu, menuitem, menuitemradio).</p>
+        
+        <div class="warning-box">
+            <h3>⚠️ Understanding the Menubar Role</h3>
+            <p>According to the ARIA Authoring Practices Guide (APG), the <code>role="menubar"</code> is used for horizontal navigation menus, often found in desktop applications. Key implementation requirements include:</p>
+            <ul>
+                <li>The menubar should have an accessible name via <code>aria-label</code> or <code>aria-labelledby</code></li>
+                <li>Menubar contains elements with <code>role="menuitem"</code>, <code>role="menuitemcheckbox"</code>, or <code>role="menuitemradio"</code></li>
+                <li>Submenus should use <code>role="menu"</code> and be referenced by <code>aria-controls</code></li>
+                <li>Items that open submenus need <code>aria-expanded</code> and <code>aria-haspopup="menu"</code></li>
+                <li>Keyboard support must allow navigation with arrow keys</li>
+            </ul>
+            <p><strong>Important:</strong> The menubar pattern is for desktop application-style menus, not for general website navigation. Website navigation should typically use the <code>nav</code> element with lists of links.</p>
+        </div>
+        
+        <h3>Passing Examples</h3>
+        
+        <div class="test-case pass">
+            <h3>Menubar with aria-label (Editor Style)</h3>
+            <p>This editor-style menubar has a descriptive aria-label providing an accessible name.</p>
+            <div class="a11yTestPass" role="menubar" id="menubar-aria-label-pass"  aria-label="Text Editor">
+                <div role="menuitem" aria-haspopup="menu" aria-expanded="false">File</div>
+                <div role="menuitem" aria-haspopup="menu" aria-expanded="false">Edit</div>
+                <div role="menuitem" aria-haspopup="menu" aria-expanded="true">
+                    View
+                    <div role="menu" aria-label="View Options">
+                        <div role="menuitem">Show Ruler</div>
+                        <div role="menuitem">Show Status Bar</div>
+                        <div role="menuitemradio" aria-checked="true">Normal View</div>
+                        <div role="menuitemradio" aria-checked="false">Outline View</div>
+                    </div>
+                </div>
+                <div role="menuitem" aria-haspopup="menu" aria-expanded="false">Help</div>
+            </div>
+            <p class="code">&lt;div role="menubar" id="menubar-aria-label-pass" class="a11yTestPass" aria-label="Text Editor"&gt;
+    &lt;div role="menuitem" aria-haspopup="menu" aria-expanded="false"&gt;File&lt;/div&gt;
+    &lt;div role="menuitem" aria-haspopup="menu" aria-expanded="false"&gt;Edit&lt;/div&gt;
+    &lt;div role="menuitem" aria-haspopup="menu" aria-expanded="true"&gt;
+        View
+        &lt;div role="menu" aria-label="View Options"&gt;
+            &lt;div role="menuitem"&gt;Show Ruler&lt;/div&gt;
+            &lt;div role="menuitem"&gt;Show Status Bar&lt;/div&gt;
+            &lt;div role="menuitemradio" aria-checked="true"&gt;Normal View&lt;/div&gt;
+            &lt;div role="menuitemradio" aria-checked="false"&gt;Outline View&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div role="menuitem" aria-haspopup="menu" aria-expanded="false"&gt;Help&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case pass">
+            <h3>Menubar with aria-labelledby (Navigation Style)</h3>
+            <p>This navigation-style menubar uses aria-labelledby to reference another element for its accessible name.</p>
+            <h4 id="site-navigation-heading">Site Navigation</h4>
+            <div class="a11yTestPass" role="menubar" id="menubar-aria-labelledby-pass"  aria-labelledby="site-navigation-heading">
+                <div role="menuitem" aria-haspopup="menu" aria-expanded="false">Products</div>
+                <div role="menuitem" aria-haspopup="menu" aria-expanded="true">
+                    Services
+                    <div role="menu" aria-label="Services Menu">
+                        <div role="menuitem">Consulting</div>
+                        <div role="menuitem">Training</div>
+                        <div role="menuitem">Support</div>
+                    </div>
+                </div>
+                <div role="menuitem" aria-haspopup="menu" aria-expanded="false">About</div>
+                <div role="menuitem" aria-haspopup="menu" aria-expanded="false">Contact</div>
+            </div>
+            <p class="code">&lt;h4 id="site-navigation-heading"&gt;Site Navigation&lt;/h4&gt;
+&lt;div role="menubar" id="menubar-aria-labelledby-pass" class="a11yTestPass" aria-labelledby="site-navigation-heading"&gt;
+    &lt;div role="menuitem" aria-haspopup="menu" aria-expanded="false"&gt;Products&lt;/div&gt;
+    &lt;div role="menuitem" aria-haspopup="menu" aria-expanded="true"&gt;
+        Services
+        &lt;div role="menu" aria-label="Services Menu"&gt;
+            &lt;div role="menuitem"&gt;Consulting&lt;/div&gt;
+            &lt;div role="menuitem"&gt;Training&lt;/div&gt;
+            &lt;div role="menuitem"&gt;Support&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div role="menuitem" aria-haspopup="menu" aria-expanded="false"&gt;About&lt;/div&gt;
+    &lt;div role="menuitem" aria-haspopup="menu" aria-expanded="false"&gt;Contact&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case pass">
+            <h3>Menu (Submenu) with aria-label</h3>
+            <p>This menu (as a submenu) has a descriptive aria-label providing an accessible name.</p>
+            <div class="a11yTestPass" role="menu" id="menu-aria-label-pass"  aria-label="Format Options">
+                <div role="menuitem">Font</div>
+                <div role="menuitem">Paragraph</div>
+                <div role="menuitemradio" aria-checked="true">Left Align</div>
+                <div role="menuitemradio" aria-checked="false">Center</div>
+                <div role="menuitemradio" aria-checked="false">Right Align</div>
+            </div>
+            <p class="code">&lt;div role="menu" id="menu-aria-label-pass" class="a11yTestPass" aria-label="Format Options"&gt;
+    &lt;div role="menuitem"&gt;Font&lt;/div&gt;
+    &lt;div role="menuitem"&gt;Paragraph&lt;/div&gt;
+    &lt;div role="menuitemradio" aria-checked="true"&gt;Left Align&lt;/div&gt;
+    &lt;div role="menuitemradio" aria-checked="false"&gt;Center&lt;/div&gt;
+    &lt;div role="menuitemradio" aria-checked="false"&gt;Right Align&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <h3>Failing Examples</h3>
+        
+        <div class="test-case fail">
+            <h3>Menubar with No Accessible Name</h3>
+            <p>This menubar lacks an accessible name, making it difficult for screen reader users to identify its purpose.</p>
+            <div class="a11yTestFail" role="menubar" id="menubar-no-name-fail">
+                <div role="menuitem" aria-haspopup="menu" aria-expanded="false">Home</div>
+                <div role="menuitem" aria-haspopup="menu" aria-expanded="false">Features</div>
+                <div role="menuitem" aria-haspopup="menu" aria-expanded="false">Pricing</div>
+                <div role="menuitem" aria-haspopup="menu" aria-expanded="false">Resources</div>
+            </div>
+            <p class="code">&lt;div role="menubar" id="menubar-no-name-fail"&gt;
+    &lt;div role="menuitem" aria-haspopup="menu" aria-expanded="false"&gt;Home&lt;/div&gt;
+    &lt;div role="menuitem" aria-haspopup="menu" aria-expanded="false"&gt;Features&lt;/div&gt;
+    &lt;div role="menuitem" aria-haspopup="menu" aria-expanded="false"&gt;Pricing&lt;/div&gt;
+    &lt;div role="menuitem" aria-haspopup="menu" aria-expanded="false"&gt;Resources&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Menubar with Empty aria-label</h3>
+            <p>This menubar has an empty aria-label, which provides no accessible name.</p>
+            <div class="a11yTestFail" role="menubar" id="menubar-empty-label-fail"  aria-label="">
+                <div role="menuitem" aria-haspopup="menu" aria-expanded="false">File</div>
+                <div role="menuitem" aria-haspopup="menu" aria-expanded="false">Edit</div>
+                <div role="menuitem" aria-haspopup="menu" aria-expanded="false">View</div>
+                <div role="menuitem" aria-haspopup="menu" aria-expanded="false">Tools</div>
+            </div>
+            <p class="code">&lt;div role="menubar" id="menubar-empty-label-fail" class="a11yTestFail" aria-label=""&gt;
+    &lt;div role="menuitem" aria-haspopup="menu" aria-expanded="false"&gt;File&lt;/div&gt;
+    &lt;div role="menuitem" aria-haspopup="menu" aria-expanded="false"&gt;Edit&lt;/div&gt;
+    &lt;div role="menuitem" aria-haspopup="menu" aria-expanded="false"&gt;View&lt;/div&gt;
+    &lt;div role="menuitem" aria-haspopup="menu" aria-expanded="false"&gt;Tools&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Menubar with Whitespace-only aria-label</h3>
+            <p>This menubar has an aria-label with only whitespace, which provides no accessible name.</p>
+            <div class="a11yTestFail" role="menubar" id="menubar-whitespace-label-fail"  aria-label="   ">
+                <div role="menuitem" aria-haspopup="menu" aria-expanded="false">Games</div>
+                <div role="menuitem" aria-haspopup="menu" aria-expanded="false">Movies</div>
+                <div role="menuitem" aria-haspopup="menu" aria-expanded="false">Music</div>
+                <div role="menuitem" aria-haspopup="menu" aria-expanded="false">Settings</div>
+            </div>
+            <p class="code">&lt;div role="menubar" id="menubar-whitespace-label-fail" class="a11yTestFail" aria-label="   "&gt;
+    &lt;div role="menuitem" aria-haspopup="menu" aria-expanded="false"&gt;Games&lt;/div&gt;
+    &lt;div role="menuitem" aria-haspopup="menu" aria-expanded="false"&gt;Movies&lt;/div&gt;
+    &lt;div role="menuitem" aria-haspopup="menu" aria-expanded="false"&gt;Music&lt;/div&gt;
+    &lt;div role="menuitem" aria-haspopup="menu" aria-expanded="false"&gt;Settings&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Menubar with Punctuation-only aria-label</h3>
+            <p>This menubar has an aria-label with only punctuation, which provides no meaningful accessible name.</p>
+            <div class="a11yTestFail" role="menubar" id="menubar-punctuation-label-fail"  aria-label="...">
+                <div role="menuitem" aria-haspopup="menu" aria-expanded="false">Docs</div>
+                <div role="menuitem" aria-haspopup="menu" aria-expanded="false">Sheets</div>
+                <div role="menuitem" aria-haspopup="menu" aria-expanded="false">Slides</div>
+                <div role="menuitem" aria-haspopup="menu" aria-expanded="false">Forms</div>
+            </div>
+            <p class="code">&lt;div role="menubar" id="menubar-punctuation-label-fail" class="a11yTestFail" aria-label="..."&gt;
+    &lt;div role="menuitem" aria-haspopup="menu" aria-expanded="false"&gt;Docs&lt;/div&gt;
+    &lt;div role="menuitem" aria-haspopup="menu" aria-expanded="false"&gt;Sheets&lt;/div&gt;
+    &lt;div role="menuitem" aria-haspopup="menu" aria-expanded="false"&gt;Slides&lt;/div&gt;
+    &lt;div role="menuitem" aria-haspopup="menu" aria-expanded="false"&gt;Forms&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Menubar with Broken aria-labelledby</h3>
+            <p>This menubar references a non-existent element ID with aria-labelledby, which prevents an accessible name from being created.</p>
+            <div class="a11yTestFail" role="menubar" id="menubar-broken-labelledby-fail"  aria-labelledby="non-existent-menubar-id">
+                <div role="menuitem" aria-haspopup="menu" aria-expanded="false">Products</div>
+                <div role="menuitem" aria-haspopup="menu" aria-expanded="false">Services</div>
+                <div role="menuitem" aria-haspopup="menu" aria-expanded="false">About</div>
+                <div role="menuitem" aria-haspopup="menu" aria-expanded="false">Contact</div>
+            </div>
+            <p class="code">&lt;div role="menubar" id="menubar-broken-labelledby-fail" class="a11yTestFail" aria-labelledby="non-existent-menubar-id"&gt;
+    &lt;div role="menuitem" aria-haspopup="menu" aria-expanded="false"&gt;Products&lt;/div&gt;
+    &lt;div role="menuitem" aria-haspopup="menu" aria-expanded="false"&gt;Services&lt;/div&gt;
+    &lt;div role="menuitem" aria-haspopup="menu" aria-expanded="false"&gt;About&lt;/div&gt;
+    &lt;div role="menuitem" aria-haspopup="menu" aria-expanded="false"&gt;Contact&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Menu with Empty Reference via aria-labelledby</h3>
+            <p>This menu references an element with no content via aria-labelledby, causing the accessible name computation to fail.</p>
+            <span id="empty-menu-label"></span>
+            <div class="a11yTestFail" role="menu" id="menu-empty-reference-labelledby-fail"  aria-labelledby="empty-menu-label">
+                <div role="menuitem">Cut</div>
+                <div role="menuitem">Copy</div>
+                <div role="menuitem">Paste</div>
+                <div role="menuitem">Delete</div>
+            </div>
+            <p class="code">&lt;span id="empty-menu-label"&gt;&lt;/span&gt;
+&lt;div role="menu" id="menu-empty-reference-labelledby-fail" class="a11yTestFail" aria-labelledby="empty-menu-label"&gt;
+    &lt;div role="menuitem"&gt;Cut&lt;/div&gt;
+    &lt;div role="menuitem"&gt;Copy&lt;/div&gt;
+    &lt;div role="menuitem"&gt;Paste&lt;/div&gt;
+    &lt;div role="menuitem"&gt;Delete&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Menu with Whitespace-only Reference via aria-labelledby</h3>
+            <p>This menu references an element that has only whitespace via aria-labelledby, causing the accessible name computation to fail.</p>
+            <span id="whitespace-menu-label">   </span>
+            <div class="a11yTestFail" role="menu" id="menu-whitespace-reference-labelledby-fail"  aria-labelledby="whitespace-menu-label">
+                <div role="menuitem">New Document</div>
+                <div role="menuitem">Open...</div>
+                <div role="menuitem">Save</div>
+                <div role="menuitem">Save As...</div>
+            </div>
+            <p class="code">&lt;span id="whitespace-menu-label"&gt;   &lt;/span&gt;
+&lt;div role="menu" id="menu-whitespace-reference-labelledby-fail" class="a11yTestFail" aria-labelledby="whitespace-menu-label"&gt;
+    &lt;div role="menuitem"&gt;New Document&lt;/div&gt;
+    &lt;div role="menuitem"&gt;Open...&lt;/div&gt;
+    &lt;div role="menuitem"&gt;Save&lt;/div&gt;
+    &lt;div role="menuitem"&gt;Save As...&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Menu with Punctuation-only Reference via aria-labelledby</h3>
+            <p>This menu references an element that has only punctuation via aria-labelledby, causing the accessible name computation to fail.</p>
+            <span id="punctuation-menu-label">...</span>
+            <div class="a11yTestFail" role="menu" id="menu-punctuation-reference-labelledby-fail"  aria-labelledby="punctuation-menu-label">
+                <div role="menuitemradio" aria-checked="true">Small</div>
+                <div role="menuitemradio" aria-checked="false">Medium</div>
+                <div role="menuitemradio" aria-checked="false">Large</div>
+                <div role="menuitemradio" aria-checked="false">Extra Large</div>
+            </div>
+            <p class="code">&lt;span id="punctuation-menu-label"&gt;...&lt;/span&gt;
+&lt;div role="menu" id="menu-punctuation-reference-labelledby-fail" class="a11yTestFail" aria-labelledby="punctuation-menu-label"&gt;
+    &lt;div role="menuitemradio" aria-checked="true"&gt;Small&lt;/div&gt;
+    &lt;div role="menuitemradio" aria-checked="false"&gt;Medium&lt;/div&gt;
+    &lt;div role="menuitemradio" aria-checked="false"&gt;Large&lt;/div&gt;
+    &lt;div role="menuitemradio" aria-checked="false"&gt;Extra Large&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <h3>Menuitemradio Test Cases</h3>
+        <p>These tests validate accessible names specifically for elements with role="menuitemradio", which are selectable menu items in a set where only one can be selected.</p>
+        
+        <div class="warning-box">
+            <h3>⚠️ Understanding the Menuitemradio Role</h3>
+            <p>According to the ARIA Authoring Practices Guide (APG), the <code>role="menuitemradio"</code> is used for selectable menu items that are checkable and can only have one selected from a group. Key implementation requirements include:</p>
+            <ul>
+                <li>Menuitemradio elements should have an accessible name via <code>aria-label</code> or <code>aria-labelledby</code> when the text content alone is not sufficient</li>
+                <li>They must use <code>aria-checked</code> to indicate their selection state (true/false)</li>
+                <li>They should be contained within a <code>role="menu"</code> or <code>role="menubar"</code></li>
+                <li>Only one menuitemradio in a group should have <code>aria-checked="true"</code></li>
+                <li>Related menuitemradio elements should use <code>aria-posinset</code> and <code>aria-setsize</code> when not all items are in the DOM</li>
+            </ul>
+            <p><strong>Important:</strong> When the visible text of a menuitemradio adequately describes its purpose, an additional aria-label is usually not necessary. However, there are cases where additional labeling may be needed for clarity.</p>
+        </div>
+        
+        <div class="test-case pass">
+            <h3>Menuitemradio with aria-label</h3>
+            <p>This menuitemradio has a descriptive aria-label providing an accessible name that enhances the default text content.</p>
+            <div role="menu" aria-label="Text Alignment">
+                <div class="a11yTestPass" role="menuitemradio" id="menuitemradio-aria-label-pass"  aria-label="Align Text Left" aria-checked="true">Left</div>
+            </div>
+            <p class="code">&lt;div role="menu" aria-label="Text Alignment"&gt;
+    &lt;div role="menuitemradio" id="menuitemradio-aria-label-pass" class="a11yTestPass" aria-label="Align Text Left" aria-checked="true"&gt;Left&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case pass">
+            <h3>Menuitemradio with aria-labelledby</h3>
+            <p>This menuitemradio uses aria-labelledby to reference another element for its accessible name.</p>
+            <h4 id="font-size-label">Text Size</h4>
+            <div role="menu" aria-label="Font Options">
+                <div class="a11yTestPass" role="menuitemradio" id="menuitemradio-aria-labelledby-pass"  aria-labelledby="font-size-label" aria-checked="true">Medium</div>
+            </div>
+            <p class="code">&lt;h4 id="font-size-label"&gt;Text Size&lt;/h4&gt;
+&lt;div role="menu" aria-label="Font Options"&gt;
+    &lt;div role="menuitemradio" id="menuitemradio-aria-labelledby-pass" class="a11yTestPass" aria-labelledby="font-size-label" aria-checked="true"&gt;Medium&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Menuitemradio with Empty aria-label</h3>
+            <p>This menuitemradio has an empty aria-label, which overrides its text content and provides no accessible name.</p>
+            <div role="menu" aria-label="View Options">
+                <div class="a11yTestFail" role="menuitemradio" id="menuitemradio-empty-label-fail"  aria-label="" aria-checked="true">Print Layout</div>
+            </div>
+            <p class="code">&lt;div role="menu" aria-label="View Options"&gt;
+    &lt;div role="menuitemradio" id="menuitemradio-empty-label-fail" class="a11yTestFail" aria-label="" aria-checked="true"&gt;Print Layout&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Menuitemradio with Whitespace-only aria-label</h3>
+            <p>This menuitemradio has an aria-label with only whitespace, which overrides its text content and provides no accessible name.</p>
+            <div role="menu" aria-label="Zoom Options">
+                <div class="a11yTestFail" role="menuitemradio" id="menuitemradio-whitespace-label-fail"  aria-label="   " aria-checked="true">100%</div>
+            </div>
+            <p class="code">&lt;div role="menu" aria-label="Zoom Options"&gt;
+    &lt;div role="menuitemradio" id="menuitemradio-whitespace-label-fail" class="a11yTestFail" aria-label="   " aria-checked="true"&gt;100%&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Menuitemradio with Punctuation-only aria-label</h3>
+            <p>This menuitemradio has an aria-label with only punctuation, which overrides its text content and provides no meaningful accessible name.</p>
+            <div role="menu" aria-label="Color Theme">
+                <div class="a11yTestFail" role="menuitemradio" id="menuitemradio-punctuation-label-fail"  aria-label="..." aria-checked="true">Dark Mode</div>
+            </div>
+            <p class="code">&lt;div role="menu" aria-label="Color Theme"&gt;
+    &lt;div role="menuitemradio" id="menuitemradio-punctuation-label-fail" class="a11yTestFail" aria-label="..." aria-checked="true"&gt;Dark Mode&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Menuitemradio with Broken aria-labelledby</h3>
+            <p>This menuitemradio references a non-existent element ID with aria-labelledby, which prevents an accessible name from being created.</p>
+            <div role="menu" aria-label="Page Layout">
+                <div class="a11yTestFail" role="menuitemradio" id="menuitemradio-broken-labelledby-fail"  aria-labelledby="non-existent-menuitemradio-id" aria-checked="true">Single Page</div>
+            </div>
+            <p class="code">&lt;div role="menu" aria-label="Page Layout"&gt;
+    &lt;div role="menuitemradio" id="menuitemradio-broken-labelledby-fail" class="a11yTestFail" aria-labelledby="non-existent-menuitemradio-id" aria-checked="true"&gt;Single Page&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Menuitemradio with Empty Reference via aria-labelledby</h3>
+            <p>This menuitemradio references an element with no content via aria-labelledby, causing the accessible name computation to fail.</p>
+            <span id="empty-menuitemradio-label"></span>
+            <div role="menu" aria-label="Line Spacing">
+                <div class="a11yTestFail" role="menuitemradio" id="menuitemradio-empty-reference-labelledby-fail"  aria-labelledby="empty-menuitemradio-label" aria-checked="true">Double</div>
+            </div>
+            <p class="code">&lt;span id="empty-menuitemradio-label"&gt;&lt;/span&gt;
+&lt;div role="menu" aria-label="Line Spacing"&gt;
+    &lt;div role="menuitemradio" id="menuitemradio-empty-reference-labelledby-fail" class="a11yTestFail" aria-labelledby="empty-menuitemradio-label" aria-checked="true"&gt;Double&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Menuitemradio with Whitespace-only Reference via aria-labelledby</h3>
+            <p>This menuitemradio references an element that has only whitespace via aria-labelledby, causing the accessible name computation to fail.</p>
+            <span id="whitespace-menuitemradio-label">   </span>
+            <div role="menu" aria-label="Text Direction">
+                <div class="a11yTestFail" role="menuitemradio" id="menuitemradio-whitespace-reference-labelledby-fail"  aria-labelledby="whitespace-menuitemradio-label" aria-checked="true">Left to Right</div>
+            </div>
+            <p class="code">&lt;span id="whitespace-menuitemradio-label"&gt;   &lt;/span&gt;
+&lt;div role="menu" aria-label="Text Direction"&gt;
+    &lt;div role="menuitemradio" id="menuitemradio-whitespace-reference-labelledby-fail" class="a11yTestFail" aria-labelledby="whitespace-menuitemradio-label" aria-checked="true"&gt;Left to Right&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Menuitemradio with Punctuation-only Reference via aria-labelledby</h3>
+            <p>This menuitemradio references an element that has only punctuation via aria-labelledby, causing the accessible name computation to fail.</p>
+            <span id="punctuation-menuitemradio-label">...</span>
+            <div role="menu" aria-label="Display Options">
+                <div class="a11yTestFail" role="menuitemradio" id="menuitemradio-punctuation-reference-labelledby-fail"  aria-labelledby="punctuation-menuitemradio-label" aria-checked="true">Fullscreen</div>
+            </div>
+            <p class="code">&lt;span id="punctuation-menuitemradio-label"&gt;...&lt;/span&gt;
+&lt;div role="menu" aria-label="Display Options"&gt;
+    &lt;div role="menuitemradio" id="menuitemradio-punctuation-reference-labelledby-fail" class="a11yTestFail" aria-labelledby="punctuation-menuitemradio-label" aria-checked="true"&gt;Fullscreen&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+    </div>
+</body>
+</html>

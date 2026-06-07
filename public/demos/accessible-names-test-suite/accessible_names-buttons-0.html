@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Button Accessible Names Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+        }
+        .button-container {
+            margin: 20px 0;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+        }
+        .test-case {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+        .test-case h3 {
+            margin-top: 0;
+        }
+        .test-case p {
+            margin-bottom: 10px;
+        }
+        .example-label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .pass {
+            border-left: 5px solid green;
+        }
+        .fail {
+            border-left: 5px solid red;
+        }
+        .code {
+            background-color: #f0f0f0;
+            padding: 5px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        button, [role="button"] {
+            padding: 8px 16px;
+            margin: 5px 0;
+            cursor: pointer;
+        }
+        .icon-button {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        [role="button"] {
+            display: inline-block;
+            background-color: #f1f1f1;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            user-select: none;
+        }
+        [role="button"]:focus {
+            outline: 2px solid blue;
+        }
+    </style>
+</head>
+<body>
+    <h1>Button Accessible Names Test Cases</h1>
+    <p><strong>Test cases: 10 passing, 15 failing (25 total)</strong></p>
+    <p>This page contains various button elements to test accessible name computation according to WCAG guidelines.</p>
+    
+    <div class="button-container">
+        <div id="pass-examples">
+            <h2>Passing Examples</h2>
+            
+            <div class="test-case pass">
+                <h3>Simple Button with Text</h3>
+                <p>This button has visible text content that provides its accessible name.</p>
+                <button class="a11yTestPass" id="btn-text-pass" >Submit Form</button>
+                <p class="code">&lt;button id="btn-text-pass" class="a11yTestPass"&gt;Submit Form&lt;/button&gt;</p>
+            </div>
+            
+            <div class="test-case pass">
+                <h3>Button with Icon and Text</h3>
+                <p>This button has both an icon and text, which together form its accessible name.</p>
+                <button class="a11yTestPass" id="btn-icon-text-pass">
+                    <span>⭐</span> Add to Favorites
+                </button>
+                <p class="code">&lt;button id="btn-icon-text-pass" class="a11yTestPass"&gt;&lt;span&gt;⭐&lt;/span&gt; Add to Favorites&lt;/button&gt;</p>
+            </div>
+            
+            <div class="test-case pass">
+                <h3>Button with aria-label</h3>
+                <p>This button has an aria-label attribute that provides its accessible name.</p>
+                <button class="a11yTestPass" id="btn-aria-label-pass"  aria-label="Close dialog">X</button>
+                <p class="code">&lt;button id="btn-aria-label-pass" class="a11yTestPass" aria-label="Close dialog"&gt;X&lt;/button&gt;</p>
+            </div>
+            
+            <div class="test-case pass">
+                <h3>Button with aria-labelledby</h3>
+                <p>This button uses aria-labelledby to reference text elsewhere on the page for its accessible name.</p>
+                <span id="search-label">Search database</span>
+                <button class="a11yTestPass" id="btn-aria-labelledby-pass"  aria-labelledby="search-label">🔍</button>
+                <p class="code">&lt;span id="search-label"&gt;Search database&lt;/span&gt;<br>
+                &lt;button id="btn-aria-labelledby-pass" class="a11yTestPass" aria-labelledby="search-label"&gt;🔍&lt;/button&gt;</p>
+            </div>
+            
+            <div class="test-case pass">
+                <h3>Input Button with Value</h3>
+                <p>This input type="button" uses its value attribute as the accessible name.</p>
+                <input class="a11yTestPass" id="input-btn-value-pass"  type="button" value="Click Me">
+                <p class="code">&lt;input id="input-btn-value-pass" class="a11yTestPass" type="button" value="Click Me"&gt;</p>
+            </div>
+            
+            <div class="test-case pass">
+                <h3>Reset Button with Value</h3>
+                <p>This reset button uses its value attribute as the accessible name.</p>
+                <input class="a11yTestPass" id="reset-btn-value-pass"  type="reset" value="Reset Form">
+                <p class="code">&lt;input id="reset-btn-value-pass" class="a11yTestPass" type="reset" value="Reset Form"&gt;</p>
+            </div>
+        </div>
+        
+        <div id="fail-examples">
+            <h2>Failing Examples</h2>
+            
+            <div class="test-case fail">
+                <h3>Empty Button</h3>
+                <p>This button has no text content or accessible name.</p>
+                <button class="a11yTestFail a11yTest a11yTestFail" id="btn-empty-fail"  ></button>
+                <p class="code">&lt;button id="btn-empty-fail" class="a11yTestFail"&gt;&lt;/button&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>Icon-only Button without Accessible Name</h3>
+                <p>This button has only an icon but no accessible name.</p>
+                <button class="a11yTestFail icon-button a11yTestFail" id="btn-icon-only-fail"  >❌</button>
+                <p class="code">&lt;button id="btn-icon-only-fail" class="a11yTestFail icon-button" &gt;❌&lt;/button&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>Input Button without Value</h3>
+                <p>This input button has no value attribute to provide an accessible name.</p>
+                <input class="a11yTestFail" id="input-btn-no-value-fail"  type="button">
+                <p class="code">&lt;input id="input-btn-no-value-fail" class="a11yTestFail" type="button"&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>Generic Button Text</h3>
+                <p>This button has text that doesn't describe its function or purpose.</p>
+                <button class="a11yTestFail" id="btn-generic-text-fail" >Click</button>
+                <p class="code">&lt;button id="btn-generic-text-fail" class="a11yTestFail"&gt;Click&lt;/button&gt;</p>
+            </div>Why did you 
+            
+            <div class="test-case fail">
+                <h3>Button with Empty aria-label</h3>
+                <p>This button has an empty aria-label attribute.</p>
+                <button class="a11yTestFail a11yTest a11yTestFail" id="btn-empty-arialabel-fail"   aria-label="">Save</button>
+                <p class="code">&lt;button id="btn-empty-arialabel-fail" class="a11yTestFail" aria-label=""&gt;Save&lt;/button&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>Button with Non-existent aria-labelledby Reference</h3>
+                <p>This button has an aria-labelledby attribute pointing to an ID that doesn't exist.</p>
+                <button class="a11yTestFail a11yTest a11yTestFail" id="btn-broken-labelledby-fail"   aria-labelledby="non-existent-id">Submit</button>
+                <p class="code">&lt;button id="btn-broken-labelledby-fail" class="a11yTestFail" aria-labelledby="non-existent-id"&gt;Submit&lt;/button&gt;</p>
+            </div>
+
+            <div class="test-case fail">
+                <h3>Button with Only Whitespace</h3>
+                <p>This button contains only whitespace characters, which doesn't provide a proper accessible name.</p>
+                <button class="a11yTestFail a11yTest a11yTestFail" id="btn-whitespace-fail"  >   </button>
+                <p class="code">&lt;button id="btn-whitespace-fail" class="a11yTestFail"&gt;   &lt;/button&gt;</p>
+            </div>
+
+            <div class="test-case fail">
+                <h3>Button with Only Punctuation</h3>
+                <p>This button's aria-label contains only punctuation, which may not be announced by some screen readers.</p>
+                <button class="a11yTestFail" id="btn-punctuation-arialabel-fail"  aria-label="..."></button>
+                <p class="code">&lt;button id="btn-punctuation-arialabel-fail" class="a11yTestFail" aria-label="..."&gt;&lt;/button&gt;</p>
+            </div>
+        </div>
+    </div>
+    
+    <hr>
+    
+    <div class="button-container">
+        <h2>ARIA Role Button Tests</h2>
+        <p>The following tests use <code>&lt;div role="button"&gt;</code> instead of semantic button elements.</p>
+        
+        <div id="pass-examples-aria">
+            <h2>Passing Examples - ARIA Role</h2>
+            
+            <div class="test-case pass">
+                <h3>Div with role="button" and Text</h3>
+                <p>This div with role="button" has visible text content that provides its accessible name.</p>
+                <div class="a11yTestPass" id="aria-btn-text-pass"  role="button" tabindex="0">Submit Form</div>
+                <p class="code">&lt;div id="aria-btn-text-pass" class="a11yTestPass" role="button" tabindex="0"&gt;Submit Form&lt;/div&gt;</p>
+            </div>
+            
+            <div class="test-case pass">
+                <h3>Role Button with Icon and Text</h3>
+                <p>This div with role="button" has both an icon and text, which together form its accessible name.</p>
+                <div class="a11yTestPass" id="aria-btn-icon-text-pass"  role="button" tabindex="0">
+                    <span>⭐</span> Add to Favorites
+                </div>
+                <p class="code">&lt;div id="aria-btn-icon-text-pass" class="a11yTestPass" role="button" tabindex="0"&gt;&lt;span&gt;⭐&lt;/span&gt; Add to Favorites&lt;/div&gt;</p>
+            </div>
+            
+            <div class="test-case pass">
+                <h3>Role Button with aria-label</h3>
+                <p>This div with role="button" has an aria-label attribute that provides its accessible name.</p>
+                <div class="a11yTestPass" id="aria-btn-arialabel-pass"  role="button" tabindex="0" aria-label="Close dialog">X</div>
+                <p class="code">&lt;div id="aria-btn-arialabel-pass" class="a11yTestPass" role="button" tabindex="0" aria-label="Close dialog"&gt;X&lt;/div&gt;</p>
+            </div>
+            
+            <div class="test-case pass">
+                <h3>Role Button with aria-labelledby</h3>
+                <p>This div with role="button" uses aria-labelledby to reference text elsewhere on the page for its accessible name.</p>
+                <span id="search-label-aria">Search database</span>
+                <div class="a11yTestPass" id="aria-btn-labelledby-pass"  role="button" tabindex="0" aria-labelledby="search-label-aria">🔍</div>
+                <p class="code">&lt;span id="search-label-aria"&gt;Search database&lt;/span&gt;<br>
+                &lt;div id="aria-btn-labelledby-pass" class="a11yTestPass" role="button" tabindex="0" aria-labelledby="search-label-aria"&gt;🔍&lt;/div&gt;</p>
+            </div>
+        </div>
+        
+        <div id="fail-examples-aria">
+            <h2>Failing Examples - ARIA Role</h2>
+            
+            <div class="test-case fail">
+                <h3>Empty Role Button</h3>
+                <p>This div with role="button" has no text content or accessible name.</p>
+                <div class="a11yTestFail" id="aria-btn-empty-fail"  role="button" tabindex="0"></div>
+                <p class="code">&lt;div id="aria-btn-empty-fail" class="a11yTestFail" role="button" tabindex="0"&gt;&lt;/div&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>Icon-only Role Button without Accessible Name</h3>
+                <p>This div with role="button" has only an icon but no accessible name.</p>
+                <div class="a11yTestFail icon-button a11yTestFail" id="aria-btn-icon-only-fail"  role="button" tabindex="0" >❌</div>
+                <p class="code">&lt;div id="aria-btn-icon-only-fail" class="a11yTestFail icon-button" role="button" tabindex="0" &gt;❌&lt;/div&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>Generic Role Button Text</h3>
+                <p>This div with role="button" has text that doesn't describe its function or purpose.</p>
+                <div class="a11yTestFail" id="aria-btn-generic-text-fail"  role="button" tabindex="0">Click</div>
+                <p class="code">&lt;div id="aria-btn-generic-text-fail" class="a11yTestFail" role="button" tabindex="0"&gt;Click&lt;/div&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>Role Button with Empty aria-label</h3>
+                <p>This div with role="button" has an empty aria-label attribute.</p>
+                <div class="a11yTestFail" id="aria-btn-empty-arialabel-fail"  role="button" tabindex="0" aria-label="">Save</div>
+                <p class="code">&lt;div id="aria-btn-empty-arialabel-fail" class="a11yTestFail" role="button" tabindex="0" aria-label=""&gt;Save&lt;/div&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>Role Button with Non-existent aria-labelledby Reference</h3>
+                <p>This div with role="button" has an aria-labelledby attribute pointing to an ID that doesn't exist.</p>
+                <div class="a11yTestFail" id="aria-btn-broken-labelledby-fail"  role="button" tabindex="0" aria-labelledby="non-existent-id-aria">Submit</div>
+                <p class="code">&lt;div id="aria-btn-broken-labelledby-fail" class="a11yTestFail" role="button" tabindex="0" aria-labelledby="non-existent-id-aria"&gt;Submit&lt;/div&gt;</p>
+            </div>
+
+            <div class="test-case fail">
+                <h3>Role Button with Only Whitespace</h3>
+                <p>This div with role="button" contains only whitespace characters, which doesn't provide a proper accessible name.</p>
+                <div class="a11yTestFail" id="aria-btn-whitespace-fail"  role="button" tabindex="0">   </div>
+                <p class="code">&lt;div id="aria-btn-whitespace-fail" class="a11yTestFail" role="button" tabindex="0"&gt;   &lt;/div&gt;</p>
+            </div>
+
+            <div class="test-case fail">
+                <h3>Role Button with Only Punctuation</h3>
+                <p>This div with role="button" has an aria-label with only punctuation, which may not be announced by some screen readers.</p>
+                <div class="a11yTestFail" id="aria-btn-punctuation-arialabel-fail"  role="button" tabindex="0" aria-label="..."></div>
+                <p class="code">&lt;div id="aria-btn-punctuation-arialabel-fail" class="a11yTestFail" role="button" tabindex="0" aria-label="..."&gt;&lt;/div&gt;</p>
+            </div>
+            
+        </div>
+    </div>
+    
+    <footer>
+        <p>This test page is designed to validate button name accessibility according to WCAG 4.1.2 Name, Role, Value criteria.</p>
+        <p>The tests are also related to WCAG 2.4.4 Link Purpose (In Context) and 2.4.9 2.4.9 Link Purpose (Link Only)</p>
+    </footer>
+</body>
+</html>

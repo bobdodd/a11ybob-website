@@ -1,0 +1,2251 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARIA Supporting Roles Accessible Names Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 30px;
+            max-width: 1200px;
+        }
+        .test-case {
+            margin-bottom: 40px;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .warning-box {
+            background-color: #fff3cd;
+            border: 1px solid #ffeeba;
+            border-left: 5px solid #ffc107;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .comparison-table {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 15px 0;
+        }
+        .comparison-table h4 {
+            width: 100%;
+            margin-bottom: 5px;
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 5px;
+        }
+        .comparison-table ul {
+            margin-top: 0;
+        }
+        .example-code {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 10px;
+            border-radius: 3px;
+            margin-top: 10px;
+            margin-bottom: 15px;
+        }
+        .example-code pre {
+            margin: 0;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        .pass {
+            background-color: #e6f7e6;
+            border-left: 5px solid #28a745;
+        }
+        .fail {
+            background-color: #fbeeee;
+            border-left: 5px solid #dc3545;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 5px solid #ffc107;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #444;
+            margin-top: 40px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        h3 {
+            color: #555;
+            margin: 0 0 10px 0;
+        }
+        .code {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            margin-top: 10px;
+            overflow-x: auto;
+        }
+        .role-container {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .interactive-element {
+            display: block;
+            margin: 10px 0;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 10px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        caption {
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>ARIA Supporting Roles Accessible Names Test</h1>
+    <p><strong>Test cases: 15 passing, 32 failing (47 total)</strong></p>
+    <p>This page contains test cases for validating accessible names for non-interactive ARIA roles that provide context for interactive elements, such as landmarks and tables.</p>
+    
+    <div class="role-container">
+        <h2>1. Landmark Roles</h2>
+        <p>These tests validate accessible names for ARIA landmark roles, which help screen reader users navigate through different sections of a page.</p>
+        
+        <div class="warning-box">
+            <h3>⚠️ Understanding Landmark Roles</h3>
+            <p>Landmarks are regions of a page that have special significance and are announced by screen readers as navigational markers. Key implementation details include:</p>
+            <ul>
+                <li>Landmarks should have unique accessible names to distinguish between multiple instances of the same type</li>
+                <li>They can be created using either semantic HTML elements or ARIA roles</li>
+                <li>Screen readers typically offer shortcuts to navigate between landmarks</li>
+                <li>Good landmark labeling improves orientation and navigation for screen reader users</li>
+            </ul>
+            <p><strong>Important:</strong> When using semantic HTML elements (like <code>&lt;nav&gt;</code>, <code>&lt;main&gt;</code>, <code>&lt;aside&gt;</code>), the ARIA landmark role is implied and generally shouldn't be duplicated unless needed for backward compatibility.</p>
+        </div>
+        
+        <h3>Passing Examples</h3>
+        
+        <div class="test-case pass">
+            <h3>Navigation Landmark with aria-label</h3>
+            <p>This nav element has a descriptive aria-label providing a unique accessible name.</p>
+            <nav id="nav-aria-label-pass" class="a11yTestPass" aria-label="Main Navigation">
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Products</a></li>
+                    <li><a href="#">Services</a></li>
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </nav>
+            <p class="code">&lt;nav id="nav-aria-label-pass" class="a11yTestPass" aria-label="Main Navigation"&gt;
+    &lt;ul&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Home&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Products&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Services&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="#"&gt;About&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Contact&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/nav&gt;</p>
+        </div>
+        
+        <div class="test-case pass">
+            <h3>ARIA Role Navigation with aria-labelledby</h3>
+            <p>This div with role="navigation" uses aria-labelledby to reference another element for its accessible name.</p>
+            <h4 id="footer-nav-heading">Footer Navigation</h4>
+            <div role="navigation" id="navigation-aria-labelledby-pass" class="a11yTestPass" aria-labelledby="footer-nav-heading">
+                <ul>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">Site Map</a></li>
+                </ul>
+            </div>
+            <p class="code">&lt;h4 id="footer-nav-heading"&gt;Footer Navigation&lt;/h4&gt;
+&lt;div role="navigation" id="navigation-aria-labelledby-pass" class="a11yTestPass" aria-labelledby="footer-nav-heading"&gt;
+    &lt;ul&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Privacy Policy&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Terms of Service&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Site Map&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case pass">
+            <h3>Main Landmark with aria-label</h3>
+            <p>This main element has a descriptive aria-label providing a unique accessible name.</p>
+            <main id="main-aria-label-pass" class="a11yTestPass" aria-label="Main Content">
+                <h2>Welcome to Our Website</h2>
+                <p>This is the main content area of the page.</p>
+            </main>
+            <p class="code">&lt;main id="main-aria-label-pass" class="a11yTestPass" aria-label="Main Content"&gt;
+    &lt;h2&gt;Welcome to Our Website&lt;/h2&gt;
+    &lt;p&gt;This is the main content area of the page.&lt;/p&gt;
+&lt;/main&gt;</p>
+        </div>
+        
+        <div class="test-case pass">
+            <h3>Multiple Complementary Landmarks with Unique Names</h3>
+            <p>These aside elements have unique accessible names to distinguish between them.</p>
+            <aside id="aside1-aria-label-pass" class="a11yTestPass" aria-label="Related Articles">
+                <h3>Related Articles</h3>
+                <ul>
+                    <li><a href="#">Article 1</a></li>
+                    <li><a href="#">Article 2</a></li>
+                </ul>
+            </aside>
+            <aside id="aside2-aria-label-pass" class="a11yTestPass" aria-label="Featured Products">
+                <h3>Featured Products</h3>
+                <ul>
+                    <li><a href="#">Product 1</a></li>
+                    <li><a href="#">Product 2</a></li>
+                </ul>
+            </aside>
+            <p class="code">&lt;aside id="aside1-aria-label-pass" class="a11yTestPass" aria-label="Related Articles"&gt;
+    &lt;h3&gt;Related Articles&lt;/h3&gt;
+    &lt;ul&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Article 1&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Article 2&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/aside&gt;
+&lt;aside id="aside2-aria-label-pass" class="a11yTestPass" aria-label="Featured Products"&gt;
+    &lt;h3&gt;Featured Products&lt;/h3&gt;
+    &lt;ul&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Product 1&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Product 2&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/aside&gt;</p>
+        </div>
+        
+        <h3>Failing Examples</h3>
+        
+        <div class="test-case fail">
+            <h3>Duplicate Landmarks with No Names</h3>
+            <p>These navigation elements have no accessible names, making it difficult for screen reader users to distinguish between them.</p>
+            <nav id="nav1-no-name-fail" class="a11yTestFail a11yTest" >
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Products</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </nav>
+            <nav id="nav2-no-name-fail" class="a11yTestFail a11yTest" >
+                <ul>
+                    <li><a href="#">Categories</a></li>
+                    <li><a href="#">Tags</a></li>
+                    <li><a href="#">Archive</a></li>
+                </ul>
+            </nav>
+            <p class="code">&lt;nav id="nav1-no-name-fail"&gt;
+    &lt;ul&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Home&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Products&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Contact&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/nav&gt;
+&lt;nav id="nav2-no-name-fail"&gt;
+    &lt;ul&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Categories&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Tags&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Archive&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/nav&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Landmark with Empty aria-label</h3>
+            <p>This search landmark has an empty aria-label, providing no accessible name.</p>
+            <div role="search" id="search-empty-label-fail" class="a11yTestFail a11yTest"  aria-label="">
+                <form>
+                    <input type="text" role="searchbox" placeholder="Search...">
+                    <button type="submit">Search</button>
+                </form>
+            </div>
+            <p class="code">&lt;div role="search" id="search-empty-label-fail" class="a11yTestFail" aria-label=""&gt;
+    &lt;form&gt;
+        &lt;input type="text" role="searchbox" placeholder="Search..."&gt;
+        &lt;button type="submit"&gt;Search&lt;/button&gt;
+    &lt;/form&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Landmark with Whitespace-only aria-label</h3>
+            <p>This form landmark has an aria-label with only whitespace, providing no accessible name.</p>
+            <form id="form-whitespace-label-fail" class="a11yTestFail a11yTest"  aria-label="   ">
+                <div>
+                    <label for="name">Name:</label>
+                    <input type="text" id="name">
+                </div>
+                <div>
+                    <label for="email">Email:</label>
+                    <input type="email" id="email">
+                </div>
+                <button type="submit">Submit</button>
+            </form>
+            <p class="code">&lt;form id="form-whitespace-label-fail" class="a11yTestFail" aria-label="   "&gt;
+    &lt;div&gt;
+        &lt;label for="name"&gt;Name:&lt;/label&gt;
+        &lt;input type="text" id="name"&gt;
+    &lt;/div&gt;
+    &lt;div&gt;
+        &lt;label for="email"&gt;Email:&lt;/label&gt;
+        &lt;input type="email" id="email"&gt;
+    &lt;/div&gt;
+    &lt;button type="submit"&gt;Submit&lt;/button&gt;
+&lt;/form&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Landmark with Punctuation-only aria-label</h3>
+            <p>This region landmark has an aria-label with only punctuation, providing no meaningful accessible name.</p>
+            <section role="region" id="region-punctuation-label-fail" class="a11yTestFail a11yTest"  aria-label="...">
+                <h2>User Dashboard</h2>
+                <p>This is the user dashboard section.</p>
+            </section>
+            <p class="code">&lt;section role="region" id="region-punctuation-label-fail" class="a11yTestFail" aria-label="..."&gt;
+    &lt;h2&gt;User Dashboard&lt;/h2&gt;
+    &lt;p&gt;This is the user dashboard section.&lt;/p&gt;
+&lt;/section&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Landmark with Broken aria-labelledby</h3>
+            <p>This contentinfo landmark references a non-existent element ID with aria-labelledby, preventing an accessible name from being created.</p>
+            <footer role="contentinfo" id="contentinfo-broken-labelledby-fail" class="a11yTestFail a11yTest"  aria-labelledby="non-existent-footer-id">
+                <p>&copy; 2025 Company Name. All rights reserved.</p>
+            </footer>
+            <p class="code">&lt;footer role="contentinfo" id="contentinfo-broken-labelledby-fail" class="a11yTestFail" aria-labelledby="non-existent-footer-id"&gt;
+    &lt;p&gt;&copy; 2025 Company Name. All rights reserved.&lt;/p&gt;
+&lt;/footer&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Landmark with Empty Reference via aria-labelledby</h3>
+            <p>This banner landmark references an element with empty content via aria-labelledby, providing no accessible name.</p>
+            <span id="empty-banner-label"></span>
+            <header role="banner" id="banner-empty-reference-fail" class="a11yTestFail a11yTest"  aria-labelledby="empty-banner-label">
+                <h1>Company Name</h1>
+                <p>Company slogan goes here</p>
+            </header>
+            <p class="code">&lt;span id="empty-banner-label"&gt;&lt;/span&gt;
+&lt;header role="banner" id="banner-empty-reference-fail" class="a11yTestFail" aria-labelledby="empty-banner-label"&gt;
+    &lt;h1&gt;Company Name&lt;/h1&gt;
+    &lt;p&gt;Company slogan goes here&lt;/p&gt;
+&lt;/header&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Landmark with Whitespace-only Reference via aria-labelledby</h3>
+            <p>This navigation landmark references an element with whitespace-only content via aria-labelledby, providing no meaningful accessible name.</p>
+            <span id="whitespace-nav-label">   </span>
+            <nav id="nav-whitespace-reference-fail" class="a11yTestFail a11yTest"  aria-labelledby="whitespace-nav-label">
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Products</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </nav>
+            <p class="code">&lt;span id="whitespace-nav-label"&gt;   &lt;/span&gt;
+&lt;nav id="nav-whitespace-reference-fail" class="a11yTestFail" aria-labelledby="whitespace-nav-label"&gt;
+    &lt;ul&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Home&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Products&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Contact&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/nav&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Landmark with Punctuation-only Reference via aria-labelledby</h3>
+            <p>This main landmark references an element with punctuation-only content via aria-labelledby, providing no meaningful accessible name.</p>
+            <span id="punctuation-main-label">...</span>
+            <main id="main-punctuation-reference-fail" class="a11yTestFail a11yTest"  aria-labelledby="punctuation-main-label">
+                <h2>Welcome to Our Website</h2>
+                <p>This is the main content area of the page.</p>
+            </main>
+            <p class="code">&lt;span id="punctuation-main-label"&gt;...&lt;/span&gt;
+&lt;main id="main-punctuation-reference-fail" class="a11yTestFail" aria-labelledby="punctuation-main-label"&gt;
+    &lt;h2&gt;Welcome to Our Website&lt;/h2&gt;
+    &lt;p&gt;This is the main content area of the page.&lt;/p&gt;
+&lt;/main&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Search Landmark with Empty aria-label</h3>
+            <p>This search landmark has an empty aria-label, providing no accessible name.</p>
+            <div role="search" id="search-empty-label-fail2" class="a11yTest" aria-label="">
+                <form>
+                    <input type="text" placeholder="Search...">
+                    <button type="submit">Search</button>
+                </form>
+            </div>
+            <p class="code">&lt;div role="search" id="search-empty-label-fail2" aria-label=""&gt;
+    &lt;form&gt;
+        &lt;input type="text" placeholder="Search..."&gt;
+        &lt;button type="submit"&gt;Search&lt;/button&gt;
+    &lt;/form&gt;
+&lt;/div&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Complementary Landmark with Whitespace-only aria-label</h3>
+            <p>This complementary landmark has a whitespace-only aria-label, providing no meaningful accessible name.</p>
+            <aside id="complementary-whitespace-label-fail" class="a11yTestFail a11yTest"  aria-label="   ">
+                <h3>Related Content</h3>
+                <ul>
+                    <li><a href="#">Related Link 1</a></li>
+                    <li><a href="#">Related Link 2</a></li>
+                </ul>
+            </aside>
+            <p class="code">&lt;aside id="complementary-whitespace-label-fail" class="a11yTestFail" aria-label="   "&gt;
+    &lt;h3&gt;Related Content&lt;/h3&gt;
+    &lt;ul&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Related Link 1&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Related Link 2&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/aside&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Form Landmark with Punctuation-only aria-label</h3>
+            <p>This form landmark has a punctuation-only aria-label, providing no meaningful accessible name.</p>
+            <form id="form-punctuation-label-fail" class="a11yTestFail a11yTest"  aria-label="...">
+                <div>
+                    <label for="username">Username:</label>
+                    <input type="text" id="username">
+                </div>
+                <div>
+                    <label for="password">Password:</label>
+                    <input type="password" id="password">
+                </div>
+                <button type="submit">Login</button>
+            </form>
+            <p class="code">&lt;form id="form-punctuation-label-fail" class="a11yTestFail" aria-label="..."&gt;
+    &lt;div&gt;
+        &lt;label for="username"&gt;Username:&lt;/label&gt;
+        &lt;input type="text" id="username"&gt;
+    &lt;/div&gt;
+    &lt;div&gt;
+        &lt;label for="password"&gt;Password:&lt;/label&gt;
+        &lt;input type="password" id="password"&gt;
+    &lt;/div&gt;
+    &lt;button type="submit"&gt;Login&lt;/button&gt;
+&lt;/form&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Banner Landmark with Empty aria-label</h3>
+            <p>This banner landmark has an empty aria-label, providing no accessible name.</p>
+            <header role="banner" id="banner-empty-label-fail" class="a11yTestFail a11yTest"  aria-label="">
+                <h1>Company Name</h1>
+                <p>Company slogan goes here</p>
+            </header>
+            <p class="code">&lt;header role="banner" id="banner-empty-label-fail" class="a11yTestFail" aria-label=""&gt;
+    &lt;h1&gt;Company Name&lt;/h1&gt;
+    &lt;p&gt;Company slogan goes here&lt;/p&gt;
+&lt;/header&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Banner Landmark with Whitespace-only aria-label</h3>
+            <p>This banner landmark has a whitespace-only aria-label, providing no meaningful accessible name.</p>
+            <header role="banner" id="banner-whitespace-label-fail" class="a11yTestFail a11yTest"  aria-label="   ">
+                <h1>Company Name</h1>
+                <p>Company slogan goes here</p>
+            </header>
+            <p class="code">&lt;header role="banner" id="banner-whitespace-label-fail" class="a11yTestFail" aria-label="   "&gt;
+    &lt;h1&gt;Company Name&lt;/h1&gt;
+    &lt;p&gt;Company slogan goes here&lt;/p&gt;
+&lt;/header&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Banner Landmark with Punctuation-only aria-label</h3>
+            <p>This banner landmark has a punctuation-only aria-label, providing no meaningful accessible name.</p>
+            <header role="banner" id="banner-punctuation-label-fail" class="a11yTestFail a11yTest"  aria-label="...">
+                <h1>Company Name</h1>
+                <p>Company slogan goes here</p>
+            </header>
+            <p class="code">&lt;header role="banner" id="banner-punctuation-label-fail" class="a11yTestFail" aria-label="..."&gt;
+    &lt;h1&gt;Company Name&lt;/h1&gt;
+    &lt;p&gt;Company slogan goes here&lt;/p&gt;
+&lt;/header&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Main Landmark with Empty aria-label</h3>
+            <p>This main landmark has an empty aria-label, providing no accessible name.</p>
+            <main id="main-empty-label-fail" class="a11yTestFail a11yTest"  aria-label="">
+                <h2>Welcome to Our Website</h2>
+                <p>This is the main content area of the page.</p>
+            </main>
+            <p class="code">&lt;main id="main-empty-label-fail" class="a11yTestFail" aria-label=""&gt;
+    &lt;h2&gt;Welcome to Our Website&lt;/h2&gt;
+    &lt;p&gt;This is the main content area of the page.&lt;/p&gt;
+&lt;/main&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Main Landmark with Whitespace-only aria-label</h3>
+            <p>This main landmark has a whitespace-only aria-label, providing no meaningful accessible name.</p>
+            <main id="main-whitespace-label-fail" class="a11yTestFail a11yTest"  aria-label="   ">
+                <h2>Welcome to Our Website</h2>
+                <p>This is the main content area of the page.</p>
+            </main>
+            <p class="code">&lt;main id="main-whitespace-label-fail" class="a11yTestFail" aria-label="   "&gt;
+    &lt;h2&gt;Welcome to Our Website&lt;/h2&gt;
+    &lt;p&gt;This is the main content area of the page.&lt;/p&gt;
+&lt;/main&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Main Landmark with Punctuation-only aria-label</h3>
+            <p>This main landmark has a punctuation-only aria-label, providing no meaningful accessible name.</p>
+            <main id="main-punctuation-label-fail" class="a11yTestFail a11yTest"  aria-label="...">
+                <h2>Welcome to Our Website</h2>
+                <p>This is the main content area of the page.</p>
+            </main>
+            <p class="code">&lt;main id="main-punctuation-label-fail" class="a11yTestFail" aria-label="..."&gt;
+    &lt;h2&gt;Welcome to Our Website&lt;/h2&gt;
+    &lt;p&gt;This is the main content area of the page.&lt;/p&gt;
+&lt;/main&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Contentinfo Landmark with Empty aria-label</h3>
+            <p>This contentinfo landmark has an empty aria-label, providing no accessible name.</p>
+            <footer role="contentinfo" id="contentinfo-empty-label-fail" class="a11yTestFail a11yTest"  aria-label="">
+                <p>&copy; 2025 Company Name. All rights reserved.</p>
+                <p>Contact: info@example.com</p>
+            </footer>
+            <p class="code">&lt;footer role="contentinfo" id="contentinfo-empty-label-fail" class="a11yTestFail" aria-label=""&gt;
+    &lt;p&gt;&copy; 2025 Company Name. All rights reserved.&lt;/p&gt;
+    &lt;p&gt;Contact: info@example.com&lt;/p&gt;
+&lt;/footer&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Contentinfo Landmark with Whitespace-only aria-label</h3>
+            <p>This contentinfo landmark has a whitespace-only aria-label, providing no meaningful accessible name.</p>
+            <footer role="contentinfo" id="contentinfo-whitespace-label-fail" class="a11yTestFail a11yTest"  aria-label="   ">
+                <p>&copy; 2025 Company Name. All rights reserved.</p>
+                <p>Contact: info@example.com</p>
+            </footer>
+            <p class="code">&lt;footer role="contentinfo" id="contentinfo-whitespace-label-fail" class="a11yTestFail" aria-label="   "&gt;
+    &lt;p&gt;&copy; 2025 Company Name. All rights reserved.&lt;/p&gt;
+    &lt;p&gt;Contact: info@example.com&lt;/p&gt;
+&lt;/footer&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Contentinfo Landmark with Punctuation-only aria-label</h3>
+            <p>This contentinfo landmark has a punctuation-only aria-label, providing no meaningful accessible name.</p>
+            <footer role="contentinfo" id="contentinfo-punctuation-label-fail" class="a11yTestFail a11yTest"  aria-label="...">
+                <p>&copy; 2025 Company Name. All rights reserved.</p>
+                <p>Contact: info@example.com</p>
+            </footer>
+            <p class="code">&lt;footer role="contentinfo" id="contentinfo-punctuation-label-fail" class="a11yTestFail" aria-label="..."&gt;
+    &lt;p&gt;&copy; 2025 Company Name. All rights reserved.&lt;/p&gt;
+    &lt;p&gt;Contact: info@example.com&lt;/p&gt;
+&lt;/footer&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Form Landmark with Empty Reference via aria-labelledby</h3>
+            <p>This form landmark references an element with empty content via aria-labelledby, providing no accessible name.</p>
+            <span id="empty-form-label"></span>
+            <form id="form-empty-reference-fail" class="a11yTestFail a11yTest"  aria-labelledby="empty-form-label">
+                <div>
+                    <label for="form-name">Name:</label>
+                    <input type="text" id="form-name">
+                </div>
+                <div>
+                    <label for="form-email">Email:</label>
+                    <input type="email" id="form-email">
+                </div>
+                <button type="submit">Submit</button>
+            </form>
+            <p class="code">&lt;span id="empty-form-label"&gt;&lt;/span&gt;
+&lt;form id="form-empty-reference-fail" class="a11yTestFail" aria-labelledby="empty-form-label"&gt;
+    &lt;div&gt;
+        &lt;label for="form-name"&gt;Name:&lt;/label&gt;
+        &lt;input type="text" id="form-name"&gt;
+    &lt;/div&gt;
+    &lt;div&gt;
+        &lt;label for="form-email"&gt;Email:&lt;/label&gt;
+        &lt;input type="email" id="form-email"&gt;
+    &lt;/div&gt;
+    &lt;button type="submit"&gt;Submit&lt;/button&gt;
+&lt;/form&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Form Landmark with Whitespace-only Reference via aria-labelledby</h3>
+            <p>This form landmark references an element with whitespace-only content via aria-labelledby, providing no meaningful accessible name.</p>
+            <span id="whitespace-form-label">   </span>
+            <form id="form-whitespace-reference-fail" class="a11yTestFail a11yTest"  aria-labelledby="whitespace-form-label">
+                <div>
+                    <label for="form-name2">Name:</label>
+                    <input type="text" id="form-name2">
+                </div>
+                <div>
+                    <label for="form-email2">Email:</label>
+                    <input type="email" id="form-email2">
+                </div>
+                <button type="submit">Submit</button>
+            </form>
+            <p class="code">&lt;span id="whitespace-form-label"&gt;   &lt;/span&gt;
+&lt;form id="form-whitespace-reference-fail" class="a11yTestFail" aria-labelledby="whitespace-form-label"&gt;
+    &lt;div&gt;
+        &lt;label for="form-name2"&gt;Name:&lt;/label&gt;
+        &lt;input type="text" id="form-name2"&gt;
+    &lt;/div&gt;
+    &lt;div&gt;
+        &lt;label for="form-email2"&gt;Email:&lt;/label&gt;
+        &lt;input type="email" id="form-email2"&gt;
+    &lt;/div&gt;
+    &lt;button type="submit"&gt;Submit&lt;/button&gt;
+&lt;/form&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Form Landmark with Punctuation-only Reference via aria-labelledby</h3>
+            <p>This form landmark references an element with punctuation-only content via aria-labelledby, providing no meaningful accessible name.</p>
+            <span id="punctuation-form-label">...</span>
+            <form id="form-punctuation-reference-fail" class="a11yTestFail a11yTest"  aria-labelledby="punctuation-form-label">
+                <div>
+                    <label for="form-name3">Name:</label>
+                    <input type="text" id="form-name3">
+                </div>
+                <div>
+                    <label for="form-email3">Email:</label>
+                    <input type="email" id="form-email3">
+                </div>
+                <button type="submit">Submit</button>
+            </form>
+            <p class="code">&lt;span id="punctuation-form-label"&gt;...&lt;/span&gt;
+&lt;form id="form-punctuation-reference-fail" class="a11yTestFail" aria-labelledby="punctuation-form-label"&gt;
+    &lt;div&gt;
+        &lt;label for="form-name3"&gt;Name:&lt;/label&gt;
+        &lt;input type="text" id="form-name3"&gt;
+    &lt;/div&gt;
+    &lt;div&gt;
+        &lt;label for="form-email3"&gt;Email:&lt;/label&gt;
+        &lt;input type="email" id="form-email3"&gt;
+    &lt;/div&gt;
+    &lt;button type="submit"&gt;Submit&lt;/button&gt;
+&lt;/form&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Region Landmark with Empty Reference via aria-labelledby</h3>
+            <p>This region landmark references an element with empty content via aria-labelledby, providing no accessible name.</p>
+            <span id="empty-region-label"></span>
+            <section role="region" id="region-empty-reference-fail" class="a11yTestFail a11yTest"  aria-labelledby="empty-region-label">
+                <h2>Featured Content</h2>
+                <p>This is the featured content section.</p>
+            </section>
+            <p class="code">&lt;span id="empty-region-label"&gt;&lt;/span&gt;
+&lt;section role="region" id="region-empty-reference-fail" class="a11yTestFail" aria-labelledby="empty-region-label"&gt;
+    &lt;h2&gt;Featured Content&lt;/h2&gt;
+    &lt;p&gt;This is the featured content section.&lt;/p&gt;
+&lt;/section&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Region Landmark with Whitespace-only Reference via aria-labelledby</h3>
+            <p>This region landmark references an element with whitespace-only content via aria-labelledby, providing no meaningful accessible name.</p>
+            <span id="whitespace-region-label">   </span>
+            <section role="region" id="region-whitespace-reference-fail" class="a11yTestFail a11yTest"  aria-labelledby="whitespace-region-label">
+                <h2>Featured Content</h2>
+                <p>This is the featured content section.</p>
+            </section>
+            <p class="code">&lt;span id="whitespace-region-label"&gt;   &lt;/span&gt;
+&lt;section role="region" id="region-whitespace-reference-fail" class="a11yTestFail" aria-labelledby="whitespace-region-label"&gt;
+    &lt;h2&gt;Featured Content&lt;/h2&gt;
+    &lt;p&gt;This is the featured content section.&lt;/p&gt;
+&lt;/section&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Region Landmark with Punctuation-only Reference via aria-labelledby</h3>
+            <p>This region landmark references an element with punctuation-only content via aria-labelledby, providing no meaningful accessible name.</p>
+            <span id="punctuation-region-label">...</span>
+            <section role="region" id="region-punctuation-reference-fail" class="a11yTestFail a11yTest"  aria-labelledby="punctuation-region-label">
+                <h2>Featured Content</h2>
+                <p>This is the featured content section.</p>
+            </section>
+            <p class="code">&lt;span id="punctuation-region-label"&gt;...&lt;/span&gt;
+&lt;section role="region" id="region-punctuation-reference-fail" class="a11yTestFail" aria-labelledby="punctuation-region-label"&gt;
+    &lt;h2&gt;Featured Content&lt;/h2&gt;
+    &lt;p&gt;This is the featured content section.&lt;/p&gt;
+&lt;/section&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Search Landmark with Whitespace-only aria-label</h3>
+            <p>This search landmark has a whitespace-only aria-label, providing no meaningful accessible name.</p>
+            <div role="search" id="search-whitespace-label-fail" class="a11yTestFail a11yTest"  aria-label="   ">
+                <form>
+                    <input type="text" role="searchbox" placeholder="Search...">
+                    <button type="submit">Search</button>
+                </form>
+            </div>
+            <p class="code">&lt;div role="search" id="search-whitespace-label-fail" class="a11yTestFail" aria-label="   "&gt;
+    &lt;form&gt;
+        &lt;input type="text" role="searchbox" placeholder="Search..."&gt;
+        &lt;button type="submit"&gt;Search&lt;/button&gt;
+    &lt;/form&gt;
+&lt;/div&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Search Landmark with Punctuation-only aria-label</h3>
+            <p>This search landmark has a punctuation-only aria-label, providing no meaningful accessible name.</p>
+            <div role="search" id="search-punctuation-label-fail" class="a11yTestFail a11yTest"  aria-label="...">
+                <form>
+                    <input type="text" role="searchbox" placeholder="Search...">
+                    <button type="submit">Search</button>
+                </form>
+            </div>
+            <p class="code">&lt;div role="search" id="search-punctuation-label-fail" class="a11yTestFail" aria-label="..."&gt;
+    &lt;form&gt;
+        &lt;input type="text" role="searchbox" placeholder="Search..."&gt;
+        &lt;button type="submit"&gt;Search&lt;/button&gt;
+    &lt;/form&gt;
+&lt;/div&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Search Landmark with Empty Reference via aria-labelledby</h3>
+            <p>This search landmark references an element with empty content via aria-labelledby, providing no accessible name.</p>
+            <span id="empty-search-label"></span>
+            <div role="search" id="search-empty-reference-fail" class="a11yTestFail a11yTest"  aria-labelledby="empty-search-label">
+                <form>
+                    <input type="text" role="searchbox" placeholder="Search...">
+                    <button type="submit">Search</button>
+                </form>
+            </div>
+            <p class="code">&lt;span id="empty-search-label"&gt;&lt;/span&gt;
+&lt;div role="search" id="search-empty-reference-fail" class="a11yTestFail" aria-labelledby="empty-search-label"&gt;
+    &lt;form&gt;
+        &lt;input type="text" role="searchbox" placeholder="Search..."&gt;
+        &lt;button type="submit"&gt;Search&lt;/button&gt;
+    &lt;/form&gt;
+&lt;/div&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Search Landmark with Whitespace-only Reference via aria-labelledby</h3>
+            <p>This search landmark references an element with whitespace-only content via aria-labelledby, providing no meaningful accessible name.</p>
+            <span id="whitespace-search-label">   </span>
+            <div role="search" id="search-whitespace-reference-fail" class="a11yTestFail a11yTest"  aria-labelledby="whitespace-search-label">
+                <form>
+                    <input type="text" role="searchbox" placeholder="Search...">
+                    <button type="submit">Search</button>
+                </form>
+            </div>
+            <p class="code">&lt;span id="whitespace-search-label"&gt;   &lt;/span&gt;
+&lt;div role="search" id="search-whitespace-reference-fail" class="a11yTestFail" aria-labelledby="whitespace-search-label"&gt;
+    &lt;form&gt;
+        &lt;input type="text" role="searchbox" placeholder="Search..."&gt;
+        &lt;button type="submit"&gt;Search&lt;/button&gt;
+    &lt;/form&gt;
+&lt;/div&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Search Landmark with Punctuation-only Reference via aria-labelledby</h3>
+            <p>This search landmark references an element with punctuation-only content via aria-labelledby, providing no meaningful accessible name.</p>
+            <span id="punctuation-search-label">...</span>
+            <div role="search" id="search-punctuation-reference-fail" class="a11yTestFail a11yTest"  aria-labelledby="punctuation-search-label">
+                <form>
+                    <input type="text" role="searchbox" placeholder="Search...">
+                    <button type="submit">Search</button>
+                </form>
+            </div>
+            <p class="code">&lt;span id="punctuation-search-label"&gt;...&lt;/span&gt;
+&lt;div role="search" id="search-punctuation-reference-fail" class="a11yTestFail" aria-labelledby="punctuation-search-label"&gt;
+    &lt;form&gt;
+        &lt;input type="text" role="searchbox" placeholder="Search..."&gt;
+        &lt;button type="submit"&gt;Search&lt;/button&gt;
+    &lt;/form&gt;
+&lt;/div&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Complementary Landmark with Empty aria-label</h3>
+            <p>This complementary landmark has an empty aria-label, providing no accessible name.</p>
+            <aside id="complementary-empty-label-fail" class="a11yTestFail a11yTest"  aria-label="">
+                <h3>Related Content</h3>
+                <ul>
+                    <li><a href="#">Related Link 1</a></li>
+                    <li><a href="#">Related Link 2</a></li>
+                </ul>
+            </aside>
+            <p class="code">&lt;aside id="complementary-empty-label-fail" class="a11yTestFail" aria-label=""&gt;
+    &lt;h3&gt;Related Content&lt;/h3&gt;
+    &lt;ul&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Related Link 1&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Related Link 2&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/aside&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Complementary Landmark with Punctuation-only aria-label</h3>
+            <p>This complementary landmark has a punctuation-only aria-label, providing no meaningful accessible name.</p>
+            <aside id="complementary-punctuation-label-fail" class="a11yTestFail a11yTest"  aria-label="...">
+                <h3>Related Content</h3>
+                <ul>
+                    <li><a href="#">Related Link 1</a></li>
+                    <li><a href="#">Related Link 2</a></li>
+                </ul>
+            </aside>
+            <p class="code">&lt;aside id="complementary-punctuation-label-fail" class="a11yTestFail" aria-label="..."&gt;
+    &lt;h3&gt;Related Content&lt;/h3&gt;
+    &lt;ul&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Related Link 1&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Related Link 2&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/aside&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Complementary Landmark with Empty Reference via aria-labelledby</h3>
+            <p>This complementary landmark references an element with empty content via aria-labelledby, providing no accessible name.</p>
+            <span id="empty-complementary-label"></span>
+            <aside id="complementary-empty-reference-fail" class="a11yTestFail a11yTest"  aria-labelledby="empty-complementary-label">
+                <h3>Related Content</h3>
+                <ul>
+                    <li><a href="#">Related Link 1</a></li>
+                    <li><a href="#">Related Link 2</a></li>
+                </ul>
+            </aside>
+            <p class="code">&lt;span id="empty-complementary-label"&gt;&lt;/span&gt;
+&lt;aside id="complementary-empty-reference-fail" class="a11yTestFail" aria-labelledby="empty-complementary-label"&gt;
+    &lt;h3&gt;Related Content&lt;/h3&gt;
+    &lt;ul&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Related Link 1&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Related Link 2&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/aside&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Complementary Landmark with Whitespace-only Reference via aria-labelledby</h3>
+            <p>This complementary landmark references an element with whitespace-only content via aria-labelledby, providing no meaningful accessible name.</p>
+            <span id="whitespace-complementary-label">   </span>
+            <aside id="complementary-whitespace-reference-fail" class="a11yTestFail a11yTest"  aria-labelledby="whitespace-complementary-label">
+                <h3>Related Content</h3>
+                <ul>
+                    <li><a href="#">Related Link 1</a></li>
+                    <li><a href="#">Related Link 2</a></li>
+                </ul>
+            </aside>
+            <p class="code">&lt;span id="whitespace-complementary-label"&gt;   &lt;/span&gt;
+&lt;aside id="complementary-whitespace-reference-fail" class="a11yTestFail" aria-labelledby="whitespace-complementary-label"&gt;
+    &lt;h3&gt;Related Content&lt;/h3&gt;
+    &lt;ul&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Related Link 1&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Related Link 2&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/aside&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Complementary Landmark with Punctuation-only Reference via aria-labelledby</h3>
+            <p>This complementary landmark references an element with punctuation-only content via aria-labelledby, providing no meaningful accessible name.</p>
+            <span id="punctuation-complementary-label">...</span>
+            <aside id="complementary-punctuation-reference-fail" class="a11yTestFail a11yTest"  aria-labelledby="punctuation-complementary-label">
+                <h3>Related Content</h3>
+                <ul>
+                    <li><a href="#">Related Link 1</a></li>
+                    <li><a href="#">Related Link 2</a></li>
+                </ul>
+            </aside>
+            <p class="code">&lt;span id="punctuation-complementary-label"&gt;...&lt;/span&gt;
+&lt;aside id="complementary-punctuation-reference-fail" class="a11yTestFail" aria-labelledby="punctuation-complementary-label"&gt;
+    &lt;h3&gt;Related Content&lt;/h3&gt;
+    &lt;ul&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Related Link 1&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Related Link 2&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/aside&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Main Landmark with Non-visible Referenced Element via aria-labelledby</h3>
+            <p>This main landmark references a hidden element via aria-labelledby, creating issues with screen reader identification.</p>
+            <span id="hidden-main-label" style="display: none;">Main Content Area</span>
+            <main id="main-hidden-reference-fail" class="a11yTestFail a11yTest"  aria-labelledby="hidden-main-label">
+                <h2>Welcome to Our Website</h2>
+                <p>This is the main content area of the page.</p>
+            </main>
+            <p class="code">&lt;span id="hidden-main-label" style="display: none;"&gt;Main Content Area&lt;/span&gt;
+&lt;main id="main-hidden-reference-fail" class="a11yTestFail" aria-labelledby="hidden-main-label"&gt;
+    &lt;h2&gt;Welcome to Our Website&lt;/h2&gt;
+    &lt;p&gt;This is the main content area of the page.&lt;/p&gt;
+&lt;/main&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Navigation Landmark with CSS-Hidden Referenced Content via aria-labelledby</h3>
+            <p>This navigation landmark references an element hidden with visibility:hidden via aria-labelledby, creating accessibility issues.</p>
+            <span id="visibility-hidden-nav-label" style="visibility: hidden;">Primary Navigation</span>
+            <nav id="nav-visibility-hidden-reference-fail" class="a11yTestFail a11yTest"  aria-labelledby="visibility-hidden-nav-label">
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Products</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </nav>
+            <p class="code">&lt;span id="visibility-hidden-nav-label" style="visibility: hidden;"&gt;Primary Navigation&lt;/span&gt;
+&lt;nav id="nav-visibility-hidden-reference-fail" class="a11yTestFail" aria-labelledby="visibility-hidden-nav-label"&gt;
+    &lt;ul&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Home&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Products&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Contact&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/nav&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Banner Landmark with aria-hidden Referenced Element via aria-labelledby</h3>
+            <p>This banner landmark references an element with aria-hidden="true" via aria-labelledby, creating issues for screen reader users.</p>
+            <span id="aria-hidden-banner-label" aria-hidden="true">Site Header</span>
+            <header role="banner" id="banner-aria-hidden-reference-fail" class="a11yTestFail a11yTest"  aria-labelledby="aria-hidden-banner-label">
+                <h1>Company Name</h1>
+                <p>Company slogan goes here</p>
+            </header>
+            <p class="code">&lt;span id="aria-hidden-banner-label" aria-hidden="true"&gt;Site Header&lt;/span&gt;
+&lt;header role="banner" id="banner-aria-hidden-reference-fail" class="a11yTestFail" aria-labelledby="aria-hidden-banner-label"&gt;
+    &lt;h1&gt;Company Name&lt;/h1&gt;
+    &lt;p&gt;Company slogan goes here&lt;/p&gt;
+&lt;/header&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Form Landmark with Multiple aria-labelledby References Including Empty Element</h3>
+            <p>This form landmark uses multiple aria-labelledby references with one being empty, weakening its accessible name.</p>
+            <h2 id="valid-form-label">Registration</h2>
+            <span id="empty-form-label-multi"></span>
+            <form id="form-multi-reference-with-empty-fail" class="a11yTestFail a11yTest"  aria-labelledby="valid-form-label empty-form-label-multi">
+                <div>
+                    <label for="form-name4">Name:</label>
+                    <input type="text" id="form-name4">
+                </div>
+                <div>
+                    <label for="form-email4">Email:</label>
+                    <input type="email" id="form-email4">
+                </div>
+                <button type="submit">Submit</button>
+            </form>
+            <p class="code">&lt;h2 id="valid-form-label"&gt;Registration&lt;/h2&gt;
+&lt;span id="empty-form-label-multi"&gt;&lt;/span&gt;
+&lt;form id="form-multi-reference-with-empty-fail" class="a11yTestFail" aria-labelledby="valid-form-label empty-form-label-multi"&gt;
+    &lt;div&gt;
+        &lt;label for="form-name4"&gt;Name:&lt;/label&gt;
+        &lt;input type="text" id="form-name4"&gt;
+    &lt;/div&gt;
+    &lt;div&gt;
+        &lt;label for="form-email4"&gt;Email:&lt;/label&gt;
+        &lt;input type="email" id="form-email4"&gt;
+    &lt;/div&gt;
+    &lt;button type="submit"&gt;Submit&lt;/button&gt;
+&lt;/form&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Contentinfo Landmark with Multiple aria-labelledby References Including Punctuation-Only Element</h3>
+            <p>This contentinfo landmark uses multiple aria-labelledby references with one having only punctuation, weakening its accessible name.</p>
+            <h2 id="valid-contentinfo-label">Site Footer</h2>
+            <span id="punct-contentinfo-label-multi">...</span>
+            <footer role="contentinfo" id="contentinfo-multi-reference-with-punct-fail" class="a11yTestFail a11yTest"  aria-labelledby="valid-contentinfo-label punct-contentinfo-label-multi">
+                <p>&copy; 2025 Company Name. All rights reserved.</p>
+                <p>Contact: info@example.com</p>
+            </footer>
+            <p class="code">&lt;h2 id="valid-contentinfo-label"&gt;Site Footer&lt;/h2&gt;
+&lt;span id="punct-contentinfo-label-multi"&gt;...&lt;/span&gt;
+&lt;footer role="contentinfo" id="contentinfo-multi-reference-with-punct-fail" class="a11yTestFail" aria-labelledby="valid-contentinfo-label punct-contentinfo-label-multi"&gt;
+    &lt;p&gt;&copy; 2025 Company Name. All rights reserved.&lt;/p&gt;
+    &lt;p&gt;Contact: info@example.com&lt;/p&gt;
+&lt;/footer&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Region Landmark with Multiple aria-labelledby References with Mixed Visibility</h3>
+            <p>This region landmark uses multiple aria-labelledby references with one element being hidden, complicating its accessible name.</p>
+            <h2 id="valid-region-label">Features Section</h2>
+            <span id="hidden-region-label-multi" style="display: none;">Highlighted Content</span>
+            <section role="region" id="region-multi-reference-with-hidden-fail" class="a11yTestFail a11yTest"  aria-labelledby="valid-region-label hidden-region-label-multi">
+                <h2>Featured Content</h2>
+                <p>This is the featured content section.</p>
+            </section>
+            <p class="code">&lt;h2 id="valid-region-label"&gt;Features Section&lt;/h2&gt;
+&lt;span id="hidden-region-label-multi" style="display: none;"&gt;Highlighted Content&lt;/span&gt;
+&lt;section role="region" id="region-multi-reference-with-hidden-fail" class="a11yTestFail" aria-labelledby="valid-region-label hidden-region-label-multi"&gt;
+    &lt;h2&gt;Featured Content&lt;/h2&gt;
+    &lt;p&gt;This is the featured content section.&lt;/p&gt;
+&lt;/section&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Search Landmark with Non-Existent Multiple aria-labelledby References</h3>
+            <p>This search landmark uses multiple aria-labelledby references with one being non-existent, creating issues with its accessible name.</p>
+            <h2 id="valid-search-label">Search</h2>
+            <div role="search" id="search-multi-reference-with-nonexistent-fail" class="a11yTestFail a11yTest"  aria-labelledby="valid-search-label non-existent-search-id">
+                <form>
+                    <input type="text" role="searchbox" placeholder="Search...">
+                    <button type="submit">Search</button>
+                </form>
+            </div>
+            <p class="code">&lt;h2 id="valid-search-label"&gt;Search&lt;/h2&gt;
+&lt;div role="search" id="search-multi-reference-with-nonexistent-fail" class="a11yTestFail" aria-labelledby="valid-search-label non-existent-search-id"&gt;
+    &lt;form&gt;
+        &lt;input type="text" role="searchbox" placeholder="Search..."&gt;
+        &lt;button type="submit"&gt;Search&lt;/button&gt;
+    &lt;/form&gt;
+&lt;/div&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Searchbox Role without Accessible Name</h3>
+            <p>This input with role="searchbox" has no accessible name, making it difficult for screen reader users to understand its purpose.</p>
+            <input type="text" id="searchbox-no-name-fail" class="a11yTestFail a11yTest"  role="searchbox">
+            <p class="code">&lt;input type="text" id="searchbox-no-name-fail" class="a11yTestFail" role="searchbox"&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Searchbox Role with Empty aria-label</h3>
+            <p>This input with role="searchbox" has an empty aria-label, providing no accessible name.</p>
+            <input type="text" id="searchbox-empty-label-fail" class="a11yTestFail a11yTest"  role="searchbox" aria-label="">
+            <p class="code">&lt;input type="text" id="searchbox-empty-label-fail" class="a11yTestFail" role="searchbox" aria-label=""&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Searchbox Role with Whitespace-only aria-label</h3>
+            <p>This input with role="searchbox" has a whitespace-only aria-label, providing no meaningful accessible name.</p>
+            <input type="text" id="searchbox-whitespace-label-fail" class="a11yTestFail a11yTest"  role="searchbox" aria-label="   ">
+            <p class="code">&lt;input type="text" id="searchbox-whitespace-label-fail" class="a11yTestFail" role="searchbox" aria-label="   "&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Searchbox Role with Punctuation-only aria-label</h3>
+            <p>This input with role="searchbox" has a punctuation-only aria-label, providing no meaningful accessible name.</p>
+            <input type="text" id="searchbox-punctuation-label-fail" class="a11yTestFail a11yTest"  role="searchbox" aria-label="...">
+            <p class="code">&lt;input type="text" id="searchbox-punctuation-label-fail" class="a11yTestFail" role="searchbox" aria-label="..."&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Searchbox Role with Broken aria-labelledby</h3>
+            <p>This input with role="searchbox" references a non-existent element ID with aria-labelledby, preventing an accessible name from being created.</p>
+            <input type="text" id="searchbox-broken-labelledby-fail" class="a11yTestFail a11yTest"  role="searchbox" aria-labelledby="non-existent-searchbox-id">
+            <p class="code">&lt;input type="text" id="searchbox-broken-labelledby-fail" class="a11yTestFail" role="searchbox" aria-labelledby="non-existent-searchbox-id"&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Searchbox Role with Empty Reference via aria-labelledby</h3>
+            <p>This input with role="searchbox" references an element with empty content via aria-labelledby, providing no accessible name.</p>
+            <span id="empty-searchbox-label"></span>
+            <input type="text" id="searchbox-empty-reference-fail" class="a11yTestFail a11yTest"  role="searchbox" aria-labelledby="empty-searchbox-label">
+            <p class="code">&lt;span id="empty-searchbox-label"&gt;&lt;/span&gt;
+&lt;input type="text" id="searchbox-empty-reference-fail" class="a11yTestFail" role="searchbox" aria-labelledby="empty-searchbox-label"&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Searchbox Role with Whitespace-only Reference via aria-labelledby</h3>
+            <p>This input with role="searchbox" references an element with whitespace-only content via aria-labelledby, providing no meaningful accessible name.</p>
+            <span id="whitespace-searchbox-label">   </span>
+            <input type="text" id="searchbox-whitespace-reference-fail" class="a11yTestFail a11yTest"  role="searchbox" aria-labelledby="whitespace-searchbox-label">
+            <p class="code">&lt;span id="whitespace-searchbox-label"&gt;   &lt;/span&gt;
+&lt;input type="text" id="searchbox-whitespace-reference-fail" class="a11yTestFail" role="searchbox" aria-labelledby="whitespace-searchbox-label"&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Searchbox Role with Punctuation-only Reference via aria-labelledby</h3>
+            <p>This input with role="searchbox" references an element with punctuation-only content via aria-labelledby, providing no meaningful accessible name.</p>
+            <span id="punctuation-searchbox-label">...</span>
+            <input type="text" id="searchbox-punctuation-reference-fail" class="a11yTestFail a11yTest"  role="searchbox" aria-labelledby="punctuation-searchbox-label">
+            <p class="code">&lt;span id="punctuation-searchbox-label"&gt;...&lt;/span&gt;
+&lt;input type="text" id="searchbox-punctuation-reference-fail" class="a11yTestFail" role="searchbox" aria-labelledby="punctuation-searchbox-label"&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Searchbox Role with Hidden Referenced Element via aria-labelledby</h3>
+            <p>This input with role="searchbox" references a hidden element via aria-labelledby, creating accessibility issues.</p>
+            <span id="hidden-searchbox-label" style="display: none;">Product Search</span>
+            <input type="text" id="searchbox-hidden-reference-fail" class="a11yTestFail a11yTest"  role="searchbox" aria-labelledby="hidden-searchbox-label">
+            <p class="code">&lt;span id="hidden-searchbox-label" style="display: none;"&gt;Product Search&lt;/span&gt;
+&lt;input type="text" id="searchbox-hidden-reference-fail" class="a11yTestFail" role="searchbox" aria-labelledby="hidden-searchbox-label"&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Searchbox Role with aria-hidden Referenced Element via aria-labelledby</h3>
+            <p>This input with role="searchbox" references an element with aria-hidden="true" via aria-labelledby, creating issues for screen reader users.</p>
+            <span id="aria-hidden-searchbox-label" aria-hidden="true">Website Search</span>
+            <input type="text" id="searchbox-aria-hidden-reference-fail" class="a11yTestFail a11yTest"  role="searchbox" aria-labelledby="aria-hidden-searchbox-label">
+            <p class="code">&lt;span id="aria-hidden-searchbox-label" aria-hidden="true"&gt;Website Search&lt;/span&gt;
+&lt;input type="text" id="searchbox-aria-hidden-reference-fail" class="a11yTestFail" role="searchbox" aria-labelledby="aria-hidden-searchbox-label"&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Searchbox Role with Multiple aria-labelledby References Including Empty Element</h3>
+            <p>This input with role="searchbox" uses multiple aria-labelledby references with one being empty, weakening its accessible name.</p>
+            <label id="valid-searchbox-label">Search Products:</label>
+            <span id="empty-searchbox-label-multi"></span>
+            <input type="text" id="searchbox-multi-reference-with-empty-fail" class="a11yTestFail a11yTest"  role="searchbox" aria-labelledby="valid-searchbox-label empty-searchbox-label-multi">
+            <p class="code">&lt;label id="valid-searchbox-label"&gt;Search Products:&lt;/label&gt;
+&lt;span id="empty-searchbox-label-multi"&gt;&lt;/span&gt;
+&lt;input type="text" id="searchbox-multi-reference-with-empty-fail" class="a11yTestFail" role="searchbox" aria-labelledby="valid-searchbox-label empty-searchbox-label-multi"&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Searchbox Role with Multiple aria-labelledby References Including Non-Existent Element</h3>
+            <p>This input with role="searchbox" uses multiple aria-labelledby references with one being non-existent, creating issues with its accessible name.</p>
+            <label id="another-valid-searchbox-label">Site Search:</label>
+            <input type="text" id="searchbox-multi-reference-with-nonexistent-fail" class="a11yTestFail a11yTest"  role="searchbox" aria-labelledby="another-valid-searchbox-label non-existent-searchbox-id">
+            <p class="code">&lt;label id="another-valid-searchbox-label"&gt;Site Search:&lt;/label&gt;
+&lt;input type="text" id="searchbox-multi-reference-with-nonexistent-fail" class="a11yTestFail" role="searchbox" aria-labelledby="another-valid-searchbox-label non-existent-searchbox-id"&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Searchbox Role with Incorrect References</h3>
+            <p>This input with role="searchbox" has an incorrectly structured aria-labelledby attribute, causing reference issues.</p>
+            <label id="improper-searchbox-label">Search:</label>
+            <input type="text" id="searchbox-improper-reference-fail" class="a11yTestFail a11yTest"  role="searchbox" aria-labelledby="improper-searchbox-label, incorrect-reference">
+            <p class="code">&lt;label id="improper-searchbox-label"&gt;Search:&lt;/label&gt;
+&lt;input type="text" id="searchbox-improper-reference-fail" class="a11yTestFail" role="searchbox" aria-labelledby="improper-searchbox-label, incorrect-reference"&gt;</p>
+        </div>
+        
+        <h3>Additional Landmark Role Examples</h3>
+        <p>The following examples cover the remaining top-level landmark roles that should be properly named for accessibility.</p>
+        
+        <div class="test-case pass">
+            <h3>Banner Landmark with aria-label</h3>
+            <p>This header element has a descriptive aria-label providing an accessible name for the banner landmark.</p>
+            <header id="banner-aria-label-pass" class="a11yTestPass" aria-label="Site Header">
+                <h1>Company Name</h1>
+                <p>Company slogan goes here</p>
+            </header>
+            <p class="code">&lt;header id="banner-aria-label-pass" class="a11yTestPass" aria-label="Site Header"&gt;
+    &lt;h1&gt;Company Name&lt;/h1&gt;
+    &lt;p&gt;Company slogan goes here&lt;/p&gt;
+&lt;/header&gt;</p>
+        </div>
+        
+        <div class="test-case pass">
+            <h3>Contentinfo Landmark with aria-label</h3>
+            <p>This footer element has a descriptive aria-label providing an accessible name for the contentinfo landmark.</p>
+            <footer id="contentinfo-aria-label-pass" class="a11yTestPass" aria-label="Site Footer">
+                <p>&copy; 2025 Company Name. All rights reserved.</p>
+                <p>Contact: info@example.com</p>
+            </footer>
+            <p class="code">&lt;footer id="contentinfo-aria-label-pass" class="a11yTestPass" aria-label="Site Footer"&gt;
+    &lt;p&gt;&copy; 2025 Company Name. All rights reserved.&lt;/p&gt;
+    &lt;p&gt;Contact: info@example.com&lt;/p&gt;
+&lt;/footer&gt;</p>
+        </div>
+        
+        <div class="test-case pass">
+            <h3>Search Landmark with aria-label</h3>
+            <p>This div with role="search" has a descriptive aria-label providing an accessible name.</p>
+            <div role="search" id="search-aria-label-pass" class="a11yTestPass" aria-label="Site Search">
+                <form>
+                    <label for="search-input">Search:</label>
+                    <input type="text" id="search-input" role="searchbox">
+                    <button type="submit">Search</button>
+                </form>
+            </div>
+            <p class="code">&lt;div role="search" id="search-aria-label-pass" class="a11yTestPass" aria-label="Site Search"&gt;
+    &lt;form&gt;
+        &lt;label for="search-input"&gt;Search:&lt;/label&gt;
+        &lt;input type="text" id="search-input" role="searchbox"&gt;
+        &lt;button type="submit"&gt;Search&lt;/button&gt;
+    &lt;/form&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case pass">
+            <h3>Searchbox Role with aria-label</h3>
+            <p>This input with role="searchbox" has a descriptive aria-label providing an accessible name.</p>
+            <input type="text" id="searchbox-aria-label-pass" class="a11yTestPass" role="searchbox" aria-label="Product Search">
+            <p class="code">&lt;input type="text" id="searchbox-aria-label-pass" class="a11yTestPass" role="searchbox" aria-label="Product Search"&gt;</p>
+        </div>
+        
+        <div class="test-case pass">
+            <h3>Searchbox Role with aria-labelledby</h3>
+            <p>This input with role="searchbox" uses aria-labelledby to reference another element for its accessible name.</p>
+            <span id="searchbox-label">Website Search</span>
+            <input type="text" id="searchbox-aria-labelledby-pass" class="a11yTestPass" role="searchbox" aria-labelledby="searchbox-label">
+            <p class="code">&lt;span id="searchbox-label"&gt;Website Search&lt;/span&gt;
+&lt;input type="text" id="searchbox-aria-labelledby-pass" class="a11yTestPass" role="searchbox" aria-labelledby="searchbox-label"&gt;</p>
+        </div>
+        
+        <div class="test-case pass">
+            <h3>Searchbox Role with label Element</h3>
+            <p>This input with role="searchbox" is associated with a label element for its accessible name.</p>
+            <label for="searchbox-label-element-pass">Search the site:</label>
+            <input type="text" id="searchbox-label-element-pass" class="a11yTestPass" role="searchbox">
+            <p class="code">&lt;label for="searchbox-label-element-pass"&gt;Search the site:&lt;/label&gt;
+&lt;input type="text" id="searchbox-label-element-pass" class="a11yTestPass" role="searchbox"&gt;</p>
+        </div>
+        
+        <div class="test-case pass">
+            <h3>Form Landmark with aria-labelledby</h3>
+            <p>This form element uses aria-labelledby to reference another element for its accessible name.</p>
+            <h2 id="contact-form-heading">Contact Us</h2>
+            <form id="form-aria-labelledby-pass" class="a11yTestPass" aria-labelledby="contact-form-heading">
+                <div>
+                    <label for="contact-name">Name:</label>
+                    <input type="text" id="contact-name">
+                </div>
+                <div>
+                    <label for="contact-message">Message:</label>
+                    <textarea id="contact-message"></textarea>
+                </div>
+                <button type="submit">Send</button>
+            </form>
+            <p class="code">&lt;h2 id="contact-form-heading"&gt;Contact Us&lt;/h2&gt;
+&lt;form id="form-aria-labelledby-pass" class="a11yTestPass" aria-labelledby="contact-form-heading"&gt;
+    &lt;div&gt;
+        &lt;label for="contact-name"&gt;Name:&lt;/label&gt;
+        &lt;input type="text" id="contact-name"&gt;
+    &lt;/div&gt;
+    &lt;div&gt;
+        &lt;label for="contact-message"&gt;Message:&lt;/label&gt;
+        &lt;textarea id="contact-message"&gt;&lt;/textarea&gt;
+    &lt;/div&gt;
+    &lt;button type="submit"&gt;Send&lt;/button&gt;
+&lt;/form&gt;</p>
+        </div>
+        
+        <div class="test-case pass">
+            <h3>Region Landmark with aria-label</h3>
+            <p>This section with role="region" has a descriptive aria-label providing an accessible name.</p>
+            <section role="region" id="region-aria-label-pass" class="a11yTestPass" aria-label="Featured Content">
+                <h2>Featured Articles</h2>
+                <p>Content for the featured section goes here.</p>
+            </section>
+            <p class="code">&lt;section role="region" id="region-aria-label-pass" class="a11yTestPass" aria-label="Featured Content"&gt;
+    &lt;h2&gt;Featured Articles&lt;/h2&gt;
+    &lt;p&gt;Content for the featured section goes here.&lt;/p&gt;
+&lt;/section&gt;</p>
+        </div>
+        
+        <div class="test-case pass">
+            <h3>Application Landmark with aria-label</h3>
+            <p>This div with role="application" has a descriptive aria-label providing an accessible name.</p>
+            <div role="application" id="application-aria-label-pass" class="a11yTestPass" aria-label="Task Manager App">
+                <h2>Task Manager</h2>
+                <div>
+                    <button>Add Task</button>
+                    <button>Delete Completed</button>
+                </div>
+                <ul>
+                    <li>Complete project documentation <button>Mark Complete</button></li>
+                    <li>Schedule team meeting <button>Mark Complete</button></li>
+                </ul>
+            </div>
+            <p class="code">&lt;div role="application" id="application-aria-label-pass" class="a11yTestPass" aria-label="Task Manager App"&gt;
+    &lt;h2&gt;Task Manager&lt;/h2&gt;
+    &lt;div&gt;
+        &lt;button&gt;Add Task&lt;/button&gt;
+        &lt;button&gt;Delete Completed&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;ul&gt;
+        &lt;li&gt;Complete project documentation &lt;button&gt;Mark Complete&lt;/button&gt;&lt;/li&gt;
+        &lt;li&gt;Schedule team meeting &lt;button&gt;Mark Complete&lt;/button&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/div&gt;</p>
+        </div>
+    </div>
+    
+    <div class="role-container">
+        <h2>2. Media Elements</h2>
+        <p>These tests validate accessible names for HTML5 media elements and their corresponding ARIA roles, which provide important context for audio and video content.</p>
+        
+        <div class="warning-box">
+            <h3>⚠️ Understanding Media Accessibility</h3>
+            <p>Audio and video elements require proper labeling and alternative content to be accessible to all users. Key implementation requirements include:</p>
+            <ul>
+                <li>Media elements should have an accessible name via <code>aria-label</code>, <code>aria-labelledby</code>, or other naming methods</li>
+                <li>Video content should include captions for users who are deaf or hard of hearing</li>
+                <li>Audio content should have transcripts available</li>
+                <li>Media players should have accessible controls</li>
+                <li>Time-based media should include audio descriptions when necessary</li>
+            </ul>
+            <p><strong>Important:</strong> Both native HTML5 media elements and ARIA role equivalents should be properly labeled for accessibility.</p>
+        </div>
+        
+        <h3>Passing Examples</h3>
+        
+        <div class="test-case pass">
+            <h3>Audio Element with aria-label</h3>
+            <p>This audio element has a descriptive aria-label providing an accessible name.</p>
+            <audio id="audio-aria-label-pass" class="a11yTestPass" controls aria-label="Introduction to Web Accessibility">
+                <source src="https://example.com/audio.mp3" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+            <p class="code">&lt;audio id="audio-aria-label-pass" class="a11yTestPass" controls aria-label="Introduction to Web Accessibility"&gt;
+    &lt;source src="https://example.com/audio.mp3" type="audio/mpeg"&gt;
+    Your browser does not support the audio element.
+&lt;/audio&gt;</p>
+        </div>
+        
+        <div class="test-case pass">
+            <h3>Audio Element with aria-labelledby</h3>
+            <p>This audio element uses aria-labelledby to reference another element for its accessible name.</p>
+            <h4 id="audio-title">Company History Podcast Episode 1</h4>
+            <audio id="audio-aria-labelledby-pass" class="a11yTestPass" controls aria-labelledby="audio-title">
+                <source src="https://example.com/podcast.mp3" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+            <p class="code">&lt;h4 id="audio-title"&gt;Company History Podcast Episode 1&lt;/h4&gt;
+&lt;audio id="audio-aria-labelledby-pass" class="a11yTestPass" controls aria-labelledby="audio-title"&gt;
+    &lt;source src="https://example.com/podcast.mp3" type="audio/mpeg"&gt;
+    Your browser does not support the audio element.
+&lt;/audio&gt;</p>
+        </div>
+        
+        <div class="test-case pass">
+            <h3>Video Element with aria-label</h3>
+            <p>This video element has a descriptive aria-label providing an accessible name.</p>
+            <video id="video-aria-label-pass" class="a11yTestPass" controls width="320" height="240" aria-label="Product Demo Video">
+                <source src="https://example.com/video.mp4" type="video/mp4">
+                <track src="https://example.com/captions.vtt" kind="subtitles" srclang="en" label="English">
+                Your browser does not support the video element.
+            </video>
+            <p class="code">&lt;video id="video-aria-label-pass" class="a11yTestPass" controls width="320" height="240" aria-label="Product Demo Video"&gt;
+    &lt;source src="https://example.com/video.mp4" type="video/mp4"&gt;
+    &lt;track src="https://example.com/captions.vtt" kind="subtitles" srclang="en" label="English"&gt;
+    Your browser does not support the video element.
+&lt;/video&gt;</p>
+        </div>
+        
+        <div class="test-case pass">
+            <h3>Video Element with aria-labelledby</h3>
+            <p>This video element uses aria-labelledby to reference another element for its accessible name.</p>
+            <h4 id="video-title">Tutorial: How to Use Our Software</h4>
+            <video id="video-aria-labelledby-pass" class="a11yTestPass" controls width="320" height="240" aria-labelledby="video-title">
+                <source src="https://example.com/tutorial.mp4" type="video/mp4">
+                <track src="https://example.com/tutorial-captions.vtt" kind="subtitles" srclang="en" label="English">
+                Your browser does not support the video element.
+            </video>
+            <p class="code">&lt;h4 id="video-title"&gt;Tutorial: How to Use Our Software&lt;/h4&gt;
+&lt;video id="video-aria-labelledby-pass" class="a11yTestPass" controls width="320" height="240" aria-labelledby="video-title"&gt;
+    &lt;source src="https://example.com/tutorial.mp4" type="video/mp4"&gt;
+    &lt;track src="https://example.com/tutorial-captions.vtt" kind="subtitles" srclang="en" label="English"&gt;
+    Your browser does not support the video element.
+&lt;/video&gt;</p>
+        </div>
+        
+        <div class="test-case pass">
+            <h3>Element with role="application" and aria-label for Custom Audio Player</h3>
+            <p>This div with role="application" and aria-label creates an accessible custom audio player.</p>
+            <div id="custom-audio-player-pass" class="a11yTestPass" role="application" aria-label="Audio Player: Company Podcast">
+                <button aria-label="Play">▶</button>
+                <div role="slider" aria-label="Time Slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+                <button aria-label="Mute">🔊</button>
+            </div>
+            <p class="code">&lt;div id="custom-audio-player-pass" class="a11yTestPass" role="application" aria-label="Audio Player: Company Podcast"&gt;
+    &lt;button aria-label="Play"&gt;▶&lt;/button&gt;
+    &lt;div role="slider" aria-label="Time Slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"&gt;&lt;/div&gt;
+    &lt;button aria-label="Mute"&gt;🔊&lt;/button&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case pass">
+            <h3>Element with role="application" and aria-labelledby for Custom Video Player</h3>
+            <p>This div with role="application" and aria-labelledby creates an accessible custom video player.</p>
+            <h4 id="custom-video-title">Product Demo Video Player</h4>
+            <div id="custom-video-player-pass" class="a11yTestPass" role="application" aria-labelledby="custom-video-title">
+                <div style="width:320px;height:240px;background:#eee;text-align:center;line-height:240px;">Video Area</div>
+                <div>
+                    <button aria-label="Play">▶</button>
+                    <div role="slider" aria-label="Progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+                    <button aria-label="Captions">CC</button>
+                    <button aria-label="Fullscreen">⛶</button>
+                </div>
+            </div>
+            <p class="code">&lt;h4 id="custom-video-title"&gt;Product Demo Video Player&lt;/h4&gt;
+&lt;div id="custom-video-player-pass" class="a11yTestPass" role="application" aria-labelledby="custom-video-title"&gt;
+    &lt;div style="width:320px;height:240px;background:#eee;text-align:center;line-height:240px;"&gt;Video Area&lt;/div&gt;
+    &lt;div&gt;
+        &lt;button aria-label="Play"&gt;▶&lt;/button&gt;
+        &lt;div role="slider" aria-label="Progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"&gt;&lt;/div&gt;
+        &lt;button aria-label="Captions"&gt;CC&lt;/button&gt;
+        &lt;button aria-label="Fullscreen"&gt;⛶&lt;/button&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <h3>Failing Examples</h3>
+        
+        <div class="test-case fail">
+            <h3>Audio Element without Accessible Name</h3>
+            <p>This audio element has no accessible name, making it difficult for screen reader users to understand its purpose.</p>
+            <audio id="audio-no-name-fail" class="a11yTestFail a11yTest"  controls>
+                <source src="https://example.com/audio.mp3" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+            <p class="code">&lt;audio id="audio-no-name-fail" class="a11yTestFail" controls&gt;
+    &lt;source src="https://example.com/audio.mp3" type="audio/mpeg"&gt;
+    Your browser does not support the audio element.
+&lt;/audio&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Audio Element with Empty aria-label</h3>
+            <p>This audio element has an empty aria-label, providing no accessible name.</p>
+            <audio id="audio-empty-label-fail" class="a11yTestFail a11yTest"  controls aria-label="">
+                <source src="https://example.com/audio.mp3" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+            <p class="code">&lt;audio id="audio-empty-label-fail" class="a11yTestFail" controls aria-label=""&gt;
+    &lt;source src="https://example.com/audio.mp3" type="audio/mpeg"&gt;
+    Your browser does not support the audio element.
+&lt;/audio&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Audio Element with Whitespace-only aria-label</h3>
+            <p>This audio element has a whitespace-only aria-label, providing no meaningful accessible name.</p>
+            <audio id="audio-whitespace-label-fail" class="a11yTestFail a11yTest"  controls aria-label="   ">
+                <source src="https://example.com/audio.mp3" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+            <p class="code">&lt;audio id="audio-whitespace-label-fail" class="a11yTestFail" controls aria-label="   "&gt;
+    &lt;source src="https://example.com/audio.mp3" type="audio/mpeg"&gt;
+    Your browser does not support the audio element.
+&lt;/audio&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Audio Element with Punctuation-only aria-label</h3>
+            <p>This audio element has a punctuation-only aria-label, providing no meaningful accessible name.</p>
+            <audio id="audio-punctuation-label-fail" class="a11yTestFail a11yTest"  controls aria-label="...">
+                <source src="https://example.com/audio.mp3" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+            <p class="code">&lt;audio id="audio-punctuation-label-fail" class="a11yTestFail" controls aria-label="..."&gt;
+    &lt;source src="https://example.com/audio.mp3" type="audio/mpeg"&gt;
+    Your browser does not support the audio element.
+&lt;/audio&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Audio Element with Broken aria-labelledby</h3>
+            <p>This audio element references a non-existent element ID with aria-labelledby, preventing an accessible name from being created.</p>
+            <audio id="audio-broken-labelledby-fail" class="a11yTestFail a11yTest"  controls aria-labelledby="non-existent-audio-id">
+                <source src="https://example.com/audio.mp3" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+            <p class="code">&lt;audio id="audio-broken-labelledby-fail" class="a11yTestFail" controls aria-labelledby="non-existent-audio-id"&gt;
+    &lt;source src="https://example.com/audio.mp3" type="audio/mpeg"&gt;
+    Your browser does not support the audio element.
+&lt;/audio&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Audio Element with Empty Reference via aria-labelledby</h3>
+            <p>This audio element references an element with empty content via aria-labelledby, providing no accessible name.</p>
+            <span id="empty-audio-label"></span>
+            <audio id="audio-empty-reference-fail" class="a11yTestFail a11yTest"  controls aria-labelledby="empty-audio-label">
+                <source src="https://example.com/audio.mp3" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+            <p class="code">&lt;span id="empty-audio-label"&gt;&lt;/span&gt;
+&lt;audio id="audio-empty-reference-fail" class="a11yTestFail" controls aria-labelledby="empty-audio-label"&gt;
+    &lt;source src="https://example.com/audio.mp3" type="audio/mpeg"&gt;
+    Your browser does not support the audio element.
+&lt;/audio&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Audio Element with Whitespace-only Reference via aria-labelledby</h3>
+            <p>This audio element references an element with whitespace-only content via aria-labelledby, providing no meaningful accessible name.</p>
+            <span id="whitespace-audio-label">   </span>
+            <audio id="audio-whitespace-reference-fail" class="a11yTestFail a11yTest"  controls aria-labelledby="whitespace-audio-label">
+                <source src="https://example.com/audio.mp3" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+            <p class="code">&lt;span id="whitespace-audio-label"&gt;   &lt;/span&gt;
+&lt;audio id="audio-whitespace-reference-fail" class="a11yTestFail" controls aria-labelledby="whitespace-audio-label"&gt;
+    &lt;source src="https://example.com/audio.mp3" type="audio/mpeg"&gt;
+    Your browser does not support the audio element.
+&lt;/audio&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Audio Element with Punctuation-only Reference via aria-labelledby</h3>
+            <p>This audio element references an element with punctuation-only content via aria-labelledby, providing no meaningful accessible name.</p>
+            <span id="punctuation-audio-label">...</span>
+            <audio id="audio-punctuation-reference-fail" class="a11yTestFail a11yTest"  controls aria-labelledby="punctuation-audio-label">
+                <source src="https://example.com/audio.mp3" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+            <p class="code">&lt;span id="punctuation-audio-label"&gt;...&lt;/span&gt;
+&lt;audio id="audio-punctuation-reference-fail" class="a11yTestFail" controls aria-labelledby="punctuation-audio-label"&gt;
+    &lt;source src="https://example.com/audio.mp3" type="audio/mpeg"&gt;
+    Your browser does not support the audio element.
+&lt;/audio&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Video Element without Accessible Name</h3>
+            <p>This video element has no accessible name, making it difficult for screen reader users to understand its purpose.</p>
+            <video id="video-no-name-fail" class="a11yTestFail a11yTest"  controls width="320" height="240">
+                <source src="https://example.com/video.mp4" type="video/mp4">
+                Your browser does not support the video element.
+            </video>
+            <p class="code">&lt;video id="video-no-name-fail" class="a11yTestFail" controls width="320" height="240"&gt;
+    &lt;source src="https://example.com/video.mp4" type="video/mp4"&gt;
+    Your browser does not support the video element.
+&lt;/video&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Video Element with Empty aria-label</h3>
+            <p>This video element has an empty aria-label, providing no accessible name.</p>
+            <video id="video-empty-label-fail" class="a11yTestFail a11yTest"  controls width="320" height="240" aria-label="">
+                <source src="https://example.com/video.mp4" type="video/mp4">
+                Your browser does not support the video element.
+            </video>
+            <p class="code">&lt;video id="video-empty-label-fail" class="a11yTestFail" controls width="320" height="240" aria-label=""&gt;
+    &lt;source src="https://example.com/video.mp4" type="video/mp4"&gt;
+    Your browser does not support the video element.
+&lt;/video&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Video Element with Whitespace-only aria-label</h3>
+            <p>This video element has a whitespace-only aria-label, providing no meaningful accessible name.</p>
+            <video id="video-whitespace-label-fail" class="a11yTestFail a11yTest"  controls width="320" height="240" aria-label="   ">
+                <source src="https://example.com/video.mp4" type="video/mp4">
+                Your browser does not support the video element.
+            </video>
+            <p class="code">&lt;video id="video-whitespace-label-fail" class="a11yTestFail" controls width="320" height="240" aria-label="   "&gt;
+    &lt;source src="https://example.com/video.mp4" type="video/mp4"&gt;
+    Your browser does not support the video element.
+&lt;/video&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Video Element with Punctuation-only aria-label</h3>
+            <p>This video element has a punctuation-only aria-label, providing no meaningful accessible name.</p>
+            <video id="video-punctuation-label-fail" class="a11yTestFail a11yTest"  controls width="320" height="240" aria-label="...">
+                <source src="https://example.com/video.mp4" type="video/mp4">
+                Your browser does not support the video element.
+            </video>
+            <p class="code">&lt;video id="video-punctuation-label-fail" class="a11yTestFail" controls width="320" height="240" aria-label="..."&gt;
+    &lt;source src="https://example.com/video.mp4" type="video/mp4"&gt;
+    Your browser does not support the video element.
+&lt;/video&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Video Element with Broken aria-labelledby</h3>
+            <p>This video element references a non-existent element ID with aria-labelledby, preventing an accessible name from being created.</p>
+            <video id="video-broken-labelledby-fail" class="a11yTestFail a11yTest"  controls width="320" height="240" aria-labelledby="non-existent-video-id">
+                <source src="https://example.com/video.mp4" type="video/mp4">
+                Your browser does not support the video element.
+            </video>
+            <p class="code">&lt;video id="video-broken-labelledby-fail" class="a11yTestFail" controls width="320" height="240" aria-labelledby="non-existent-video-id"&gt;
+    &lt;source src="https://example.com/video.mp4" type="video/mp4"&gt;
+    Your browser does not support the video element.
+&lt;/video&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Video Element with Empty Reference via aria-labelledby</h3>
+            <p>This video element references an element with empty content via aria-labelledby, providing no accessible name.</p>
+            <span id="empty-video-label"></span>
+            <video id="video-empty-reference-fail" class="a11yTestFail a11yTest"  controls width="320" height="240" aria-labelledby="empty-video-label">
+                <source src="https://example.com/video.mp4" type="video/mp4">
+                Your browser does not support the video element.
+            </video>
+            <p class="code">&lt;span id="empty-video-label"&gt;&lt;/span&gt;
+&lt;video id="video-empty-reference-fail" class="a11yTestFail" controls width="320" height="240" aria-labelledby="empty-video-label"&gt;
+    &lt;source src="https://example.com/video.mp4" type="video/mp4"&gt;
+    Your browser does not support the video element.
+&lt;/video&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Video Element with Whitespace-only Reference via aria-labelledby</h3>
+            <p>This video element references an element with whitespace-only content via aria-labelledby, providing no meaningful accessible name.</p>
+            <span id="whitespace-video-label">   </span>
+            <video id="video-whitespace-reference-fail" class="a11yTestFail a11yTest"  controls width="320" height="240" aria-labelledby="whitespace-video-label">
+                <source src="https://example.com/video.mp4" type="video/mp4">
+                Your browser does not support the video element.
+            </video>
+            <p class="code">&lt;span id="whitespace-video-label"&gt;   &lt;/span&gt;
+&lt;video id="video-whitespace-reference-fail" class="a11yTestFail" controls width="320" height="240" aria-labelledby="whitespace-video-label"&gt;
+    &lt;source src="https://example.com/video.mp4" type="video/mp4"&gt;
+    Your browser does not support the video element.
+&lt;/video&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Video Element with Punctuation-only Reference via aria-labelledby</h3>
+            <p>This video element references an element with punctuation-only content via aria-labelledby, providing no meaningful accessible name.</p>
+            <span id="punctuation-video-label">...</span>
+            <video id="video-punctuation-reference-fail" class="a11yTestFail a11yTest"  controls width="320" height="240" aria-labelledby="punctuation-video-label">
+                <source src="https://example.com/video.mp4" type="video/mp4">
+                Your browser does not support the video element.
+            </video>
+            <p class="code">&lt;span id="punctuation-video-label"&gt;...&lt;/span&gt;
+&lt;video id="video-punctuation-reference-fail" class="a11yTestFail" controls width="320" height="240" aria-labelledby="punctuation-video-label"&gt;
+    &lt;source src="https://example.com/video.mp4" type="video/mp4"&gt;
+    Your browser does not support the video element.
+&lt;/video&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Custom Audio Player with role="application" without Accessible Name</h3>
+            <p>This custom audio player with role="application" has no accessible name, making it difficult for screen reader users to understand its purpose.</p>
+            <div id="custom-audio-player-no-name-fail" class="a11yTestFail a11yTest"  role="application">
+                <button aria-label="Play">▶</button>
+                <div role="slider" aria-label="Time Slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+                <button aria-label="Mute">🔊</button>
+            </div>
+            <p class="code">&lt;div id="custom-audio-player-no-name-fail" class="a11yTestFail" role="application"&gt;
+    &lt;button aria-label="Play"&gt;▶&lt;/button&gt;
+    &lt;div role="slider" aria-label="Time Slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"&gt;&lt;/div&gt;
+    &lt;button aria-label="Mute"&gt;🔊&lt;/button&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Custom Video Player with role="application" with Empty aria-label</h3>
+            <p>This custom video player with role="application" has an empty aria-label, providing no accessible name.</p>
+            <div id="custom-video-player-empty-label-fail" class="a11yTestFail a11yTest"  role="application" aria-label="">
+                <div style="width:320px;height:240px;background:#eee;text-align:center;line-height:240px;">Video Area</div>
+                <div>
+                    <button aria-label="Play">▶</button>
+                    <div role="slider" aria-label="Progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+                    <button aria-label="Captions">CC</button>
+                </div>
+            </div>
+            <p class="code">&lt;div id="custom-video-player-empty-label-fail" class="a11yTestFail" role="application" aria-label=""&gt;
+    &lt;div style="width:320px;height:240px;background:#eee;text-align:center;line-height:240px;"&gt;Video Area&lt;/div&gt;
+    &lt;div&gt;
+        &lt;button aria-label="Play"&gt;▶&lt;/button&gt;
+        &lt;div role="slider" aria-label="Progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"&gt;&lt;/div&gt;
+        &lt;button aria-label="Captions"&gt;CC&lt;/button&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Custom Audio Player with Hidden Referenced Element via aria-labelledby</h3>
+            <p>This custom audio player references a hidden element via aria-labelledby, creating accessibility issues.</p>
+            <span id="hidden-audio-player-label" style="display: none;">Podcast Player</span>
+            <div id="custom-audio-player-hidden-reference-fail" class="a11yTestFail a11yTest"  role="application" aria-labelledby="hidden-audio-player-label">
+                <button aria-label="Play">▶</button>
+                <div role="slider" aria-label="Time Slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+                <button aria-label="Mute">🔊</button>
+            </div>
+            <p class="code">&lt;span id="hidden-audio-player-label" style="display: none;"&gt;Podcast Player&lt;/span&gt;
+&lt;div id="custom-audio-player-hidden-reference-fail" class="a11yTestFail" role="application" aria-labelledby="hidden-audio-player-label"&gt;
+    &lt;button aria-label="Play"&gt;▶&lt;/button&gt;
+    &lt;div role="slider" aria-label="Time Slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"&gt;&lt;/div&gt;
+    &lt;button aria-label="Mute"&gt;🔊&lt;/button&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Custom Video Player with Multiple aria-labelledby References Including Empty Element</h3>
+            <p>This custom video player uses multiple aria-labelledby references with one being empty, weakening its accessible name.</p>
+            <h2 id="valid-video-player-label">Training Video</h2>
+            <span id="empty-video-player-label"></span>
+            <div id="custom-video-player-multi-reference-with-empty-fail" class="a11yTestFail a11yTest"  role="application" aria-labelledby="valid-video-player-label empty-video-player-label">
+                <div style="width:320px;height:240px;background:#eee;text-align:center;line-height:240px;">Video Area</div>
+                <div>
+                    <button aria-label="Play">▶</button>
+                    <div role="slider" aria-label="Progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div>
+                </div>
+            </div>
+            <p class="code">&lt;h2 id="valid-video-player-label"&gt;Training Video&lt;/h2&gt;
+&lt;span id="empty-video-player-label"&gt;&lt;/span&gt;
+&lt;div id="custom-video-player-multi-reference-with-empty-fail" class="a11yTestFail" role="application" aria-labelledby="valid-video-player-label empty-video-player-label"&gt;
+    &lt;div style="width:320px;height:240px;background:#eee;text-align:center;line-height:240px;"&gt;Video Area&lt;/div&gt;
+    &lt;div&gt;
+        &lt;button aria-label="Play"&gt;▶&lt;/button&gt;
+        &lt;div role="slider" aria-label="Progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+    </div>
+    
+    <div class="role-container">
+        <h2>3. Table Structures</h2>
+        <p>These tests validate accessible names and related attributes for tables, which provide important context for data cells and help screen reader users understand tabular information.</p>
+        
+        <div class="warning-box">
+            <h3>⚠️ Understanding Table Accessibility</h3>
+            <p>Tables require proper structure and labeling to be accessible to screen reader users. Key implementation requirements include:</p>
+            <ul>
+                <li>Tables should have an accessible name via <code>&lt;caption&gt;</code>, <code>aria-label</code>, or <code>aria-labelledby</code></li>
+                <li>Data tables should use <code>&lt;th&gt;</code> elements with appropriate <code>scope</code> attributes</li>
+                <li>Complex tables may need <code>headers</code> and <code>id</code> attributes to associate cells with headers</li>
+                <li>Tables with merged cells should use <code>rowspan</code> and <code>colspan</code> appropriately</li>
+                <li>Layout tables should be avoided, but if used, should include <code>role="presentation"</code></li>
+            </ul>
+            <p><strong>Important:</strong> Screen readers announce table structure and header relationships during navigation, making proper table structure essential for understanding tabular data.</p>
+        </div>
+        
+        <h3>Passing Examples</h3>
+        
+        <div class="test-case pass">
+            <h3>Table with Caption</h3>
+            <p>This table uses the caption element to provide an accessible name.</p>
+            <table id="table-caption-pass">
+                <caption>Monthly Budget Summary</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Category</th>
+                        <th scope="col">Budget</th>
+                        <th scope="col">Actual</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row">Housing</th>
+                        <td>$1,200</td>
+                        <td>$1,150</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Utilities</th>
+                        <td>$200</td>
+                        <td>$175</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Groceries</th>
+                        <td>$400</td>
+                        <td>$425</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p class="code">&lt;table id="table-caption-pass"&gt;
+    &lt;caption&gt;Monthly Budget Summary&lt;/caption&gt;
+    &lt;thead&gt;
+        &lt;tr&gt;
+            &lt;th scope="col"&gt;Category&lt;/th&gt;
+            &lt;th scope="col"&gt;Budget&lt;/th&gt;
+            &lt;th scope="col"&gt;Actual&lt;/th&gt;
+        &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+        &lt;tr&gt;
+            &lt;th scope="row"&gt;Housing&lt;/th&gt;
+            &lt;td&gt;$1,200&lt;/td&gt;
+            &lt;td&gt;$1,150&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;th scope="row"&gt;Utilities&lt;/th&gt;
+            &lt;td&gt;$200&lt;/td&gt;
+            &lt;td&gt;$175&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;th scope="row"&gt;Groceries&lt;/th&gt;
+            &lt;td&gt;$400&lt;/td&gt;
+            &lt;td&gt;$425&lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;</p>
+        </div>
+        
+        <div class="test-case pass">
+            <h3>Table with aria-label</h3>
+            <p>This table has a descriptive aria-label providing an accessible name.</p>
+            <table id="table-aria-label-pass" class="a11yTestPass" aria-label="Employee Schedule">
+                <thead>
+                    <tr>
+                        <th scope="col">Employee</th>
+                        <th scope="col">Monday</th>
+                        <th scope="col">Tuesday</th>
+                        <th scope="col">Wednesday</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row">John</th>
+                        <td>9am-5pm</td>
+                        <td>9am-5pm</td>
+                        <td>Off</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Maria</th>
+                        <td>Off</td>
+                        <td>9am-5pm</td>
+                        <td>9am-5pm</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p class="code">&lt;table id="table-aria-label-pass" class="a11yTestPass" aria-label="Employee Schedule"&gt;
+    &lt;thead&gt;
+        &lt;tr&gt;
+            &lt;th scope="col"&gt;Employee&lt;/th&gt;
+            &lt;th scope="col"&gt;Monday&lt;/th&gt;
+            &lt;th scope="col"&gt;Tuesday&lt;/th&gt;
+            &lt;th scope="col"&gt;Wednesday&lt;/th&gt;
+        &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+        &lt;tr&gt;
+            &lt;th scope="row"&gt;John&lt;/th&gt;
+            &lt;td&gt;9am-5pm&lt;/td&gt;
+            &lt;td&gt;9am-5pm&lt;/td&gt;
+            &lt;td&gt;Off&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;th scope="row"&gt;Maria&lt;/th&gt;
+            &lt;td&gt;Off&lt;/td&gt;
+            &lt;td&gt;9am-5pm&lt;/td&gt;
+            &lt;td&gt;9am-5pm&lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;</p>
+        </div>
+        
+        <div class="test-case pass">
+            <h3>Table with aria-labelledby</h3>
+            <p>This table uses aria-labelledby to reference another element for its accessible name.</p>
+            <h4 id="product-table-heading">Product Inventory</h4>
+            <table id="table-aria-labelledby-pass" class="a11yTestPass" aria-labelledby="product-table-heading">
+                <thead>
+                    <tr>
+                        <th scope="col">Product ID</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Stock</th>
+                        <th scope="col">Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row">P001</th>
+                        <td>Widget A</td>
+                        <td>43</td>
+                        <td>$19.99</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">P002</th>
+                        <td>Widget B</td>
+                        <td>28</td>
+                        <td>$24.99</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p class="code">&lt;h4 id="product-table-heading"&gt;Product Inventory&lt;/h4&gt;
+&lt;table id="table-aria-labelledby-pass" class="a11yTestPass" aria-labelledby="product-table-heading"&gt;
+    &lt;thead&gt;
+        &lt;tr&gt;
+            &lt;th scope="col"&gt;Product ID&lt;/th&gt;
+            &lt;th scope="col"&gt;Name&lt;/th&gt;
+            &lt;th scope="col"&gt;Stock&lt;/th&gt;
+            &lt;th scope="col"&gt;Price&lt;/th&gt;
+        &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+        &lt;tr&gt;
+            &lt;th scope="row"&gt;P001&lt;/th&gt;
+            &lt;td&gt;Widget A&lt;/td&gt;
+            &lt;td&gt;43&lt;/td&gt;
+            &lt;td&gt;$19.99&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;th scope="row"&gt;P002&lt;/th&gt;
+            &lt;td&gt;Widget B&lt;/td&gt;
+            &lt;td&gt;28&lt;/td&gt;
+            &lt;td&gt;$24.99&lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;</p>
+        </div>
+        
+        <div class="test-case pass">
+            <h3>Complex Table with headers and ids</h3>
+            <p>This complex table uses headers and ids to associate data cells with multiple headers.</p>
+            <table id="complex-table-pass" class="a11yTestPass" aria-label="Quarterly Sales by Region">
+                <thead>
+                    <tr>
+                        <th id="empty-header"></th>
+                        <th id="q1" colspan="2" scope="col">Q1</th>
+                        <th id="q2" colspan="2" scope="col">Q2</th>
+                    </tr>
+                    <tr>
+                        <th id="region" scope="col">Region</th>
+                        <th id="q1-sales" headers="q1">Sales</th>
+                        <th id="q1-profit" headers="q1">Profit</th>
+                        <th id="q2-sales" headers="q2">Sales</th>
+                        <th id="q2-profit" headers="q2">Profit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th id="north" scope="row">North</th>
+                        <td headers="north q1 q1-sales">$10,000</td>
+                        <td headers="north q1 q1-profit">$2,000</td>
+                        <td headers="north q2 q2-sales">$12,000</td>
+                        <td headers="north q2 q2-profit">$2,400</td>
+                    </tr>
+                    <tr>
+                        <th id="south" scope="row">South</th>
+                        <td headers="south q1 q1-sales">$8,500</td>
+                        <td headers="south q1 q1-profit">$1,700</td>
+                        <td headers="south q2 q2-sales">$9,500</td>
+                        <td headers="south q2 q2-profit">$1,900</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p class="code">&lt;table id="complex-table-pass" class="a11yTestPass" aria-label="Quarterly Sales by Region"&gt;
+    &lt;thead&gt;
+        &lt;tr&gt;
+            &lt;th id="empty-header"&gt;&lt;/th&gt;
+            &lt;th id="q1" colspan="2" scope="col"&gt;Q1&lt;/th&gt;
+            &lt;th id="q2" colspan="2" scope="col"&gt;Q2&lt;/th&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;th id="region" scope="col"&gt;Region&lt;/th&gt;
+            &lt;th id="q1-sales" headers="q1"&gt;Sales&lt;/th&gt;
+            &lt;th id="q1-profit" headers="q1"&gt;Profit&lt;/th&gt;
+            &lt;th id="q2-sales" headers="q2"&gt;Sales&lt;/th&gt;
+            &lt;th id="q2-profit" headers="q2"&gt;Profit&lt;/th&gt;
+        &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+        &lt;tr&gt;
+            &lt;th id="north" scope="row"&gt;North&lt;/th&gt;
+            &lt;td headers="north q1 q1-sales"&gt;$10,000&lt;/td&gt;
+            &lt;td headers="north q1 q1-profit"&gt;$2,000&lt;/td&gt;
+            &lt;td headers="north q2 q2-sales"&gt;$12,000&lt;/td&gt;
+            &lt;td headers="north q2 q2-profit"&gt;$2,400&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;th id="south" scope="row"&gt;South&lt;/th&gt;
+            &lt;td headers="south q1 q1-sales"&gt;$8,500&lt;/td&gt;
+            &lt;td headers="south q1 q1-profit"&gt;$1,700&lt;/td&gt;
+            &lt;td headers="south q2 q2-sales"&gt;$9,500&lt;/td&gt;
+            &lt;td headers="south q2 q2-profit"&gt;$1,900&lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;</p>
+        </div>
+        
+        <h3>Failing Examples</h3>
+        
+        <div class="test-case fail">
+            <h3>Table with No Accessible Name</h3>
+            <p>This table lacks an accessible name, making it difficult for screen reader users to identify its purpose.</p>
+            <table id="table-no-name-fail" class="a11yTestFail a11yTest" >
+                <thead>
+                    <tr>
+                        <th>Event</th>
+                        <th>Date</th>
+                        <th>Location</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Conference</td>
+                        <td>May 15-17, 2025</td>
+                        <td>San Francisco</td>
+                    </tr>
+                    <tr>
+                        <td>Workshop</td>
+                        <td>June 8, 2025</td>
+                        <td>Chicago</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p class="code">&lt;table id="table-no-name-fail"&gt;
+    &lt;thead&gt;
+        &lt;tr&gt;
+            &lt;th&gt;Event&lt;/th&gt;
+            &lt;th&gt;Date&lt;/th&gt;
+            &lt;th&gt;Location&lt;/th&gt;
+        &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+        &lt;tr&gt;
+            &lt;td&gt;Conference&lt;/td&gt;
+            &lt;td&gt;May 15-17, 2025&lt;/td&gt;
+            &lt;td&gt;San Francisco&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;Workshop&lt;/td&gt;
+            &lt;td&gt;June 8, 2025&lt;/td&gt;
+            &lt;td&gt;Chicago&lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Table with Empty Caption</h3>
+            <p>This table has an empty caption, providing no accessible name.</p>
+            <table id="table-empty-caption-fail" class="a11yTestFail a11yTest" >
+                <caption></caption>
+                <thead>
+                    <tr>
+                        <th>Project</th>
+                        <th>Status</th>
+                        <th>Deadline</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Website Redesign</td>
+                        <td>In Progress</td>
+                        <td>July 30, 2025</td>
+                    </tr>
+                    <tr>
+                        <td>Mobile App</td>
+                        <td>Planning</td>
+                        <td>August 15, 2025</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p class="code">&lt;table id="table-empty-caption-fail"&gt;
+    &lt;caption&gt;&lt;/caption&gt;
+    &lt;thead&gt;
+        &lt;tr&gt;
+            &lt;th&gt;Project&lt;/th&gt;
+            &lt;th&gt;Status&lt;/th&gt;
+            &lt;th&gt;Deadline&lt;/th&gt;
+        &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+        &lt;tr&gt;
+            &lt;td&gt;Website Redesign&lt;/td&gt;
+            &lt;td&gt;In Progress&lt;/td&gt;
+            &lt;td&gt;July 30, 2025&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;Mobile App&lt;/td&gt;
+            &lt;td&gt;Planning&lt;/td&gt;
+            &lt;td&gt;August 15, 2025&lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Table with Empty aria-label</h3>
+            <p>This table has an empty aria-label, which provides no accessible name.</p>
+            <table id="table-empty-label-fail" class="a11yTestFail a11yTest"  aria-label="">
+                <thead>
+                    <tr>
+                        <th>Course</th>
+                        <th>Instructor</th>
+                        <th>Schedule</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Web Development</td>
+                        <td>Prof. Smith</td>
+                        <td>Mon/Wed 2-4pm</td>
+                    </tr>
+                    <tr>
+                        <td>Digital Marketing</td>
+                        <td>Dr. Johnson</td>
+                        <td>Tue/Thu 10-12pm</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p class="code">&lt;table id="table-empty-label-fail" class="a11yTestFail" aria-label=""&gt;
+    &lt;thead&gt;
+        &lt;tr&gt;
+            &lt;th&gt;Course&lt;/th&gt;
+            &lt;th&gt;Instructor&lt;/th&gt;
+            &lt;th&gt;Schedule&lt;/th&gt;
+        &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+        &lt;tr&gt;
+            &lt;td&gt;Web Development&lt;/td&gt;
+            &lt;td&gt;Prof. Smith&lt;/td&gt;
+            &lt;td&gt;Mon/Wed 2-4pm&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;Digital Marketing&lt;/td&gt;
+            &lt;td&gt;Dr. Johnson&lt;/td&gt;
+            &lt;td&gt;Tue/Thu 10-12pm&lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Table with Whitespace-only aria-label</h3>
+            <p>This table has an aria-label with only whitespace, providing no accessible name.</p>
+            <table id="table-whitespace-label-fail" class="a11yTestFail a11yTest"  aria-label="   ">
+                <thead>
+                    <tr>
+                        <th>Team</th>
+                        <th>Wins</th>
+                        <th>Losses</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Eagles</td>
+                        <td>12</td>
+                        <td>5</td>
+                    </tr>
+                    <tr>
+                        <td>Bears</td>
+                        <td>8</td>
+                        <td>9</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p class="code">&lt;table id="table-whitespace-label-fail" class="a11yTestFail" aria-label="   "&gt;
+    &lt;thead&gt;
+        &lt;tr&gt;
+            &lt;th&gt;Team&lt;/th&gt;
+            &lt;th&gt;Wins&lt;/th&gt;
+            &lt;th&gt;Losses&lt;/th&gt;
+        &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+        &lt;tr&gt;
+            &lt;td&gt;Eagles&lt;/td&gt;
+            &lt;td&gt;12&lt;/td&gt;
+            &lt;td&gt;5&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;Bears&lt;/td&gt;
+            &lt;td&gt;8&lt;/td&gt;
+            &lt;td&gt;9&lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Table with Punctuation-only Caption</h3>
+            <p>This table has a caption with only punctuation, providing no meaningful accessible name.</p>
+            <table id="table-punctuation-caption-fail" class="a11yTestFail a11yTest" >
+                <caption>...</caption>
+                <thead>
+                    <tr>
+                        <th>Country</th>
+                        <th>Capital</th>
+                        <th>Population</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Canada</td>
+                        <td>Ottawa</td>
+                        <td>38 million</td>
+                    </tr>
+                    <tr>
+                        <td>France</td>
+                        <td>Paris</td>
+                        <td>67 million</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p class="code">&lt;table id="table-punctuation-caption-fail"&gt;
+    &lt;caption&gt;...&lt;/caption&gt;
+    &lt;thead&gt;
+        &lt;tr&gt;
+            &lt;th&gt;Country&lt;/th&gt;
+            &lt;th&gt;Capital&lt;/th&gt;
+            &lt;th&gt;Population&lt;/th&gt;
+        &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+        &lt;tr&gt;
+            &lt;td&gt;Canada&lt;/td&gt;
+            &lt;td&gt;Ottawa&lt;/td&gt;
+            &lt;td&gt;38 million&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;France&lt;/td&gt;
+            &lt;td&gt;Paris&lt;/td&gt;
+            &lt;td&gt;67 million&lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Table with Broken aria-labelledby</h3>
+            <p>This table references a non-existent element ID with aria-labelledby, preventing an accessible name from being created.</p>
+            <table id="table-broken-labelledby-fail" class="a11yTestFail a11yTest"  aria-labelledby="non-existent-table-id">
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Free Plan</th>
+                        <th>Pro Plan</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Storage</td>
+                        <td>5 GB</td>
+                        <td>50 GB</td>
+                    </tr>
+                    <tr>
+                        <td>Users</td>
+                        <td>3</td>
+                        <td>Unlimited</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p class="code">&lt;table id="table-broken-labelledby-fail" class="a11yTestFail" aria-labelledby="non-existent-table-id"&gt;
+    &lt;thead&gt;
+        &lt;tr&gt;
+            &lt;th&gt;Feature&lt;/th&gt;
+            &lt;th&gt;Free Plan&lt;/th&gt;
+            &lt;th&gt;Pro Plan&lt;/th&gt;
+        &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+        &lt;tr&gt;
+            &lt;td&gt;Storage&lt;/td&gt;
+            &lt;td&gt;5 GB&lt;/td&gt;
+            &lt;td&gt;50 GB&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+            &lt;td&gt;Users&lt;/td&gt;
+            &lt;td&gt;3&lt;/td&gt;
+            &lt;td&gt;Unlimited&lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;</p>
+        </div>
+    </div>
+
+    <footer>
+        <p>This test page is designed to validate accessible names in supporting ARIA role elements according to WCAG 1.3.1 (Info and Relationships), 2.4.1 (Bypass Blocks), and 4.1.2 (Name, Role, Value) criteria.</p>
+        <p>The tests focus specifically on non-interactive ARIA roles that provide structure and context, such as landmarks, regions, and table components, which are essential for screen reader navigation and understanding document structure.</p>
+        <p><strong>Note on test categories:</strong></p>
+        <ul>
+            <li><span style="color:#28a745">✓ Passing:</span> Fully accessible, follows best practices for accessible name computation</li>
+            <li><span style="color:#dc3545">✗ Failing:</span> Inaccessible, violates WCAG requirements for accessible names</li>
+        </ul>
+    </footer>
+</body>
+</html>

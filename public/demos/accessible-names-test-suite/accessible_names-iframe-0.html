@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IFrame Accessible Names Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+        }
+        .iframe-container {
+            margin: 20px 0;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+        }
+        .test-case {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+        .test-case h3 {
+            margin-top: 0;
+        }
+        .test-case p {
+            margin-bottom: 10px;
+        }
+        .example-label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .pass {
+            border-left: 5px solid green;
+        }
+        .fail {
+            border-left: 5px solid red;
+        }
+        .code {
+            background-color: #f0f0f0;
+            padding: 5px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        iframe {
+            border: 1px solid #ddd;
+            max-width: 100%;
+            margin: 10px 0;
+            background-color: #f5f5f5;
+        }
+        /* Simple styles for iframe placeholders */
+        .iframe-placeholder {
+            width: 400px;
+            height: 200px;
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px 0;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <h1>IFrame Accessible Names Test Cases</h1>
+    <p><strong>Test cases: 7 passing, 9 failing (16 total)</strong></p>
+    <p>This page contains various iframe elements to test accessible name computation according to WCAG guidelines.</p>
+    
+    <div class="iframe-container">
+        <div id="pass-examples">
+            <h2>Passing Examples</h2>
+            
+            <div class="test-case pass">
+                <h3>IFrame with Title Attribute</h3>
+                <p>This iframe has a descriptive title attribute that explains its purpose.</p>
+                <iframe id="iframe-title-pass" class="a11yTestPass" src="about:blank" title="Contact form for customer support" width="400" height="200"></iframe>
+                <p class="code">&lt;iframe id="iframe-title-pass" src="about:blank" title="Contact form for customer support" width="400" height="200"&gt;&lt;/iframe&gt;</p>
+            </div>
+            
+            <div class="test-case pass">
+                <h3>IFrame with aria-labelledby</h3>
+                <p>This iframe uses aria-labelledby to reference text elsewhere on the page for its accessible name.</p>
+                <h4 id="map-heading">Interactive Map of Store Locations</h4>
+                <iframe id="iframe-labelledby-pass" class="a11yTestPass" src="about:blank" aria-labelledby="map-heading" width="400" height="200"></iframe>
+                <p class="code">&lt;h4 id="map-heading"&gt;Interactive Map of Store Locations&lt;/h4&gt;<br>
+                &lt;iframe id="iframe-labelledby-pass" src="about:blank" aria-labelledby="map-heading" width="400" height="200"&gt;&lt;/iframe&gt;</p>
+            </div>
+            
+            <div class="test-case pass">
+                <h3>IFrame with aria-label</h3>
+                <p>This iframe has an aria-label attribute that provides its accessible name.</p>
+                <iframe id="iframe-aria-label-pass" class="a11yTestPass" src="about:blank" aria-label="Product demonstration video" width="400" height="200"></iframe>
+                <p class="code">&lt;iframe id="iframe-aria-label-pass" src="about:blank" aria-label="Product demonstration video" width="400" height="200"&gt;&lt;/iframe&gt;</p>
+            </div>
+            
+            <div class="test-case pass">
+                <h3>IFrame with Both Title and aria-label</h3>
+                <p>This iframe has both title and aria-label attributes, with aria-label taking precedence.</p>
+                <iframe id="iframe-both-pass" class="a11yTestPass" src="about:blank" title="Weather forecast widget" aria-label="5-day weather forecast for your location" width="400" height="200"></iframe>
+                <p class="code">&lt;iframe id="iframe-both-pass" src="about:blank" title="Weather forecast widget" aria-label="5-day weather forecast for your location" width="400" height="200"&gt;&lt;/iframe&gt;</p>
+            </div>
+            
+            <div class="test-case pass">
+                <h3>Hidden IFrame with No Title</h3>
+                <p>This hidden iframe doesn't need a title because it is not perceivable to users.</p>
+                <iframe id="iframe-hidden-pass" class="a11yTestPass" src="about:blank" style="display:none;" width="400" height="200"></iframe>
+                <p class="code">&lt;iframe id="iframe-hidden-pass" src="about:blank" style="display:none;" width="400" height="200"&gt;&lt;/iframe&gt;</p>
+            </div>
+        </div>
+        
+        <div id="fail-examples">
+            <h2>Failing Examples</h2>
+            
+            <div class="test-case fail">
+                <h3>IFrame with No Title</h3>
+                <p>This iframe has no title attribute or other accessible name.</p>
+                <iframe id="iframe-no-title-fail" class="a11yTestFail" src="about:blank" width="400" height="200"></iframe>
+                <p class="code">&lt;iframe id="iframe-no-title-fail" src="about:blank" width="400" height="200"&gt;&lt;/iframe&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>IFrame with Empty Title</h3>
+                <p>This iframe has an empty title attribute, which doesn't provide an accessible name.</p>
+                <iframe id="iframe-empty-title-fail" class="a11yTestFail" src="about:blank" title="" width="400" height="200"></iframe>
+                <p class="code">&lt;iframe id="iframe-empty-title-fail" src="about:blank" title="" width="400" height="200"&gt;&lt;/iframe&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>IFrame with Generic Title</h3>
+                <p>This iframe has a generic title that doesn't describe its purpose or content.</p>
+                <iframe id="iframe-generic-title-fail" class="a11yTestFail" src="about:blank" title="Frame" width="400" height="200"></iframe>
+                <p class="code">&lt;iframe id="iframe-generic-title-fail" src="about:blank" title="Frame" width="400" height="200"&gt;&lt;/iframe&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>IFrame with URL as Title</h3>
+                <p>This iframe uses its URL as the title, which is not descriptive.</p>
+                <iframe id="iframe-url-title-fail" class="a11yTestFail" src="about:blank" title="https://example.com/widget" width="400" height="200"></iframe>
+                <p class="code">&lt;iframe id="iframe-url-title-fail" src="about:blank" title="https://example.com/widget" width="400" height="200"&gt;&lt;/iframe&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>IFrame with Empty aria-label</h3>
+                <p>This iframe has an empty aria-label attribute.</p>
+                <iframe id="iframe-empty-arialabel-fail" class="a11yTestFail" src="about:blank" aria-label="" width="400" height="200"></iframe>
+                <p class="code">&lt;iframe id="iframe-empty-arialabel-fail" src="about:blank" aria-label="" width="400" height="200"&gt;&lt;/iframe&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>IFrame with Non-existent aria-labelledby Reference</h3>
+                <p>This iframe has an aria-labelledby attribute pointing to an ID that doesn't exist.</p>
+                <iframe id="iframe-broken-labelledby-fail" class="a11yTestFail" src="about:blank" aria-labelledby="non-existent-id" width="400" height="200"></iframe>
+                <p class="code">&lt;iframe id="iframe-broken-labelledby-fail" src="about:blank" aria-labelledby="non-existent-id" width="400" height="200"&gt;&lt;/iframe&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>IFrame with Only Whitespace in Title</h3>
+                <p>This iframe contains only whitespace characters in its title attribute.</p>
+                <iframe id="iframe-whitespace-title-fail" class="a11yTestFail" src="about:blank" title="   " width="400" height="200"></iframe>
+                <p class="code">&lt;iframe id="iframe-whitespace-title-fail" src="about:blank" title="   " width="400" height="200"&gt;&lt;/iframe&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>IFrame with Only Punctuation in Title</h3>
+                <p>This iframe's title contains only punctuation, which may not be announced by some screen readers.</p>
+                <iframe id="iframe-punctuation-title-fail" class="a11yTestFail" src="about:blank" title="..." width="400" height="200"></iframe>
+                <p class="code">&lt;iframe id="iframe-punctuation-title-fail" src="about:blank" title="..." width="400" height="200"&gt;&lt;/iframe&gt;</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="iframe-container">
+        <h2>Browser Embedding Examples</h2>
+        <p>The following examples test iframe accessibility in different browser embedding contexts.</p>
+        
+        <div id="embedding-examples">
+            <div class="test-case pass">
+                <h3>IFrame with srcdoc Content</h3>
+                <p>This iframe uses srcdoc to embed HTML content with a proper title.</p>
+                <iframe id="iframe-srcdoc-pass" class="a11yTestPass" srcdoc="<html><head><title>Embedded HTML Content</title></head><body><h1>Hello from embedded content!</h1></body></html>" title="Feedback form embedded content" width="400" height="200"></iframe>
+                <p class="code">&lt;iframe id="iframe-srcdoc-pass" srcdoc="&lt;html&gt;&lt;head&gt;&lt;title&gt;Embedded HTML Content&lt;/title&gt;&lt;/head&gt;..." title="Feedback form embedded content" width="400" height="200"&gt;&lt;/iframe&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>IFrame with srcdoc Content but No Title</h3>
+                <p>This iframe uses srcdoc to embed HTML content but lacks a title attribute.</p>
+                <iframe id="iframe-srcdoc-no-title-fail" class="a11yTestFail" srcdoc="<html><head><title>Embedded HTML Content</title></head><body><h1>Hello from embedded content!</h1></body></html>" width="400" height="200"></iframe>
+                <p class="code">&lt;iframe id="iframe-srcdoc-no-title-fail" srcdoc="&lt;html&gt;&lt;head&gt;&lt;title&gt;Embedded HTML Content&lt;/title&gt;&lt;/head&gt;..." width="400" height="200"&gt;&lt;/iframe&gt;</p>
+            </div>
+            
+            <div class="test-case pass">
+                <h3>IFrame with aria-describedby</h3>
+                <p>This iframe has both a title and aria-describedby for additional context.</p>
+                <p id="iframe-description">This chat widget allows you to connect with our support team in real-time during business hours.</p>
+                <iframe id="iframe-describedby-pass" class="a11yTestPass" src="about:blank" title="Live Chat Support" aria-describedby="iframe-description" width="400" height="200"></iframe>
+                <p class="code">&lt;p id="iframe-description"&gt;This chat widget allows you to connect with our support team in real-time during business hours.&lt;/p&gt;<br>
+                &lt;iframe id="iframe-describedby-pass" src="about:blank" title="Live Chat Support" aria-describedby="iframe-description" width="400" height="200"&gt;&lt;/iframe&gt;</p>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>This test page is designed to validate iframe title accessibility according to WCAG 4.1.2 (Name, Role, Value) criteria.</p>
+    </footer>
+</body>
+</html>

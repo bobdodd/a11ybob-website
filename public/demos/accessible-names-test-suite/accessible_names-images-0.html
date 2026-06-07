@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Accessible Names Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+        }
+        .image-container {
+            margin: 20px 0;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+        }
+        .test-case {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+        .test-case h3 {
+            margin-top: 0;
+        }
+        .test-case p {
+            margin-bottom: 10px;
+        }
+        .example-label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .pass {
+            border-left: 5px solid green;
+        }
+        .fail {
+            border-left: 5px solid red;
+        }
+        .code {
+            background-color: #f0f0f0;
+            padding: 5px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            padding: 3px;
+            background-color: #fff;
+        }
+        /* Simple styles for SVG images */
+        .svg-image {
+            width: 200px;
+            height: 150px;
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            display: block;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Image Accessible Names Test Cases</h1>
+    <p><strong>Test cases: 12 passing, 23 failing (35 total)</strong></p>
+    <p>This page contains various image elements to test accessible name computation according to WCAG guidelines.</p>
+    
+    <div class="image-container">
+        <div id="pass-examples">
+            <h2>Passing Examples</h2>
+            
+            <div class="test-case pass">
+                <h3>Image with Descriptive Alt Text</h3>
+                <p>This image has descriptive alt text that explains its content.</p>
+                <img id="img-alt-descriptive-pass" class="a11yTestPass" src="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22200%22%20height%3D%22150%22%3E%3Crect%20width%3D%22200%22%20height%3D%22150%22%20fill%3D%22%23e6f2ff%22%2F%3E%3Cpath%20d%3D%22M80%2040%20L120%2040%20L150%20110%20L50%20110%20Z%22%20fill%3D%22%23b3d9ff%22%2F%3E%3Ccircle%20cx%3D%22150%22%20cy%3D%2240%22%20r%3D%2215%22%20fill%3D%22%23ffcc00%22%2F%3E%3C%2Fsvg%3E" alt="Mountain landscape with a lake and sun in the sky">
+                <p class="code">&lt;img id="img-alt-descriptive-pass" src="..." alt="Mountain landscape with a lake and sun in the sky"&gt;</p>
+            </div>
+            
+            <div class="test-case pass">
+                <h3>Decorative Image with Empty Alt Text</h3>
+                <p>This decorative image correctly uses empty alt text to be ignored by screen readers.</p>
+                <img id="img-alt-empty-decorative-pass" class="a11yTestPass" src="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22200%22%20height%3D%2220%22%3E%3Crect%20width%3D%22200%22%20height%3D%2220%22%20fill%3D%22%23ddd%22%2F%3E%3C%2Fsvg%3E" alt="">
+                <p class="code">&lt;img id="img-alt-empty-decorative-pass" src="..." alt=""&gt;</p>
+            </div>
+            
+            <div class="test-case pass">
+                <h3>Image with aria-label</h3>
+                <p>This image uses aria-label instead of alt text for its accessible name.</p>
+                <img id="img-aria-label-pass" class="a11yTestPass" src="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22200%22%20height%3D%22150%22%3E%3Crect%20width%3D%22200%22%20height%3D%22150%22%20fill%3D%22%23f2f2f2%22%2F%3E%3Ccircle%20cx%3D%22100%22%20cy%3D%2275%22%20r%3D%2250%22%20fill%3D%22%23b3e6b3%22%2F%3E%3C%2Fsvg%3E" aria-label="Green circle on gray background">
+                <p class="code">&lt;img id="img-aria-label-pass" src="..." aria-label="Green circle on gray background"&gt;</p>
+            </div>
+            
+            <div class="test-case pass">
+                <h3>Image with aria-labelledby</h3>
+                <p>This image uses aria-labelledby to reference text elsewhere on the page for its accessible name.</p>
+                <h4 id="chart-description">Quarter 1 Sales Performance Chart</h4>
+                <img id="img-aria-labelledby-pass" class="a11yTestPass" src="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22200%22%20height%3D%22150%22%3E%3Crect%20width%3D%22200%22%20height%3D%22150%22%20fill%3D%22%23f2f2f2%22%2F%3E%3Crect%20x%3D%2220%22%20y%3D%2260%22%20width%3D%2230%22%20height%3D%2270%22%20fill%3D%22%234d94ff%22%2F%3E%3Crect%20x%3D%2260%22%20y%3D%2240%22%20width%3D%2230%22%20height%3D%2290%22%20fill%3D%22%234d94ff%22%2F%3E%3Crect%20x%3D%22100%22%20y%3D%2270%22%20width%3D%2230%22%20height%3D%2260%22%20fill%3D%22%234d94ff%22%2F%3E%3Crect%20x%3D%22140%22%20y%3D%2250%22%20width%3D%2230%22%20height%3D%2280%22%20fill%3D%22%234d94ff%22%2F%3E%3C%2Fsvg%3E" aria-labelledby="chart-description">
+                <p class="code">&lt;h4 id="chart-description"&gt;Quarter 1 Sales Performance Chart&lt;/h4&gt;<br>
+                &lt;img id="img-aria-labelledby-pass" src="..." aria-labelledby="chart-description"&gt;</p>
+            </div>
+            
+            <div class="test-case pass">
+                <h3>Complex Image with Alt Text and aria-describedby for Long Description</h3>
+                <p>This complex chart image has appropriate alt text and references a longer description for screen reader users.</p>
+                <img id="img-complex-pass" class="a11yTestPass" src="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22200%22%20height%3D%22150%22%3E%3Crect%20width%3D%22200%22%20height%3D%22150%22%20fill%3D%22%23f2f2f2%22%2F%3E%3Cpath%20d%3D%22M10%2C75%20L40%2C65%20L70%2C85%20L100%2C45%20L130%2C95%20L160%2C75%20L190%2C55%22%20stroke%3D%22%23ff6666%22%20stroke-width%3D%222%22%20fill%3D%22none%22%2F%3E%3Cpath%20d%3D%22M10%2C120%20L40%2C100%20L70%2C110%20L100%2C95%20L130%2C115%20L160%2C90%20L190%2C105%22%20stroke%3D%22%234d94ff%22%20stroke-width%3D%222%22%20fill%3D%22none%22%2F%3E%3C%2Fsvg%3E" alt="Temperature trends 2020-2023" aria-describedby="chart-long-desc">
+                <p id="chart-long-desc" class="visually-hidden">This line chart shows temperature trends from 2020 to 2023. The red line represents maximum temperatures, showing an upward trend with peaks in summer months. The blue line represents minimum temperatures, which follow a similar pattern but with less dramatic fluctuations.</p>
+                <p class="code">&lt;img id="img-complex-pass" src="..." alt="Temperature trends 2020-2023" aria-describedby="chart-long-desc"&gt;<br>
+                &lt;p id="chart-long-desc"&gt;This line chart shows temperature trends...&lt;/p&gt;</p>
+            </div>
+        </div>
+        
+        <div id="fail-examples">
+            <h2>Failing Examples</h2>
+            
+            <div class="test-case fail">
+                <h3>Image with No Alt Attribute</h3>
+                <p>This image is missing the alt attribute entirely.</p>
+                <img id="img-no-alt-fail" class="a11yTestFail" src="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22200%22%20height%3D%22150%22%3E%3Crect%20width%3D%22200%22%20height%3D%22150%22%20fill%3D%22%23ffcccc%22%2F%3E%3Ccircle%20cx%3D%22100%22%20cy%3D%2275%22%20r%3D%2240%22%20fill%3D%22%23ff6666%22%2F%3E%3C%2Fsvg%3E">
+                <p class="code">&lt;img id="img-no-alt-fail" src="..."&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>Image with Filename as Alt Text</h3>
+                <p>This image uses its filename as alt text, which is not descriptive.</p>
+                <img id="img-filename-alt-fail" class="a11yTestFail" src="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22200%22%20height%3D%22150%22%3E%3Crect%20width%3D%22200%22%20height%3D%22150%22%20fill%3D%22%23f2f2f2%22%2F%3E%3Cpath%20d%3D%22M50%2C30%20L150%2C30%20L100%2C120%20Z%22%20fill%3D%22%23ffcc00%22%2F%3E%3C%2Fsvg%3E" alt="image001.jpg">
+                <p class="code">&lt;img id="img-filename-alt-fail" src="..." alt="image001.jpg"&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>Image with Generic Alt Text</h3>
+                <p>This image has generic alt text that doesn't describe its content.</p>
+                <img id="img-generic-alt-fail" class="a11yTestFail" src="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22200%22%20height%3D%22150%22%3E%3Crect%20width%3D%22200%22%20height%3D%22150%22%20fill%3D%22%23e6f2ff%22%2F%3E%3Ccircle%20cx%3D%2260%22%20cy%3D%2260%22%20r%3D%2230%22%20fill%3D%22%23ffcc00%22%2F%3E%3Ccircle%20cx%3D%22140%22%20cy%3D%2260%22%20r%3D%2230%22%20fill%3D%22%23ffcc00%22%2F%3E%3Cpath%20d%3D%22M60%2C100%20Q100%2C140%20140%2C100%22%20stroke%3D%22%23000%22%20stroke-width%3D%223%22%20fill%3D%22none%22%2F%3E%3C%2Fsvg%3E" alt="Image">
+                <p class="code">&lt;img id="img-generic-alt-fail" src="..." alt="Image"&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>Image with Alt Text that Includes "Image of"</h3>
+                <p>This image has redundant alt text that begins with "Image of" (unnecessary since screen readers already announce it's an image).</p>
+                <img id="img-redundant-alt-fail" class="a11yTestFail" src="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22200%22%20height%3D%22150%22%3E%3Crect%20width%3D%22200%22%20height%3D%22150%22%20fill%3D%22%23f2f2f2%22%2F%3E%3Crect%20x%3D%2250%22%20y%3D%2250%22%20width%3D%22100%22%20height%3D%2260%22%20fill%3D%22%234d94ff%22%2F%3E%3C%2Fsvg%3E" alt="Image of a blue rectangle">
+                <p class="code">&lt;img id="img-redundant-alt-fail" src="..." alt="Image of a blue rectangle"&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>Image with Only Whitespace in Alt Text</h3>
+                <p>This image has only whitespace in its alt attribute, which is treated differently than empty alt text.</p>
+                <img id="img-whitespace-alt-fail" class="a11yTestFail" src="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22200%22%20height%3D%22150%22%3E%3Crect%20width%3D%22200%22%20height%3D%22150%22%20fill%3D%22%23f2f2f2%22%2F%3E%3Cpath%20d%3D%22M80%2C40%20L120%2C40%20L150%2C110%20L50%2C110%20Z%22%20fill%3D%22%23b3d9ff%22%2F%3E%3C%2Fsvg%3E" alt="   ">
+                <p class="code">&lt;img id="img-whitespace-alt-fail" src="..." alt="   "&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>Image with Only Punctuation in Alt Text</h3>
+                <p>This image has only punctuation in its alt text, which may not be announced by some screen readers.</p>
+                <img id="img-punctuation-alt-fail" class="a11yTestFail" src="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22200%22%20height%3D%22150%22%3E%3Crect%20width%3D%22200%22%20height%3D%22150%22%20fill%3D%22%23f2f2f2%22%2F%3E%3Ccircle%20cx%3D%22100%22%20cy%3D%2275%22%20r%3D%2250%22%20fill%3D%22%23ff9999%22%2F%3E%3C%2Fsvg%3E" alt="...">
+                <p class="code">&lt;img id="img-punctuation-alt-fail" src="..." alt="..."&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>SVG Image without Title or Description</h3>
+                <p>This inline SVG image has role="img" but lacks accessible name via title or aria attributes.</p>
+                <svg id="svg-no-title-fail" class="a11yTestFail" width="200" height="150" xmlns="http://www.w3.org/2000/svg" role="img">
+                    <rect width="200" height="150" fill="#f2f2f2" />
+                    <rect x="25" y="50" width="150" height="50" fill="#b3e6b3" />
+                </svg>
+                <p class="code">&lt;svg id="svg-no-title-fail" width="200" height="150" xmlns="http://www.w3.org/2000/svg" role="img"&gt;<br>
+                &nbsp;&nbsp;&lt;rect width="200" height="150" fill="#f2f2f2" /&gt;<br>
+                &nbsp;&nbsp;&lt;rect x="25" y="50" width="150" height="50" fill="#b3e6b3" /&gt;<br>
+                &lt;/svg&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>Image with Broken aria-labelledby Reference</h3>
+                <p>This image has an aria-labelledby attribute pointing to an ID that doesn't exist.</p>
+                <img id="img-broken-labelledby-fail" class="a11yTestFail" src="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22200%22%20height%3D%22150%22%3E%3Crect%20width%3D%22200%22%20height%3D%22150%22%20fill%3D%22%23f2f2f2%22%2F%3E%3Ccircle%20cx%3D%22100%22%20cy%3D%2275%22%20r%3D%2240%22%20fill%3D%22%23ff9999%22%2F%3E%3C%2Fsvg%3E" aria-labelledby="non-existent-id">
+                <p class="code">&lt;img id="img-broken-labelledby-fail" src="..." aria-labelledby="non-existent-id"&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>SVG with Empty Title Element</h3>
+                <p>This inline SVG has role="img" and an empty title element, which doesn't provide an accessible name.</p>
+                <svg id="svg-empty-title-fail" class="a11yTestFail" width="200" height="150" xmlns="http://www.w3.org/2000/svg" role="img">
+                    <title></title>
+                    <rect width="200" height="150" fill="#f2f2f2" />
+                    <circle cx="100" cy="75" r="50" fill="#ffcc99" />
+                </svg>
+                <p class="code">&lt;svg id="svg-empty-title-fail" width="200" height="150" xmlns="http://www.w3.org/2000/svg" role="img"&gt;<br>
+                &nbsp;&nbsp;&lt;title&gt;&lt;/title&gt;<br>
+                &nbsp;&nbsp;&lt;rect width="200" height="150" fill="#f2f2f2" /&gt;<br>
+                &nbsp;&nbsp;&lt;circle cx="100" cy="75" r="50" fill="#ffcc99" /&gt;<br>
+                &lt;/svg&gt;</p>
+            </div>
+
+            <div class="test-case fail">
+                <h3>SVG with HTML Markup in Title Element</h3>
+                <p>This inline SVG has role="img" with a title element containing HTML markup. Screen readers will announce the literal tags, not interpret them.</p>
+                <svg id="svg-html-title-fail" class="a11yTestFail" width="200" height="150" xmlns="http://www.w3.org/2000/svg" role="img">
+                    <title>A <span lang="fr">Bonjour</span> greeting icon</title>
+                    <rect width="200" height="150" fill="#f2f2f2" />
+                    <text x="60" y="90" font-family="Arial" font-size="24" fill="#000">Bonjour</text>
+                </svg>
+                <p class="code">&lt;svg id="svg-html-title-fail" width="200" height="150" xmlns="http://www.w3.org/2000/svg" role="img"&gt;<br>
+                &nbsp;&nbsp;&lt;title&gt;A &lt;span lang="fr"&gt;Bonjour&lt;/span&gt; greeting icon&lt;/title&gt;<br>
+                &nbsp;&nbsp;&lt;rect width="200" height="150" fill="#f2f2f2" /&gt;<br>
+                &nbsp;&nbsp;&lt;text x="60" y="90" font-family="Arial" font-size="24" fill="#000"&gt;Bonjour&lt;/text&gt;<br>
+                &lt;/svg&gt;</p>
+            </div>
+
+            <div class="test-case fail">
+                <h3>SVG with Whitespace-only Title Element</h3>
+                <p>This inline SVG has role="img" and a title element containing only whitespace, which doesn't provide a proper accessible name.</p>
+                <svg id="svg-whitespace-title-fail" class="a11yTestFail" width="200" height="150" xmlns="http://www.w3.org/2000/svg" role="img">
+                    <title>   </title>
+                    <rect width="200" height="150" fill="#f2f2f2" />
+                    <circle cx="100" cy="75" r="50" fill="#ccffcc" />
+                </svg>
+                <p class="code">&lt;svg id="svg-whitespace-title-fail" width="200" height="150" xmlns="http://www.w3.org/2000/svg" role="img"&gt;<br>
+                &nbsp;&nbsp;&lt;title&gt;   &lt;/title&gt;<br>
+                &nbsp;&nbsp;&lt;rect width="200" height="150" fill="#f2f2f2" /&gt;<br>
+                &nbsp;&nbsp;&lt;circle cx="100" cy="75" r="50" fill="#ccffcc" /&gt;<br>
+                &lt;/svg&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>Image with HTML in Alt Text</h3>
+                <p>This image contains HTML notation in its alt text, which won't render correctly for screen readers.</p>
+                <img id="img-html-alt-fail" class="a11yTestFail" src="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22200%22%20height%3D%22150%22%3E%3Crect%20width%3D%22200%22%20height%3D%22150%22%20fill%3D%22%23f2f2f2%22%2F%3E%3Cpath%20d%3D%22M40%2C75%20L160%2C75%22%20stroke%3D%22%23000%22%20stroke-width%3D%222%22%2F%3E%3Cpath%20d%3D%22M100%2C35%20L100%2C115%22%20stroke%3D%22%23000%22%20stroke-width%3D%222%22%2F%3E%3C%2Fsvg%3E" alt="<strong>Medical cross</strong> symbol">
+                <p class="code">&lt;img id="img-html-alt-fail" src="..." alt="&lt;strong&gt;Medical cross&lt;/strong&gt; symbol"&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>Image with Misused lang Attribute in Alt Text</h3>
+                <p>This image incorrectly attempts to specify language within the alt text using HTML notation.</p>
+                <img id="img-lang-alt-fail" class="a11yTestFail" src="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22200%22%20height%3D%22150%22%3E%3Crect%20width%3D%22200%22%20height%3D%22150%22%20fill%3D%22%23fff0cc%22%2F%3E%3Ctext%20x%3D%2240%22%20y%3D%2280%22%20font-family%3D%22serif%22%20font-size%3D%2224%22%20fill%3D%22%23000%22%3EBonjour%3C%2Ftext%3E%3C%2Fsvg%3E" alt="French greeting <span lang='fr'>Bonjour</span> on yellow background">
+                <p class="code">&lt;img id="img-lang-alt-fail" src="..." alt="French greeting &lt;span lang='fr'&gt;Bonjour&lt;/span&gt; on yellow background"&gt;</p>
+            </div>
+
+            <div class="test-case fail">
+                <h3>Image with HTML Markup in Alt Text (Foreign Language)</h3>
+                <p>This image incorrectly uses HTML in its alt text, which won't be interpreted by screen readers. HTML tags in alt text are read literally.</p>
+                <img id="img-html-foreign-alt-fail" class="a11yTestFail" src="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22200%22%20height%3D%22150%22%3E%3Crect%20width%3D%22200%22%20height%3D%22150%22%20fill%3D%22%23fff0cc%22%2F%3E%3Ctext%20x%3D%2240%22%20y%3D%2280%22%20font-family%3D%22serif%22%20font-size%3D%2224%22%20fill%3D%22%23000%22%3EBonjour%3C%2Ftext%3E%3C%2Fsvg%3E" alt="A sign saying <span lang='fr'>Bonjour</span>">
+                <p class="code">&lt;img id="img-html-foreign-alt-fail" src="..." alt="A sign saying &lt;span lang='fr'&gt;Bonjour&lt;/span&gt;"&gt;</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="image-container">
+        <h2>Special Cases and Best Practices</h2>
+        <p>The following examples demonstrate specific edge cases and best practices for image accessibility.</p>
+        
+        <div id="special-cases">
+            <div class="test-case pass">
+                <h3>Image with Proper lang Attribute Usage</h3>
+                <p>This image correctly references a span with lang attribute using aria-labelledby to specify foreign language content.</p>
+                <span id="french-greeting" lang="fr" aria-label="Bonjour"></span>
+                <img id="img-proper-lang-pass" class="a11yTestPass" src="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22200%22%20height%3D%22150%22%3E%3Crect%20width%3D%22200%22%20height%3D%22150%22%20fill%3D%22%23fff0cc%22%2F%3E%3Ctext%20x%3D%2240%22%20y%3D%2280%22%20font-family%3D%22serif%22%20font-size%3D%2224%22%20fill%3D%22%23000%22%3EBonjour%3C%2Ftext%3E%3C%2Fsvg%3E" aria-labelledby="french-greeting" alt="">
+                <p class="code">&lt;span id="french-greeting" lang="fr" aria-label="Bonjour"&gt;&lt;/span&gt;<br>
+                &lt;img id="img-proper-lang-pass" src="..." aria-labelledby="french-greeting" alt=""&gt;</p>
+            </div>
+        </div>
+        
+        <h2>SVG Special Cases</h2>
+        <p>The following examples test special cases for SVG images.</p>
+        
+        <div id="svg-examples">
+            <div class="test-case pass">
+                <h3>Inline SVG with Title Element</h3>
+                <p>This inline SVG includes a title element to provide an accessible name.</p>
+                <svg id="svg-with-title-pass" class="a11yTestPass" width="200" height="150" xmlns="http://www.w3.org/2000/svg" role="img">
+                    <title>Three colorful circles in a row</title>
+                    <rect width="200" height="150" fill="#f2f2f2" />
+                    <circle cx="50" cy="75" r="25" fill="#ff9999" />
+                    <circle cx="100" cy="75" r="25" fill="#99ff99" />
+                    <circle cx="150" cy="75" r="25" fill="#9999ff" />
+                </svg>
+                <p class="code">&lt;svg id="svg-with-title-pass" width="200" height="150" xmlns="http://www.w3.org/2000/svg" role="img"&gt;<br>
+                &nbsp;&nbsp;&lt;title&gt;Three colorful circles in a row&lt;/title&gt;<br>
+                &nbsp;&nbsp;&lt;rect width="200" height="150" fill="#f2f2f2" /&gt;<br>
+                &nbsp;&nbsp;&lt;circle cx="50" cy="75" r="25" fill="#ff9999" /&gt;...<br>
+                &lt;/svg&gt;</p>
+            </div>
+            
+            <div class="test-case pass">
+                <h3>Inline SVG with aria-label</h3>
+                <p>This inline SVG uses aria-label to provide an accessible name.</p>
+                <svg id="svg-with-aria-label-pass" class="a11yTestPass" width="200" height="150" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Blue star on light background">
+                    <rect width="200" height="150" fill="#f2f2f2" />
+                    <path d="M100,30 L115,75 L165,75 L125,100 L140,150 L100,120 L60,150 L75,100 L35,75 L85,75 Z" fill="#4d94ff" />
+                </svg>
+                <p class="code">&lt;svg id="svg-with-aria-label-pass" width="200" height="150" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Blue star on light background"&gt;<br>
+                &nbsp;&nbsp;&lt;rect width="200" height="150" fill="#f2f2f2" /&gt;<br>
+                &nbsp;&nbsp;&lt;path d="M100,30 L115,75 L165,75 L125,100 L140,150 L100,120 L60,150 L75,100 L35,75 L85,75 Z" fill="#4d94ff" /&gt;<br>
+                &lt;/svg&gt;</p>
+            </div>
+            
+            <div class="test-case pass">
+                <h3>Decorative SVG with role="presentation"</h3>
+                <p>This decorative inline SVG correctly uses role="presentation" to be ignored by screen readers.</p>
+                <svg id="svg-decorative-pass" class="a11yTestPass" width="200" height="20" xmlns="http://www.w3.org/2000/svg" role="presentation">
+                    <rect width="200" height="20" fill="#ddd" />
+                </svg>
+                <p class="code">&lt;svg id="svg-decorative-pass" width="200" height="20" xmlns="http://www.w3.org/2000/svg" role="presentation"&gt;<br>
+                &nbsp;&nbsp;&lt;rect width="200" height="20" fill="#ddd" /&gt;<br>
+                &lt;/svg&gt;</p>
+            </div>
+        </div>
+        
+        <h2>Complex Images with role="img"</h2>
+        <p>The following examples test accessible names for complex images created with non-image elements.</p>
+        
+        <style>
+            /* Styles for the weather component */
+            .weather-container {
+                width: 200px;
+                height: 150px;
+                padding: 15px;
+                background-color: #f0f8ff;
+                border-radius: 8px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                position: relative;
+                border: 1px solid #ccc;
+            }
+            
+            .weather-icon {
+                position: relative;
+                width: 80px;
+                height: 80px;
+                margin-bottom: 10px;
+            }
+            
+            .sun {
+                position: absolute;
+                width: 40px;
+                height: 40px;
+                background-color: #ffcc00;
+                border-radius: 50%;
+                top: 10px;
+                left: 10px;
+            }
+            
+            .cloud {
+                position: absolute;
+                width: 60px;
+                height: 30px;
+                background-color: #fff;
+                border-radius: 15px;
+                top: 30px;
+                left: 20px;
+                box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            }
+            
+            .temperature {
+                font-size: 24px;
+                font-weight: bold;
+                margin-bottom: 5px;
+            }
+            
+            .condition {
+                font-size: 16px;
+                color: #555;
+            }
+            
+            /* Styles for the chart component */
+            .chart-container {
+                width: 200px;
+                height: 150px;
+                background-color: #f9f9f9;
+                border: 1px solid #ddd;
+                padding: 15px;
+                position: relative;
+            }
+            
+            .bar {
+                position: absolute;
+                bottom: 20px;
+                width: 25px;
+                background-color: #4d94ff;
+            }
+            
+            .bar-1 {
+                left: 25px;
+                height: 60px;
+            }
+            
+            .bar-2 {
+                left: 65px;
+                height: 90px;
+            }
+            
+            .bar-3 {
+                left: 105px;
+                height: 40px;
+            }
+            
+            .bar-4 {
+                left: 145px;
+                height: 70px;
+            }
+            
+            .chart-label {
+                position: absolute;
+                bottom: 5px;
+                font-size: 12px;
+                width: 100%;
+                text-align: center;
+                left: 0;
+            }
+            
+            /* Styles for the rating stars component */
+            .rating-container {
+                width: 200px;
+                background-color: #f5f5f5;
+                padding: 15px;
+                border-radius: 5px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                border: 1px solid #ddd;
+            }
+            
+            .star {
+                width: 30px;
+                height: 30px;
+                margin: 0 3px;
+                display: inline-block;
+                position: relative;
+            }
+            
+            .star-filled {
+                color: #ffd700;
+                font-size: 28px;
+                line-height: 30px;
+            }
+            
+            .star-empty {
+                color: #ccc;
+                font-size: 28px;
+                line-height: 30px;
+            }
+        </style>
+        
+        <div id="complex-image-examples">
+            <!-- PASSING EXAMPLES -->
+            <div class="test-case pass">
+                <h3>Complex Weather Widget with aria-label</h3>
+                <p>This div with role="img" uses aria-label to provide an accessible name for a complex weather widget.</p>
+                <div id="weather-aria-label-pass" role="img" aria-label="Current weather: 72°F, Partly Cloudy" class="weather-container a11yTestPass">
+                  <div class="weather-icon">
+                    <div class="sun"></div>
+                    <div class="cloud"></div>
+                  </div>
+                  <div class="temperature">72°F</div>
+                  <div class="condition">Partly Cloudy</div>
+                </div>
+                <p class="code">&lt;div id="weather-aria-label-pass" role="img" aria-label="Current weather: 72°F, Partly Cloudy" class="weather-container"&gt;<br>
+                &nbsp;&nbsp;&lt;div class="weather-icon"&gt;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&lt;div class="sun"&gt;&lt;/div&gt;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&lt;div class="cloud"&gt;&lt;/div&gt;<br>
+                &nbsp;&nbsp;&lt;/div&gt;<br>
+                &nbsp;&nbsp;&lt;div class="temperature"&gt;72°F&lt;/div&gt;<br>
+                &nbsp;&nbsp;&lt;div class="condition"&gt;Partly Cloudy&lt;/div&gt;<br>
+                &lt;/div&gt;</p>
+            </div>
+            
+            <div class="test-case pass">
+                <h3>Complex Chart with aria-labelledby</h3>
+                <p>This complex chart element uses aria-labelledby to reference its accessible name.</p>
+                <h4 id="sales-chart-title">Quarterly Sales Performance (in thousands)</h4>
+                <div id="chart-aria-labelledby-pass" role="img" aria-labelledby="sales-chart-title" class="chart-container a11yTestPass">
+                    <div class="bar-1"></div>
+                    <div class="bar-2"></div>
+                    <div class="bar-3"></div>
+                    <div class="bar-4"></div>
+                    <div class="chart-label">Q1-Q4</div>
+                </div>
+                <p class="code">&lt;h4 id="sales-chart-title"&gt;Quarterly Sales Performance (in thousands)&lt;/h4&gt;<br>
+                &lt;div id="chart-aria-labelledby-pass" role="img" aria-labelledby="sales-chart-title" class="chart-container"&gt;<br>
+                &nbsp;&nbsp;&lt;div class="bar-1"&gt;&lt;/div&gt;<br>
+                &nbsp;&nbsp;&lt;div class="bar-2"&gt;&lt;/div&gt;<br>
+                &nbsp;&nbsp;&lt;div class="bar-3"&gt;&lt;/div&gt;<br>
+                &nbsp;&nbsp;&lt;div class="bar-4"&gt;&lt;/div&gt;<br>
+                &nbsp;&nbsp;&lt;div class="chart-label"&gt;Q1-Q4&lt;/div&gt;<br>
+                &lt;/div&gt;</p>
+            </div>
+            
+            <div class="test-case pass">
+                <h3>Complex Star Rating with aria-label</h3>
+                <p>This div with role="img" uses aria-label to provide an accessible name for a star rating display.</p>
+                <div id="rating-aria-label-pass" role="img" aria-label="Rating: 4 out of 5 stars" class="rating-container a11yTestPass">
+                    <span class="star"><span class="star-filled">★</span></span>
+                    <span class="star"><span class="star-filled">★</span></span>
+                    <span class="star"><span class="star-filled">★</span></span>
+                    <span class="star"><span class="star-filled">★</span></span>
+                    <span class="star"><span class="star-empty">☆</span></span>
+                </div>
+                <p class="code">&lt;div id="rating-aria-label-pass" role="img" aria-label="Rating: 4 out of 5 stars" class="rating-container"&gt;<br>
+                &nbsp;&nbsp;&lt;span class="star"&gt;★&lt;/span&gt;&lt;/span&gt;<br>
+                &nbsp;&nbsp;&lt;span class="star"&gt;★&lt;/span&gt;&lt;/span&gt;<br>
+                &nbsp;&nbsp;&lt;span class="star"&gt;★&lt;/span&gt;&lt;/span&gt;<br>
+                &nbsp;&nbsp;&lt;span class="star"&gt;★&lt;/span&gt;&lt;/span&gt;<br>
+                &nbsp;&nbsp;&lt;span class="star"&gt;☆&lt;/span&gt;&lt;/span&gt;<br>
+                &lt;/div&gt;</p>
+            </div>
+            
+            <!-- FAILING EXAMPLES -->
+            <div class="test-case fail">
+                <h3>Complex Weather Widget with No Accessible Name</h3>
+                <p>This div with role="img" has no accessible name (missing aria-label or aria-labelledby).</p>
+                <div id="weather-no-name-fail" role="img" class="weather-container a11yTestFail">
+                  <div class="weather-icon">
+                    <div class="sun"></div>
+                    <div class="cloud"></div>
+                  </div>
+                  <div class="temperature">68°F</div>
+                  <div class="condition">Partly Cloudy</div>
+                </div>
+                <p class="code">&lt;div id="weather-no-name-fail" role="img" class="weather-container"&gt;<br>
+                &nbsp;&nbsp;&lt;div class="weather-icon"&gt;...&lt;/div&gt;<br>
+                &nbsp;&nbsp;&lt;div class="temperature"&gt;68°F&lt;/div&gt;<br>
+                &nbsp;&nbsp;&lt;div class="condition"&gt;Partly Cloudy&lt;/div&gt;<br>
+                &lt;/div&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>Complex Chart with Empty aria-label</h3>
+                <p>This complex chart has an empty aria-label, providing no accessible name.</p>
+                <div id="chart-empty-label-fail" role="img" aria-label="" class="chart-container a11yTestFail">
+                    <div class="bar-1"></div>
+                    <div class="bar-2"></div>
+                    <div class="bar-3"></div>
+                    <div class="bar-4"></div>
+                    <div class="chart-label">Q1-Q4</div>
+                </div>
+                <p class="code">&lt;div id="chart-empty-label-fail" role="img" aria-label="" class="chart-container"&gt;<br>
+                &nbsp;&nbsp;&lt;div class="bar-1"&gt;&lt;/div&gt;...<br>
+                &nbsp;&nbsp;&lt;div class="chart-label"&gt;Q1-Q4&lt;/div&gt;<br>
+                &lt;/div&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>Complex Star Rating with Whitespace-only aria-label</h3>
+                <p>This div with role="img" has an aria-label containing only whitespace.</p>
+                <div id="rating-whitespace-label-fail" role="img" aria-label="   " class="rating-container a11yTestFail">
+                    <span class="star"><span class="star-filled">★</span></span>
+                    <span class="star"><span class="star-filled">★</span></span>
+                    <span class="star"><span class="star-filled">★</span></span>
+                    <span class="star"><span class="star-empty">☆</span></span>
+                    <span class="star"><span class="star-empty">☆</span></span>
+                </div>
+                <p class="code">&lt;div id="rating-whitespace-label-fail" role="img" aria-label="   " class="rating-container"&gt;<br>
+                &nbsp;&nbsp;&lt;span class="star"&gt;★&lt;/span&gt;&lt;/span&gt;...<br>
+                &lt;/div&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>Complex Chart with Broken aria-labelledby Reference</h3>
+                <p>This complex chart references a non-existent element with aria-labelledby.</p>
+                <div id="chart-broken-labelledby-fail" role="img" aria-labelledby="non-existent-chart-title" class="chart-container a11yTestFail">
+                    <div class="bar-1"></div>
+                    <div class="bar-2"></div>
+                    <div class="bar-3"></div>
+                    <div class="bar-4"></div>
+                    <div class="chart-label">Q1-Q4</div>
+                </div>
+                <p class="code">&lt;div id="chart-broken-labelledby-fail" role="img" aria-labelledby="non-existent-chart-title" class="chart-container"&gt;<br>
+                &nbsp;&nbsp;&lt;div class="bar-1"&gt;&lt;/div&gt;...<br>
+                &nbsp;&nbsp;&lt;div class="chart-label"&gt;Q1-Q4&lt;/div&gt;<br>
+                &lt;/div&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>Complex Weather Widget with URL as aria-label</h3>
+                <p>This div with role="img" uses a URL as its aria-label, which is not descriptive.</p>
+                <div id="weather-url-label-fail" role="img" aria-label="https://example.com/weather-icon.png" class="weather-container a11yTestFail">
+                  <div class="weather-icon">
+                    <div class="sun"></div>
+                    <div class="cloud"></div>
+                  </div>
+                  <div class="temperature">75°F</div>
+                  <div class="condition">Partly Cloudy</div>
+                </div>
+                <p class="code">&lt;div id="weather-url-label-fail" role="img" aria-label="https://example.com/weather-icon.png" class="weather-container"&gt;<br>
+                &nbsp;&nbsp;&lt;div class="weather-icon"&gt;...&lt;/div&gt;<br>
+                &nbsp;&nbsp;&lt;div class="temperature"&gt;75°F&lt;/div&gt;<br>
+                &nbsp;&nbsp;&lt;div class="condition"&gt;Partly Cloudy&lt;/div&gt;<br>
+                &lt;/div&gt;</p>
+            </div>
+
+            <div class="test-case fail">
+                <h3>Complex Weather Widget with HTML Markup in aria-label</h3>
+                <p>This div with role="img" incorrectly uses HTML markup in its aria-label. Screen readers will announce the literal HTML tags, not interpret them.</p>
+                <div id="weather-html-label-fail" role="img" aria-label="Weather in <span lang='fr'>Paris</span>: Sunny, 28°C" class="weather-container a11yTestFail">
+                  <div class="weather-icon">
+                    <div class="sun"></div>
+                  </div>
+                  <div class="temperature">28°C</div>
+                  <div class="condition">Sunny</div>
+                </div>
+                <p class="code">&lt;div id="weather-html-label-fail" role="img" aria-label="Weather in &lt;span lang='fr'&gt;Paris&lt;/span&gt;: Sunny, 28°C" class="weather-container"&gt;<br>
+                &nbsp;&nbsp;&lt;div class="weather-icon"&gt;...&lt;/div&gt;<br>
+                &nbsp;&nbsp;&lt;div class="temperature"&gt;28°C&lt;/div&gt;<br>
+                &nbsp;&nbsp;&lt;div class="condition"&gt;Sunny&lt;/div&gt;<br>
+                &lt;/div&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>Complex Star Rating with Generic aria-label</h3>
+                <p>This div with role="img" has a generic, non-descriptive aria-label.</p>
+                <div id="rating-generic-label-fail" role="img" aria-label="image" class="rating-container a11yTestFail">
+                    <span class="star"><span class="star-filled">★</span></span>
+                    <span class="star"><span class="star-filled">★</span></span>
+                    <span class="star"><span class="star-empty">☆</span></span>
+                    <span class="star"><span class="star-empty">☆</span></span>
+                    <span class="star"><span class="star-empty">☆</span></span>
+                </div>
+                <p class="code">&lt;div id="rating-generic-label-fail" role="img" aria-label="image" class="rating-container"&gt;<br>
+                &nbsp;&nbsp;&lt;span class="star"&gt;★&lt;/span&gt;&lt;/span&gt;...<br>
+                &lt;/div&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>Complex Chart with Punctuation-only aria-label</h3>
+                <p>This div with role="img" has an aria-label containing only punctuation.</p>
+                <div id="chart-punctuation-label-fail" role="img" aria-label="..." class="chart-container a11yTestFail">
+                    <div class="bar-1"></div>
+                    <div class="bar-2"></div>
+                    <div class="bar-3"></div>
+                    <div class="bar-4"></div>
+                    <div class="chart-label">Q1-Q4</div>
+                </div>
+                <p class="code">&lt;div id="chart-punctuation-label-fail" role="img" aria-label="..." class="chart-container"&gt;<br>
+                &nbsp;&nbsp;&lt;div class="bar-1"&gt;&lt;/div&gt;...<br>
+                &nbsp;&nbsp;&lt;div class="chart-label"&gt;Q1-Q4&lt;/div&gt;<br>
+                &lt;/div&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>Complex Weather Widget with Filename as aria-label</h3>
+                <p>This div with role="img" uses a filename as its aria-label, which is not descriptive.</p>
+                <div id="weather-filename-label-fail" role="img" aria-label="weather_icon_01.png" class="weather-container a11yTestFail">
+                  <div class="weather-icon">
+                    <div class="sun"></div>
+                    <div class="cloud"></div>
+                  </div>
+                  <div class="temperature">70°F</div>
+                  <div class="condition">Partly Cloudy</div>
+                </div>
+                <p class="code">&lt;div id="weather-filename-label-fail" role="img" aria-label="weather_icon_01.png" class="weather-container"&gt;<br>
+                &nbsp;&nbsp;&lt;div class="weather-icon"&gt;...&lt;/div&gt;<br>
+                &nbsp;&nbsp;&lt;div class="temperature"&gt;70°F&lt;/div&gt;<br>
+                &nbsp;&nbsp;&lt;div class="condition"&gt;Partly Cloudy&lt;/div&gt;<br>
+                &lt;/div&gt;</p>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>This test page is designed to validate image accessibility according to WCAG 1.1.1 (Non-text Content) criteria.</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Link Accessible Names Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+        }
+        .link-container {
+            margin: 20px 0;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+        }
+        .test-case {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f9f9f9; /* default background */
+            border-radius: 5px;
+        }
+        /* Override background for warning cases */
+        .test-case.warn {
+            background-color: #FFF8E6; /* pale amber background */
+        }
+        .test-case h3 {
+            margin-top: 0;
+        }
+        .test-case p {
+            margin-bottom: 10px;
+        }
+        .example-label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .pass {
+            border-left: 5px solid green;
+        }
+        .fail {
+            border-left: 5px solid red;
+        }
+        .warn {
+            border-left: 5px solid #E6A700; /* amber bar */
+            background-color: #FFF8E6; /* pale amber background */
+        }
+        .code {
+            background-color: #f0f0f0;
+            padding: 5px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        a, [role="link"] {
+            color: #0066cc;
+            text-decoration: underline;
+            padding: 2px 4px;
+            margin: 5px 0;
+            display: inline-block;
+        }
+        [role="link"] {
+            cursor: pointer;
+            color: #0066cc;
+            background-color: #f1f1f1;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            padding: 2px 6px;
+        }
+        [role="link"]:focus {
+            outline: 2px solid blue;
+        }
+        .icon-link {
+            display: inline-flex;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Link Accessible Names Test Cases</h1>
+    <p><strong>Test cases: 9 passing, 16 failing, 1 warning (26 total)</strong></p>
+    <p>This page contains various link elements to test accessible name computation according to WCAG guidelines.</p>
+    
+    <div class="link-container">
+        <div id="pass-examples">
+            <h2>Passing Examples</h2>
+            
+            <div class="test-case pass">
+                <h3>Link with Descriptive Text</h3>
+                <p>This link has descriptive text that clearly explains where it leads.</p>
+                <a id="link-descriptive-pass" class="a11yTestPass" href="https://example.com/contact">Contact our support team</a>
+                <p class="code">&lt;a id="link-descriptive-pass" href="https://example.com/contact"&gt;Contact our support team&lt;/a&gt;</p>
+            </div>
+            
+            <div class="test-case pass">
+                <h3>Link with Icon and Text</h3>
+                <p>This link has both an icon and text, which together form its accessible name.</p>
+                <a id="link-icon-text-pass" href="https://example.com/home" class="icon-link a11yTestPass">
+                    <span>🏠</span> Return to homepage
+                </a>
+                <p class="code">&lt;a id="link-icon-text-pass" href="https://example.com/home" class="icon-link"&gt;&lt;span&gt;🏠&lt;/span&gt; Return to homepage&lt;/a&gt;</p>
+            </div>
+            
+            <div class="test-case pass">
+                <h3>Link with aria-label</h3>
+                <p>This link has an aria-label attribute that provides a more descriptive name than its visual text.</p>
+                <a id="link-aria-label-pass" class="a11yTestPass" href="https://example.com/products" aria-label="View all available products and services">Products</a>
+                <p class="code">&lt;a id="link-aria-label-pass" href="https://example.com/products" aria-label="View all available products and services"&gt;Products&lt;/a&gt;</p>
+            </div>
+            
+            <div class="test-case pass">
+                <h3>Link with aria-labelledby</h3>
+                <p>This link uses aria-labelledby to reference text elsewhere on the page for its accessible name.</p>
+                <span id="search-label">Search the knowledge base</span>
+                <a id="link-aria-labelledby-pass" class="a11yTestPass" href="https://example.com/search" aria-labelledby="search-label">🔍</a>
+                <p class="code">&lt;span id="search-label"&gt;Search the knowledge base&lt;/span&gt;<br>
+                &lt;a id="link-aria-labelledby-pass" href="https://example.com/search" aria-labelledby="search-label"&gt;🔍&lt;/a&gt;</p>
+            </div>
+            
+            <div class="test-case pass">
+                <h3>Image Link with alt Text</h3>
+                <p>This link contains an image with proper alt text.</p>
+                <a id="link-img-alt-pass" class="a11yTestPass" href="https://example.com/profile">
+                    <img src="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2225%22%20height%3D%2225%22%3E%3Ccircle%20cx%3D%2212.5%22%20cy%3D%228%22%20r%3D%225%22%20fill%3D%22%23999%22%2F%3E%3Cpath%20d%3D%22M12.5%2C13%20C%208%2C13%204.5%2C16%204.5%2C20%20L20.5%2C20%20C%2020.5%2C16%2017%2C13%2012.5%2C13%20Z%22%20fill%3D%22%23999%22%2F%3E%3C%2Fsvg%3E" alt="John Doe">
+                </a>
+                <p class="code">&lt;a id="link-img-alt-pass" href="https://example.com/profile"&gt;<br>
+                &nbsp;&nbsp;&lt;img src="..." alt="John Doe"&gt;<br>
+                &lt;/a&gt;</p>
+            </div>
+        </div>
+        
+        <div id="fail-examples">
+            <h2>Failing Examples</h2>
+            
+            <div class="test-case fail">
+                <h3>Empty Link</h3>
+                <p>This link has no text content or accessible name.</p>
+                <a id="link-empty-fail" class="a11yTestFail" href="https://example.com"></a>
+                <p class="code">&lt;a id="link-empty-fail" href="https://example.com"&gt;&lt;/a&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>Generic "Click Here" Link</h3>
+                <p>This link has generic text that doesn't explain its purpose or destination.</p>
+                <a id="link-click-here-fail" class="a11yTestFail" href="https://example.com/about">Click here</a>
+                <p class="code">&lt;a id="link-click-here-fail" href="https://example.com/about"&gt;Click here&lt;/a&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>Generic "Read More" Link</h3>
+                <p>This link has generic text that doesn't explain its purpose or destination.</p>
+                <a id="link-read-more-fail" class="a11yTestFail" href="https://example.com/article">Read more</a>
+                <p class="code">&lt;a id="link-read-more-fail" href="https://example.com/article"&gt;Read more&lt;/a&gt;</p>
+            </div>
+            
+            <div class="test-case warn">
+                <h3>Link with URL as Text</h3>
+                <p>This link uses a raw URL as its text, which can be difficult for screen readers to process. This is a best practice issue, not a WCAG requirement.</p>
+                <a id="link-raw-url-warn" class="a11yTestWarn" href="https://example.com/policy">https://example.com/policy</a>
+                <p class="code">&lt;a id="link-raw-url-warn" href="https://example.com/policy"&gt;https://example.com/policy&lt;/a&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>Icon-only Link without Accessible Name</h3>
+                <p>This link has only an icon with no accessible name.</p>
+                <a id="link-icon-only-fail" href="https://example.com/settings" class="icon-link a11yTestFail">⚙️</a>
+                <p class="code">&lt;a id="link-icon-only-fail" href="https://example.com/settings" class="icon-link"&gt;⚙️&lt;/a&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>Link with Empty aria-label</h3>
+                <p>This link has an empty aria-label attribute.</p>
+                <a id="link-empty-arialabel-fail" class="a11yTestFail" href="https://example.com/faq" aria-label="">FAQ</a>
+                <p class="code">&lt;a id="link-empty-arialabel-fail" href="https://example.com/faq" aria-label=""&gt;FAQ&lt;/a&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>Link with Non-existent aria-labelledby Reference</h3>
+                <p>This link has an aria-labelledby attribute pointing to an ID that doesn't exist.</p>
+                <a id="link-broken-labelledby-fail" class="a11yTestFail" href="https://example.com/support" aria-labelledby="non-existent-id">Support</a>
+                <p class="code">&lt;a id="link-broken-labelledby-fail" href="https://example.com/support" aria-labelledby="non-existent-id"&gt;Support&lt;/a&gt;</p>
+            </div>
+
+            <div class="test-case fail">
+                <h3>Link with Only Whitespace</h3>
+                <p>This link contains only whitespace characters, which doesn't provide a proper accessible name.</p>
+                <a id="link-whitespace-fail" class="a11yTestFail" href="https://example.com/blank">   </a>
+                <p class="code">&lt;a id="link-whitespace-fail" href="https://example.com/blank"&gt;   &lt;/a&gt;</p>
+            </div>
+
+            <div class="test-case fail">
+                <h3>Link with Only Punctuation</h3>
+                <p>This link's aria-label contains only punctuation, which may not be announced by some screen readers.</p>
+                <a id="link-punctuation-arialabel-fail" class="a11yTestFail" href="https://example.com/more" aria-label="..."></a>
+                <p class="code">&lt;a id="link-punctuation-arialabel-fail" href="https://example.com/more" aria-label="..."&gt;&lt;/a&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>Image Link without alt Text</h3>
+                <p>This link contains an image with no alt text.</p>
+                <a id="link-img-no-alt-fail" class="a11yTestFail" href="https://example.com/image">
+                    <img src="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2225%22%20height%3D%2225%22%3E%3Crect%20width%3D%2225%22%20height%3D%2225%22%20fill%3D%22red%22%2F%3E%3C%2Fsvg%3E" alt="">
+                </a>
+                <p class="code">&lt;a id="link-img-no-alt-fail" href="https://example.com/image"&gt;<br>
+                &nbsp;&nbsp;&lt;img src="..." alt=""&gt;<br>
+                &lt;/a&gt;</p>
+            </div>
+        </div>
+    </div>
+    
+    <hr>
+    
+    <div class="link-container">
+        <h2>ARIA Role Link Tests</h2>
+        <p>The following tests use <code>&lt;div role="link"&gt;</code> or <code>&lt;span role="link"&gt;</code> instead of semantic anchor elements.</p>
+        
+        <div id="pass-examples-aria">
+            <h2>Passing Examples - ARIA Role</h2>
+            
+            <div class="test-case pass">
+                <h3>Div with role="link" and Descriptive Text</h3>
+                <p>This div with role="link" has descriptive text that explains its purpose.</p>
+                <div id="aria-link-text-pass" class="a11yTestPass" role="link" tabindex="0">Download our annual report</div>
+                <p class="code">&lt;div id="aria-link-text-pass" role="link" tabindex="0"&gt;Download our annual report&lt;/div&gt;</p>
+            </div>
+            
+            <div class="test-case pass">
+                <h3>Role Link with Icon and Text</h3>
+                <p>This span with role="link" has both an icon and text, which together form its accessible name.</p>
+                <span id="aria-link-icon-text-pass" role="link" tabindex="0" class="icon-link a11yTestPass">
+                    <span>📧</span> Contact us via email
+                </span>
+                <p class="code">&lt;span id="aria-link-icon-text-pass" role="link" tabindex="0" class="icon-link"&gt;&lt;span&gt;📧&lt;/span&gt; Contact us via email&lt;/span&gt;</p>
+            </div>
+            
+            <div class="test-case pass">
+                <h3>Role Link with aria-label</h3>
+                <p>This div with role="link" has an aria-label attribute that provides its accessible name.</p>
+                <div id="aria-link-arialabel-pass" class="a11yTestPass" role="link" tabindex="0" aria-label="Find us on social media">Social</div>
+                <p class="code">&lt;div id="aria-link-arialabel-pass" role="link" tabindex="0" aria-label="Find us on social media"&gt;Social&lt;/div&gt;</p>
+            </div>
+            
+            <div class="test-case pass">
+                <h3>Role Link with aria-labelledby</h3>
+                <p>This div with role="link" uses aria-labelledby to reference text elsewhere on the page for its accessible name.</p>
+                <span id="download-label">Download latest version</span>
+                <div id="aria-link-labelledby-pass" class="a11yTestPass" role="link" tabindex="0" aria-labelledby="download-label">↓</div>
+                <p class="code">&lt;span id="download-label"&gt;Download latest version&lt;/span&gt;<br>
+                &lt;div id="aria-link-labelledby-pass" role="link" tabindex="0" aria-labelledby="download-label"&gt;↓&lt;/div&gt;</p>
+            </div>
+        </div>
+        
+        <div id="fail-examples-aria">
+            <h2>Failing Examples - ARIA Role</h2>
+            
+            <div class="test-case fail">
+                <h3>Empty Role Link</h3>
+                <p>This div with role="link" has no text content or accessible name.</p>
+                <div id="aria-link-empty-fail" class="a11yTestFail" role="link" tabindex="0"></div>
+                <p class="code">&lt;div id="aria-link-empty-fail" role="link" tabindex="0"&gt;&lt;/div&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>Generic Text Role Link</h3>
+                <p>This div with role="link" has generic text that doesn't describe its purpose.</p>
+                <div id="aria-link-generic-text-fail" class="a11yTestFail" role="link" tabindex="0">Click here</div>
+                <p class="code">&lt;div id="aria-link-generic-text-fail" role="link" tabindex="0"&gt;Click here&lt;/div&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>Icon-only Role Link without Accessible Name</h3>
+                <p>This div with role="link" has only an icon but no accessible name.</p>
+                <div id="aria-link-icon-only-fail" role="link" tabindex="0" class="icon-link a11yTestFail">🔗</div>
+                <p class="code">&lt;div id="aria-link-icon-only-fail" role="link" tabindex="0" class="icon-link"&gt;🔗&lt;/div&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>Role Link with Empty aria-label</h3>
+                <p>This div with role="link" has an empty aria-label attribute.</p>
+                <div id="aria-link-empty-arialabel-fail" class="a11yTestFail" role="link" tabindex="0" aria-label="">Help</div>
+                <p class="code">&lt;div id="aria-link-empty-arialabel-fail" role="link" tabindex="0" aria-label=""&gt;Help&lt;/div&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>Role Link with Non-existent aria-labelledby Reference</h3>
+                <p>This div with role="link" has an aria-labelledby attribute pointing to an ID that doesn't exist.</p>
+                <div id="aria-link-broken-labelledby-fail" class="a11yTestFail" role="link" tabindex="0" aria-labelledby="non-existent-id-aria">Docs</div>
+                <p class="code">&lt;div id="aria-link-broken-labelledby-fail" role="link" tabindex="0" aria-labelledby="non-existent-id-aria"&gt;Docs&lt;/div&gt;</p>
+            </div>
+
+            <div class="test-case fail">
+                <h3>Role Link with Only Whitespace</h3>
+                <p>This div with role="link" contains only whitespace characters, which doesn't provide a proper accessible name.</p>
+                <div id="aria-link-whitespace-fail" class="a11yTestFail" role="link" tabindex="0">   </div>
+                <p class="code">&lt;div id="aria-link-whitespace-fail" role="link" tabindex="0"&gt;   &lt;/div&gt;</p>
+            </div>
+
+            <div class="test-case fail">
+                <h3>Role Link with Only Punctuation</h3>
+                <p>This div with role="link" has an aria-label with only punctuation, which may not be announced by some screen readers.</p>
+                <div id="aria-link-punctuation-arialabel-fail" class="a11yTestFail" role="link" tabindex="0" aria-label="..."></div>
+                <p class="code">&lt;div id="aria-link-punctuation-arialabel-fail" role="link" tabindex="0" aria-label="..."&gt;&lt;/div&gt;</p>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>This test page is designed to validate link text quality according to WCAG 2.4.4 (Link Purpose - In Context) and 2.4.9 (Link Purpose - Link Only) criteria.</p>
+    </footer>
+</body>
+</html>

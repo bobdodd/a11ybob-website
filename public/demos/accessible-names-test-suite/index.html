@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accessible Names Test Suite</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        h1 {
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        h2 {
+            border-bottom: 1px solid #bdc3c7;
+            padding-bottom: 5px;
+            margin-top: 40px;
+        }
+        .test-group {
+            margin-bottom: 40px;
+        }
+        .test-card {
+            background-color: #f9f9f9;
+            border-left: 5px solid #3498db;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 0 5px 5px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.2s ease;
+        }
+        .test-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        .test-card h3 {
+            margin-top: 0;
+            margin-bottom: 5px;
+        }
+        .test-stats {
+            color: #7f8c8d;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+        .test-card p {
+            margin-bottom: 0;
+        }
+        a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .wcag-badge {
+            display: inline-block;
+            background-color: #27ae60;
+            color: white;
+            font-size: 0.75em;
+            padding: 2px 6px;
+            border-radius: 3px;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+        .summary {
+            background-color: #e8f4fc;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+            border: 1px solid #bde0f3;
+        }
+        .summary p:last-child {
+            margin-bottom: 0;
+        }
+        .total-stats {
+            font-weight: bold;
+            margin-top: 10px;
+            font-size: 1.1em;
+        }
+        footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #bdc3c7;
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <h1>Accessible Names Test Suite</h1>
+
+    <section class="summary">
+        <h2>Test Suite Overview</h2>
+        <p><strong>This test suite is specifically focused on Accessible Names testing</strong> - validating accessible name computation across different HTML elements and ARIA roles according to the W3C's Accessible Name and Description Computation algorithm.</p>
+        <p>Accessible names are crucial for assistive technologies like screen readers to correctly identify and announce interface elements. These tests validate proper implementation of the algorithms that determine what name is announced to users.</p>
+        <p>The test files contain both passing examples (that follow best practices) and failing examples (that violate accessible name requirements) to validate automated testing tools and demonstrate proper implementation techniques.</p>
+        <p class="total-stats">Total Accessible Name Test Cases: 406 (120 passing, 281 failing, 10 warnings)</p>
+    </section>
+
+    <section class="test-group">
+        <h2>HTML Element Tests</h2>
+        
+        <div class="test-card">
+            <h3><a href="accessible_names-buttons-0.html">Button Accessible Names Test</a></h3>
+            <div class="test-stats">10 passing, 15 failing (25 total)</div>
+            <p>Tests accessible name computation for button elements (&lt;button&gt;) and elements with role="button", including various scenarios with text content, aria-label, and aria-labelledby.</p>
+            <div>
+                <span class="wcag-badge">WCAG 4.1.2</span>
+            </div>
+        </div>
+        
+        <div class="test-card">
+            <h3><a href="accessible_names-forms-0.html">Form Accessible Names Test</a></h3>
+            <div class="test-stats">9 passing, 25 failing, 2 warnings (36 total)</div>
+            <p>Tests accessible name computation for form elements, including &lt;form&gt;, &lt;fieldset&gt;, and ARIA equivalents with role="form" and role="group".</p>
+            <div>
+                <span class="wcag-badge">WCAG 4.1.2</span>
+            </div>
+        </div>
+        
+        <div class="test-card">
+            <h3><a href="accessible_names-controls-0.html">Form Controls Accessible Names Test</a></h3>
+            <div class="test-stats">16 passing, 75 failing, 5 warnings (96 total)</div>
+            <p>Tests accessible name computation for various form controls including text inputs, checkboxes, radio buttons, selects, and textareas using explicit labels, implicit labels, aria-label, and aria-labelledby.</p>
+            <div>
+                <span class="wcag-badge">WCAG 4.1.2</span>
+            </div>
+        </div>
+        
+        <div class="test-card">
+            <h3><a href="accessible_names-iframe-0.html">IFrame Accessible Names Test</a></h3>
+            <div class="test-stats">7 passing, 9 failing (16 total)</div>
+            <p>Tests accessible name computation for iframe elements using title attribute, aria-label, and aria-labelledby, including embedded content with srcdoc.</p>
+            <div>
+                <span class="wcag-badge">WCAG 4.1.2</span>
+            </div>
+        </div>
+        
+        <div class="test-card">
+            <h3><a href="accessible_names-images-0.html">Image Accessible Names Test</a></h3>
+            <div class="test-stats">12 passing, 23 failing (35 total)</div>
+            <p>Tests accessible name computation for images, including &lt;img&gt; elements with alt text, SVG images with various labeling techniques, and complex images with role="img".</p>
+            <div>
+                <span class="wcag-badge">WCAG 4.1.2</span>
+                <span class="wcag-badge">WCAG 1.1.1</span>
+            </div>
+        </div>
+        
+        <div class="test-card">
+            <h3><a href="accessible_names-links-0.html">Link Accessible Names Test</a></h3>
+            <div class="test-stats">9 passing, 17 failing (26 total)</div>
+            <p>Tests accessible name computation for links (&lt;a&gt; elements) and elements with role="link", including text content, icon+text, aria-label, and aria-labelledby.</p>
+            <div>
+                <span class="wcag-badge">WCAG 4.1.2</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="test-group">
+        <h2>ARIA Role Tests</h2>
+        
+        <div class="test-card">
+            <h3><a href="accessible_names-aria-roles-0.html">ARIA Roles Accessible Names - Part 1</a></h3>
+            <div class="test-stats">12 passing, 66 failing, 3 warnings (81 total)</div>
+            <p>Tests accessible name computation for common interactive ARIA roles including combobox, dialog, listbox, menu, menubar, radiogroup, and tab elements.</p>
+            <div>
+                <span class="wcag-badge">WCAG 4.1.2</span>
+            </div>
+        </div>
+        
+        <div class="test-card">
+            <h3><a href="accessible_names-aria-roles-1.html">ARIA Roles Accessible Names - Part 2</a></h3>
+            <div class="test-stats">24 passing, 64 failing (88 total)</div>
+            <p>Continues testing accessible name computation for additional interactive ARIA roles including grid, slider, spinbutton, switch, and textbox elements.</p>
+            <div>
+                <span class="wcag-badge">WCAG 4.1.2</span>
+            </div>
+        </div>
+        
+        <div class="test-card">
+            <h3><a href="accessible_names-aria-roles-2.html">ARIA Roles Accessible Names - Part 3</a></h3>
+            <div class="test-stats">16 passing, 36 failing (52 total)</div>
+            <p>Tests accessible name computation for specialized ARIA roles (meter, toolbar, tree) and elements with tabindex that require accessible names for proper screen reader identification.</p>
+            <div>
+                <span class="wcag-badge">WCAG 4.1.2</span>
+            </div>
+        </div>
+        
+        <div class="test-card">
+            <h3><a href="accessible_names-supporting-roles-0.html">ARIA Supporting Roles Accessible Names Test</a></h3>
+            <div class="test-stats">15 passing, 32 failing (47 total)</div>
+            <p>Tests accessible name computation for non-interactive ARIA roles that provide structure and context, such as landmarks, regions, and table components.</p>
+            <div>
+                <span class="wcag-badge">WCAG 4.1.2</span>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>This test suite is <strong>specifically focused on Accessible Names testing</strong> and was created to validate the W3C's Accessible Name Computation algorithm.</p>
+        <p>While the tests relate to several WCAG criteria, they are all specifically testing the computation and presence of accessible names as required by WCAG 4.1.2 Name, Role, Value.</p>
+        <p>The tests are used by the CARNFORTH accessibility validation system to verify the correct implementation of accessible name computation in accessibility testing tools.</p>
+    </footer>
+</body>
+</html>

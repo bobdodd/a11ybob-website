@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Accessible Names Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 30px;
+            max-width: 1200px;
+        }
+        .test-case {
+            margin-bottom: 40px;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .pass {
+            background-color: #e6f7e6;
+            border-left: 5px solid #28a745;
+        }
+        .fail {
+            background-color: #fbeeee;
+            border-left: 5px solid #dc3545;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 5px solid #ffc107;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #444;
+            margin-top: 40px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        h3 {
+            color: #555;
+            margin: 0 0 10px 0;
+        }
+        .code {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            margin-top: 10px;
+            overflow-x: auto;
+        }
+        label, input, select, textarea {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input, select, textarea {
+            padding: 8px;
+            margin-bottom: 15px;
+            width: 300px;
+        }
+        .fieldset-demo {
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .fieldset-demo legend {
+            padding: 0 10px;
+        }
+        .radio-group, .checkbox-group {
+            margin-bottom: 15px;
+        }
+        .radio-group input, .checkbox-group input {
+            display: inline-block;
+            width: auto;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+        .radio-group label, .checkbox-group label {
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .form-container {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 5px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Form Accessible Names Test</h1>
+    <p><strong>Test cases: 9 passing, 25 failing, 2 warnings (36 total)</strong></p>
+    <p>This page contains test cases for accessible names in form elements according to the WCAG accessible name computation algorithm. The test cases include passing, failing, and warning examples to validate accessibility testing tools.</p>
+    
+    <div class="form-container">
+        <h2>1. Form Element Accessible Names</h2>
+        <p>These tests validate accessible names for the <code>&lt;form&gt;</code> element itself.</p>
+        
+        <div id="form-element-pass">
+            <h2>Passing Examples - Form Element</h2>
+            
+            <div class="test-case pass">
+                <h3>Form with Proper aria-label</h3>
+                <p>This form has a descriptive aria-label attribute.</p>
+                <form id="form-aria-label-pass" class="a11yTestPass" aria-label="Contact Form for Customer Support">
+                    <div class="form-group">
+                        <label for="name-form1">Name</label>
+                        <input type="text" id="name-form1" name="name">
+                    </div>
+                    <button type="submit">Submit</button>
+                </form>
+                <p class="code">&lt;form id="form-aria-label-pass" aria-label="Contact Form for Customer Support"&gt;
+    &lt;div class="form-group"&gt;
+        &lt;label for="name-form1"&gt;Name&lt;/label&gt;
+        &lt;input type="text" id="name-form1" name="name"&gt;
+    &lt;/div&gt;
+    &lt;button type="submit"&gt;Submit&lt;/button&gt;
+&lt;/form&gt;</p>
+            </div>
+            
+            <div class="test-case pass">
+                <h3>Form with aria-labelledby</h3>
+                <p>This form uses aria-labelledby to reference a heading as its accessible name.</p>
+                <h4 id="newsletter-heading">Newsletter Subscription</h4>
+                <form id="form-aria-labelledby-pass" class="a11yTestPass" aria-labelledby="newsletter-heading">
+                    <div class="form-group">
+                        <label for="email-form2">Email Address</label>
+                        <input type="email" id="email-form2" name="email">
+                    </div>
+                    <button type="submit">Subscribe</button>
+                </form>
+                <p class="code">&lt;h4 id="newsletter-heading"&gt;Newsletter Subscription&lt;/h4&gt;
+&lt;form id="form-aria-labelledby-pass" aria-labelledby="newsletter-heading"&gt;
+    &lt;div class="form-group"&gt;
+        &lt;label for="email-form2"&gt;Email Address&lt;/label&gt;
+        &lt;input type="email" id="email-form2" name="email"&gt;
+    &lt;/div&gt;
+    &lt;button type="submit"&gt;Subscribe&lt;/button&gt;
+&lt;/form&gt;</p>
+            </div>
+            
+            <div class="test-case warning">
+                <h3>Form with title Attribute (Warning)</h3>
+                <p>This form has a title attribute which provides an accessible name, but is <strong>not recommended</strong> for accessibility. While technically valid, title attributes:</p>
+                <ul>
+                    <li>May not be visible to screen magnifier users who cannot see the entire tooltip</li>
+                    <li>Are not consistently exposed by all assistive technologies</li>
+                    <li>May be difficult to discover for keyboard-only users</li>
+                    <li>Are only visible on hover/focus and may timeout before users can read them</li>
+                </ul>
+                <p><strong>Better alternatives:</strong> Use aria-label or aria-labelledby instead.</p>
+                <form id="form-title-warning" class="a11yTestWarn" title="Account Registration Form">
+                    <div class="form-group">
+                        <label for="username-form3">Username</label>
+                        <input type="text" id="username-form3" name="username">
+                    </div>
+                    <button type="submit">Register</button>
+                </form>
+                <p class="code">&lt;form id="form-title-warning" title="Account Registration Form"&gt;
+    &lt;div class="form-group"&gt;
+        &lt;label for="username-form3"&gt;Username&lt;/label&gt;
+        &lt;input type="text" id="username-form3" name="username"&gt;
+    &lt;/div&gt;
+    &lt;button type="submit"&gt;Register&lt;/button&gt;
+&lt;/form&gt;</p>
+            </div>
+        </div>
+        
+        <div id="form-element-fail">
+            <h2>Failing Examples - Form Element</h2>
+            
+            <div class="test-case fail">
+                <h3>Form without Accessible Name</h3>
+                <p>This form has no accessible name - no aria-label, aria-labelledby, or associated heading.</p>
+                <form id="form-no-name-fail" class="a11yTestFail">
+                    <div class="form-group">
+                        <label for="name-form4">Name</label>
+                        <input type="text" id="name-form4" name="name">
+                    </div>
+                    <button type="submit">Submit</button>
+                </form>
+                <p class="code">&lt;form id="form-no-name-fail"&gt;
+    &lt;div class="form-group"&gt;
+        &lt;label for="name-form4"&gt;Name&lt;/label&gt;
+        &lt;input type="text" id="name-form4" name="name"&gt;
+    &lt;/div&gt;
+    &lt;button type="submit"&gt;Submit&lt;/button&gt;
+&lt;/form&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>Form with Empty aria-label</h3>
+                <p>This form has an empty aria-label attribute, which doesn't provide an accessible name.</p>
+                <form id="form-empty-aria-label-fail" class="a11yTestFail" aria-label="">
+                    <div class="form-group">
+                        <label for="name-form5">Name</label>
+                        <input type="text" id="name-form5" name="name">
+                    </div>
+                    <button type="submit">Submit</button>
+                </form>
+                <p class="code">&lt;form id="form-empty-aria-label-fail" aria-label=""&gt;
+    &lt;div class="form-group"&gt;
+        &lt;label for="name-form5"&gt;Name&lt;/label&gt;
+        &lt;input type="text" id="name-form5" name="name"&gt;
+    &lt;/div&gt;
+    &lt;button type="submit"&gt;Submit&lt;/button&gt;
+&lt;/form&gt;</p>
+            </div>
+
+            <div class="test-case fail">
+                <h3>Form with Whitespace-only aria-label</h3>
+                <p>This form has an aria-label attribute that contains only whitespace, which is effectively empty.</p>
+                <form id="form-whitespace-aria-label-fail" class="a11yTestFail" aria-label="   ">
+                    <div class="form-group">
+                        <label for="name-form-whitespace">Name</label>
+                        <input type="text" id="name-form-whitespace" name="name">
+                    </div>
+                    <button type="submit">Submit</button>
+                </form>
+                <p class="code">&lt;form id="form-whitespace-aria-label-fail" aria-label="   "&gt;
+    &lt;div class="form-group"&gt;
+        &lt;label for="name-form-whitespace"&gt;Name&lt;/label&gt;
+        &lt;input type="text" id="name-form-whitespace" name="name"&gt;
+    &lt;/div&gt;
+    &lt;button type="submit"&gt;Submit&lt;/button&gt;
+&lt;/form&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>Form with Punctuation-only aria-label</h3>
+                <p>This form has an aria-label with only punctuation, which is not a meaningful accessible name.</p>
+                <form id="form-punctuation-aria-label-fail" class="a11yTestFail" aria-label="...">
+                    <div class="form-group">
+                        <label for="name-form-punctuation">Name</label>
+                        <input type="text" id="name-form-punctuation" name="name">
+                    </div>
+                    <button type="submit">Submit</button>
+                </form>
+                <p class="code">&lt;form id="form-punctuation-aria-label-fail" aria-label="..."&gt;
+    &lt;div class="form-group"&gt;
+        &lt;label for="name-form-punctuation"&gt;Name&lt;/label&gt;
+        &lt;input type="text" id="name-form-punctuation" name="name"&gt;
+    &lt;/div&gt;
+    &lt;button type="submit"&gt;Submit&lt;/button&gt;
+&lt;/form&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>Form with Filename aria-label</h3>
+                <p>This form has an aria-label that is just a filename, which is not a descriptive accessible name.</p>
+                <form id="form-filename-aria-label-fail" class="a11yTestFail" aria-label="form.html">
+                    <div class="form-group">
+                        <label for="name-form-filename">Name</label>
+                        <input type="text" id="name-form-filename" name="name">
+                    </div>
+                    <button type="submit">Submit</button>
+                </form>
+                <p class="code">&lt;form id="form-filename-aria-label-fail" aria-label="form.html"&gt;
+    &lt;div class="form-group"&gt;
+        &lt;label for="name-form-filename"&gt;Name&lt;/label&gt;
+        &lt;input type="text" id="name-form-filename" name="name"&gt;
+    &lt;/div&gt;
+    &lt;button type="submit"&gt;Submit&lt;/button&gt;
+&lt;/form&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>Form with URL aria-label</h3>
+                <p>This form has an aria-label that is just a URL, which is not a descriptive accessible name.</p>
+                <form id="form-url-aria-label-fail" class="a11yTestFail" aria-label="https://example.com/form">
+                    <div class="form-group">
+                        <label for="name-form-url">Name</label>
+                        <input type="text" id="name-form-url" name="name">
+                    </div>
+                    <button type="submit">Submit</button>
+                </form>
+                <p class="code">&lt;form id="form-url-aria-label-fail" aria-label="https://example.com/form"&gt;
+    &lt;div class="form-group"&gt;
+        &lt;label for="name-form-url"&gt;Name&lt;/label&gt;
+        &lt;input type="text" id="name-form-url" name="name"&gt;
+    &lt;/div&gt;
+    &lt;button type="submit"&gt;Submit&lt;/button&gt;
+&lt;/form&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>Form with Broken aria-labelledby</h3>
+                <p>This form has an aria-labelledby attribute that references a non-existent element ID.</p>
+                <form id="form-broken-labelledby-fail" class="a11yTestFail" aria-labelledby="non-existent-heading">
+                    <div class="form-group">
+                        <label for="email-form6">Email</label>
+                        <input type="email" id="email-form6" name="email">
+                    </div>
+                    <button type="submit">Submit</button>
+                </form>
+                <p class="code">&lt;form id="form-broken-labelledby-fail" aria-labelledby="non-existent-heading"&gt;
+    &lt;div class="form-group"&gt;
+        &lt;label for="email-form6"&gt;Email&lt;/label&gt;
+        &lt;input type="email" id="email-form6" name="email"&gt;
+    &lt;/div&gt;
+    &lt;button type="submit"&gt;Submit&lt;/button&gt;
+&lt;/form&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>Form with Whitespace-only aria-labelledby</h3>
+                <p>This form references a label element that contains only whitespace.</p>
+                <span id="whitespace-label">   </span>
+                <form id="form-whitespace-labelledby-fail" class="a11yTestFail" aria-labelledby="whitespace-label">
+                    <div class="form-group">
+                        <label for="email-whitespace">Email</label>
+                        <input type="email" id="email-whitespace" name="email">
+                    </div>
+                    <button type="submit">Submit</button>
+                </form>
+                <p class="code">&lt;span id="whitespace-label"&gt;   &lt;/span&gt;
+&lt;form id="form-whitespace-labelledby-fail" aria-labelledby="whitespace-label"&gt;
+    &lt;div class="form-group"&gt;
+        &lt;label for="email-whitespace"&gt;Email&lt;/label&gt;
+        &lt;input type="email" id="email-whitespace" name="email"&gt;
+    &lt;/div&gt;
+    &lt;button type="submit"&gt;Submit&lt;/button&gt;
+&lt;/form&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>Form with Punctuation-only aria-labelledby</h3>
+                <p>This form references a label that contains only punctuation.</p>
+                <span id="punctuation-label">...</span>
+                <form id="form-punctuation-labelledby-fail" class="a11yTestFail" aria-labelledby="punctuation-label">
+                    <div class="form-group">
+                        <label for="email-punctuation">Email</label>
+                        <input type="email" id="email-punctuation" name="email">
+                    </div>
+                    <button type="submit">Submit</button>
+                </form>
+                <p class="code">&lt;span id="punctuation-label"&gt;...&lt;/span&gt;
+&lt;form id="form-punctuation-labelledby-fail" aria-labelledby="punctuation-label"&gt;
+    &lt;div class="form-group"&gt;
+        &lt;label for="email-punctuation"&gt;Email&lt;/label&gt;
+        &lt;input type="email" id="email-punctuation" name="email"&gt;
+    &lt;/div&gt;
+    &lt;button type="submit"&gt;Submit&lt;/button&gt;
+&lt;/form&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>Form with Filename aria-labelledby</h3>
+                <p>This form references a label that contains just a filename.</p>
+                <span id="filename-label">form.html</span>
+                <form id="form-filename-labelledby-fail" class="a11yTestFail" aria-labelledby="filename-label">
+                    <div class="form-group">
+                        <label for="email-filename">Email</label>
+                        <input type="email" id="email-filename" name="email">
+                    </div>
+                    <button type="submit">Submit</button>
+                </form>
+                <p class="code">&lt;span id="filename-label"&gt;form.html&lt;/span&gt;
+&lt;form id="form-filename-labelledby-fail" aria-labelledby="filename-label"&gt;
+    &lt;div class="form-group"&gt;
+        &lt;label for="email-filename"&gt;Email&lt;/label&gt;
+        &lt;input type="email" id="email-filename" name="email"&gt;
+    &lt;/div&gt;
+    &lt;button type="submit"&gt;Submit&lt;/button&gt;
+&lt;/form&gt;</p>
+            </div>
+            
+            <div class="test-case fail">
+                <h3>Form with URL aria-labelledby</h3>
+                <p>This form references a label that contains just a URL.</p>
+                <span id="url-label">https://example.com/form</span>
+                <form id="form-url-labelledby-fail" class="a11yTestFail" aria-labelledby="url-label">
+                    <div class="form-group">
+                        <label for="email-url">Email</label>
+                        <input type="email" id="email-url" name="email">
+                    </div>
+                    <button type="submit">Submit</button>
+                </form>
+                <p class="code">&lt;span id="url-label"&gt;https://example.com/form&lt;/span&gt;
+&lt;form id="form-url-labelledby-fail" aria-labelledby="url-label"&gt;
+    &lt;div class="form-group"&gt;
+        &lt;label for="email-url"&gt;Email&lt;/label&gt;
+        &lt;input type="email" id="email-url" name="email"&gt;
+    &lt;/div&gt;
+    &lt;button type="submit"&gt;Submit&lt;/button&gt;
+&lt;/form&gt;</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="form-container">
+        <h2>2. Fieldset Accessible Names</h2>
+        <p>These tests validate accessible names for fieldset elements, which are used to group related form controls.</p>
+        
+        <h2>Passing Examples - Fieldset</h2>
+        
+        <div class="test-case pass">
+            <h3>Fieldset with Legend</h3>
+            <p>This fieldset uses legend as its accessible name, which is the proper way to label a group of form controls.</p>
+            <fieldset id="fieldset-legend-pass" class="fieldset-demo a11yTestPass">
+                <legend>Contact Preferences</legend>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="contact-email-pass" name="contact-email">
+                    <label for="contact-email-pass">Email</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="contact-phone-pass" name="contact-phone">
+                    <label for="contact-phone-pass">Phone</label>
+                </div>
+            </fieldset>
+            <p class="code">&lt;fieldset id="fieldset-legend-pass" class="fieldset-demo"&gt;
+    &lt;legend&gt;Contact Preferences&lt;/legend&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="contact-email-pass" name="contact-email"&gt;
+        &lt;label for="contact-email-pass"&gt;Email&lt;/label&gt;
+    &lt;/div&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="contact-phone-pass" name="contact-phone"&gt;
+        &lt;label for="contact-phone-pass"&gt;Phone&lt;/label&gt;
+    &lt;/div&gt;
+&lt;/fieldset&gt;</p>
+        </div>
+        
+        <div class="test-case pass">
+            <h3>Fieldset with aria-labelledby</h3>
+            <p>This fieldset uses aria-labelledby to reference a heading for its accessible name.</p>
+            <h4 id="preferences-heading">Notification Preferences</h4>
+            <fieldset id="fieldset-aria-labelledby-pass" class="fieldset-demo a11yTestPass" aria-labelledby="preferences-heading">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="notify-aria-email" name="notify-email">
+                    <label for="notify-aria-email">Email</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="notify-aria-sms" name="notify-sms">
+                    <label for="notify-aria-sms">SMS</label>
+                </div>
+            </fieldset>
+            <p class="code">&lt;h4 id="preferences-heading"&gt;Notification Preferences&lt;/h4&gt;
+&lt;fieldset id="fieldset-aria-labelledby-pass" class="fieldset-demo" aria-labelledby="preferences-heading"&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="notify-aria-email" name="notify-email"&gt;
+        &lt;label for="notify-aria-email"&gt;Email&lt;/label&gt;
+    &lt;/div&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="notify-aria-sms" name="notify-sms"&gt;
+        &lt;label for="notify-aria-sms"&gt;SMS&lt;/label&gt;
+    &lt;/div&gt;
+&lt;/fieldset&gt;</p>
+        </div>
+        
+        <div class="test-case pass">
+            <h3>Fieldset with aria-label</h3>
+            <p>This fieldset uses an aria-label attribute to provide its accessible name directly.</p>
+            <fieldset id="fieldset-aria-label-pass" class="fieldset-demo a11yTestPass" aria-label="Delivery Options">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="delivery-standard" name="delivery-standard">
+                    <label for="delivery-standard">Standard Delivery</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="delivery-express" name="delivery-express">
+                    <label for="delivery-express">Express Delivery</label>
+                </div>
+            </fieldset>
+            <p class="code">&lt;fieldset id="fieldset-aria-label-pass" class="fieldset-demo" aria-label="Delivery Options"&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="delivery-standard" name="delivery-standard"&gt;
+        &lt;label for="delivery-standard"&gt;Standard Delivery&lt;/label&gt;
+    &lt;/div&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="delivery-express" name="delivery-express"&gt;
+        &lt;label for="delivery-express"&gt;Express Delivery&lt;/label&gt;
+    &lt;/div&gt;
+&lt;/fieldset&gt;</p>
+        </div>
+        
+        <h2>Failing Examples - Fieldset</h2>
+        
+        <div class="test-case fail">
+            <h3>Fieldset without Legend, aria-label or aria-labelledby</h3>
+            <p>This fieldset lacks any form of accessible name - no legend element, aria-label attribute, or aria-labelledby reference.</p>
+            <fieldset id="fieldset-no-name-fail" class="fieldset-demo a11yTestFail">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="notify-email-fail" name="notify-email">
+                    <label for="notify-email-fail">Email</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="notify-sms-fail" name="notify-sms">
+                    <label for="notify-sms-fail">SMS</label>
+                </div>
+            </fieldset>
+            <p class="code">&lt;fieldset id="fieldset-no-name-fail" class="fieldset-demo"&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="notify-email-fail" name="notify-email"&gt;
+        &lt;label for="notify-email-fail"&gt;Email&lt;/label&gt;
+    &lt;/div&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="notify-sms-fail" name="notify-sms"&gt;
+        &lt;label for="notify-sms-fail"&gt;SMS&lt;/label&gt;
+    &lt;/div&gt;
+&lt;/fieldset&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Fieldset with Empty Legend</h3>
+            <p>This fieldset has an empty legend element, providing no meaningful accessible name.</p>
+            <fieldset id="fieldset-empty-legend-fail" class="fieldset-demo a11yTestFail">
+                <legend></legend>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="notify-email-empty-legend" name="notify-email">
+                    <label for="notify-email-empty-legend">Email</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="notify-sms-empty-legend" name="notify-sms">
+                    <label for="notify-sms-empty-legend">SMS</label>
+                </div>
+            </fieldset>
+            <p class="code">&lt;fieldset id="fieldset-empty-legend-fail" class="fieldset-demo"&gt;
+    &lt;legend&gt;&lt;/legend&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="notify-email-empty-legend" name="notify-email"&gt;
+        &lt;label for="notify-email-empty-legend"&gt;Email&lt;/label&gt;
+    &lt;/div&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="notify-sms-empty-legend" name="notify-sms"&gt;
+        &lt;label for="notify-sms-empty-legend"&gt;SMS&lt;/label&gt;
+    &lt;/div&gt;
+&lt;/fieldset&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Fieldset with Whitespace-only Legend</h3>
+            <p>This fieldset has a legend that contains only whitespace, which is not a meaningful accessible name.</p>
+            <fieldset id="fieldset-whitespace-legend-fail" class="fieldset-demo a11yTestFail">
+                <legend>   </legend>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="notify-email-whitespace-legend" name="notify-email">
+                    <label for="notify-email-whitespace-legend">Email</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="notify-sms-whitespace-legend" name="notify-sms">
+                    <label for="notify-sms-whitespace-legend">SMS</label>
+                </div>
+            </fieldset>
+            <p class="code">&lt;fieldset id="fieldset-whitespace-legend-fail" class="fieldset-demo"&gt;
+    &lt;legend&gt;   &lt;/legend&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="notify-email-whitespace-legend" name="notify-email"&gt;
+        &lt;label for="notify-email-whitespace-legend"&gt;Email&lt;/label&gt;
+    &lt;/div&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="notify-sms-whitespace-legend" name="notify-sms"&gt;
+        &lt;label for="notify-sms-whitespace-legend"&gt;SMS&lt;/label&gt;
+    &lt;/div&gt;
+&lt;/fieldset&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Fieldset with Punctuation-only Legend</h3>
+            <p>This fieldset has a legend that contains only punctuation, which is not a meaningful accessible name.</p>
+            <fieldset id="fieldset-punctuation-legend-fail" class="fieldset-demo a11yTestFail">
+                <legend>...</legend>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="notify-email-punctuation-legend" name="notify-email">
+                    <label for="notify-email-punctuation-legend">Email</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="notify-sms-punctuation-legend" name="notify-sms">
+                    <label for="notify-sms-punctuation-legend">SMS</label>
+                </div>
+            </fieldset>
+            <p class="code">&lt;fieldset id="fieldset-punctuation-legend-fail" class="fieldset-demo"&gt;
+    &lt;legend&gt;...&lt;/legend&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="notify-email-punctuation-legend" name="notify-email"&gt;
+        &lt;label for="notify-email-punctuation-legend"&gt;Email&lt;/label&gt;
+    &lt;/div&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="notify-sms-punctuation-legend" name="notify-sms"&gt;
+        &lt;label for="notify-sms-punctuation-legend"&gt;SMS&lt;/label&gt;
+    &lt;/div&gt;
+&lt;/fieldset&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Fieldset with Empty aria-label</h3>
+            <p>This fieldset has an empty aria-label attribute, which doesn't provide an accessible name.</p>
+            <fieldset id="fieldset-empty-aria-label-fail" class="fieldset-demo a11yTestFail" aria-label="">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="empty-aria-email" name="empty-aria-email">
+                    <label for="empty-aria-email">Email</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="empty-aria-sms" name="empty-aria-sms">
+                    <label for="empty-aria-sms">SMS</label>
+                </div>
+            </fieldset>
+            <p class="code">&lt;fieldset id="fieldset-empty-aria-label-fail" class="fieldset-demo" aria-label=""&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="empty-aria-email" name="empty-aria-email"&gt;
+        &lt;label for="empty-aria-email"&gt;Email&lt;/label&gt;
+    &lt;/div&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="empty-aria-sms" name="empty-aria-sms"&gt;
+        &lt;label for="empty-aria-sms"&gt;SMS&lt;/label&gt;
+    &lt;/div&gt;
+&lt;/fieldset&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Fieldset with Whitespace-only aria-label</h3>
+            <p>This fieldset has an aria-label attribute with only whitespace, which doesn't provide a meaningful accessible name.</p>
+            <fieldset id="fieldset-whitespace-aria-label-fail" class="fieldset-demo a11yTestFail" aria-label="   ">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="whitespace-aria-email" name="whitespace-aria-email">
+                    <label for="whitespace-aria-email">Email</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="whitespace-aria-sms" name="whitespace-aria-sms">
+                    <label for="whitespace-aria-sms">SMS</label>
+                </div>
+            </fieldset>
+            <p class="code">&lt;fieldset id="fieldset-whitespace-aria-label-fail" class="fieldset-demo" aria-label="   "&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="whitespace-aria-email" name="whitespace-aria-email"&gt;
+        &lt;label for="whitespace-aria-email"&gt;Email&lt;/label&gt;
+    &lt;/div&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="whitespace-aria-sms" name="whitespace-aria-sms"&gt;
+        &lt;label for="whitespace-aria-sms"&gt;SMS&lt;/label&gt;
+    &lt;/div&gt;
+&lt;/fieldset&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Fieldset with Punctuation-only aria-label</h3>
+            <p>This fieldset has an aria-label attribute with only punctuation, which doesn't provide a meaningful accessible name.</p>
+            <fieldset id="fieldset-punctuation-aria-label-fail" class="fieldset-demo a11yTestFail" aria-label="***">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="punct-aria-email" name="punct-aria-email">
+                    <label for="punct-aria-email">Email</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="punct-aria-sms" name="punct-aria-sms">
+                    <label for="punct-aria-sms">SMS</label>
+                </div>
+            </fieldset>
+            <p class="code">&lt;fieldset id="fieldset-punctuation-aria-label-fail" class="fieldset-demo" aria-label="***"&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="punct-aria-email" name="punct-aria-email"&gt;
+        &lt;label for="punct-aria-email"&gt;Email&lt;/label&gt;
+    &lt;/div&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="punct-aria-sms" name="punct-aria-sms"&gt;
+        &lt;label for="punct-aria-sms"&gt;SMS&lt;/label&gt;
+    &lt;/div&gt;
+&lt;/fieldset&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Fieldset with Broken aria-labelledby</h3>
+            <p>This fieldset references a non-existent element ID with aria-labelledby.</p>
+            <fieldset id="fieldset-broken-labelledby-fail" class="fieldset-demo a11yTestFail" aria-labelledby="non-existent-id">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="broken-labelledby-email" name="broken-labelledby-email">
+                    <label for="broken-labelledby-email">Email</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="broken-labelledby-sms" name="broken-labelledby-sms">
+                    <label for="broken-labelledby-sms">SMS</label>
+                </div>
+            </fieldset>
+            <p class="code">&lt;fieldset id="fieldset-broken-labelledby-fail" class="fieldset-demo" aria-labelledby="non-existent-id"&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="broken-labelledby-email" name="broken-labelledby-email"&gt;
+        &lt;label for="broken-labelledby-email"&gt;Email&lt;/label&gt;
+    &lt;/div&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="broken-labelledby-sms" name="broken-labelledby-sms"&gt;
+        &lt;label for="broken-labelledby-sms"&gt;SMS&lt;/label&gt;
+    &lt;/div&gt;
+&lt;/fieldset&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Fieldset with Empty aria-labelledby Reference</h3>
+            <p>This fieldset references an element that has no content with aria-labelledby.</p>
+            <span id="empty-reference"></span>
+            <fieldset id="fieldset-empty-reference-fail" class="fieldset-demo a11yTestFail" aria-labelledby="empty-reference">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="empty-ref-email" name="empty-ref-email">
+                    <label for="empty-ref-email">Email</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="empty-ref-sms" name="empty-ref-sms">
+                    <label for="empty-ref-sms">SMS</label>
+                </div>
+            </fieldset>
+            <p class="code">&lt;span id="empty-reference"&gt;&lt;/span&gt;
+&lt;fieldset id="fieldset-empty-reference-fail" class="fieldset-demo" aria-labelledby="empty-reference"&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="empty-ref-email" name="empty-ref-email"&gt;
+        &lt;label for="empty-ref-email"&gt;Email&lt;/label&gt;
+    &lt;/div&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="empty-ref-sms" name="empty-ref-sms"&gt;
+        &lt;label for="empty-ref-sms"&gt;SMS&lt;/label&gt;
+    &lt;/div&gt;
+&lt;/fieldset&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Fieldset with Whitespace-only aria-labelledby Reference</h3>
+            <p>This fieldset references an element that contains only whitespace with aria-labelledby.</p>
+            <span id="whitespace-reference">   </span>
+            <fieldset id="fieldset-whitespace-reference-fail" class="fieldset-demo a11yTestFail" aria-labelledby="whitespace-reference">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="whitespace-ref-email" name="whitespace-ref-email">
+                    <label for="whitespace-ref-email">Email</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="whitespace-ref-sms" name="whitespace-ref-sms">
+                    <label for="whitespace-ref-sms">SMS</label>
+                </div>
+            </fieldset>
+            <p class="code">&lt;span id="whitespace-reference"&gt;   &lt;/span&gt;
+&lt;fieldset id="fieldset-whitespace-reference-fail" class="fieldset-demo" aria-labelledby="whitespace-reference"&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="whitespace-ref-email" name="whitespace-ref-email"&gt;
+        &lt;label for="whitespace-ref-email"&gt;Email&lt;/label&gt;
+    &lt;/div&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="whitespace-ref-sms" name="whitespace-ref-sms"&gt;
+        &lt;label for="whitespace-ref-sms"&gt;SMS&lt;/label&gt;
+    &lt;/div&gt;
+&lt;/fieldset&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Fieldset with Punctuation-only aria-labelledby Reference</h3>
+            <p>This fieldset references an element that contains only punctuation with aria-labelledby.</p>
+            <span id="punctuation-reference">///</span>
+            <fieldset id="fieldset-punctuation-reference-fail" class="fieldset-demo a11yTestFail" aria-labelledby="punctuation-reference">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="punctuation-ref-email" name="punctuation-ref-email">
+                    <label for="punctuation-ref-email">Email</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="punctuation-ref-sms" name="punctuation-ref-sms">
+                    <label for="punctuation-ref-sms">SMS</label>
+                </div>
+            </fieldset>
+            <p class="code">&lt;span id="punctuation-reference"&gt;///&lt;/span&gt;
+&lt;fieldset id="fieldset-punctuation-reference-fail" class="fieldset-demo" aria-labelledby="punctuation-reference"&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="punctuation-ref-email" name="punctuation-ref-email"&gt;
+        &lt;label for="punctuation-ref-email"&gt;Email&lt;/label&gt;
+    &lt;/div&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="punctuation-ref-sms" name="punctuation-ref-sms"&gt;
+        &lt;label for="punctuation-ref-sms"&gt;SMS&lt;/label&gt;
+    &lt;/div&gt;
+&lt;/fieldset&gt;</p>
+        </div>
+    </div>
+    
+    <div class="form-container">
+        <h2>3. ARIA Form Role Accessible Names</h2>
+        <p>These tests validate accessible names for <code>&lt;div role="form"&gt;</code> elements, which are the ARIA equivalent of <code>&lt;form&gt;</code> elements.</p>
+        
+        <h2>Passing Examples - ARIA Form Role</h2>
+        
+        <div class="test-case pass">
+            <h3>Div with role="form" and aria-label</h3>
+            <p>This div with role="form" has a descriptive aria-label attribute.</p>
+            <div role="form" id="aria-form-label-pass" class="a11yTestPass" aria-label="Contact Form for Customer Support">
+                <div class="form-group">
+                    <label for="name-aria-form1">Name</label>
+                    <input type="text" id="name-aria-form1" name="name">
+                </div>
+                <button type="submit">Submit</button>
+            </div>
+            <p class="code">&lt;div role="form" id="aria-form-label-pass" aria-label="Contact Form for Customer Support"&gt;
+    &lt;div class="form-group"&gt;
+        &lt;label for="name-aria-form1"&gt;Name&lt;/label&gt;
+        &lt;input type="text" id="name-aria-form1" name="name"&gt;
+    &lt;/div&gt;
+    &lt;button type="submit"&gt;Submit&lt;/button&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case pass">
+            <h3>Div with role="form" and aria-labelledby</h3>
+            <p>This div with role="form" uses aria-labelledby to reference a heading as its accessible name.</p>
+            <h4 id="aria-form-heading">Newsletter Subscription</h4>
+            <div role="form" id="aria-form-labelledby-pass" class="a11yTestPass" aria-labelledby="aria-form-heading">
+                <div class="form-group">
+                    <label for="email-aria-form2">Email Address</label>
+                    <input type="email" id="email-aria-form2" name="email">
+                </div>
+                <button type="submit">Subscribe</button>
+            </div>
+            <p class="code">&lt;h4 id="aria-form-heading"&gt;Newsletter Subscription&lt;/h4&gt;
+&lt;div role="form" id="aria-form-labelledby-pass" aria-labelledby="aria-form-heading"&gt;
+    &lt;div class="form-group"&gt;
+        &lt;label for="email-aria-form2"&gt;Email Address&lt;/label&gt;
+        &lt;input type="email" id="email-aria-form2" name="email"&gt;
+    &lt;/div&gt;
+    &lt;button type="submit"&gt;Subscribe&lt;/button&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case warning">
+            <h3>Div with role="form" and title Attribute (Warning)</h3>
+            <p>This div with role="form" has a title attribute which provides an accessible name, but is <strong>not recommended</strong> for accessibility. While technically valid, title attributes:</p>
+            <ul>
+                <li>May not be visible to screen magnifier users who cannot see the entire tooltip</li>
+                <li>Are not consistently exposed by all assistive technologies</li>
+                <li>May be difficult to discover for keyboard-only users</li>
+                <li>Are only visible on hover/focus and may timeout before users can read them</li>
+            </ul>
+            <p><strong>Better alternatives:</strong> Use aria-label or aria-labelledby instead.</p>
+            <div role="form" id="aria-form-title-warning" class="a11yTestWarn" title="Account Registration Form">
+                <div class="form-group">
+                    <label for="username-aria-form3">Username</label>
+                    <input type="text" id="username-aria-form3" name="username">
+                </div>
+                <button type="submit">Register</button>
+            </div>
+            <p class="code">&lt;div role="form" id="aria-form-title-warning" title="Account Registration Form"&gt;
+    &lt;div class="form-group"&gt;
+        &lt;label for="username-aria-form3"&gt;Username&lt;/label&gt;
+        &lt;input type="text" id="username-aria-form3" name="username"&gt;
+    &lt;/div&gt;
+    &lt;button type="submit"&gt;Register&lt;/button&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <h2>Failing Examples - ARIA Form Role</h2>
+        
+        <div class="test-case fail">
+            <h3>Div with role="form" without Accessible Name</h3>
+            <p>This div with role="form" has no accessible name - no aria-label, aria-labelledby, or associated heading.</p>
+            <div role="form" id="aria-form-no-name-fail" class="a11yTestFail">
+                <div class="form-group">
+                    <label for="name-aria-form4">Name</label>
+                    <input type="text" id="name-aria-form4" name="name">
+                </div>
+                <button type="submit">Submit</button>
+            </div>
+            <p class="code">&lt;div role="form" id="aria-form-no-name-fail"&gt;
+    &lt;div class="form-group"&gt;
+        &lt;label for="name-aria-form4"&gt;Name&lt;/label&gt;
+        &lt;input type="text" id="name-aria-form4" name="name"&gt;
+    &lt;/div&gt;
+    &lt;button type="submit"&gt;Submit&lt;/button&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Div with role="form" with Empty aria-label</h3>
+            <p>This div with role="form" has an empty aria-label attribute, which doesn't provide an accessible name.</p>
+            <div role="form" id="aria-form-empty-aria-label-fail" class="a11yTestFail" aria-label="">
+                <div class="form-group">
+                    <label for="name-aria-form5">Name</label>
+                    <input type="text" id="name-aria-form5" name="name">
+                </div>
+                <button type="submit">Submit</button>
+            </div>
+            <p class="code">&lt;div role="form" id="aria-form-empty-aria-label-fail" aria-label=""&gt;
+    &lt;div class="form-group"&gt;
+        &lt;label for="name-aria-form5"&gt;Name&lt;/label&gt;
+        &lt;input type="text" id="name-aria-form5" name="name"&gt;
+    &lt;/div&gt;
+    &lt;button type="submit"&gt;Submit&lt;/button&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Div with role="form" with Broken aria-labelledby</h3>
+            <p>This div with role="form" has an aria-labelledby attribute that references a non-existent element ID.</p>
+            <div role="form" id="aria-form-broken-labelledby-fail" class="a11yTestFail" aria-labelledby="non-existent-aria-form-heading">
+                <div class="form-group">
+                    <label for="email-aria-form6">Email</label>
+                    <input type="email" id="email-aria-form6" name="email">
+                </div>
+                <button type="submit">Submit</button>
+            </div>
+            <p class="code">&lt;div role="form" id="aria-form-broken-labelledby-fail" aria-labelledby="non-existent-aria-form-heading"&gt;
+    &lt;div class="form-group"&gt;
+        &lt;label for="email-aria-form6"&gt;Email&lt;/label&gt;
+        &lt;input type="email" id="email-aria-form6" name="email"&gt;
+    &lt;/div&gt;
+    &lt;button type="submit"&gt;Submit&lt;/button&gt;
+&lt;/div&gt;</p>
+        </div>
+    </div>
+    
+    <div class="form-container">
+        <h2>4. ARIA Group Role Accessible Names</h2>
+        <p>These tests validate accessible names for <code>&lt;div role="group"&gt;</code> elements, which are the ARIA equivalent of <code>&lt;fieldset&gt;</code> elements.</p>
+        
+        <h2>Passing Examples - ARIA Group Role</h2>
+        
+        <div class="test-case pass">
+            <h3>Div with role="group" and aria-label</h3>
+            <p>This div with role="group" uses an aria-label attribute to provide its accessible name directly.</p>
+            <div id="div-group-aria-label-pass" role="group" class="fieldset-demo a11yTestPass" aria-label="Contact Preferences">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="contact-email-group-pass" name="contact-email">
+                    <label for="contact-email-group-pass">Email</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="contact-phone-group-pass" name="contact-phone">
+                    <label for="contact-phone-group-pass">Phone</label>
+                </div>
+            </div>
+            <p class="code">&lt;div id="div-group-aria-label-pass" role="group" class="fieldset-demo" aria-label="Contact Preferences"&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="contact-email-group-pass" name="contact-email"&gt;
+        &lt;label for="contact-email-group-pass"&gt;Email&lt;/label&gt;
+    &lt;/div&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="contact-phone-group-pass" name="contact-phone"&gt;
+        &lt;label for="contact-phone-group-pass"&gt;Phone&lt;/label&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case pass">
+            <h3>Div with role="group" and aria-labelledby</h3>
+            <p>This div with role="group" uses aria-labelledby to reference a heading for its accessible name.</p>
+            <h4 id="group-preferences-heading">Notification Preferences</h4>
+            <div id="div-group-aria-labelledby-pass" role="group" class="fieldset-demo a11yTestPass" aria-labelledby="group-preferences-heading">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="notify-group-aria-email" name="notify-email">
+                    <label for="notify-group-aria-email">Email</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="notify-group-aria-sms" name="notify-sms">
+                    <label for="notify-group-aria-sms">SMS</label>
+                </div>
+            </div>
+            <p class="code">&lt;h4 id="group-preferences-heading"&gt;Notification Preferences&lt;/h4&gt;
+&lt;div id="div-group-aria-labelledby-pass" role="group" class="fieldset-demo" aria-labelledby="group-preferences-heading"&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="notify-group-aria-email" name="notify-email"&gt;
+        &lt;label for="notify-group-aria-email"&gt;Email&lt;/label&gt;
+    &lt;/div&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="notify-group-aria-sms" name="notify-sms"&gt;
+        &lt;label for="notify-group-aria-sms"&gt;SMS&lt;/label&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <h2>Failing Examples - ARIA Group Role</h2>
+        
+        <div class="test-case fail">
+            <h3>Div with role="group" without Accessible Name</h3>
+            <p>This div with role="group" lacks any form of accessible name - no aria-label or aria-labelledby reference.</p>
+            <div id="div-group-no-name-fail" role="group" class="fieldset-demo a11yTestFail">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="notify-group-email-fail" name="notify-email">
+                    <label for="notify-group-email-fail">Email</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="notify-group-sms-fail" name="notify-sms">
+                    <label for="notify-group-sms-fail">SMS</label>
+                </div>
+            </div>
+            <p class="code">&lt;div id="div-group-no-name-fail" role="group" class="fieldset-demo"&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="notify-group-email-fail" name="notify-email"&gt;
+        &lt;label for="notify-group-email-fail"&gt;Email&lt;/label&gt;
+    &lt;/div&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="notify-group-sms-fail" name="notify-sms"&gt;
+        &lt;label for="notify-group-sms-fail"&gt;SMS&lt;/label&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Div with role="group" with Empty aria-label</h3>
+            <p>This div with role="group" has an empty aria-label attribute, providing no accessible name.</p>
+            <div id="div-group-empty-aria-label-fail" role="group" class="fieldset-demo a11yTestFail" aria-label="">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="empty-group-aria-email" name="empty-group-aria-email">
+                    <label for="empty-group-aria-email">Email</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="empty-group-aria-sms" name="empty-group-aria-sms">
+                    <label for="empty-group-aria-sms">SMS</label>
+                </div>
+            </div>
+            <p class="code">&lt;div id="div-group-empty-aria-label-fail" role="group" class="fieldset-demo" aria-label=""&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="empty-group-aria-email" name="empty-group-aria-email"&gt;
+        &lt;label for="empty-group-aria-email"&gt;Email&lt;/label&gt;
+    &lt;/div&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="empty-group-aria-sms" name="empty-group-aria-sms"&gt;
+        &lt;label for="empty-group-aria-sms"&gt;SMS&lt;/label&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Div with role="group" with Broken aria-labelledby</h3>
+            <p>This div with role="group" references a non-existent element ID with aria-labelledby.</p>
+            <div id="div-group-broken-labelledby-fail" role="group" class="fieldset-demo a11yTestFail" aria-labelledby="non-existent-group-id">
+                <div class="checkbox-group">
+                    <input type="checkbox" id="broken-group-labelledby-email" name="broken-group-labelledby-email">
+                    <label for="broken-group-labelledby-email">Email</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="broken-group-labelledby-sms" name="broken-group-labelledby-sms">
+                    <label for="broken-group-labelledby-sms">SMS</label>
+                </div>
+            </div>
+            <p class="code">&lt;div id="div-group-broken-labelledby-fail" role="group" class="fieldset-demo" aria-labelledby="non-existent-group-id"&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="broken-group-labelledby-email" name="broken-group-labelledby-email"&gt;
+        &lt;label for="broken-group-labelledby-email"&gt;Email&lt;/label&gt;
+    &lt;/div&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="broken-group-labelledby-sms" name="broken-group-labelledby-sms"&gt;
+        &lt;label for="broken-group-labelledby-sms"&gt;SMS&lt;/label&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+    </div>
+    
+    <div class="form-container">
+        <h2>5. Form Control Accessible Names</h2>
+        <p>For tests validating accessible names for individual form controls (inputs, buttons, etc.), see the separate test file:</p>
+        <p><a href="accessible_names-controls-0.html">Form Controls Accessible Names Test</a></p>
+        <p>The form controls test file includes examples of:</p>
+        <ul>
+            <li>Passing examples: explicit labels, implicit labels, aria-label, aria-labelledby, and custom controls with ARIA</li>
+            <li>Failing examples: missing labels, unassociated labels, empty labels, broken for attributes, and more</li>
+        </ul>
+    </div>
+    
+    <footer>
+        <p>This test page is designed to validate accessible names in forms and form elements according to WCAG 4.1.2 (Name, Role, Value) and the W3C's accessible name computation algorithm.</p>
+        <p><strong>Note on test categories:</strong></p>
+        <ul>
+            <li><span style="color:#28a745">✓ Passing:</span> Fully accessible, follows best practices for accessible name computation</li>
+            <li><span style="color:#dc3545">✗ Failing:</span> Inaccessible, violates WCAG requirements for accessible names</li>
+            <li><span style="color:#ffc107">⚠ Warning:</span> Technically valid but not recommended - has accessibility limitations or follows outdated practices</li>
+        </ul>
+    </footer>
+</body>
+</html>

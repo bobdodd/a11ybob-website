@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Controls Accessible Names Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 30px;
+            max-width: 1200px;
+        }
+        .test-case {
+            margin-bottom: 40px;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .pass {
+            background-color: #e6f7e6;
+            border-left: 5px solid #28a745;
+        }
+        .fail {
+            background-color: #fbeeee;
+            border-left: 5px solid #dc3545;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 5px solid #ffc107;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #444;
+            margin-top: 40px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        h3 {
+            color: #555;
+            margin: 0 0 10px 0;
+        }
+        .code {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            margin-top: 10px;
+            overflow-x: auto;
+        }
+        label, input, select, textarea {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input, select, textarea {
+            padding: 8px;
+            margin-bottom: 15px;
+            width: 300px;
+        }
+        .fieldset-demo {
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .fieldset-demo legend {
+            padding: 0 10px;
+        }
+        .radio-group, .checkbox-group {
+            margin-bottom: 15px;
+        }
+        .radio-group input, .checkbox-group input {
+            display: inline-block;
+            width: auto;
+            margin-right: 5px;
+            vertical-align: middle;
+        }
+        .radio-group label, .checkbox-group label {
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .form-container {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin-bottom: 30px;
+            border-radius: 5px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .progress-demo {
+            width: 300px;
+            height: 20px;
+            background-color: #f3f3f3;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+        .progress-bar {
+            height: 100%;
+            background-color: #4caf50;
+            width: 75%;
+        }
+        .custom-control {
+            width: 300px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            background-color: #f9f9f9;
+        }
+        /* Styles for image maps */
+        .image-map-container {
+            position: relative;
+            margin: 20px 0;
+        }
+        .image-map-container img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <h1>Form Controls Accessible Names Test</h1>
+    <p><strong>Test cases: 16 passing, 75 failing, 5 warnings (96 total)</strong></p>
+    <p>This page contains test cases for accessible names in form controls according to the WCAG accessible name computation algorithm. The test cases include passing, failing, and warning examples organized by control type.</p>
+    
+    <div class="form-container">
+        <h2>1. Text Input Fields</h2>
+        <p>These tests validate accessible names for text input fields, including types text, email, search, url, tel, password, and number.</p>
+        
+        <h3>Passing Examples - Text Inputs</h3>
+        
+        <div class="test-case pass">
+            <h3>Text Input with Visible Label</h3>
+            <p>This input field has a proper label element connected with the for attribute.</p>
+            <label for="name-visible-label-pass">Full Name</label>
+            <input class="a11yTestPass" type="text" id="name-visible-label-pass"  name="name">
+            <p class="code">&lt;label for="name-visible-label-pass"&gt;Full Name&lt;/label&gt;
+&lt;input type="text" id="name-visible-label-pass" class="a11yTestPass" name="name"&gt;</p>
+        </div>
+        
+        <div class="test-case warning">
+            <h3>Text Input with Implicit Label (Warning)</h3>
+            <p>This input field has its label wrapped around it, creating an implicit association. While technically valid for accessibility, this approach has limitations:</p>
+            <ul>
+                <li>Some voice-control technologies like Dragon Naturally Speaking do not support this method</li>
+                <li>Voice control software often looks specifically for the "for" attribute in labels</li>
+                <li>May cause issues for users who rely on these technologies</li>
+            </ul>
+            <p><strong>Better alternative:</strong> Use explicit labels with matching for/id attributes.</p>
+            <label>
+                Email Address
+                <input class="a11yTestWarn" type="email" id="email-implicit-label-warning" name="email">
+            </label>
+            <p class="code">&lt;label&gt;
+    Email Address
+    &lt;input type="email" id="email-implicit-label-warning" name="email"&gt;
+&lt;/label&gt;</p>
+        </div>
+        
+        <div class="test-case pass">
+            <h3>Text Input with ARIA Label</h3>
+            <p>This input field uses aria-label to provide its accessible name.</p>
+            <input class="a11yTestPass" type="text" id="search-aria-label-pass"  name="search" aria-label="Search products">
+            <p class="code">&lt;input type="text" id="search-aria-label-pass" class="a11yTestPass" name="search" aria-label="Search products"&gt;</p>
+        </div>
+        
+        <div class="test-case pass">
+            <h3>Text Input with ARIA Labelledby</h3>
+            <p>This input field references its label using aria-labelledby.</p>
+            <h4 id="phone-label">Phone Number</h4>
+            <input class="a11yTestPass" type="tel" id="phone-aria-labelledby-pass"  name="phone" aria-labelledby="phone-label">
+            <p class="code">&lt;h4 id="phone-label"&gt;Phone Number&lt;/h4&gt;
+&lt;input type="tel" id="phone-aria-labelledby-pass" class="a11yTestPass" name="phone" aria-labelledby="phone-label"&gt;</p>
+        </div>
+        
+        <div class="test-case pass">
+            <h3>Password Input with Label</h3>
+            <p>This password input has a proper explicit label.</p>
+            <label for="password-input-pass">Password</label>
+            <input class="a11yTestPass" type="password" id="password-input-pass"  name="password">
+            <p class="code">&lt;label for="password-input-pass"&gt;Password&lt;/label&gt;
+&lt;input type="password" id="password-input-pass" class="a11yTestPass" name="password"&gt;</p>
+        </div>
+        
+        <h3>Failing Examples - Text Inputs</h3>
+        
+        <div class="test-case fail">
+            <h3>Text Input without Label</h3>
+            <p>This input field has no accessible name - no label, aria-label, or aria-labelledby.</p>
+            <input class="a11yTestFail a11yTest a11yTestFail" type="text" id="name-no-label-fail"   name="name">
+            <p class="code">&lt;input type="text" id="name-no-label-fail" class="a11yTestFail" name="name"&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Text Input with Placeholder Only (Fail)</h3>
+            <p>This input relies only on the placeholder attribute. Placeholder text is not part of the accessible name calculation, so this input has no accessible name at all:</p>
+            <ul>
+                <li>Placeholder text is not included in the accessible name</li>
+                <li>Disappears once the user starts typing</li>
+                <li>Often has low contrast ratios</li>
+                <li>Cannot serve as a label for the input</li>
+            </ul>
+            <input class="a11yTestFail" type="text" id="placeholder-only-warning" name="search" placeholder="Search...">
+            <p class="code">&lt;input type="text" id="placeholder-only-warning" name="search" placeholder="Search..."&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Empty Label</h3>
+            <p>This input has a label element, but the label is empty.</p>
+            <label for="city-empty-label-fail"></label>
+            <input class="a11yTestFail a11yTest a11yTestFail" type="text" id="city-empty-label-fail"   name="city">
+            <p class="code">&lt;label for="city-empty-label-fail"&gt;&lt;/label&gt;
+&lt;input type="text" id="city-empty-label-fail" class="a11yTestFail" name="city"&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Label with Whitespace Only</h3>
+            <p>This input has a label element, but it contains only whitespace, which does not provide a meaningful accessible name.</p>
+            <label for="whitespace-label-fail">   </label>
+            <input class="a11yTestFail a11yTest a11yTestFail" type="text" id="whitespace-label-fail"   name="address">
+            <p class="code">&lt;label for="whitespace-label-fail"&gt;   &lt;/label&gt;
+&lt;input type="text" id="whitespace-label-fail" class="a11yTestFail" name="address"&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Label with Punctuation Only</h3>
+            <p>This input has a label element, but it contains only punctuation, which does not provide a meaningful accessible name.</p>
+            <label for="punctuation-label-fail">###</label>
+            <input class="a11yTestFail a11yTest a11yTestFail" type="text" id="punctuation-label-fail"   name="code">
+            <p class="code">&lt;label for="punctuation-label-fail"&gt;###&lt;/label&gt;
+&lt;input type="text" id="punctuation-label-fail" class="a11yTestFail" name="code"&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Label Contains the Word "Label"</h3>
+            <p>This input has a generic label that just contains the word "label", which is not descriptive of its purpose.</p>
+            <label for="generic-label-fail">Label</label>
+            <input class="a11yTestFail a11yTest a11yTestFail" type="text" id="generic-label-fail"   name="generic">
+            <p class="code">&lt;label for="generic-label-fail"&gt;Label&lt;/label&gt;
+&lt;input type="text" id="generic-label-fail" class="a11yTestFail" name="generic"&gt;</p>
+        </div>
+        
+        <div class="test-case warning">
+            <h3>Label with Filename (Warning)</h3>
+            <p>This input has a label that is a filename, which is not user-friendly or descriptive of the input's purpose.</p>
+            <label for="filename-label-warning">document.txt</label>
+            <input class="a11yTestWarn" type="text" id="filename-label-warning" name="file">
+            <p class="code">&lt;label for="filename-label-warning"&gt;document.txt&lt;/label&gt;
+&lt;input type="text" id="filename-label-warning" name="file"&gt;</p>
+        </div>
+        
+        <div class="test-case warning">
+            <h3>Label with URL (Warning)</h3>
+            <p>This input has a label that is a URL, which is not user-friendly or descriptive of the input's purpose.</p>
+            <label for="url-label-warning">https://example.com/form</label>
+            <input class="a11yTestWarn" type="text" id="url-label-warning" name="website">
+            <p class="code">&lt;label for="url-label-warning"&gt;https://example.com/form&lt;/label&gt;
+&lt;input type="text" id="url-label-warning" name="website"&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Label with Broken For Attribute</h3>
+            <p>This input has a label, but the for attribute points to a non-existent id.</p>
+            <label for="wrong-id">Postal Code</label>
+            <input class="a11yTestFail" type="text" id="zip-broken-for-fail"  name="zip">
+            <p class="code">&lt;label for="wrong-id"&gt;Postal Code&lt;/label&gt;
+&lt;input type="text" id="zip-broken-for-fail" class="a11yTestFail" name="zip"&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Input with Broken ARIA Labelledby</h3>
+            <p>This input references a non-existent element with aria-labelledby.</p>
+            <input class="a11yTestFail" type="text" id="input-broken-labelledby-fail"  aria-labelledby="non-existent-id">
+            <p class="code">&lt;input type="text" id="input-broken-labelledby-fail" class="a11yTestFail" aria-labelledby="non-existent-id"&gt;</p>
+        </div>
+        
+        <h3>ARIA Role Equivalents - Text Inputs</h3>
+        
+        <div class="test-case fail">
+            <h3>ARIA Textbox without Accessible Name</h3>
+            <p>This div with role="textbox" has no accessible name - no aria-label or aria-labelledby.</p>
+            <div class="a11yTestFail" role="textbox" id="textbox-no-label-fail"  tabindex="0" style="border: 1px solid #ccc; padding: 5px; width: 300px; min-height: 20px;"></div>
+            <p class="code">&lt;div role="textbox" id="textbox-no-label-fail" class="a11yTestFail" tabindex="0" style="border: 1px solid #ccc; padding: 5px; width: 300px; min-height: 20px;"&gt;&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>ARIA Textbox with Empty aria-label</h3>
+            <p>This div with role="textbox" has an aria-label attribute, but it's empty, providing no accessible name.</p>
+            <div class="a11yTestFail" role="textbox" id="textbox-empty-aria-label-fail"  aria-label="" tabindex="0" style="border: 1px solid #ccc; padding: 5px; width: 300px; min-height: 20px;"></div>
+            <p class="code">&lt;div role="textbox" id="textbox-empty-aria-label-fail" class="a11yTestFail" aria-label="" tabindex="0" style="border: 1px solid #ccc; padding: 5px; width: 300px; min-height: 20px;"&gt;&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>ARIA Textbox with Whitespace-only aria-label</h3>
+            <p>This div with role="textbox" has an aria-label attribute containing only whitespace, which doesn't provide a meaningful accessible name.</p>
+            <div class="a11yTestFail" role="textbox" id="textbox-whitespace-aria-label-fail"  aria-label="   " tabindex="0" style="border: 1px solid #ccc; padding: 5px; width: 300px; min-height: 20px;"></div>
+            <p class="code">&lt;div role="textbox" id="textbox-whitespace-aria-label-fail" class="a11yTestFail" aria-label="   " tabindex="0" style="border: 1px solid #ccc; padding: 5px; width: 300px; min-height: 20px;"&gt;&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>ARIA Textbox with Punctuation-only aria-label</h3>
+            <p>This div with role="textbox" has an aria-label attribute containing only punctuation, which doesn't provide a meaningful accessible name.</p>
+            <div class="a11yTestFail" role="textbox" id="textbox-punctuation-aria-label-fail"  aria-label="..." tabindex="0" style="border: 1px solid #ccc; padding: 5px; width: 300px; min-height: 20px;"></div>
+            <p class="code">&lt;div role="textbox" id="textbox-punctuation-aria-label-fail" class="a11yTestFail" aria-label="..." tabindex="0" style="border: 1px solid #ccc; padding: 5px; width: 300px; min-height: 20px;"&gt;&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>ARIA Textbox with Broken aria-labelledby</h3>
+            <p>This div with role="textbox" references a non-existent element with aria-labelledby.</p>
+            <div class="a11yTestFail" role="textbox" id="textbox-broken-labelledby-fail"  aria-labelledby="non-existent-id" tabindex="0" style="border: 1px solid #ccc; padding: 5px; width: 300px; min-height: 20px;"></div>
+            <p class="code">&lt;div role="textbox" id="textbox-broken-labelledby-fail" class="a11yTestFail" aria-labelledby="non-existent-id" tabindex="0" style="border: 1px solid #ccc; padding: 5px; width: 300px; min-height: 20px;"&gt;&lt;/div&gt;</p>
+        </div>
+    </div>
+    
+    <div class="form-container">
+        <h2>2. Radio Buttons</h2>
+        <p>These tests validate accessible names for radio button input fields and their groups.</p>
+        
+        <h3>Passing Examples - Radio Buttons</h3>
+        
+        <div class="test-case pass">
+            <h3>Radio Buttons with Individual Labels</h3>
+            <p>Each radio button has its own properly associated label.</p>
+            <fieldset class="fieldset-demo">
+                <legend>Preferred Contact Method</legend>
+                <div class="radio-group">
+                    <input class="a11yTestPass" type="radio" id="radio-email-pass"  name="contact-method" value="email">
+                    <label for="radio-email-pass">Email</label>
+                </div>
+                <div class="radio-group">
+                    <input type="radio" id="radio-phone-pass" class="a11yTestPass" name="contact-method" value="phone">
+                    <label for="radio-phone-pass">Phone</label>
+                </div>
+                <div class="radio-group">
+                    <input class="a11yTestPass" type="radio" id="radio-mail-pass"  name="contact-method" value="mail">
+                    <label for="radio-mail-pass">Mail</label>
+                </div>
+            </fieldset>
+            <p class="code">&lt;fieldset class="fieldset-demo"&gt;
+    &lt;legend&gt;Preferred Contact Method&lt;/legend&gt;
+    &lt;div class="radio-group"&gt;
+        &lt;input type="radio" id="radio-email-pass" class="a11yTestPass" name="contact-method" value="email"&gt;
+        &lt;label for="radio-email-pass"&gt;Email&lt;/label&gt;
+    &lt;/div&gt;
+    &lt;div class="radio-group"&gt;
+        &lt;input type="radio" id="radio-phone-pass" class="a11yTestPass" name="contact-method" value="phone"&gt;
+        &lt;label for="radio-phone-pass"&gt;Phone&lt;/label&gt;
+    &lt;/div&gt;
+    &lt;div class="radio-group"&gt;
+        &lt;input type="radio" id="radio-mail-pass" class="a11yTestPass" name="contact-method" value="mail"&gt;
+        &lt;label for="radio-mail-pass"&gt;Mail&lt;/label&gt;
+    &lt;/div&gt;
+&lt;/fieldset&gt;</p>
+        </div>
+        
+        <h3>Failing Examples - Radio Buttons</h3>
+        
+        <div class="test-case fail">
+            <h3>Radio Buttons without Labels</h3>
+            <p>These radio buttons have no accessible names - no labels or ARIA attributes. While the group itself has a proper legend, each individual radio button lacks an accessible name.</p>
+            <fieldset class="fieldset-demo">
+                <legend>Agreement Options</legend>
+                <div class="radio-group">
+                    <input class="a11yTestFail" type="radio" id="radio-yes-no-label-fail"  name="yes-no" value="yes">
+                    Yes
+                </div>
+                <div class="radio-group">
+                    <input class="a11yTestFail" type="radio" id="radio-no-no-label-fail"  name="yes-no" value="no">
+                    No
+                </div>
+            </fieldset>
+            <p class="code">&lt;fieldset class="fieldset-demo"&gt;
+    &lt;legend&gt;Agreement Options&lt;/legend&gt;
+    &lt;div class="radio-group"&gt;
+        &lt;input type="radio" id="radio-yes-no-label-fail" class="a11yTestFail" name="yes-no" value="yes"&gt;
+        Yes
+    &lt;/div&gt;
+    &lt;div class="radio-group"&gt;
+        &lt;input type="radio" id="radio-no-no-label-fail" class="a11yTestFail" name="yes-no" value="no"&gt;
+        No
+    &lt;/div&gt;
+&lt;/fieldset&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Radio Button with Empty Label</h3>
+            <p>These radio buttons have labels, but they are empty, providing no accessible name.</p>
+            <fieldset class="fieldset-demo">
+                <legend>Empty Label Test</legend>
+                <div class="radio-group">
+                    <input class="a11yTestFail" type="radio" id="radio-empty-label1-fail"  name="empty-label" value="option1">
+                    <label for="radio-empty-label1-fail"></label>
+                </div>
+                <div class="radio-group">
+                    <input class="a11yTestFail" type="radio" id="radio-empty-label2-fail"  name="empty-label" value="option2">
+                    <label for="radio-empty-label2-fail"></label>
+                </div>
+            </fieldset>
+            <p class="code">&lt;fieldset class="fieldset-demo"&gt;
+    &lt;legend&gt;Empty Label Test&lt;/legend&gt;
+    &lt;div class="radio-group"&gt;
+        &lt;input type="radio" id="radio-empty-label1-fail" class="a11yTestFail" name="empty-label" value="option1"&gt;
+        &lt;label for="radio-empty-label1-fail"&gt;&lt;/label&gt;
+    &lt;/div&gt;
+    &lt;div class="radio-group"&gt;
+        &lt;input type="radio" id="radio-empty-label2-fail" class="a11yTestFail" name="empty-label" value="option2"&gt;
+        &lt;label for="radio-empty-label2-fail"&gt;&lt;/label&gt;
+    &lt;/div&gt;
+&lt;/fieldset&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Radio Button with Whitespace-only Label</h3>
+            <p>These radio buttons have labels, but they contain only whitespace, which doesn't provide a meaningful accessible name.</p>
+            <fieldset class="fieldset-demo">
+                <legend>Whitespace Label Test</legend>
+                <div class="radio-group">
+                    <input class="a11yTestFail" type="radio" id="radio-whitespace-label1-fail"  name="whitespace-label" value="option1">
+                    <label for="radio-whitespace-label1-fail">   </label>
+                </div>
+                <div class="radio-group">
+                    <input class="a11yTestFail" type="radio" id="radio-whitespace-label2-fail"  name="whitespace-label" value="option2">
+                    <label for="radio-whitespace-label2-fail">   </label>
+                </div>
+            </fieldset>
+            <p class="code">&lt;fieldset class="fieldset-demo"&gt;
+    &lt;legend&gt;Whitespace Label Test&lt;/legend&gt;
+    &lt;div class="radio-group"&gt;
+        &lt;input type="radio" id="radio-whitespace-label1-fail" class="a11yTestFail" name="whitespace-label" value="option1"&gt;
+        &lt;label for="radio-whitespace-label1-fail"&gt;   &lt;/label&gt;
+    &lt;/div&gt;
+    &lt;div class="radio-group"&gt;
+        &lt;input type="radio" id="radio-whitespace-label2-fail" class="a11yTestFail" name="whitespace-label" value="option2"&gt;
+        &lt;label for="radio-whitespace-label2-fail"&gt;   &lt;/label&gt;
+    &lt;/div&gt;
+&lt;/fieldset&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Radio Button with Punctuation-only Label</h3>
+            <p>These radio buttons have labels, but they contain only punctuation, which doesn't provide a meaningful accessible name.</p>
+            <fieldset class="fieldset-demo">
+                <legend>Punctuation Label Test</legend>
+                <div class="radio-group">
+                    <input class="a11yTestFail" type="radio" id="radio-punctuation-label1-fail"  name="punctuation-label" value="option1">
+                    <label for="radio-punctuation-label1-fail">***</label>
+                </div>
+                <div class="radio-group">
+                    <input class="a11yTestFail" type="radio" id="radio-punctuation-label2-fail"  name="punctuation-label" value="option2">
+                    <label for="radio-punctuation-label2-fail">###</label>
+                </div>
+            </fieldset>
+            <p class="code">&lt;fieldset class="fieldset-demo"&gt;
+    &lt;legend&gt;Punctuation Label Test&lt;/legend&gt;
+    &lt;div class="radio-group"&gt;
+        &lt;input type="radio" id="radio-punctuation-label1-fail" class="a11yTestFail" name="punctuation-label" value="option1"&gt;
+        &lt;label for="radio-punctuation-label1-fail"&gt;***&lt;/label&gt;
+    &lt;/div&gt;
+    &lt;div class="radio-group"&gt;
+        &lt;input type="radio" id="radio-punctuation-label2-fail" class="a11yTestFail" name="punctuation-label" value="option2"&gt;
+        &lt;label for="radio-punctuation-label2-fail"&gt;###&lt;/label&gt;
+    &lt;/div&gt;
+&lt;/fieldset&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Radio Button Group without Grouping Context</h3>
+            <p>These radio buttons have individual labels but no grouping context (like a fieldset with legend).</p>
+            <div class="radio-group">
+                <input class="a11yTestFail" type="radio" id="radio-option1-no-group-fail"  name="options" value="option1">
+                <label for="radio-option1-no-group-fail">Option 1</label>
+            </div>
+            <div class="radio-group">
+                <input type="radio" id="radio-option2-no-group-fail" class="a11yTestFail" name="options" value="option2">
+                <label for="radio-option2-no-group-fail">Option 2</label>
+            </div>
+            <p class="code">&lt;div class="radio-group"&gt;
+    &lt;input type="radio" id="radio-option1-no-group-fail" class="a11yTestFail" name="options" value="option1"&gt;
+    &lt;label for="radio-option1-no-group-fail"&gt;Option 1&lt;/label&gt;
+&lt;/div&gt;
+&lt;div class="radio-group"&gt;
+    &lt;input type="radio" id="radio-option2-no-group-fail" class="a11yTestFail" name="options" value="option2"&gt;
+    &lt;label for="radio-option2-no-group-fail"&gt;Option 2&lt;/label&gt;
+&lt;/div&gt;</p>
+        </div>
+    </div>
+    
+    <div class="form-container">
+        <h2>3. Checkboxes</h2>
+        <p>These tests validate accessible names for checkbox input fields.</p>
+        
+        <h3>Passing Examples - Checkboxes</h3>
+        
+        <div class="test-case pass">
+            <h3>Checkboxes with Individual Labels</h3>
+            <p>Each checkbox has its own properly associated label.</p>
+            <fieldset class="fieldset-demo">
+                <legend>Interests</legend>
+                <div class="checkbox-group">
+                    <input class="a11yTestPass" type="checkbox" id="checkbox-sports-pass"  name="interests" value="sports">
+                    <label for="checkbox-sports-pass">Sports</label>
+                </div>
+                <div class="checkbox-group">
+                    <input class="a11yTestPass" type="checkbox" id="checkbox-music-pass"  name="interests" value="music">
+                    <label for="checkbox-music-pass">Music</label>
+                </div>
+                <div class="checkbox-group">
+                    <input class="a11yTestPass" type="checkbox" id="checkbox-art-pass"  name="interests" value="art">
+                    <label for="checkbox-art-pass">Art</label>
+                </div>
+            </fieldset>
+            <p class="code">&lt;fieldset class="fieldset-demo"&gt;
+    &lt;legend&gt;Interests&lt;/legend&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="checkbox-sports-pass" class="a11yTestPass" name="interests" value="sports"&gt;
+        &lt;label for="checkbox-sports-pass"&gt;Sports&lt;/label&gt;
+    &lt;/div&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="checkbox-music-pass" class="a11yTestPass" name="interests" value="music"&gt;
+        &lt;label for="checkbox-music-pass"&gt;Music&lt;/label&gt;
+    &lt;/div&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="checkbox-art-pass" class="a11yTestPass" name="interests" value="art"&gt;
+        &lt;label for="checkbox-art-pass"&gt;Art&lt;/label&gt;
+    &lt;/div&gt;
+&lt;/fieldset&gt;</p>
+        </div>
+        
+        <h3>Failing Examples - Checkboxes</h3>
+        
+        <div class="test-case fail">
+            <h3>Checkboxes without Labels</h3>
+            <p>These checkboxes have no accessible names - no labels or ARIA attributes. While the group itself has a proper legend, each individual checkbox lacks an accessible name.</p>
+            <fieldset class="fieldset-demo">
+                <legend>Preferences</legend>
+                <div class="checkbox-group">
+                    <input class="a11yTestFail" type="checkbox" id="checkbox-terms-no-label-fail"  name="terms">
+                    I agree to the terms
+                </div>
+                <div class="checkbox-group">
+                    <input class="a11yTestFail" type="checkbox" id="checkbox-newsletter-no-label-fail"  name="newsletter">
+                    Subscribe to newsletter
+                </div>
+            </fieldset>
+            <p class="code">&lt;fieldset class="fieldset-demo"&gt;
+    &lt;legend&gt;Preferences&lt;/legend&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="checkbox-terms-no-label-fail" class="a11yTestFail" name="terms"&gt;
+        I agree to the terms
+    &lt;/div&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="checkbox-newsletter-no-label-fail" class="a11yTestFail" name="newsletter"&gt;
+        Subscribe to newsletter
+    &lt;/div&gt;
+&lt;/fieldset&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Checkbox with Empty Label</h3>
+            <p>These checkboxes have labels, but they are empty, providing no accessible name.</p>
+            <fieldset class="fieldset-demo">
+                <legend>Empty Label Test</legend>
+                <div class="checkbox-group">
+                    <input class="a11yTestFail" type="checkbox" id="checkbox-empty-label1-fail"  name="empty-label-1">
+                    <label for="checkbox-empty-label1-fail"></label>
+                </div>
+                <div class="checkbox-group">
+                    <input class="a11yTestFail" type="checkbox" id="checkbox-empty-label2-fail"  name="empty-label-2">
+                    <label for="checkbox-empty-label2-fail"></label>
+                </div>
+            </fieldset>
+            <p class="code">&lt;fieldset class="fieldset-demo"&gt;
+    &lt;legend&gt;Empty Label Test&lt;/legend&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="checkbox-empty-label1-fail" class="a11yTestFail" name="empty-label-1"&gt;
+        &lt;label for="checkbox-empty-label1-fail"&gt;&lt;/label&gt;
+    &lt;/div&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="checkbox-empty-label2-fail" class="a11yTestFail" name="empty-label-2"&gt;
+        &lt;label for="checkbox-empty-label2-fail"&gt;&lt;/label&gt;
+    &lt;/div&gt;
+&lt;/fieldset&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Checkbox with Whitespace-only Label</h3>
+            <p>These checkboxes have labels, but they contain only whitespace, which doesn't provide a meaningful accessible name.</p>
+            <fieldset class="fieldset-demo">
+                <legend>Whitespace Label Test</legend>
+                <div class="checkbox-group">
+                    <input class="a11yTestFail" type="checkbox" id="checkbox-whitespace-label1-fail"  name="whitespace-label-1">
+                    <label for="checkbox-whitespace-label1-fail">   </label>
+                </div>
+                <div class="checkbox-group">
+                    <input class="a11yTestFail" type="checkbox" id="checkbox-whitespace-label2-fail"  name="whitespace-label-2">
+                    <label for="checkbox-whitespace-label2-fail">   </label>
+                </div>
+            </fieldset>
+            <p class="code">&lt;fieldset class="fieldset-demo"&gt;
+    &lt;legend&gt;Whitespace Label Test&lt;/legend&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="checkbox-whitespace-label1-fail" class="a11yTestFail" name="whitespace-label-1"&gt;
+        &lt;label for="checkbox-whitespace-label1-fail"&gt;   &lt;/label&gt;
+    &lt;/div&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="checkbox-whitespace-label2-fail" class="a11yTestFail" name="whitespace-label-2"&gt;
+        &lt;label for="checkbox-whitespace-label2-fail"&gt;   &lt;/label&gt;
+    &lt;/div&gt;
+&lt;/fieldset&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Checkbox with Punctuation-only Label</h3>
+            <p>These checkboxes have labels, but they contain only punctuation, which doesn't provide a meaningful accessible name.</p>
+            <fieldset class="fieldset-demo">
+                <legend>Punctuation Label Test</legend>
+                <div class="checkbox-group">
+                    <input class="a11yTestFail" type="checkbox" id="checkbox-punctuation-label1-fail"  name="punctuation-label-1">
+                    <label for="checkbox-punctuation-label1-fail">***</label>
+                </div>
+                <div class="checkbox-group">
+                    <input class="a11yTestFail" type="checkbox" id="checkbox-punctuation-label2-fail"  name="punctuation-label-2">
+                    <label for="checkbox-punctuation-label2-fail">###</label>
+                </div>
+            </fieldset>
+            <p class="code">&lt;fieldset class="fieldset-demo"&gt;
+    &lt;legend&gt;Punctuation Label Test&lt;/legend&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="checkbox-punctuation-label1-fail" class="a11yTestFail" name="punctuation-label-1"&gt;
+        &lt;label for="checkbox-punctuation-label1-fail"&gt;***&lt;/label&gt;
+    &lt;/div&gt;
+    &lt;div class="checkbox-group"&gt;
+        &lt;input type="checkbox" id="checkbox-punctuation-label2-fail" class="a11yTestFail" name="punctuation-label-2"&gt;
+        &lt;label for="checkbox-punctuation-label2-fail"&gt;###&lt;/label&gt;
+    &lt;/div&gt;
+&lt;/fieldset&gt;</p>
+        </div>
+    </div>
+    
+    <div class="form-container">
+        <h2>4. Select and Option Elements</h2>
+        <p>These tests validate accessible names for dropdown menus and their options.</p>
+        
+        <h3>Passing Examples - Select/Option</h3>
+        
+        <div class="test-case pass">
+            <h3>Select with Explicit Label</h3>
+            <p>This select element has a properly associated label.</p>
+            <label for="select-country-pass">Country</label>
+            <select class="a11yTestPass" id="select-country-pass"  name="country">
+                <option value="">Select a country</option>
+                <option value="us">United States</option>
+                <option value="ca">Canada</option>
+                <option value="mx">Mexico</option>
+            </select>
+            <p class="code">&lt;label for="select-country-pass"&gt;Country&lt;/label&gt;
+&lt;select id="select-country-pass" class="a11yTestPass" name="country"&gt;
+    &lt;option value=""&gt;Select a country&lt;/option&gt;
+    &lt;option value="us"&gt;United States&lt;/option&gt;
+    &lt;option value="ca"&gt;Canada&lt;/option&gt;
+    &lt;option value="mx"&gt;Mexico&lt;/option&gt;
+&lt;/select&gt;</p>
+        </div>
+        
+        <h3>Failing Examples - Select/Option</h3>
+        
+        <div class="test-case fail">
+            <h3>Select without Label</h3>
+            <p>This select element has no accessible name - no label or ARIA attributes.</p>
+            <select class="a11yTestFail a11yTest a11yTestFail" id="select-state-no-label-fail"   name="state">
+                <option value="">Select a state</option>
+                <option value="ca">California</option>
+                <option value="ny">New York</option>
+                <option value="tx">Texas</option>
+            </select>
+            <p class="code">&lt;select id="select-state-no-label-fail" class="a11yTestFail" name="state"&gt;
+    &lt;option value=""&gt;Select a state&lt;/option&gt;
+    &lt;option value="ca"&gt;California&lt;/option&gt;
+    &lt;option value="ny"&gt;New York&lt;/option&gt;
+    &lt;option value="tx"&gt;Texas&lt;/option&gt;
+&lt;/select&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Select with Empty aria-label</h3>
+            <p>This select element has an aria-label attribute, but it's empty, providing no accessible name.</p>
+            <select class="a11yTestFail a11yTest a11yTestFail" id="select-empty-aria-label-fail"   name="region" aria-label="">
+                <option value="">Select a region</option>
+                <option value="north">North</option>
+                <option value="south">South</option>
+                <option value="east">East</option>
+                <option value="west">West</option>
+            </select>
+            <p class="code">&lt;select id="select-empty-aria-label-fail" class="a11yTestFail" name="region" aria-label=""&gt;
+    &lt;option value=""&gt;Select a region&lt;/option&gt;
+    &lt;option value="north"&gt;North&lt;/option&gt;
+    &lt;option value="south"&gt;South&lt;/option&gt;
+    &lt;option value="east"&gt;East&lt;/option&gt;
+    &lt;option value="west"&gt;West&lt;/option&gt;
+&lt;/select&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Select with Whitespace-only aria-label</h3>
+            <p>This select element has an aria-label attribute with only whitespace, which doesn't provide a meaningful accessible name.</p>
+            <select class="a11yTestFail a11yTest a11yTestFail" id="select-whitespace-aria-label-fail"   name="city" aria-label="   ">
+                <option value="">Select a city</option>
+                <option value="nyc">New York City</option>
+                <option value="la">Los Angeles</option>
+                <option value="chi">Chicago</option>
+            </select>
+            <p class="code">&lt;select id="select-whitespace-aria-label-fail" class="a11yTestFail" name="city" aria-label="   "&gt;
+    &lt;option value=""&gt;Select a city&lt;/option&gt;
+    &lt;option value="nyc"&gt;New York City&lt;/option&gt;
+    &lt;option value="la"&gt;Los Angeles&lt;/option&gt;
+    &lt;option value="chi"&gt;Chicago&lt;/option&gt;
+&lt;/select&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Select with Punctuation-only aria-label</h3>
+            <p>This select element has an aria-label attribute with only punctuation, which doesn't provide a meaningful accessible name.</p>
+            <select class="a11yTestFail a11yTest a11yTestFail" id="select-punctuation-aria-label-fail"   name="area" aria-label="***">
+                <option value="">Select an area</option>
+                <option value="urban">Urban</option>
+                <option value="suburban">Suburban</option>
+                <option value="rural">Rural</option>
+            </select>
+            <p class="code">&lt;select id="select-punctuation-aria-label-fail" class="a11yTestFail" name="area" aria-label="***"&gt;
+    &lt;option value=""&gt;Select an area&lt;/option&gt;
+    &lt;option value="urban"&gt;Urban&lt;/option&gt;
+    &lt;option value="suburban"&gt;Suburban&lt;/option&gt;
+    &lt;option value="rural"&gt;Rural&lt;/option&gt;
+&lt;/select&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Select with Broken aria-labelledby</h3>
+            <p>This select element references a non-existent element with aria-labelledby.</p>
+            <select class="a11yTestFail a11yTest a11yTestFail" id="select-broken-labelledby-fail"   name="language" aria-labelledby="non-existent-id">
+                <option value="">Select a language</option>
+                <option value="en">English</option>
+                <option value="es">Spanish</option>
+                <option value="fr">French</option>
+            </select>
+            <p class="code">&lt;select id="select-broken-labelledby-fail" class="a11yTestFail" name="language" aria-labelledby="non-existent-id"&gt;
+    &lt;option value=""&gt;Select a language&lt;/option&gt;
+    &lt;option value="en"&gt;English&lt;/option&gt;
+    &lt;option value="es"&gt;Spanish&lt;/option&gt;
+    &lt;option value="fr"&gt;French&lt;/option&gt;
+&lt;/select&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Select with Empty Option Value</h3>
+            <p>The first option is a placeholder but has no value and is not clearly labeled as an instruction.</p>
+            <label for="select-category-empty-option-fail">Category</label>
+            <select class="a11yTestFail a11yTest a11yTestFail" id="select-category-empty-option-fail"   name="category">
+                <option></option>
+                <option value="books">Books</option>
+                <option value="movies">Movies</option>
+                <option value="music">Music</option>
+            </select>
+            <p class="code">&lt;label for="select-category-empty-option-fail"&gt;Category&lt;/label&gt;
+&lt;select id="select-category-empty-option-fail" class="a11yTestFail" name="category"&gt;
+    &lt;option&gt;&lt;/option&gt;
+    &lt;option value="books"&gt;Books&lt;/option&gt;
+    &lt;option value="movies"&gt;Movies&lt;/option&gt;
+    &lt;option value="music"&gt;Music&lt;/option&gt;
+&lt;/select&gt;</p>
+        </div>
+
+        <div class="test-case fail">
+            <h3>Select with Whitespace-only Option Text</h3>
+            <p>This select contains an option with only whitespace, which does not provide a meaningful accessible name for the option.</p>
+            <label for="select-whitespace-option-fail">Topic</label>
+            <select class="a11yTestFail" id="select-whitespace-option-fail"  name="topic">
+                <option value="">Choose a topic</option>
+                <option value="space">   </option>
+                <option value="science">Science</option>
+                <option value="tech">Technology</option>
+            </select>
+            <p class="code">&lt;label for="select-whitespace-option-fail"&gt;Topic&lt;/label&gt;
+&lt;select id="select-whitespace-option-fail" class="a11yTestFail" name="topic"&gt;
+    &lt;option value=""&gt;Choose a topic&lt;/option&gt;
+    &lt;option value="space"&gt;   &lt;/option&gt;
+    &lt;option value="science"&gt;Science&lt;/option&gt;
+    &lt;option value="tech"&gt;Technology&lt;/option&gt;
+&lt;/select&gt;</p>
+        </div>
+    </div>
+    
+    <div class="form-container">
+        <h2>5. Textarea Elements</h2>
+        <p>These tests validate accessible names for multiline text entry fields.</p>
+        
+        <h3>Passing Examples - Textarea</h3>
+        
+        <div class="test-case pass">
+            <h3>Textarea with Explicit Label</h3>
+            <p>This textarea has a properly associated label.</p>
+            <label for="textarea-comments-pass">Comments</label>
+            <textarea class="a11yTestPass" id="textarea-comments-pass"  name="comments" rows="4"></textarea>
+            <p class="code">&lt;label for="textarea-comments-pass"&gt;Comments&lt;/label&gt;
+&lt;textarea id="textarea-comments-pass" class="a11yTestPass" name="comments" rows="4"&gt;&lt;/textarea&gt;</p>
+        </div>
+        
+        <h3>Failing Examples - Textarea</h3>
+        
+        <div class="test-case fail">
+            <h3>Textarea without Label</h3>
+            <p>This textarea has no accessible name - no label or ARIA attributes.</p>
+            <textarea class="a11yTestFail" id="textarea-bio-no-label-fail"  name="bio" rows="4" placeholder="Enter your bio"></textarea>
+            <p class="code">&lt;textarea id="textarea-bio-no-label-fail" class="a11yTestFail" name="bio" rows="4" placeholder="Enter your bio"&gt;&lt;/textarea&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Textarea with Empty Label</h3>
+            <p>This textarea has a label element, but the label is empty.</p>
+            <label for="textarea-empty-label-fail"></label>
+            <textarea class="a11yTestFail" id="textarea-empty-label-fail"  name="feedback" rows="4"></textarea>
+            <p class="code">&lt;label for="textarea-empty-label-fail"&gt;&lt;/label&gt;
+&lt;textarea id="textarea-empty-label-fail" class="a11yTestFail" name="feedback" rows="4"&gt;&lt;/textarea&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Textarea with Whitespace-only Label</h3>
+            <p>This textarea has a label element, but it contains only whitespace, which doesn't provide a meaningful accessible name.</p>
+            <label for="textarea-whitespace-label-fail">   </label>
+            <textarea class="a11yTestFail" id="textarea-whitespace-label-fail"  name="notes" rows="4"></textarea>
+            <p class="code">&lt;label for="textarea-whitespace-label-fail"&gt;   &lt;/label&gt;
+&lt;textarea id="textarea-whitespace-label-fail" class="a11yTestFail" name="notes" rows="4"&gt;&lt;/textarea&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Textarea with Punctuation-only Label</h3>
+            <p>This textarea has a label element, but it contains only punctuation, which doesn't provide a meaningful accessible name.</p>
+            <label for="textarea-punctuation-label-fail">***</label>
+            <textarea class="a11yTestFail" id="textarea-punctuation-label-fail"  name="description" rows="4"></textarea>
+            <p class="code">&lt;label for="textarea-punctuation-label-fail"&gt;***&lt;/label&gt;
+&lt;textarea id="textarea-punctuation-label-fail" class="a11yTestFail" name="description" rows="4"&gt;&lt;/textarea&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Textarea with Empty aria-label</h3>
+            <p>This textarea has an aria-label attribute, but it's empty, providing no accessible name.</p>
+            <textarea class="a11yTestFail" id="textarea-empty-aria-label-fail"  name="message" rows="4" aria-label=""></textarea>
+            <p class="code">&lt;textarea id="textarea-empty-aria-label-fail" class="a11yTestFail" name="message" rows="4" aria-label=""&gt;&lt;/textarea&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Textarea with Whitespace-only aria-label</h3>
+            <p>This textarea has an aria-label attribute with only whitespace, which doesn't provide a meaningful accessible name.</p>
+            <textarea class="a11yTestFail" id="textarea-whitespace-aria-label-fail"  name="review" rows="4" aria-label="   "></textarea>
+            <p class="code">&lt;textarea id="textarea-whitespace-aria-label-fail" class="a11yTestFail" name="review" rows="4" aria-label="   "&gt;&lt;/textarea&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Textarea with Punctuation-only aria-label</h3>
+            <p>This textarea has an aria-label attribute with only punctuation, which doesn't provide a meaningful accessible name.</p>
+            <textarea class="a11yTestFail" id="textarea-punctuation-aria-label-fail"  name="details" rows="4" aria-label="###"></textarea>
+            <p class="code">&lt;textarea id="textarea-punctuation-aria-label-fail" class="a11yTestFail" name="details" rows="4" aria-label="###"&gt;&lt;/textarea&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Textarea with Broken aria-labelledby</h3>
+            <p>This textarea references a non-existent element with aria-labelledby.</p>
+            <textarea class="a11yTestFail" id="textarea-broken-labelledby-fail"  name="summary" rows="4" aria-labelledby="non-existent-id"></textarea>
+            <p class="code">&lt;textarea id="textarea-broken-labelledby-fail" class="a11yTestFail" name="summary" rows="4" aria-labelledby="non-existent-id"&gt;&lt;/textarea&gt;</p>
+        </div>
+        
+        <h3>ARIA Role Equivalents - Textarea</h3>
+        
+        <div class="test-case fail">
+            <h3>ARIA Multiline Textbox without Accessible Name</h3>
+            <p>This div with role="textbox" and aria-multiline="true" has no accessible name - no aria-label or aria-labelledby.</p>
+            <div class="a11yTestFail" role="textbox" aria-multiline="true" id="multiline-textbox-no-label-fail"  tabindex="0" style="border: 1px solid #ccc; padding: 5px; width: 300px; min-height: 80px;"></div>
+            <p class="code">&lt;div role="textbox" aria-multiline="true" id="multiline-textbox-no-label-fail" class="a11yTestFail" tabindex="0" style="border: 1px solid #ccc; padding: 5px; width: 300px; min-height: 80px;"&gt;&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>ARIA Multiline Textbox with Empty aria-label</h3>
+            <p>This div with role="textbox" and aria-multiline="true" has an aria-label attribute, but it's empty, providing no accessible name.</p>
+            <div class="a11yTestFail" role="textbox" aria-multiline="true" id="multiline-textbox-empty-aria-label-fail"  aria-label="" tabindex="0" style="border: 1px solid #ccc; padding: 5px; width: 300px; min-height: 80px;"></div>
+            <p class="code">&lt;div role="textbox" aria-multiline="true" id="multiline-textbox-empty-aria-label-fail" class="a11yTestFail" aria-label="" tabindex="0" style="border: 1px solid #ccc; padding: 5px; width: 300px; min-height: 80px;"&gt;&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>ARIA Multiline Textbox with Broken aria-labelledby</h3>
+            <p>This div with role="textbox" and aria-multiline="true" references a non-existent element with aria-labelledby.</p>
+            <div class="a11yTestFail" role="textbox" aria-multiline="true" id="multiline-textbox-broken-labelledby-fail"  aria-labelledby="non-existent-id" tabindex="0" style="border: 1px solid #ccc; padding: 5px; width: 300px; min-height: 80px;"></div>
+            <p class="code">&lt;div role="textbox" aria-multiline="true" id="multiline-textbox-broken-labelledby-fail" class="a11yTestFail" aria-labelledby="non-existent-id" tabindex="0" style="border: 1px solid #ccc; padding: 5px; width: 300px; min-height: 80px;"&gt;&lt;/div&gt;</p>
+        </div>
+    </div>
+    
+    
+    <div class="form-container">
+        <h2>6. Image Maps and Image Inputs</h2>
+        <p>These tests validate accessible names for image maps and image inputs.</p>
+        
+        <h3>Passing Examples - Image Maps/Inputs</h3>
+        
+        <div class="test-case pass">
+            <h3>Image Input with Alt Text</h3>
+            <p>This image input has an alt attribute that serves as its accessible name.</p>
+            <input class="a11yTestPass" type="image" id="image-submit-alt-pass"  src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M5 21h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2zm2-10h4V7h2v4h4v2h-4v4h-2v-4H7v-2z'/%3E%3C/svg%3E" alt="Submit form">
+            <p class="code">&lt;input type="image" id="image-submit-alt-pass" class="a11yTestPass" src="data:image/svg+xml,%3Csvg..." alt="Submit form"&gt;</p>
+        </div>
+        
+        <div class="test-case pass">
+            <h3>Image Map with Complete Alt Text</h3>
+            <p>This image map has proper alt attributes for all area elements, providing accessible names for each clickable region.</p>
+            <div class="image-map-container">
+                <img class="a11yTestPass" id="image-map-complete-alt-pass"  src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='100' viewBox='0 0 200 100'%3E%3Crect width='200' height='100' fill='%23f0f0f0'/%3E%3Ccircle cx='50' cy='50' r='30' fill='%2355aa55'/%3E%3Crect x='120' y='20' width='60' height='60' fill='%235555aa'/%3E%3C/svg%3E" usemap="#complete-shapes-map" alt="Interactive shapes">
+                <map name="complete-shapes-map">
+                    <area shape="circle" coords="50,50,30" href="#" alt="Green Circle">
+                    <area shape="rect" coords="120,20,180,80" href="#" alt="Blue Square">
+                </map>
+            </div>
+            <p class="code">&lt;img id="image-map-complete-alt-pass" class="a11yTestPass" src="data:image/svg+xml,%3Csvg..." usemap="#complete-shapes-map" alt="Interactive shapes"&gt;
+&lt;map name="complete-shapes-map"&gt;
+    &lt;area shape="circle" coords="50,50,30" href="#" alt="Green Circle"&gt;
+    &lt;area shape="rect" coords="120,20,180,80" href="#" alt="Blue Square"&gt;
+&lt;/map&gt;</p>
+        </div>
+        
+        <h3>Failing Examples - Image Maps/Inputs</h3>
+        
+        <div class="test-case fail">
+            <h3>Image Input without Alt Text</h3>
+            <p>This image input has no alt attribute to provide an accessible name.</p>
+            <input type="image" id="image-submit-no-alt-fail" class="a11yTestFail"  src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M5 21h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2zm2-10h4V7h2v4h4v2h-4v4h-2v-4H7v-2z'/%3E%3C/svg%3E">
+            <p class="code">&lt;input type="image" id="image-submit-no-alt-fail" class="a11yTestFail" src="data:image/svg+xml,%3Csvg..."&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Image Input with Empty Alt Text</h3>
+            <p>This image input has an empty alt attribute, which is incorrect for functional images like submit buttons.</p>
+            <input type="image" id="image-submit-empty-alt-fail" class="a11yTestFail"  src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M5 21h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2zm2-10h4V7h2v4h4v2h-4v4h-2v-4H7v-2z'/%3E%3C/svg%3E" alt="">
+            <p class="code">&lt;input type="image" id="image-submit-empty-alt-fail" class="a11yTestFail" src="data:image/svg+xml,%3Csvg..." alt=""&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Image Input with Whitespace-only Alt Text</h3>
+            <p>This image input has alt text containing only whitespace, which doesn't provide a meaningful accessible name.</p>
+            <input type="image" id="image-submit-whitespace-alt-fail" class="a11yTestFail"  src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M5 21h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2zm2-10h4V7h2v4h4v2h-4v4h-2v-4H7v-2z'/%3E%3C/svg%3E" alt="   ">
+            <p class="code">&lt;input type="image" id="image-submit-whitespace-alt-fail" class="a11yTestFail" src="data:image/svg+xml,%3Csvg..." alt="   "&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Image Input with Punctuation-only Alt Text</h3>
+            <p>This image input has alt text containing only punctuation, which doesn't provide a meaningful accessible name.</p>
+            <input type="image" id="image-submit-punctuation-alt-fail" class="a11yTestFail"  src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M5 21h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2zm2-10h4V7h2v4h4v2h-4v4h-2v-4H7v-2z'/%3E%3C/svg%3E" alt="...">
+            <p class="code">&lt;input type="image" id="image-submit-punctuation-alt-fail" class="a11yTestFail" src="data:image/svg+xml,%3Csvg..." alt="..."&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Image Input with Generic Alt Text</h3>
+            <p>This image input has generic alt text that doesn't describe its purpose.</p>
+            <input type="image" id="image-submit-generic-alt-fail" class="a11yTestFail"  src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M5 21h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2zm2-10h4V7h2v4h4v2h-4v4h-2v-4H7v-2z'/%3E%3C/svg%3E" alt="Button">
+            <p class="code">&lt;input type="image" id="image-submit-generic-alt-fail" class="a11yTestFail" src="data:image/svg+xml,%3Csvg..." alt="Button"&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Image Input with Filename as Alt Text</h3>
+            <p>This image input uses its filename as alt text, which is not descriptive of its purpose.</p>
+            <input type="image" id="image-submit-filename-alt-fail" class="a11yTestFail"  src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath d='M5 21h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2zm2-10h4V7h2v4h4v2h-4v4h-2v-4H7v-2z'/%3E%3C/svg%3E" alt="button.png">
+            <p class="code">&lt;input type="image" id="image-submit-filename-alt-fail" class="a11yTestFail" src="data:image/svg+xml,%3Csvg..." alt="button.png"&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Image Map with Missing Alt Text</h3>
+            <p>This image map has an area without an alt attribute to provide an accessible name.</p>
+            <img class="a11yTestFail" id="image-map-missing-alt-fail"  src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='100' viewBox='0 0 200 100'%3E%3Crect width='200' height='100' fill='%23f0f0f0'/%3E%3Ccircle cx='50' cy='50' r='30' fill='%23ff5555'/%3E%3Crect x='120' y='20' width='60' height='60' fill='%235555ff'/%3E%3C/svg%3E" usemap="#shapes-map" alt="Shapes">
+            <map name="shapes-map">
+                <area shape="circle" coords="50,50,30" href="#" alt="Red Circle">
+                <area class="a11yTestFail" id="area-missing-alt-fail"  shape="rect" coords="120,20,180,80" href="#">
+            </map>
+            <p class="code">&lt;img id="image-map-missing-alt-fail" class="a11yTestFail" src="data:image/svg+xml,%3Csvg..." usemap="#shapes-map" alt="Shapes"&gt;
+&lt;map name="shapes-map"&gt;
+    &lt;area shape="circle" coords="50,50,30" href="#" alt="Red Circle"&gt;
+    &lt;area id="area-missing-alt-fail" class="a11yTestFail" shape="rect" coords="120,20,180,80" href="#"&gt;
+&lt;/map&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Image Map Area with Empty Alt Text</h3>
+            <p>This image map has an area with an empty alt attribute, providing no accessible name.</p>
+            <img class="a11yTestFail" id="image-map-empty-alt-fail"  src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='100' viewBox='0 0 200 100'%3E%3Crect width='200' height='100' fill='%23f0f0f0'/%3E%3Ccircle cx='50' cy='50' r='30' fill='%23ff5555'/%3E%3Crect x='120' y='20' width='60' height='60' fill='%235555ff'/%3E%3C/svg%3E" usemap="#empty-alt-map" alt="Shapes">
+            <map name="empty-alt-map">
+                <area shape="circle" coords="50,50,30" href="#" alt="Red Circle">
+                <area id="area-empty-alt-fail" class="a11yTestFail" shape="rect" coords="120,20,180,80" href="#" alt="">
+            </map>
+            <p class="code">&lt;img id="image-map-empty-alt-fail" class="a11yTestFail" src="data:image/svg+xml,%3Csvg..." usemap="#empty-alt-map" alt="Shapes"&gt;
+&lt;map name="empty-alt-map"&gt;
+    &lt;area shape="circle" coords="50,50,30" href="#" alt="Red Circle"&gt;
+    &lt;area id="area-empty-alt-fail" class="a11yTestFail" shape="rect" coords="120,20,180,80" href="#" alt=""&gt;
+&lt;/map&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Image Map Area with Whitespace-only Alt Text</h3>
+            <p>This image map has an area with alt text containing only whitespace, which doesn't provide a meaningful accessible name.</p>
+            <img id="image-map-whitespace-alt-fail" class="a11yTestFail" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='100' viewBox='0 0 200 100'%3E%3Crect width='200' height='100' fill='%23f0f0f0'/%3E%3Ccircle cx='50' cy='50' r='30' fill='%23ff5555'/%3E%3Crect x='120' y='20' width='60' height='60' fill='%235555ff'/%3E%3C/svg%3E" usemap="#whitespace-alt-map" alt="Shapes">
+            <map name="whitespace-alt-map">
+                <area shape="circle" coords="50,50,30" href="#" alt="Red Circle">
+                <area class="a11yTestFail" id="area-whitespace-alt-fail"  shape="rect" coords="120,20,180,80" href="#" alt="   ">
+            </map>
+            <p class="code">&lt;img id="image-map-whitespace-alt-fail" class="a11yTestFail" src="data:image/svg+xml,%3Csvg..." usemap="#whitespace-alt-map" alt="Shapes"&gt;
+&lt;map name="whitespace-alt-map"&gt;
+    &lt;area shape="circle" coords="50,50,30" href="#" alt="Red Circle"&gt;
+    &lt;area id="area-whitespace-alt-fail" class="a11yTestFail" shape="rect" coords="120,20,180,80" href="#" alt="   "&gt;
+&lt;/map&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Image Map Area with Punctuation-only Alt Text</h3>
+            <p>This image map has an area with alt text containing only punctuation, which doesn't provide a meaningful accessible name.</p>
+            <img id="image-map-punctuation-alt-fail" class="a11yTestFail" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='100' viewBox='0 0 200 100'%3E%3Crect width='200' height='100' fill='%23f0f0f0'/%3E%3Ccircle cx='50' cy='50' r='30' fill='%23ff5555'/%3E%3Crect x='120' y='20' width='60' height='60' fill='%235555ff'/%3E%3C/svg%3E" usemap="#punctuation-alt-map" alt="Shapes">
+            <map name="punctuation-alt-map">
+                <area shape="circle" coords="50,50,30" href="#" alt="Red Circle">
+                <area class="a11yTestFail" id="area-punctuation-alt-fail"  shape="rect" coords="120,20,180,80" href="#" alt="...">
+            </map>
+            <p class="code">&lt;img id="image-map-punctuation-alt-fail" class="a11yTestFail" src="data:image/svg+xml,%3Csvg..." usemap="#punctuation-alt-map" alt="Shapes"&gt;
+&lt;map name="punctuation-alt-map"&gt;
+    &lt;area shape="circle" coords="50,50,30" href="#" alt="Red Circle"&gt;
+    &lt;area id="area-punctuation-alt-fail" class="a11yTestFail" shape="rect" coords="120,20,180,80" href="#" alt="..."&gt;
+&lt;/map&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Image Map Area with Empty aria-label</h3>
+            <p>This image map has an area with an empty aria-label attribute, providing no accessible name.</p>
+            <img class="a11yTestFail" id="image-map-empty-aria-label-fail"  src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='100' viewBox='0 0 200 100'%3E%3Crect width='200' height='100' fill='%23f0f0f0'/%3E%3Ccircle cx='50' cy='50' r='30' fill='%23ff5555'/%3E%3Crect x='120' y='20' width='60' height='60' fill='%235555ff'/%3E%3C/svg%3E" usemap="#empty-aria-label-map" alt="Shapes">
+            <map name="empty-aria-label-map">
+                <area shape="circle" coords="50,50,30" href="#" alt="Red Circle">
+                <area class="a11yTestFail" id="area-empty-aria-label-fail"  shape="rect" coords="120,20,180,80" href="#" aria-label="">
+            </map>
+            <p class="code">&lt;img id="image-map-empty-aria-label-fail" class="a11yTestFail" src="data:image/svg+xml,%3Csvg..." usemap="#empty-aria-label-map" alt="Shapes"&gt;
+&lt;map name="empty-aria-label-map"&gt;
+    &lt;area shape="circle" coords="50,50,30" href="#" alt="Red Circle"&gt;
+    &lt;area id="area-empty-aria-label-fail" class="a11yTestFail" shape="rect" coords="120,20,180,80" href="#" aria-label=""&gt;
+&lt;/map&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Image Map Area with Whitespace-only aria-label</h3>
+            <p>This image map has an area with an aria-label attribute containing only whitespace, which doesn't provide a meaningful accessible name.</p>
+            <img class="a11yTestFail" id="image-map-whitespace-aria-label-fail"  src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='100' viewBox='0 0 200 100'%3E%3Crect width='200' height='100' fill='%23f0f0f0'/%3E%3Ccircle cx='50' cy='50' r='30' fill='%23ff5555'/%3E%3Crect x='120' y='20' width='60' height='60' fill='%235555ff'/%3E%3C/svg%3E" usemap="#whitespace-aria-label-map" alt="Shapes">
+            <map name="whitespace-aria-label-map">
+                <area shape="circle" coords="50,50,30" href="#" alt="Red Circle">
+                <area class="a11yTestFail" id="area-whitespace-aria-label-fail"  shape="rect" coords="120,20,180,80" href="#" aria-label="   ">
+            </map>
+            <p class="code">&lt;img id="image-map-whitespace-aria-label-fail" class="a11yTestFail" src="data:image/svg+xml,%3Csvg..." usemap="#whitespace-aria-label-map" alt="Shapes"&gt;
+&lt;map name="whitespace-aria-label-map"&gt;
+    &lt;area shape="circle" coords="50,50,30" href="#" alt="Red Circle"&gt;
+    &lt;area id="area-whitespace-aria-label-fail" class="a11yTestFail" shape="rect" coords="120,20,180,80" href="#" aria-label="   "&gt;
+&lt;/map&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Image Map Area with Punctuation-only aria-label</h3>
+            <p>This image map has an area with an aria-label attribute containing only punctuation, which doesn't provide a meaningful accessible name.</p>
+            <img class="a11yTestFail" id="image-map-punctuation-aria-label-fail"  src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='100' viewBox='0 0 200 100'%3E%3Crect width='200' height='100' fill='%23f0f0f0'/%3E%3Ccircle cx='50' cy='50' r='30' fill='%23ff5555'/%3E%3Crect x='120' y='20' width='60' height='60' fill='%235555ff'/%3E%3C/svg%3E" usemap="#punctuation-aria-label-map" alt="Shapes">
+            <map name="punctuation-aria-label-map">
+                <area shape="circle" coords="50,50,30" href="#" alt="Red Circle">
+                <area class="a11yTestFail" id="area-punctuation-aria-label-fail"  shape="rect" coords="120,20,180,80" href="#" aria-label="...">
+            </map>
+            <p class="code">&lt;img id="image-map-punctuation-aria-label-fail" class="a11yTestFail" src="data:image/svg+xml,%3Csvg..." usemap="#punctuation-aria-label-map" alt="Shapes"&gt;
+&lt;map name="punctuation-aria-label-map"&gt;
+    &lt;area shape="circle" coords="50,50,30" href="#" alt="Red Circle"&gt;
+    &lt;area id="area-punctuation-aria-label-fail" class="a11yTestFail" shape="rect" coords="120,20,180,80" href="#" aria-label="..."&gt;
+&lt;/map&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Image Map Area with Broken aria-labelledby</h3>
+            <p>This image map has an area with an aria-labelledby attribute that references a non-existent element, providing no accessible name.</p>
+            <img class="a11yTestFail" id="image-map-broken-labelledby-fail"  src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='100' viewBox='0 0 200 100'%3E%3Crect width='200' height='100' fill='%23f0f0f0'/%3E%3Ccircle cx='50' cy='50' r='30' fill='%23ff5555'/%3E%3Crect x='120' y='20' width='60' height='60' fill='%235555ff'/%3E%3C/svg%3E" usemap="#broken-labelledby-map" alt="Shapes">
+            <map name="broken-labelledby-map">
+                <area shape="circle" coords="50,50,30" href="#" alt="Red Circle">
+                <area class="a11yTestFail" id="area-broken-labelledby-fail"  shape="rect" coords="120,20,180,80" href="#" aria-labelledby="non-existent-id">
+            </map>
+            <p class="code">&lt;img id="image-map-broken-labelledby-fail" class="a11yTestFail" src="data:image/svg+xml,%3Csvg..." usemap="#broken-labelledby-map" alt="Shapes"&gt;
+&lt;map name="broken-labelledby-map"&gt;
+    &lt;area shape="circle" coords="50,50,30" href="#" alt="Red Circle"&gt;
+    &lt;area id="area-broken-labelledby-fail" class="a11yTestFail" shape="rect" coords="120,20,180,80" href="#" aria-labelledby="non-existent-id"&gt;
+&lt;/map&gt;</p>
+        </div>
+    </div>
+    
+    <div class="form-container">
+        <h2>7. Progress and Meter Elements</h2>
+        <p>These tests validate accessible names for progress bars and meter elements.</p>
+        
+        <h3>Passing Examples - Progress/Meter</h3>
+        
+        <div class="test-case pass">
+            <h3>Progress Element with Label</h3>
+            <p>This progress element has a properly associated label.</p>
+            <label for="download-progress-pass">Download Progress</label>
+            <progress class="a11yTestPass" id="download-progress-pass"  value="75" max="100">75%</progress>
+            <p class="code">&lt;label for="download-progress-pass"&gt;Download Progress&lt;/label&gt;
+&lt;progress id="download-progress-pass" class="a11yTestPass" value="75" max="100"&gt;75%&lt;/progress&gt;</p>
+        </div>
+        
+        <div class="test-case pass">
+            <h3>Meter Element with ARIA Labelledby</h3>
+            <p>This meter element references its label using aria-labelledby.</p>
+            <div id="disk-usage-label">Disk Usage</div>
+            <meter class="a11yTestPass" id="disk-usage-meter-pass"  aria-labelledby="disk-usage-label" value="0.6" min="0" max="1">60%</meter>
+            <p class="code">&lt;div id="disk-usage-label"&gt;Disk Usage&lt;/div&gt;
+&lt;meter id="disk-usage-meter-pass" class="a11yTestPass" aria-labelledby="disk-usage-label" value="0.6" min="0" max="1"&gt;60%&lt;/meter&gt;</p>
+        </div>
+        
+        <h3>Failing Examples - Progress/Meter</h3>
+        
+        <div class="test-case fail">
+            <h3>Progress Element without Accessible Name</h3>
+            <p>This progress element has no accessible name - no label or ARIA attributes.</p>
+            <progress id="upload-progress-no-label-fail" class="a11yTestFail"  value="30" max="100">30%</progress>
+            <p class="code">&lt;progress id="upload-progress-no-label-fail" class="a11yTestFail" value="30" max="100"&gt;30%&lt;/progress&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Progress Element with Empty aria-label</h3>
+            <p>This progress element has an aria-label attribute, but it's empty, providing no accessible name.</p>
+            <progress id="progress-empty-aria-label-fail" class="a11yTestFail"  value="45" max="100" aria-label="">45%</progress>
+            <p class="code">&lt;progress id="progress-empty-aria-label-fail" class="a11yTestFail" value="45" max="100" aria-label=""&gt;45%&lt;/progress&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Progress Element with Whitespace-only aria-label</h3>
+            <p>This progress element has an aria-label attribute with only whitespace, which doesn't provide a meaningful accessible name.</p>
+            <progress id="progress-whitespace-aria-label-fail" class="a11yTestFail"  value="50" max="100" aria-label="   ">50%</progress>
+            <p class="code">&lt;progress id="progress-whitespace-aria-label-fail" class="a11yTestFail" value="50" max="100" aria-label="   "&gt;50%&lt;/progress&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Progress Element with Punctuation-only aria-label</h3>
+            <p>This progress element has an aria-label attribute with only punctuation, which doesn't provide a meaningful accessible name.</p>
+            <progress id="progress-punctuation-aria-label-fail" class="a11yTestFail"  value="55" max="100" aria-label="...">55%</progress>
+            <p class="code">&lt;progress id="progress-punctuation-aria-label-fail" class="a11yTestFail" value="55" max="100" aria-label="..."&gt;55%&lt;/progress&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Progress Element with Broken aria-labelledby</h3>
+            <p>This progress element references a non-existent element with aria-labelledby.</p>
+            <progress id="progress-broken-labelledby-fail" class="a11yTestFail"  value="60" max="100" aria-labelledby="non-existent-id">60%</progress>
+            <p class="code">&lt;progress id="progress-broken-labelledby-fail" class="a11yTestFail" value="60" max="100" aria-labelledby="non-existent-id"&gt;60%&lt;/progress&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Meter Element with Empty aria-label</h3>
+            <p>This meter element has an aria-label attribute, but it's empty, providing no accessible name.</p>
+            <meter class="a11yTestFail" id="meter-empty-aria-label-fail"  value="0.3" min="0" max="1" aria-label="">30%</meter>
+            <p class="code">&lt;meter id="meter-empty-aria-label-fail" class="a11yTestFail" value="0.3" min="0" max="1" aria-label=""&gt;30%&lt;/meter&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Meter Element with Whitespace-only aria-label</h3>
+            <p>This meter element has an aria-label attribute with only whitespace, which doesn't provide a meaningful accessible name.</p>
+            <meter class="a11yTestFail" id="meter-whitespace-aria-label-fail"  value="0.4" min="0" max="1" aria-label="   ">40%</meter>
+            <p class="code">&lt;meter id="meter-whitespace-aria-label-fail" class="a11yTestFail" value="0.4" min="0" max="1" aria-label="   "&gt;40%&lt;/meter&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Meter Element with Punctuation-only aria-label</h3>
+            <p>This meter element has an aria-label attribute with only punctuation, which doesn't provide a meaningful accessible name.</p>
+            <meter class="a11yTestFail" id="meter-punctuation-aria-label-fail"  value="0.5" min="0" max="1" aria-label="...">50%</meter>
+            <p class="code">&lt;meter id="meter-punctuation-aria-label-fail" class="a11yTestFail" value="0.5" min="0" max="1" aria-label="..."&gt;50%&lt;/meter&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>Meter Element with Broken aria-labelledby</h3>
+            <p>This meter element references a non-existent element with aria-labelledby.</p>
+            <meter class="a11yTestFail" id="meter-broken-labelledby-fail"  value="0.7" min="0" max="1" aria-labelledby="non-existent-id">70%</meter>
+            <p class="code">&lt;meter id="meter-broken-labelledby-fail" class="a11yTestFail" value="0.7" min="0" max="1" aria-labelledby="non-existent-id"&gt;70%&lt;/meter&gt;</p>
+        </div>
+        
+        <h3>ARIA Role Equivalents - Progress/Meter</h3>
+        
+        <div class="test-case fail">
+            <h3>ARIA Progressbar without Accessible Name</h3>
+            <p>This div with role="progressbar" has no accessible name - no aria-label or aria-labelledby.</p>
+            <div class="a11yTestFail" role="progressbar" id="progressbar-no-label-fail"  aria-valuenow="30" aria-valuemin="0" aria-valuemax="100" style="width: 300px; height: 20px; background-color: #f3f3f3; border-radius: 4px; overflow: hidden;">
+                <div style="height: 100%; background-color: #4caf50; width: 30%;"></div>
+            </div>
+            <p class="code">&lt;div role="progressbar" id="progressbar-no-label-fail" class="a11yTestFail" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"&gt;
+    &lt;div style="height: 100%; background-color: #4caf50; width: 30%;"&gt;&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>ARIA Progressbar with Empty aria-label</h3>
+            <p>This div with role="progressbar" has an aria-label attribute, but it's empty, providing no accessible name.</p>
+            <div class="a11yTestFail" role="progressbar" id="progressbar-empty-aria-label-fail"  aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" aria-label="" style="width: 300px; height: 20px; background-color: #f3f3f3; border-radius: 4px; overflow: hidden;">
+                <div style="height: 100%; background-color: #4caf50; width: 45%;"></div>
+            </div>
+            <p class="code">&lt;div role="progressbar" id="progressbar-empty-aria-label-fail" class="a11yTestFail" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" aria-label=""&gt;
+    &lt;div style="height: 100%; background-color: #4caf50; width: 45%;"&gt;&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>ARIA Meter without Accessible Name</h3>
+            <p>This div with role="meter" has no accessible name - no aria-label or aria-labelledby.</p>
+            <div class="a11yTestFail" role="meter" id="meter-role-no-label-fail"  aria-valuenow="0.3" aria-valuemin="0" aria-valuemax="1" style="width: 300px; height: 20px; background-color: #f3f3f3; border-radius: 4px; overflow: hidden;">
+                <div style="height: 100%; background-color: #4caf50; width: 30%;"></div>
+            </div>
+            <p class="code">&lt;div role="meter" id="meter-role-no-label-fail" class="a11yTestFail" aria-valuenow="0.3" aria-valuemin="0" aria-valuemax="1"&gt;
+    &lt;div style="height: 100%; background-color: #4caf50; width: 30%;"&gt;&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+        
+        <div class="test-case fail">
+            <h3>ARIA Meter with Empty aria-label</h3>
+            <p>This div with role="meter" has an aria-label attribute, but it's empty, providing no accessible name.</p>
+            <div class="a11yTestFail" role="meter" id="meter-role-empty-aria-label-fail"  aria-valuenow="0.4" aria-valuemin="0" aria-valuemax="1" aria-label="" style="width: 300px; height: 20px; background-color: #f3f3f3; border-radius: 4px; overflow: hidden;">
+                <div style="height: 100%; background-color: #4caf50; width: 40%;"></div>
+            </div>
+            <p class="code">&lt;div role="meter" id="meter-role-empty-aria-label-fail" class="a11yTestFail" aria-valuenow="0.4" aria-valuemin="0" aria-valuemax="1" aria-label=""&gt;
+    &lt;div style="height: 100%; background-color: #4caf50; width: 40%;"&gt;&lt;/div&gt;
+&lt;/div&gt;</p>
+        </div>
+    </div>
+    
+    <footer>
+        <p>This test page is designed to validate accessible names in form controls according to WCAG 4.1.2 (Name, Role, Value) and the W3C's accessible name computation algorithm.</p>
+        <p><strong>Note on test categories:</strong></p>
+        <ul>
+            <li><span style="color:#28a745">✓ Passing:</span> Fully accessible, follows best practices for accessible name computation</li>
+            <li><span style="color:#dc3545">✗ Failing:</span> Inaccessible, violates WCAG requirements for accessible names</li>
+            <li><span style="color:#ffc107">⚠ Warning:</span> Technically valid but not recommended - has accessibility limitations or follows outdated practices</li>
+        </ul>
+    </footer>
+</body>
+</html>
