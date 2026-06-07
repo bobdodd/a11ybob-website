@@ -43,7 +43,9 @@ yarn-error.log*
 # source-of-truth originals for images processed into /public/.
 # Filenames there are human-readable ('Ascotel Crystal.jpg'); the
 # deployed copies live under /public/ with kebab-case names.
-IMAGES/
+# Anchored to the repo root so it doesn't also catch public/images/ on
+# case-insensitive filesystems (macOS).
+/IMAGES/
 
 # local working notes / dev-environment instructions —
 # not site content, not knowledge about the site
