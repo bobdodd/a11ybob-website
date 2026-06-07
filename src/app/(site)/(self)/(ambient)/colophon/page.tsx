@@ -186,6 +186,57 @@ export default function Colophon() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
+            <h2>Counting visits without tracking visitors</h2>
+            <p>
+              This site needs a little operational feedback &mdash; which
+              writing lands, where readers arrive from, whether anything
+              here is drawing the kind of consulting or hiring interest
+              it&rsquo;s meant to. The obvious way to get that is a
+              third-party analytics script. The obvious way is also the
+              wrong way for a site whose whole posture is that it
+              doesn&rsquo;t watch you: a script that runs in your browser,
+              sets cookies, and reports your behaviour to someone
+              else&rsquo;s servers would contradict the{" "}
+              <Link href="/privacy">privacy</Link> page in the very act of
+              measuring whether anyone reads it.
+            </p>
+            <p>
+              So the measurement comes from the one record the server
+              already keeps: its own access log.{" "}
+              <a href="https://goaccess.io">GoAccess</a> reads
+              Caddy&rsquo;s log on the same box and produces aggregate
+              figures &mdash; popular pages, referrers, browsers. There is
+              no client-side script, no cookie, no third party, and
+              therefore no consent banner, because there is nothing about
+              you to consent to. The visitor&rsquo;s IP address is masked
+              at the moment of logging &mdash; Caddy drops the last octet
+              before the line is written, so a complete address is never
+              stored &mdash; the raw logs are short-lived and rotate away
+              within days, and only the non-identifying aggregates
+              persist. Crawlers and link-prefetch requests are filtered
+              out, so the numbers reflect people, not bots.
+            </p>
+            <p>
+              What this deliberately <em>cannot</em> do is tell me{" "}
+              <em>who</em> visited. Naming the company or person behind a
+              visit means reverse-IP matching against data brokers
+              &mdash; the exact surveillance move the rest of the site
+              rejects &mdash; so it isn&rsquo;t done. The numbers say what
+              resonates and where it travelled; the people who want to be
+              found identify themselves, through{" "}
+              <Link href="/work">Work</Link> and{" "}
+              <Link href="/contact">Contact</Link>. An accessibility
+              practitioner who audits other people&rsquo;s tracking can
+              hardly run the surveillance kind on their own front page;
+              the analytics here are meant to be as legible and as honest
+              as everything else on the box.
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
             <h2>Layout</h2>
             <p>
               The layout system is{" "}
