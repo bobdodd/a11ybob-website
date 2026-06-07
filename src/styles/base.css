@@ -104,6 +104,16 @@ a :where(p, h1, h2, h3, h4, h5, h6, li, blockquote, figcaption) {
   white-space: normal;
 }
 
+/* Same idea for the link that LEADS a list item — it acts as the item's
+   title/primary link (e.g. the Frameworks list on /research, the maps
+   "reading on" lists, where each item is "Link — description"). Only the
+   leading link wraps; a genuine inline phrase link later in the item's prose
+   (e.g. a "W4A 2008" citation link) keeps the nowrap above and stays one
+   phrase. */
+li > a:first-child {
+  white-space: normal;
+}
+
 a:hover,
 a:focus-visible {
   text-decoration-thickness: 2px;
