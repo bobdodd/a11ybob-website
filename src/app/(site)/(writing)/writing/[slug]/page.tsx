@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { CSSProperties } from "react";
+import type { Metadata } from "next";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import {
@@ -8,8 +9,27 @@ import {
   getArticleHighlights,
   injectHighlightMarks,
 } from "@/lib/articles";
+import { NewTabLink } from "@/components/NewTabLink";
 
 export const dynamic = "force-dynamic";
+
+const BASE = "https://a11ybob.com";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const article = await getArticleBySlug(slug);
+  if (!article) return {};
+  // Self-canonical (good SEO; for reposts it declares a11ybob the primary
+  // over the LinkedIn copy).
+  return {
+    title: article.title,
+    alternates: { canonical: `${BASE}/writing/${slug}` },
+  };
+}
 
 type Search = { q?: string };
 
@@ -91,6 +111,21 @@ export default async function Article({
                 )}
               </h1>
             </header>
+          )}
+
+          {article.originUrl && (
+            <p className="muted">
+              <small>
+                Originally shared on{" "}
+                <NewTabLink href={article.originUrl}>
+                  {article.originLabel ?? "LinkedIn"}
+                </NewTabLink>
+                {article.publishedAt
+                  ? `, ${new Date(article.publishedAt).toISOString().slice(0, 10)}`
+                  : ""}
+                .
+              </small>
+            </p>
           )}
 
           <div className="prose">

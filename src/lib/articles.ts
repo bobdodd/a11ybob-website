@@ -21,6 +21,10 @@ export type Article = {
   currentVersionId?: string;
   createdAt: Date;
   updatedAt: Date;
+  /** If the piece was first published elsewhere (e.g. LinkedIn). a11ybob.com
+   *  stays the canonical home; the reader shows a visible origin credit. */
+  originUrl?: string;
+  originLabel?: string;
 };
 
 export type ArticleVersion = {
@@ -329,5 +333,7 @@ function serialiseArticle(doc: Record<string, unknown>): Article {
       : undefined,
     createdAt: doc.createdAt as Date,
     updatedAt: doc.updatedAt as Date,
+    originUrl: doc.originUrl as string | undefined,
+    originLabel: doc.originLabel as string | undefined,
   };
 }
