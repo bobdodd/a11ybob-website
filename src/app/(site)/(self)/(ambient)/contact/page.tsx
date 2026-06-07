@@ -11,7 +11,7 @@ export default function Contact() {
             or anything that needs a considered reply.
           </p>
           <p>
-            <a href="mailto:bobdodd@gmail.com">bobdodd@gmail.com</a>
+            <a href="mailto:bob@a11ybob.com">bob@a11ybob.com</a>
           </p>
           <ul
             className="cluster list-flat"
