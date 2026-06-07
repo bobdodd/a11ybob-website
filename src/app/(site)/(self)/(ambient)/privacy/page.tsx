@@ -12,14 +12,18 @@ export default function Privacy() {
           >
             <h1>Privacy</h1>
             <p className="muted">
-              <small>Last reviewed: 2026-05-05.</small>
+              <small>Last reviewed: 2026-06-07.</small>
             </p>
           </header>
 
           <p className="lede">
-            This site does not track you. There is no analytics. There are
-            no advertising trackers. There are no third-party scripts that
-            phone home with your behaviour.
+            This site does not track you across the web. There are no
+            advertising trackers, no third-party analytics, no cookies, and
+            nothing running in your browser that reports on your behaviour.
+            What the site keeps — like every web server — is a short-lived
+            log of the requests it receives, with your IP address masked
+            before it is written to disk; from those logs I derive aggregate,
+            non-identifying statistics. The detail is below.
           </p>
 
           <section
@@ -29,10 +33,12 @@ export default function Privacy() {
             <h2>Cookies</h2>
             <p>
               The site sets no cookies for identification, personalisation,
-              or analytics. If a cookie ever becomes necessary for a
-              specific feature (a future content-management surface, for
-              example, would need a session cookie for login), it will be
-              listed here and limited to the surface that requires it.
+              or analytics — so there is no cookie banner to dismiss, because
+              there is nothing to consent to. If a cookie ever becomes
+              necessary for a specific feature (a future content-management
+              surface, for example, would need a session cookie for login),
+              it will be listed here and limited to the surface that requires
+              it.
             </p>
           </section>
 
@@ -42,11 +48,19 @@ export default function Privacy() {
           >
             <h2>Server logs</h2>
             <p>
-              The web server keeps short-lived operational logs (request
-              method, path, response status, user-agent string) for
-              debugging and abuse-mitigation purposes. These logs are not
-              correlated with anything else, are not shared with any
-              third party, and are rotated regularly.
+              The web server records each request it receives — the method,
+              path, response status, and browser user-agent string — with
+              your IP address masked at the point of logging: the last part
+              of the address is dropped before anything is written to disk, so
+              a complete IP is never stored. These raw logs are kept
+              short-lived and rotated regularly (a few days at most). From
+              them I produce aggregate, non-identifying statistics — which
+              pages are read, and which sites people arrive from — to
+              understand what is useful here and to gauge potential consulting
+              or employment interest. Those aggregate figures contain no
+              personal data and are never tied back to an individual. The logs
+              are processed on this same server in the EU, shared with no
+              third party, and deleted on rotation.
             </p>
           </section>
 
