@@ -57,6 +57,7 @@ const STATIC_PATHS = [
   "tools",
   "work",
   "writing",
+  "writing/research-essays",
   "writing/experience",
   "writing/glossary",
   "writing/reviews",
@@ -82,7 +83,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     for (const article of await listPublishedArticles()) {
       entries.push({
-        url: `${BASE}/writing/${article.slug}`,
+        url: `${BASE}/writing/research-essays/${article.slug}`,
         lastModified: article.updatedAt,
       });
     }

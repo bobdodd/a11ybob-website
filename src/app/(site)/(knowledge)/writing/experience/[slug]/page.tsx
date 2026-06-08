@@ -6,6 +6,7 @@ import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import { getExperienceBySlug } from "@/lib/experiences";
 import { NewTabLink } from "@/components/NewTabLink";
+import { WritingSubNav } from "@/components/WritingSubNav";
 
 export const dynamic = "force-dynamic";
 
@@ -53,10 +54,12 @@ export default async function ExperiencePiece({
   return (
     <main id="main" className="site-main">
       <div className="center">
-        <article
-          className="stack"
-          style={{ "--space": "var(--s2)" } as CSSProperties}
-        >
+        <div className="stack" style={{ "--space": "var(--s2)" } as CSSProperties}>
+          <WritingSubNav />
+          <article
+            className="stack"
+            style={{ "--space": "var(--s2)" } as CSSProperties}
+          >
           <p>
             <small>
               <Link
@@ -113,7 +116,8 @@ export default async function ExperiencePiece({
               </p>
             </footer>
           )}
-        </article>
+          </article>
+        </div>
       </div>
     </main>
   );

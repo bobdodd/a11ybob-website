@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { CSSProperties } from "react";
 import { getReviewById } from "@/lib/reviews";
+import { WritingSubNav } from "@/components/WritingSubNav";
 
 export const dynamic = "force-dynamic";
 
@@ -18,6 +19,7 @@ export default async function ReviewPage({
     <main id="main" className="site-main">
       <div className="center">
         <div className="stack" style={{ "--space": "var(--s2)" } as CSSProperties}>
+          <WritingSubNav />
           <p>
             <small>
               <Link href="/writing/reviews">← All reviews</Link>

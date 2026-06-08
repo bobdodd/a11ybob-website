@@ -32,7 +32,8 @@ export default function NotFound() {
                   <Link href="/">Home</Link>
                 </li>
                 <li>
-                  <Link href="/writing">Writing</Link> — long-form essays
+                  <Link href="/writing">Writing</Link> — essays, experience,
+                  reviews, and a glossary
                 </li>
                 <li>
                   <Link href="/about">About</Link> — the 50-year arc

@@ -37,10 +37,10 @@ export async function GET(req: NextRequest) {
   const allGroups: Group[] = [
     {
       corpus: "articles",
-      label: "Articles",
+      label: "Research essays",
       items: articles.map((o) => ({
         text: (o._source.title as string) ?? o.text,
-        href: `/writing/${o._source.slug as string}`,
+        href: `/writing/research-essays/${o._source.slug as string}`,
       })),
     },
     {

@@ -15,6 +15,7 @@ import {
   ReviewResultCard,
   GlossaryResultCard,
 } from "@/components/ResultCards";
+import { WritingSubNav } from "@/components/WritingSubNav";
 
 export const dynamic = "force-dynamic";
 
@@ -72,19 +73,12 @@ export default async function Glossary({
     <main id="main" className="site-main">
       <div className="center" style={{ "--max": "min(80rem, 100%)" } as CSSProperties}>
         <div className="stack" style={{ "--space": "var(--s2)" } as CSSProperties}>
+          <WritingSubNav />
+
           <header
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
-            <p>
-              <small>
-                <Link href="/writing">← Writing</Link>
-                {" · "}
-                <Link href="/writing/experience">Experience</Link>
-                {" · "}
-                <Link href="/writing/reviews">Reviews →</Link>
-              </small>
-            </p>
             <h1>Glossary</h1>
             <p className="lede">
               Terms used in accessibility research and practice. Each entry
@@ -107,7 +101,7 @@ export default async function Glossary({
               },
               {
                 name: "articles",
-                label: "+ Articles",
+                label: "+ Research essays",
                 checked: includeArticles,
                 href: q ? toggleHref(baseUrl, "articles") : undefined,
               },
@@ -160,7 +154,7 @@ export default async function Glossary({
                         },
                         articlesExtra && {
                           total: articlesExtra.total,
-                          noun: "article",
+                          noun: "research essay",
                         },
                         reviewsExtra && {
                           total: reviewsExtra.total,
@@ -263,7 +257,7 @@ export default async function Glossary({
                 <details className="extra-section" open>
                   <summary>
                     <h2>
-                      Articles · {articlesExtra.total === 0 ? "no matches" : `${articlesExtra.total} match${articlesExtra.total === 1 ? "" : "es"}`}
+                      Research essays · {articlesExtra.total === 0 ? "no matches" : `${articlesExtra.total} match${articlesExtra.total === 1 ? "" : "es"}`}
                     </h2>
                   </summary>
                   {articlesExtra.hits.length > 0 && (
@@ -278,8 +272,8 @@ export default async function Glossary({
                   )}
                   {articlesExtra.total > articlesExtra.hits.length && (
                     <p>
-                      <Link href={`/writing?q=${encodeURIComponent(q!)}`}>
-                        See all {articlesExtra.total} matching articles →
+                      <Link href={`/writing/research-essays?q=${encodeURIComponent(q!)}`}>
+                        See all {articlesExtra.total} matching research essays →
                       </Link>
                     </p>
                   )}

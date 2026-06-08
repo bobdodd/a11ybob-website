@@ -35,8 +35,8 @@ export function ArticleResultCard({
 }) {
   const searching = Boolean(q);
   const articleHref = q
-    ? `/writing/${hit.slug}?q=${encodeURIComponent(q)}`
-    : `/writing/${hit.slug}`;
+    ? `/writing/research-essays/${hit.slug}?q=${encodeURIComponent(q)}`
+    : `/writing/research-essays/${hit.slug}`;
   const titleHtml =
     searching && hit.highlights.title?.[0]
       ? renderSnippet(hit.highlights.title[0])

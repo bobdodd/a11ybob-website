@@ -15,6 +15,7 @@ import {
   ReviewResultCard,
   GlossaryResultCard,
 } from "@/components/ResultCards";
+import { WritingSubNav } from "@/components/WritingSubNav";
 
 export const dynamic = "force-dynamic";
 
@@ -71,19 +72,12 @@ export default async function Reading({
     <main id="main" className="site-main">
       <div className="center" style={{ "--max": "min(80rem, 100%)" } as CSSProperties}>
         <div className="stack" style={{ "--space": "var(--s2)" } as CSSProperties}>
+          <WritingSubNav />
+
           <header
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
-            <p>
-              <small>
-                <Link href="/writing">← Writing</Link>
-                {" · "}
-                <Link href="/writing/experience">Experience</Link>
-                {" · "}
-                <Link href="/writing/glossary">Glossary →</Link>
-              </small>
-            </p>
             <h1>Reviews</h1>
             <p className="lede">
               The literature-review database. Every paper Bob has
@@ -107,7 +101,7 @@ export default async function Reading({
               },
               {
                 name: "articles",
-                label: "+ Articles",
+                label: "+ Research essays",
                 checked: includeArticles,
                 href: q ? toggleHref(baseUrl, "articles") : undefined,
               },
@@ -133,7 +127,7 @@ export default async function Reading({
                         },
                         articlesExtra && {
                           total: articlesExtra.total,
-                          noun: "article",
+                          noun: "research essay",
                         },
                         glossaryExtra && {
                           total: glossaryExtra.total,
@@ -247,7 +241,7 @@ export default async function Reading({
                 <details className="extra-section" open>
                   <summary>
                     <h2>
-                      Articles · {articlesExtra.total === 0 ? "no matches" : `${articlesExtra.total} match${articlesExtra.total === 1 ? "" : "es"}`}
+                      Research essays · {articlesExtra.total === 0 ? "no matches" : `${articlesExtra.total} match${articlesExtra.total === 1 ? "" : "es"}`}
                     </h2>
                   </summary>
                   {articlesExtra.hits.length > 0 && (
@@ -262,8 +256,8 @@ export default async function Reading({
                   )}
                   {articlesExtra.total > articlesExtra.hits.length && (
                     <p>
-                      <Link href={`/writing?q=${encodeURIComponent(q!)}`}>
-                        See all {articlesExtra.total} matching articles →
+                      <Link href={`/writing/research-essays?q=${encodeURIComponent(q!)}`}>
+                        See all {articlesExtra.total} matching research essays →
                       </Link>
                     </p>
                   )}

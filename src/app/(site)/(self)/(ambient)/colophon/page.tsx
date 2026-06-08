@@ -474,7 +474,8 @@ export default function Colophon() {
             <h2>Search-result highlighting carries through to the article</h2>
             <p>
               When you click a result on{" "}
-              <a href="/writing">/writing</a>, the matched terms are
+              <a href="/writing/research-essays">/writing/research-essays</a>,
+              the matched terms are
               highlighted (using the semantic <code>&lt;mark&gt;</code>{" "}
               element) wherever they appear in the article body. The
               highlights aren&rsquo;t a naive client-side substring match
