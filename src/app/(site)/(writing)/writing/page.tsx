@@ -48,9 +48,9 @@ export default function Writing() {
           >
             <h2 id="writing-experience-heading">Experience</h2>
             <p>
-              Shorter, first-person pieces &mdash; field notes and experience
-              reports, including writing first shared elsewhere and brought
-              home here.
+              First-person writing &mdash; field notes, experience reports, and
+              longer LinkedIn-style posts, including pieces first shared
+              elsewhere and brought home here.
             </p>
             <p>
               <Link href="/writing/experience">

@@ -19,8 +19,13 @@ export default function Home() {
             </p>
             <p>
               Bob Dodd. Currently Head of Accessibility at CNIB Access Labs in
-              Toronto. Author of long-form synthesis articles drawing on{" "}
-              <Link href="/writing">2,661 reviewed accessibility papers</Link>.
+              Toronto. Author of long-form{" "}
+              <Link href="/writing/research-essays">research essays</Link> drawing
+              on{" "}
+              <Link href="/writing/reviews">
+                2,662 reviewed accessibility papers
+              </Link>
+              .
               Author of the{" "}
               <Link href="/research/cisna-model">
                 CISNA Model of Accessible Adaptive Hypermedia
@@ -44,8 +49,9 @@ export default function Home() {
             <Link href="/writing" className="door">
               <h2>Read the writing</h2>
               <p>
-                Long-form essays grounded in the published research, with
-                citations back to the underlying evidence.
+                Research essays grounded in the published research, plus
+                first-person experience, a database of reviewed papers, and a
+                glossary.
               </p>
             </Link>
             <Link href="/research" className="door">

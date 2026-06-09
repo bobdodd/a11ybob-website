@@ -75,9 +75,9 @@ export default async function Experience({
           >
             <h1>Experience</h1>
             <p className="lede">
-              Shorter, first-person pieces — field notes and experience
-              reports, including writing first shared elsewhere and brought
-              home here. The long-form essays live under{" "}
+              First-person writing — field notes, experience reports, and longer
+              LinkedIn-style posts, including pieces first shared elsewhere and
+              brought home here. The cited, research-grounded essays live under{" "}
               <Link href="/writing/research-essays">Research essays</Link>.
             </p>
           </header>
