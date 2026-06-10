@@ -105,8 +105,9 @@ about.columns = [{ width: 104 }];
 about.addRows([
   ["a11ybob.com — page visits"],
   [`Generated ${stamp}`],
-  ["Cumulative visit counts since the analytics baseline (2026-06-08), surviving log rotation."],
-  ["Aggregate page counts only — no IP addresses, no individuals. Known crawlers/bots are excluded."],
+  ["Engaged human visitors only: counts visitors who loaded page assets (CSS/JS/images). HTML-only traffic — bots with browser-like user-agents — is excluded."],
+  ["Rolling window of the retained access logs (about 7 days)."],
+  ["Aggregate page counts only — no IP addresses, no individuals."],
   ["Counts include full page loads and in-app navigations; query strings are merged into the page path."],
   ["CMS pages (reviews, research essays, glossary, experience) are resolved to their titles."],
   ['"Visits" = total requests to the page. "Unique visitors" = distinct visitors for that page (summed across URL variants, so a slight over-count where a page has query-string variants).'],
