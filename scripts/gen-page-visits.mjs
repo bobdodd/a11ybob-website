@@ -42,13 +42,17 @@ const MONGODB_DB = process.env.MONGODB_DB || envLocal("MONGODB_DB") || "a11y_par
 const ga = JSON.parse(fs.readFileSync(REPORT, "utf8"));
 const reqPanel = Array.isArray(ga.requests) ? ga.requests : (ga.requests?.data ?? []);
 
-const counts = new Map(); // path -> visits
+const counts = new Map(); // path -> { visits, uniq }
 for (const row of reqPanel) {
   const raw = typeof row?.data === "string" ? row.data : null;
   if (!raw) continue;
   const p = raw.split("?")[0].split("#")[0];
   const hits = typeof row.hits === "object" ? row.hits?.count : row.hits;
-  counts.set(p, (counts.get(p) || 0) + Number(hits || 0));
+  const vis = typeof row.visitors === "object" ? row.visitors?.count : row.visitors;
+  const cur = counts.get(p) || { visits: 0, uniq: 0 };
+  cur.visits += Number(hits || 0);
+  cur.uniq += Number(vis || 0);
+  counts.set(p, cur);
 }
 
 // --- load CMS title maps from Mongo ---
@@ -85,9 +89,9 @@ function classify(p) {
 }
 
 const rows = [...counts.entries()]
-  .map(([p, visits]) => {
+  .map(([p, c0]) => {
     const c = classify(p);
-    return { path: p, type: c.type, title: c.title, visits };
+    return { path: p, type: c.type, title: c.title, visits: c0.visits, uniq: c0.uniq };
   })
   .sort((a, b) => b.visits - a.visits);
 
@@ -105,6 +109,8 @@ about.addRows([
   ["Aggregate page counts only — no IP addresses, no individuals. Known crawlers/bots are excluded."],
   ["Counts include full page loads and in-app navigations; query strings are merged into the page path."],
   ["CMS pages (reviews, research essays, glossary, experience) are resolved to their titles."],
+  ['"Visits" = total requests to the page. "Unique visitors" = distinct visitors for that page (summed across URL variants, so a slight over-count where a page has query-string variants).'],
+  ["Site-wide unique visitors are fewer than the sum of the per-page column, since one visitor counts toward every page they view."],
 ]);
 about.getRow(1).font = { bold: true, size: 14 };
 
@@ -112,15 +118,17 @@ function sheet(name, items, withType) {
   const ws = wb.addWorksheet(name);
   ws.columns = withType
     ? [
-        { header: "Path", key: "path", width: 52 },
-        { header: "Type", key: "type", width: 16 },
-        { header: "Title", key: "title", width: 60 },
+        { header: "Path", key: "path", width: 50 },
+        { header: "Type", key: "type", width: 15 },
+        { header: "Title", key: "title", width: 58 },
         { header: "Visits", key: "visits", width: 9 },
+        { header: "Unique visitors", key: "uniq", width: 16 },
       ]
     : [
-        { header: "Title", key: "title", width: 60 },
-        { header: "Path", key: "path", width: 52 },
+        { header: "Title", key: "title", width: 58 },
+        { header: "Path", key: "path", width: 50 },
         { header: "Visits", key: "visits", width: 9 },
+        { header: "Unique visitors", key: "uniq", width: 16 },
       ];
   ws.getRow(1).font = { bold: true };
   ws.views = [{ state: "frozen", ySplit: 1 }];
