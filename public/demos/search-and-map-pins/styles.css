@@ -164,7 +164,7 @@ a.skip-to-content:hover {
     min-width: 42em;
 }
 
-#grovesHero {
+#elmsHero {
     background-image: url(./commons.jpg);
     background-size: cover;
     background-clip: padding-box;
@@ -214,7 +214,7 @@ a.skip-to-content:hover {
     font-size:small;
 }
 
-#learnMoreAboutTheGroves {
+#learnMoreAboutTheElms {
     background-color: transparent;
     border: 1px solid white;
     padding-top: 0.5em;
@@ -225,8 +225,8 @@ a.skip-to-content:hover {
     margin-left: 2em;
 }
 
-#learnMoreAboutTheGroves:focus,
-#learnMoreAboutTheGroves:hover {
+#learnMoreAboutTheElms:focus,
+#learnMoreAboutTheElms:hover {
     color: black;
     background-color: white;
     outline-color: white;
@@ -493,10 +493,10 @@ div.moveIn,
 .lot28,
 .lot32,
 .king,
-.borregos,
+.laws,
 .marketplace,
 .ymca,
-.whittierUnionHS,
-.whittierHS {
+.jamesUnionHS,
+.jamesHS {
 	display:none;
 }
