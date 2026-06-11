@@ -31,7 +31,7 @@ export default function Home() {
                 CISNA Model of Accessible Adaptive Hypermedia
               </Link>
               . Designer of <Link href="/paradise">Paradise</Link>, a
-              multi-model accessibility analyser that reasons about
+              model-driven accessibility analyser that reasons about
               JavaScript runtime behaviour at the source level.
             </p>
           </header>

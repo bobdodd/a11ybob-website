@@ -17,15 +17,30 @@ export default function Paradise() {
           >
             <h1>Paradise</h1>
             <p className="lede">
-              A multi-model accessibility analyser for HTML, JavaScript, and
-              CSS. It reasons about all three at once, in source, before the
-              page renders — so it catches issues that single-file linters
-              miss and reports issues that rendered-DOM scanners can&rsquo;t
-              tell from intentional behaviour.
+              Paradise reads a web page in source — HTML, JavaScript, and CSS
+              together — and reasons about how it will <em>behave</em>, before
+              it renders. Underneath sits a particular stance: source code is a
+              projection of an executable model of behaviour, and accessibility
+              is a property you verify against that model — not a checklist you
+              apply to the code. Most tooling asks{" "}
+              <em>is this attribute present?</em> Paradise is built to ask{" "}
+              <em>what can a user do here, and where does that break down?</em>
             </p>
             <p>
-              The intermediate representation (IR) it builds,{" "}
-              <strong>ActionLanguage</strong>, descends from doctoral
+              What ships today is the first and simplest application of that
+              idea: a multi-model analyser. It parses HTML, JavaScript, and CSS
+              into one integrated model and runs fourteen analysers over it —
+              catching issues single-file linters miss and ones rendered-DOM
+              scanners can&rsquo;t tell from intentional behaviour, with a
+              measured 88% fewer false positives than axe and eslint-jsx-a11y
+              on the test corpus.
+            </p>
+            <p>
+              The model it <em>populates</em>,{" "}
+              <strong>ActionLanguage</strong>, is a model in its own right: its
+              action semantics, relationships, and state models are explicit
+              and complete, an <em>architecture domain</em> in the
+              Shlaer-Mellor sense. It descends from doctoral
               work on adaptive user interfaces — published in the{" "}
               <a href="https://doi.org/10.1145/1368044.1368052">
                 W4A 2008
@@ -152,6 +167,58 @@ export default function Paradise() {
               diagnostics, but abstract enough that two
               semantically-equivalent JavaScript fragments collapse to
               the same tree.
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
+            <h2>The bigger idea: accessibility as behavioural verification</h2>
+            <p>
+              The analyser is the visible part. The architecture underneath is
+              model-driven engineering — specifically Shlaer-Mellor, the
+              original executable-modelling method, where a system is a set of
+              formal domains joined by explicit <em>counterpart mappings</em>{" "}
+              and behaviour is modelled as precisely as data. In that frame
+              ActionLanguage is the behavioural architecture domain that the
+              CISNA accessibility domains map into — many-to-many, across the
+              Shlaer-Mellor bridges; remediation becomes a{" "}
+              <em>transformation of the model</em>, not a patch to the text;
+              and a model that executes can be <em>simulated</em>.
+            </p>
+            <p>
+              Simulation is what would make this different in kind, not degree.
+              Today&rsquo;s tools work at three levels — static rules, runtime
+              inspection (axe, the accessibility tree), and human testing. A
+              simulable model adds a fourth: run a <em>capability model</em> —
+              a keyboard-only user, a switch user, a screen-reader user —
+              against the behavioural model and ask whether they can ever reach
+              a state where focus is trapped, an announcement never fires, or a
+              control becomes unreachable. That is behavioural verification —
+              the posture safety-critical engineering takes — and it is how the
+              older idea of <em>intrinsic</em> accessibility becomes something
+              you can actually check.
+            </p>
+            <p>
+              It also meets current AI research from an unusual direction. Most
+              AI code-remediation treats source text as primary and infers
+              behaviour, or skips the model and rewrites the text — producing
+              diffs no one can verify. This architecture inverts that: the model
+              is primary, the code is a projection, and the counterpart-mapping
+              chain gives remediation what AI rewriting lacks —{" "}
+              <em>traceability</em>, and verification by re-simulation. In the
+              clean theory the model is populated by counterpart mapping across
+              the bridges; in the implementation the harder, more opaque step is
+              the <em>lift</em> — recovering a faithful behavioural model from
+              real-world JavaScript, and verifying that it is faithful. That is
+              the open problem, and where the research edge sits.
+            </p>
+            <p className="muted">
+              Most of this section describes the architecture&rsquo;s reach and
+              trajectory, not shipped features. What ships today is the analyser
+              and its suggested fixes; simulation and model-level adaptation are
+              where the platform is going.
             </p>
           </section>
 
