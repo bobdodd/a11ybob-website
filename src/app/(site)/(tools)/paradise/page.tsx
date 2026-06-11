@@ -36,11 +36,17 @@ export default function Paradise() {
               on the test corpus.
             </p>
             <p>
-              The model it <em>populates</em>,{" "}
-              <strong>ActionLanguage</strong>, is a model in its own right: its
-              action semantics, relationships, and state models are explicit
-              and complete, an <em>architecture domain</em> in the
-              Shlaer-Mellor sense. It descends from doctoral
+              In this application <strong>ActionLanguage</strong> acts as a
+              kind of intermediate representation — a structured form of the
+              program that is easier to reason about than raw source, the
+              familiar role an IR plays. But it is not an IR Paradise builds on
+              the fly. Its action semantics, relationships, and state models
+              are explicit and complete: it is a model in its own right — an{" "}
+              <em>architecture domain</em> in the Shlaer-Mellor sense — that
+              Paradise <em>populates</em>.
+            </p>
+            <p>
+              It descends from doctoral
               work on adaptive user interfaces — published in the{" "}
               <a href="https://doi.org/10.1145/1368044.1368052">
                 W4A 2008
