@@ -787,7 +787,22 @@
                     wireControl("southControl", controlsPanSouth);
                     wireControl("eastControl", controlsPanEast);
                     wireControl("westControl", controlsPanWest);
-                    updateControlStates();
+                    updateControlStates(); // captures mapExtent (full map)
+
+                    // Start slightly zoomed in (~70% of the map extent) so the
+                    // compass pan/zoom controls are usable from the outset: at
+                    // full extent the view sits against every edge at once, so
+                    // all pans and zoom-out begin disabled. mapExtent stays the
+                    // true full map, so edge logic remains correct.
+                    (function initialView() {
+                        const vb = getMapViewBox();
+                        vb.w = mapExtent.w * 0.7;
+                        vb.h = mapExtent.h * 0.7;
+                        vb.x = 500; // frames the development; all edges interior
+                        vb.y = 100;
+                        setMapViewBox(clampMapViewBox(vb));
+                    })();
+
                     // keep the compass pinned through window changes too
                     window.addEventListener("resize", updateControlStates);
                     window.addEventListener("scroll", updateControlStates, { passive: true });
