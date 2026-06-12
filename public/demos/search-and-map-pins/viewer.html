@@ -406,9 +406,6 @@
 				  function controlsZoomIn(evt) {
 					const f = 0.95;
 					anchorZoom(f, null);
-					for (let i=0; i<pins.length; i++) {
-						pins[i].scale(f);
-					}
 					if (evt && evt.preventDefault) evt.preventDefault();
 				  }
 
@@ -420,9 +417,6 @@
 					const f = Math.min(1.05, mapExtent.w / vb.w, mapExtent.h / vb.h);
 					if (f <= 1.0001) { updateControlStates(); return; }
 					anchorZoom(f, null);
-					for (let i=0; i<pins.length; i++) {
-						pins[i].scale(f);
-					}
 				  }
 
 				  // Scale the viewBox by factor f about an anchor point: the pointer
@@ -522,6 +516,7 @@
 					set("westControl", vb.x <= mapExtent.x + eps);
 					set("eastControl", vb.x + vb.w >= mapExtent.x + mapExtent.w - eps);
 					set("zoomOutControl", vb.w >= mapExtent.w - eps && vb.h >= mapExtent.h - eps);
+					const sc = vb.w / mapExtent.w;
 					// Pin the compass to the visible top-left of the map viewport at
 					// constant on-screen size. The SVG renders full-size and is clipped
 					// by the page window, with the left panel overlaying its left edge —
@@ -538,8 +533,18 @@
 						pt.x = Math.max(svgRect.left, panelRight) + MARGIN;
 						pt.y = Math.max(svgRect.top, 0) + MARGIN;
 						const p0 = pt.matrixTransform(ctm.inverse());
-						const sc = vb.w / mapExtent.w;
 						g.setAttribute("transform", "translate(" + (p0.x - sc * controlsOrigin.x) + " " + (p0.y - sc * controlsOrigin.y) + ") scale(" + sc + ")");
+					}
+					// Map pins move with the map but keep a constant on-screen size:
+					// each pin group is counter-scaled about its tip (this.x, this.y),
+					// so the point of the pin stays nailed to its map location.
+					if (typeof pins !== "undefined") {
+						for (let i = 0; i < pins.length; i++) {
+							const p = pins[i];
+							if (p && p.pin && typeof p.x === "number") {
+								p.pin.setAttribute("transform", "translate(" + ((1 - sc) * p.x) + " " + ((1 - sc) * p.y) + ") scale(" + sc + ")");
+							}
+						}
 					}
 				  }
 
@@ -1158,18 +1163,12 @@
                       const up = (typeof evt.wheelDeltaY === "number" ? evt.wheelDeltaY : -evt.deltaY) > 0;
                       if (up) {
                           anchorZoom(0.95, evt);
-                          for (let i=0; i<pins.length; i++) {
-                              pins[i].scale(0.95);
-                          }
                       } else {
                           const vb = getMapViewBox();
                           // cap zoom-out at the full map extent (no whitespace)
                           const f = Math.min(1.05, mapExtent.w / vb.w, mapExtent.h / vb.h);
                           if (f > 1.0001) {
                               anchorZoom(f, evt);
-                              for (let i=0; i<pins.length; i++) {
-                                  pins[i].scale(f);
-                              }
                           }
                       }
                       evt.preventDefault();
