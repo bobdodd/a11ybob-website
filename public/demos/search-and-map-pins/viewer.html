@@ -21,7 +21,7 @@
                             </g>
                         </svg>
                     </label>
-                    <input id="searchBox" role="searchbox" type="text" name="searchBox" autocomplete="on" placeholder="california, united states" />
+                    <input id="searchBox" role="searchbox" type="text" name="searchBox" autocomplete="on" placeholder="toronto, canada" />
                     <button id="searchButton" type="button" aria-label="begin search">
                         <svg role="presentation" focusable="false" width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <g id="search icon">
@@ -501,6 +501,34 @@
 				  
 				  function createMapControls(parent,x,y) {
 
+				  // Focus ring for the map controls: a copy of the arrow's
+				  // triangle, offset outward so the visible focus indicator
+				  // follows the arrow's contour (not a rectangular box) with
+				  // a 2-3px gap. Offsetting a triangle uniformly is a scale
+				  // about its incentre. Shown via CSS on g:focus.
+				  function addFocusRing(control, verts) {
+					const seg = (P,Q) => Math.hypot(Q[0]-P[0], Q[1]-P[1]);
+					const [A,B,C] = verts;
+					const a = seg(B,C), b = seg(C,A), c = seg(A,B);
+					const p = a + b + c;
+					const ix = (a*A[0] + b*B[0] + c*C[0]) / p;
+					const iy = (a*A[1] + b*B[1] + c*C[1]) / p;
+					const area = Math.abs((B[0]-A[0])*(C[1]-A[1]) - (C[0]-A[0])*(B[1]-A[1])) / 2;
+					const r = area / (p/2); // inradius
+					const k = (r + 4.5) / r; // 2-3px gap + half the ring width
+					const off = verts.map(v => [ix + k*(v[0]-ix), iy + k*(v[1]-iy)]);
+					const ring = document.createElementNS("http://www.w3.org/2000/svg","path");
+					ring.setAttribute("d", "M " + off.map(v => v[0].toFixed(1) + " " + v[1].toFixed(1)).join(" L ") + " Z");
+					ring.setAttribute("class", "focusRing");
+					ring.setAttribute("fill", "none");
+					ring.setAttribute("stroke", "#007EAB");
+					ring.setAttribute("stroke-width", "3");
+					ring.setAttribute("stroke-linejoin", "round");
+					control.appendChild(ring);
+				  }
+
+
+
 					let controls = document.createElementNS("http://www.w3.org/2000/svg","g");
 					controls.id = "mapControls";
 					controls.setAttribute("role", "none");
@@ -553,6 +581,7 @@
 					zoomInPath.setAttribute("fill", "gray");
 					zoomInPath.setAttribute("stroke", "black");
 					zoomInControl.appendChild(zoomInPath);
+					addFocusRing(zoomInControl, [[x+80,y+80],[x+120,y+80],[x+120,y+120]]);
 
 					let zoomOutControl = document.createElementNS("http://www.w3.org/2000/svg","g");
 					zoomOutControl.id = "zoomOutControl";
@@ -579,6 +608,7 @@
 					zoomOutPath.setAttribute("fill", "white");
 					zoomOutPath.setAttribute("stroke", "black");
 					zoomOutControl.appendChild(zoomOutPath);
+					addFocusRing(zoomOutControl, [[x+80,y+80],[x+80,y+120],[x+120,y+120]]);
 
 					let northControl = document.createElementNS("http://www.w3.org/2000/svg","g");
 					northControl.id = "northControl";
@@ -605,6 +635,7 @@
 					northPath.setAttribute("fill", "gray");
 					northPath.setAttribute("stroke", "black");
 					northControl.appendChild(northPath);
+					addFocusRing(northControl, [[x+80,y+70],[x+120,y+70],[x+100,y+10]]);
 
 
 					let southControl = document.createElementNS("http://www.w3.org/2000/svg","g");
@@ -632,6 +663,7 @@
 					southPath.setAttribute("fill", "gray");
 					southPath.setAttribute("stroke", "black");
 					southControl.appendChild(southPath);
+					addFocusRing(southControl, [[x+80,y+130],[x+120,y+130],[x+100,y+190]]);
 
 					let westControl = document.createElementNS("http://www.w3.org/2000/svg","g");
 					westControl.id = "westControl";
@@ -657,7 +689,8 @@
 					westPath.setAttribute("d","M " + String(x+80) + " " + String(y+80) +" m -10 0 l 0 40 l -60 -20 z");
 					westPath.setAttribute("fill", "gray");
 					westPath.setAttribute("stroke", "black");
-					controls.appendChild(westPath);
+					westControl.appendChild(westPath);
+					addFocusRing(westControl, [[x+70,y+80],[x+70,y+120],[x+10,y+100]]);
 
 					let eastControl = document.createElementNS("http://www.w3.org/2000/svg","g");
 					eastControl.id = "eastControl";
@@ -683,7 +716,8 @@
 					eastPath.setAttribute("d","M " + String(x+80) + " " + String(y+80) +" m 50 0 l 0 40 l 60 -20 z");
 					eastPath.setAttribute("fill", "gray");
 					eastPath.setAttribute("stroke", "black");
-					controls.appendChild(eastPath);
+					eastControl.appendChild(eastPath);
+					addFocusRing(eastControl, [[x+130,y+80],[x+130,y+120],[x+190,y+100]]);
 
                     document.querySelector("#zoomInControl").addEventListener("click", controlsZoomIn);
                     document.querySelector("#zoomOutControl").addEventListener("click", controlsZoomOut);

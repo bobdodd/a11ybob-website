@@ -500,3 +500,18 @@ div.moveIn,
 .jamesHS {
 	display:none;
 }
+/* Map-control focus indicator. The compass/zoom controls are SVG
+   <g role="button"> elements; browsers don't reliably draw outlines
+   around SVG containers, and a box would be wrong anyway. Each
+   control carries a .focusRing path (a contour copy of its arrow,
+   offset ~2-3px outward), revealed on focus. */
+#mapControls g:focus {
+    outline: none;
+}
+.focusRing {
+    visibility: hidden;
+    pointer-events: none;
+}
+#mapControls g:focus .focusRing {
+    visibility: visible;
+}
