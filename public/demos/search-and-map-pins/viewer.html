@@ -405,7 +405,7 @@
 				  
 				  function controlsZoomIn(evt) {
 					const f = 0.95;
-					anchorZoom(f, evt);
+					anchorZoom(f, null);
 					for (let i=0; i<pins.length; i++) {
 						pins[i].scale(f);
 					}
@@ -419,14 +419,15 @@
 					// past the map and exposes whitespace.
 					const f = Math.min(1.05, mapExtent.w / vb.w, mapExtent.h / vb.h);
 					if (f <= 1.0001) { updateControlStates(); return; }
-					anchorZoom(f, evt);
+					anchorZoom(f, null);
 					for (let i=0; i<pins.length; i++) {
 						pins[i].scale(f);
 					}
 				  }
 
 				  // Scale the viewBox by factor f about an anchor point: the pointer
-				  // position for mouse activation, the view centre for keyboard.
+				  // position when the event carries coordinates (wheel zoom), the
+				  // view centre otherwise (the zoom buttons, keyboard activation).
 				  function anchorZoom(f, evt) {
 					const vb = getMapViewBox();
 					let ax = vb.x + vb.w/2, ay = vb.y + vb.h/2;
@@ -475,6 +476,8 @@
 				  // --- map-extent plumbing for the controls ---
 				  let mapExtent = null; // the full map, captured from the initial viewBox
 
+				  let controlsOrigin = null; // design origin of the compass (createMapControls x,y)
+
 				  function getMapViewBox() {
 					const svgMap = document.querySelector("#map");
 					const p = svgMap.getAttribute("viewBox").split(/\s+|,/).map(Number);
@@ -487,6 +490,7 @@
 				  }
 
 				  function clampMapViewBox(vb) {
+					if (!mapExtent) updateControlStates();
 					if (vb.w >= mapExtent.w) { vb.w = mapExtent.w; vb.x = mapExtent.x; }
 					else vb.x = Math.min(Math.max(vb.x, mapExtent.x), mapExtent.x + mapExtent.w - vb.w);
 					if (vb.h >= mapExtent.h) { vb.h = mapExtent.h; vb.y = mapExtent.y; }
@@ -518,6 +522,25 @@
 					set("westControl", vb.x <= mapExtent.x + eps);
 					set("eastControl", vb.x + vb.w >= mapExtent.x + mapExtent.w - eps);
 					set("zoomOutControl", vb.w >= mapExtent.w - eps && vb.h >= mapExtent.h - eps);
+					// Pin the compass to the visible top-left of the map viewport at
+					// constant on-screen size. The SVG renders full-size and is clipped
+					// by the page window, with the left panel overlaying its left edge —
+					// so the pin point comes from real page geometry, converted into map
+					// coordinates via the current screen transform.
+					const g = document.querySelector("#mapControls");
+					const ctm = vb.svg.getScreenCTM && vb.svg.getScreenCTM();
+					if (g && controlsOrigin && ctm) {
+						const svgRect = vb.svg.getBoundingClientRect();
+						const panel = document.querySelector("#leftPanel");
+						const panelRight = panel ? panel.getBoundingClientRect().right : svgRect.left;
+						const MARGIN = 16; // screen px
+						const pt = vb.svg.createSVGPoint();
+						pt.x = Math.max(svgRect.left, panelRight) + MARGIN;
+						pt.y = Math.max(svgRect.top, 0) + MARGIN;
+						const p0 = pt.matrixTransform(ctm.inverse());
+						const sc = vb.w / mapExtent.w;
+						g.setAttribute("transform", "translate(" + (p0.x - sc * controlsOrigin.x) + " " + (p0.y - sc * controlsOrigin.y) + ") scale(" + sc + ")");
+					}
 				  }
 
 				  function createMapControls(parent,x,y) {
@@ -552,6 +575,7 @@
 
 					let controls = document.createElementNS("http://www.w3.org/2000/svg","g");
 					controls.id = "mapControls";
+					controlsOrigin = { x: x, y: y };
 					controls.setAttribute("role", "none");
 					controls.setAttribute("aria-labelledby", "mapControlsHeading");
 					parent.appendChild(controls);
@@ -759,6 +783,9 @@
                     wireControl("eastControl", controlsPanEast);
                     wireControl("westControl", controlsPanWest);
                     updateControlStates();
+                    // keep the compass pinned through window changes too
+                    window.addEventListener("resize", updateControlStates);
+                    window.addEventListener("scroll", updateControlStates, { passive: true });
 
 				
 				  // MapControlsAndFilters
@@ -1127,58 +1154,28 @@
 
 
                   function baseMapOnWheel(evt) {
-
-                      let svgMap = document.querySelector("#map");
-                      let pt1 = svgMap.createSVGPoint();
-                      let loc1 = cursorPoint(svgMap, pt1, evt);
-                      let box = svgMap.getAttribute('viewBox');
-                      let boxParams = box.split(/\s+|,/);
-
-                      if (evt.wheelDeltaY > 0) {
-                          // zoom in
-                          boxParams[2] *= 0.95;
-                          boxParams[3] *= 0.95;
-                          svgMap.setAttribute('viewBox', boxParams.join(' '));
-                          let pt2 = svgMap.createSVGPoint();
-                          let loc2 = cursorPoint(svgMap, pt2, evt);
-                          let dx = Math.round(loc2.x - loc1.x);
-                          let dy = Math.round(loc2.y - loc1.y);
-                          boxParams[0]= Number(boxParams[0]) - dx;
-                          boxParams[1]= Number(boxParams[1]) - dy;
-                          svgMap.setAttribute('viewBox', boxParams.join(' '));
-						  
-						  // Adjust pin size
-						  for (i=0; i<pins.length; i++) {
-							//console.log("i="+i);
-							pins[i].scale(0.95);
-						  }
-
-                          evt.preventDefault();
+                      if (!mapExtent) updateControlStates();
+                      const up = (typeof evt.wheelDeltaY === "number" ? evt.wheelDeltaY : -evt.deltaY) > 0;
+                      if (up) {
+                          anchorZoom(0.95, evt);
+                          for (let i=0; i<pins.length; i++) {
+                              pins[i].scale(0.95);
+                          }
+                      } else {
+                          const vb = getMapViewBox();
+                          // cap zoom-out at the full map extent (no whitespace)
+                          const f = Math.min(1.05, mapExtent.w / vb.w, mapExtent.h / vb.h);
+                          if (f > 1.0001) {
+                              anchorZoom(f, evt);
+                              for (let i=0; i<pins.length; i++) {
+                                  pins[i].scale(f);
+                              }
+                          }
                       }
-                      else if (evt.wheelDeltaY < 0) {
-                          // zoom in
-                          boxParams[2] *= 1.05;
-                          boxParams[3] *= 1.05;
-                          svgMap.setAttribute('viewBox', boxParams.join(' '));
-                          let pt2 = svgMap.createSVGPoint();
-                          let loc2 = cursorPoint(svgMap, pt2, evt);
-                          let dx = Math.round(loc2.x - loc1.x);
-                          let dy = Math.round(loc2.y - loc1.y);
-                          boxParams[0]= Number(boxParams[0]) - dx;
-                          boxParams[1]= Number(boxParams[1]) - dy;
-                          svgMap.setAttribute('viewBox', boxParams.join(' '));
-
-						  // Adjust pin size
-						  for (i=0; i<pins.length; i++) {
-						  console.log("i="+i);
-							pins[i].scale(1.05);
-						  }
-
-                         evt.preventDefault();
-                      }
+                      evt.preventDefault();
                   }
 
-                      function baseMapOnDrag(evt) {
+                  function baseMapOnDrag(evt) {
                               alert(" drag +=" + evt.clientX+ ", y="+evt.clientY);
                           let svgobj = evt.target;
                       }
@@ -1197,41 +1194,25 @@
                       }
 
                       function baseMapMouseMove(evt) {
-                          //alert("mouse move");
-                          let svgMap = document.querySelector("#map");
-                          let pt = svgMap.createSVGPoint();
-                          let loc = cursorPoint(svgMap, pt, evt);
-                          //console.log("Cursor point: " + loc.x + ", " + loc.y);
-                             if ((evt.buttons & 1) == 1) {
-                              console.log("drag");
-                              let svgobj = evt.target;
-                              let dx, dy;
-                              if (mouseX == null) {
-                                  console.log("x==null");
-                                  dx = 0;
-                                  dy = 0;
-                              }
-                              else {
-                                  dx = evt.clientX - mouseX;
-                                  dy = evt.clientY - mouseY;
-                              }
-                              mouseX = evt.clientX;
-                              mouseY = evt.clientY;
-                              console.log(dx + ", " + dy);
-
-                              let svgMap = document.querySelector("#map");
-                              let box = svgMap.getAttribute('viewBox');
-                              let boxParams = box.split(/\s+|,/);
-                              boxParams[0] -= dx;
-                              boxParams[1] -= dy;
-                              //console.log(dx + ", " + dy + ", " + boxParams[0] + ", " + boxParams[1]);
-                              svgMap.setAttribute('viewBox', boxParams.join(' '));
-
+                      if ((evt.buttons & 1) == 1) {
+                          let dx = 0, dy = 0;
+                          if (mouseX != null) {
+                              dx = evt.clientX - mouseX;
+                              dy = evt.clientY - mouseY;
                           }
-                          evt.preventDefault();
+                          mouseX = evt.clientX;
+                          mouseY = evt.clientY;
+                          const vb = getMapViewBox();
+                          // convert CSS-pixel deltas to map units at the current zoom
+                          const rect = vb.svg.getBoundingClientRect();
+                          vb.x -= dx * vb.w / rect.width;
+                          vb.y -= dy * vb.h / rect.height;
+                          setMapViewBox(clampMapViewBox(vb));
+                      }
+                      evt.preventDefault();
                   }
 
-                      function baseMapMouseOut(evt) {
+                  function baseMapMouseOut(evt) {
                           mouseX = null;
                           mouseY = null;
                           //alert("mouse out");
