@@ -526,12 +526,24 @@
 					const ctm = vb.svg.getScreenCTM && vb.svg.getScreenCTM();
 					if (g && controlsOrigin && ctm) {
 						const svgRect = vb.svg.getBoundingClientRect();
-						const panel = document.querySelector("#leftPanel");
-						const panelRight = panel ? panel.getBoundingClientRect().right : svgRect.left;
 						const MARGIN = 16; // screen px
+						const top = Math.max(svgRect.top, 0) + MARGIN;
+						// The left sidebar's painted content (the navy #hero panel,
+						// the listing cards) can overflow its container's box, so a
+						// single container rect under-reports the obstruction. Measure
+						// the true right edge of any sidebar element that actually
+						// overlaps the compass's vertical band instead.
+						const COMPASS_PX = 200; // constant on-screen size of the controls
+						let sidebarRight = svgRect.left;
+						document.querySelectorAll("#leftPanel, #leftPanel *").forEach((el) => {
+							const r = el.getBoundingClientRect();
+							if (r.width && r.height && r.bottom > top && r.top < top + COMPASS_PX) {
+								sidebarRight = Math.max(sidebarRight, r.right);
+							}
+						});
 						const pt = vb.svg.createSVGPoint();
-						pt.x = Math.max(svgRect.left, panelRight) + MARGIN;
-						pt.y = Math.max(svgRect.top, 0) + MARGIN;
+						pt.x = sidebarRight + MARGIN;
+						pt.y = top;
 						const p0 = pt.matrixTransform(ctm.inverse());
 						g.setAttribute("transform", "translate(" + (p0.x - sc * controlsOrigin.x) + " " + (p0.y - sc * controlsOrigin.y) + ") scale(" + sc + ")");
 					}
