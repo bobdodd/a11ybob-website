@@ -352,6 +352,8 @@
 					});
 					let lr = document.getElementById("liveRegion");
 					lr.textContent = "Lot 27 displayed on map";
+					updateControlStates(); // counter-scale the card at the current zoom
+					panDialogIntoView("lot27"); // pan so the whole card is visible
 
 				  }
 
@@ -368,6 +370,8 @@
 					});
 					let lr = document.getElementById("liveRegion");
 					lr.textContent = "Lot 28 displayed on map";
+					updateControlStates(); // counter-scale the card at the current zoom
+					panDialogIntoView("lot28"); // pan so the whole card is visible
 				  }
 				  
 
@@ -384,6 +388,8 @@
 					});
 					let lr = document.getElementById("liveRegion");
 					lr.textContent = "Lot 32 displayed on map";
+					updateControlStates(); // counter-scale the card at the current zoom
+					panDialogIntoView("lot32"); // pan so the whole card is visible
 
 				  }
 				  
@@ -558,6 +564,17 @@
 							}
 						}
 					}
+
+					// The selected-property cards (lots) are speech bubbles whose
+					// pointer apex (980, 487 in map units, shared by all of them) marks
+					// the property location. Counter-scale each about that apex so the
+					// card keeps a constant on-screen size with its point nailed to the
+					// map, exactly like the pins.
+					const LOT_APEX_X = 980, LOT_APEX_Y = 487;
+					["lot27", "lot28", "lot32"].forEach((id) => {
+						const el = document.getElementById(id);
+						if (el) el.setAttribute("transform", "translate(" + ((1 - sc) * LOT_APEX_X) + " " + ((1 - sc) * LOT_APEX_Y) + ") scale(" + sc + ")");
+					});
 				  }
 
 				  function createMapControls(parent,x,y) {
@@ -880,12 +897,21 @@
 					if (!isFinite(L)) return;
 					const vb = getMapViewBox();
 					const svgRect = vb.svg.getBoundingClientRect();
-					const panel = document.querySelector("#leftPanel");
 					const M = 16;
-					const visLeft = Math.max(svgRect.left, panel ? panel.getBoundingClientRect().right : svgRect.left) + M;
 					const visTop = Math.max(svgRect.top, 0) + M;
-					const visRight = Math.min(svgRect.right, window.innerWidth) - M;
 					const visBottom = Math.min(svgRect.bottom, window.innerHeight) - M;
+					const visRight = Math.min(svgRect.right, window.innerWidth) - M;
+					// The navy sidebar content overflows #leftPanel's box, so measure
+					// the true right edge of any sidebar element overlapping the visible
+					// height (same approach as the compass dock) rather than one box.
+					let sidebarRight = svgRect.left;
+					document.querySelectorAll("#leftPanel, #leftPanel *").forEach((el) => {
+						const r = el.getBoundingClientRect();
+						if (r.width && r.height && r.bottom > visTop && r.top < visBottom) {
+							sidebarRight = Math.max(sidebarRight, r.right);
+						}
+					});
+					const visLeft = sidebarRight + M;
 					let dx = 0, dy = 0;
 					if (R > visRight) dx = R - visRight;
 					if (L - dx < visLeft) dx = L - visLeft; // left/top edges win if it cannot all fit
