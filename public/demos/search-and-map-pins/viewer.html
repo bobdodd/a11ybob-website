@@ -806,6 +806,45 @@
 				  
 				  }
 								  
+				  				  // When a pin's info dialog opens (focus or click), pan the map the
+				  // minimum distance needed to bring the whole dialog - the revealed
+				  // class-toggled elements plus the pin itself - into the visible
+				  // viewport (right of the left panel, inside the window), clamped to
+				  // the map extent.
+				  function panDialogIntoView(pinClass) {
+					if (!pinClass) return;
+					const els = Array.from(document.getElementsByClassName(pinClass))
+						.filter((el) => el.style && el.style.display !== "none" && el.getBoundingClientRect);
+					const pinEl = document.getElementById(pinClass);
+					if (pinEl) els.push(pinEl);
+					let L = Infinity, Tp = Infinity, R = -Infinity, B = -Infinity;
+					for (const el of els) {
+						const r = el.getBoundingClientRect();
+						if (!r.width && !r.height) continue;
+						L = Math.min(L, r.left); Tp = Math.min(Tp, r.top);
+						R = Math.max(R, r.right); B = Math.max(B, r.bottom);
+					}
+					if (!isFinite(L)) return;
+					const vb = getMapViewBox();
+					const svgRect = vb.svg.getBoundingClientRect();
+					const panel = document.querySelector("#leftPanel");
+					const M = 16;
+					const visLeft = Math.max(svgRect.left, panel ? panel.getBoundingClientRect().right : svgRect.left) + M;
+					const visTop = Math.max(svgRect.top, 0) + M;
+					const visRight = Math.min(svgRect.right, window.innerWidth) - M;
+					const visBottom = Math.min(svgRect.bottom, window.innerHeight) - M;
+					let dx = 0, dy = 0;
+					if (R > visRight) dx = R - visRight;
+					if (L - dx < visLeft) dx = L - visLeft; // left/top edges win if it cannot all fit
+					if (B > visBottom) dy = B - visBottom;
+					if (Tp - dy < visTop) dy = Tp - visTop;
+					if (dx || dy) {
+						vb.x += dx * vb.w / svgRect.width;
+						vb.y += dy * vb.h / svgRect.height;
+						setMapViewBox(clampMapViewBox(vb));
+					}
+				  }
+
 				  function pinOnFocus(evt) {
 					clearAllPins();
 					evt =  window.event || evt; //window.event for IE
@@ -868,6 +907,8 @@
 
 						}
 
+
+					panDialogIntoView(pin.id);
 				  }
 				  
 				  function pinOnClick(evt) {
@@ -936,6 +977,8 @@
 								break;
 
 						}
+
+						panDialogIntoView(aS[1]);
 					}
 				  }
 				  
