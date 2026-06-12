@@ -819,6 +819,32 @@
                     window.addEventListener("resize", updateControlStates);
                     window.addEventListener("scroll", updateControlStates, { passive: true });
 
+                    // Escape closes any open map popup: the extended pin info
+                    // dialogs (via clearAllPins) and the property / search-result
+                    // cards (the .lot displays). Bound to the document so it fires
+                    // whatever currently holds focus, not just the popup element -
+                    // the Escape handler for a page-level behaviour belongs on the page.
+                    document.addEventListener("keydown", function (evt) {
+                        if (evt.key !== "Escape" && evt.key !== "Esc") return;
+                        const popupClasses = ["jamesHS", "jamesUnionHS", "king", "laws", "marketplace", "ymca", "lot"];
+                        let anyOpen = false;
+                        for (const cls of popupClasses) {
+                            const els = document.getElementsByClassName(cls);
+                            for (let i = 0; i < els.length; i++) {
+                                if (els[i].style.display === "inline") { anyOpen = true; break; }
+                            }
+                            if (anyOpen) break;
+                        }
+                        if (!anyOpen) return; // nothing open: leave Escape to its default
+                        clearAllPins();
+                        Array.from(document.getElementsByClassName("lot")).forEach(function (el) {
+                            el.style.display = "none";
+                        });
+                        const lr = document.getElementById("liveRegion");
+                        if (lr) lr.textContent = "Map popup closed";
+                        evt.preventDefault();
+                    });
+
 				
 				  // MapControlsAndFilters
 				  
