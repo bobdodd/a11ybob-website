@@ -404,101 +404,122 @@
 				  }
 				  
 				  function controlsZoomIn(evt) {
-					//alert("zoom in");
-                    let svgMap = document.querySelector("#map");
-                    let pt1 = svgMap.createSVGPoint();
-                    let loc1 = cursorPoint(svgMap, pt1, evt);
-                    let box = svgMap.getAttribute('viewBox');
-                    let boxParams = box.split(/\s+|,/);
-
-                    boxParams[2] *= 0.95;
-					boxParams[3] *= 0.95;
-					svgMap.setAttribute('viewBox', boxParams.join(' '));
-					let pt2 = svgMap.createSVGPoint();
-					let loc2 = cursorPoint(svgMap, pt2, evt);
-					let dx = Math.round(loc2.x - loc1.x);
-					let dy = Math.round(loc2.y - loc1.y);
-					boxParams[0]= Number(boxParams[0]) - dx;
-					boxParams[1]= Number(boxParams[1]) - dy;
-					svgMap.setAttribute('viewBox', boxParams.join(' '));
-				  
-					// Adjust pin size
-					for (i=0; i<pins.length; i++) {
-						//console.log("i="+i);
-						pins[i].scale(0.95);
+					const f = 0.95;
+					anchorZoom(f, evt);
+					for (let i=0; i<pins.length; i++) {
+						pins[i].scale(f);
 					}
-
-					evt.preventDefault();
+					if (evt && evt.preventDefault) evt.preventDefault();
 				  }
-				  
-				  
+
 				  function controlsZoomOut(evt) {
-					//alert("zoom out");
-
-                    let svgMap = document.querySelector("#map");
-                    let pt1 = svgMap.createSVGPoint();
-                    let loc1 = cursorPoint(svgMap, pt1, evt);
-                    let box = svgMap.getAttribute('viewBox');
-                    let boxParams = box.split(/\s+|,/);
-
-					boxParams[2] *= 1.05;
-					boxParams[3] *= 1.05;
-					svgMap.setAttribute('viewBox', boxParams.join(' '));
-					let pt2 = svgMap.createSVGPoint();
-					let loc2 = cursorPoint(svgMap, pt2, evt);
-					let dx = Math.round(loc2.x - loc1.x);
-					let dy = Math.round(loc2.y - loc1.y);
-					boxParams[0]= Number(boxParams[0]) - dx;
-					boxParams[1]= Number(boxParams[1]) - dy;
-					svgMap.setAttribute('viewBox', boxParams.join(' '));
-
-					// Adjust pin size
-					for (i=0; i<pins.length; i++) {
-						//console.log("i="+i);
-						pins[i].scale(1.05);
+					if (controlIsDisabled(evt)) return;
+					const vb = getMapViewBox();
+					// Cap zoom-out at the full map extent so the view never grows
+					// past the map and exposes whitespace.
+					const f = Math.min(1.05, mapExtent.w / vb.w, mapExtent.h / vb.h);
+					if (f <= 1.0001) { updateControlStates(); return; }
+					anchorZoom(f, evt);
+					for (let i=0; i<pins.length; i++) {
+						pins[i].scale(f);
 					}
 				  }
 
+				  // Scale the viewBox by factor f about an anchor point: the pointer
+				  // position for mouse activation, the view centre for keyboard.
+				  function anchorZoom(f, evt) {
+					const vb = getMapViewBox();
+					let ax = vb.x + vb.w/2, ay = vb.y + vb.h/2;
+					if (evt && typeof evt.clientX === "number" && (evt.clientX || evt.clientY)) {
+						const pt = vb.svg.createSVGPoint();
+						const loc = cursorPoint(vb.svg, pt, evt);
+						if (loc && isFinite(loc.x) && isFinite(loc.y)) { ax = loc.x; ay = loc.y; }
+					}
+					vb.x = ax - (ax - vb.x) * f;
+					vb.y = ay - (ay - vb.y) * f;
+					vb.w *= f;
+					vb.h *= f;
+					setMapViewBox(clampMapViewBox(vb));
+				  }
+
+				  // Pan steps are proportional (10% of the current view) and clamped
+				  // to the map extent; controls at their edge are aria-disabled.
 				  function controlsPanNorth(evt) {
-					//alert("Pan north");
-                    let svgMap = document.querySelector("#map");  
-				    let box = svgMap.getAttribute('viewBox');
-				    let boxParams = box.split(/\s+|,/);
-				    boxParams[0] -= 0;
-				    boxParams[1] += 1;
-  				    svgMap.setAttribute('viewBox', boxParams.join(' '));
+					if (controlIsDisabled(evt)) return;
+					const vb = getMapViewBox();
+					vb.y -= vb.h * 0.1;
+					setMapViewBox(clampMapViewBox(vb));
 				  }
 
 				  function controlsPanSouth(evt) {
-					//alert("Pan south");
-                    let svgMap = document.querySelector("#map");  
-				    let box = svgMap.getAttribute('viewBox');
-				    let boxParams = box.split(/\s+|,/);
-				    boxParams[0] -= 0;
-				    boxParams[1] -= 10;
-  				    svgMap.setAttribute('viewBox', boxParams.join(' '));
+					if (controlIsDisabled(evt)) return;
+					const vb = getMapViewBox();
+					vb.y += vb.h * 0.1;
+					setMapViewBox(clampMapViewBox(vb));
 				  }
 
 				  function controlsPanEast(evt) {
-					//alert("pan east");
-                    let svgMap = document.querySelector("#map");  
-				    let box = svgMap.getAttribute('viewBox');
-				    let boxParams = box.split(/\s+|,/);
-				    boxParams[0] += 1;
-				    boxParams[1] -= 0;
-  				    svgMap.setAttribute('viewBox', boxParams.join(' '));
+					if (controlIsDisabled(evt)) return;
+					const vb = getMapViewBox();
+					vb.x += vb.w * 0.1;
+					setMapViewBox(clampMapViewBox(vb));
 				  }
 
 				  function controlsPanWest(evt) {
-					//alert("pan west");
-                    let svgMap = document.querySelector("#map");  
-				    let box = svgMap.getAttribute('viewBox');
-				    let boxParams = box.split(/\s+|,/);
-				    boxParams[0] -= 10;
-				    boxParams[1] -= 0;
-  				    svgMap.setAttribute('viewBox', boxParams.join(' '));
+					if (controlIsDisabled(evt)) return;
+					const vb = getMapViewBox();
+					vb.x -= vb.w * 0.1;
+					setMapViewBox(clampMapViewBox(vb));
 				  }
-				  
+
+				  // --- map-extent plumbing for the controls ---
+				  let mapExtent = null; // the full map, captured from the initial viewBox
+
+				  function getMapViewBox() {
+					const svgMap = document.querySelector("#map");
+					const p = svgMap.getAttribute("viewBox").split(/\s+|,/).map(Number);
+					return { svg: svgMap, x: p[0], y: p[1], w: p[2], h: p[3] };
+				  }
+
+				  function setMapViewBox(vb) {
+					vb.svg.setAttribute("viewBox", vb.x + " " + vb.y + " " + vb.w + " " + vb.h);
+					updateControlStates();
+				  }
+
+				  function clampMapViewBox(vb) {
+					if (vb.w >= mapExtent.w) { vb.w = mapExtent.w; vb.x = mapExtent.x; }
+					else vb.x = Math.min(Math.max(vb.x, mapExtent.x), mapExtent.x + mapExtent.w - vb.w);
+					if (vb.h >= mapExtent.h) { vb.h = mapExtent.h; vb.y = mapExtent.y; }
+					else vb.y = Math.min(Math.max(vb.y, mapExtent.y), mapExtent.y + mapExtent.h - vb.h);
+					return vb;
+				  }
+
+				  function controlIsDisabled(evt) {
+					const g = evt && evt.currentTarget;
+					return !!(g && g.getAttribute && g.getAttribute("aria-disabled") === "true");
+				  }
+
+				  // Disable (aria-disabled + pale styling via CSS) any direction whose
+				  // edge of the map is already in view, and zoom-out at full extent.
+				  // Controls stay focusable while disabled so they remain discoverable.
+				  function updateControlStates() {
+					if (!mapExtent) {
+						const p = document.querySelector("#map").getAttribute("viewBox").split(/\s+|,/).map(Number);
+						mapExtent = { x: p[0], y: p[1], w: p[2], h: p[3] };
+					}
+					const vb = getMapViewBox();
+					const eps = 0.5;
+					const set = (id, disabled) => {
+						const c = document.querySelector("#" + id);
+						if (c) c.setAttribute("aria-disabled", disabled ? "true" : "false");
+					};
+					set("northControl", vb.y <= mapExtent.y + eps);
+					set("southControl", vb.y + vb.h >= mapExtent.y + mapExtent.h - eps);
+					set("westControl", vb.x <= mapExtent.x + eps);
+					set("eastControl", vb.x + vb.w >= mapExtent.x + mapExtent.w - eps);
+					set("zoomOutControl", vb.w >= mapExtent.w - eps && vb.h >= mapExtent.h - eps);
+				  }
+
 				  function createMapControls(parent,x,y) {
 
 				  // Focus ring for the map controls: a copy of the arrow's
@@ -719,12 +740,25 @@
 					eastControl.appendChild(eastPath);
 					addFocusRing(eastControl, [[x+130,y+80],[x+130,y+120],[x+190,y+100]]);
 
-                    document.querySelector("#zoomInControl").addEventListener("click", controlsZoomIn);
-                    document.querySelector("#zoomOutControl").addEventListener("click", controlsZoomOut);
-                    document.querySelector("#northControl").addEventListener("click", controlsPanNorth);
-                    document.querySelector("#southControl").addEventListener("click", controlsPanSouth);
-                    document.querySelector("#eastControl").addEventListener("click", controlsPanEast);
-                    document.querySelector("#westControl").addEventListener("click", controlsPanWest);
+                    // Wire each control for mouse AND keyboard (role="button" needs
+                    // Enter/Space), then set the initial enabled/disabled states.
+                    function wireControl(id, handler) {
+                        const c = document.querySelector("#" + id);
+                        c.addEventListener("click", handler);
+                        c.addEventListener("keydown", function (evt) {
+                            if (evt.key === "Enter" || evt.key === " " || evt.key === "Spacebar") {
+                                evt.preventDefault();
+                                handler(evt);
+                            }
+                        });
+                    }
+                    wireControl("zoomInControl", controlsZoomIn);
+                    wireControl("zoomOutControl", controlsZoomOut);
+                    wireControl("northControl", controlsPanNorth);
+                    wireControl("southControl", controlsPanSouth);
+                    wireControl("eastControl", controlsPanEast);
+                    wireControl("westControl", controlsPanWest);
+                    updateControlStates();
 
 				
 				  // MapControlsAndFilters

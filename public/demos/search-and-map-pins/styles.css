@@ -515,3 +515,14 @@ div.moveIn,
 #mapControls g:focus .focusRing {
     visibility: visible;
 }
+
+/* Map controls at the edge of the map (or zoom-out at full extent)
+   are aria-disabled: activation is a no-op and the arrow goes pale.
+   They stay in the tab order so they remain discoverable. */
+#mapControls g[aria-disabled="true"] {
+    cursor: default;
+}
+#mapControls g[aria-disabled="true"] path:not(.focusRing) {
+    fill: #e0e0e0;
+    stroke: #8a8a8a;
+}
