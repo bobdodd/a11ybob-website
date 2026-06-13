@@ -912,12 +912,31 @@
 						}
 					});
 					const visLeft = sidebarRight + M;
-					let dx = 0, dy = 0;
-					if (R > visRight) dx = R - visRight;
-					if (L - dx < visLeft) dx = L - visLeft; // left/top edges win if it cannot all fit
-					if (B > visBottom) dy = B - visBottom;
-					if (Tp - dy < visTop) dy = Tp - visTop;
-					if (dx || dy) {
+					const w = R - L, h = B - Tp;
+					// Target top-left, brought inside the visible region (the top
+					// or left edge wins if the card is larger than the region).
+					let tL = L, tT = Tp;
+					if (R > visRight) tL = visRight - w;
+					if (tL < visLeft) tL = visLeft;
+					if (B > visBottom) tT = visBottom - h;
+					if (tT < visTop) tT = visTop;
+					// The compass is a fixed top-left widget painted above the map.
+					// If the card would land under it, pan a little further to
+					// expose it: below the compass if it fits, else to its right.
+					// Use the compass background square (#controlsBg), not the
+					// #mapControls group - the group's box also spans the off-screen
+					// screen-reader-only heading, which would over-report the area.
+					const comp = document.querySelector("#controlsBg");
+					if (comp) {
+						const c = comp.getBoundingClientRect();
+						if (c.width && c.height && tL < c.right && tL + w > c.left && tT < c.bottom && tT + h > c.top) {
+							if (c.bottom + M + h <= visBottom) tT = c.bottom + M;
+							else if (c.right + M + w <= visRight) tL = c.right + M;
+							else tT = c.bottom + M;
+						}
+					}
+					const dx = L - tL, dy = Tp - tT;
+					if (Math.abs(dx) > 0.5 || Math.abs(dy) > 0.5) {
 						vb.x += dx * vb.w / svgRect.width;
 						vb.y += dy * vb.h / svgRect.height;
 						setMapViewBox(clampMapViewBox(vb));
@@ -1353,6 +1372,17 @@
 						  
 						  createPins(document.querySelector("#MapPins"));
 						  createMapControls(document.querySelector("#MapControlsAndFilters"), 720, 50);
+
+                    // SVG paints in document order, so the compass must be the
+                    // last child of #map to sit above the map content (pins and
+                    // the selected-property cards). Its parent has no transform,
+                    // so the CTM-based positioning in updateControlStates is
+                    // unaffected by the move.
+                    (function raiseCompass() {
+                        const map = document.querySelector("#map");
+                        const mc = document.querySelector("#mapControls");
+                        if (map && mc) map.appendChild(mc);
+                    })();
 						}
 
                                                                               ]]>
