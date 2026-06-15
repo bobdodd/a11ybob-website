@@ -171,6 +171,21 @@ export async function getGlossaryByTerm(
   return serialiseHit(String(doc._id), doc);
 }
 
+/** Ids (+ last-modified) of glossary entries, for the sitemap. */
+export async function listGlossaryForSitemap(): Promise<
+  { id: string; updated?: string }[]
+> {
+  const db = await getDb();
+  const docs = await db
+    .collection("glossary")
+    .find({}, { projection: { _id: 1, updated: 1, created: 1 } })
+    .toArray();
+  return docs.map((d) => ({
+    id: String(d._id),
+    updated: (d.updated as string) ?? (d.created as string) ?? undefined,
+  }));
+}
+
 function escapeRegex(s: string): string {
   return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }

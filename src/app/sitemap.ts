@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { listPublishedArticles } from "@/lib/articles";
 import { listReviewsForSitemap } from "@/lib/reviews";
 import { listExperiencesForSitemap } from "@/lib/experiences";
+import { listGlossaryForSitemap } from "@/lib/glossary";
 
 const BASE = "https://a11ybob.com";
 
@@ -115,6 +116,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   } catch {
     /* skip experiences on error */
+  }
+
+  // Glossary terms.
+  try {
+    for (const g of await listGlossaryForSitemap()) {
+      const lastModified = toDate(g.updated);
+      entries.push({
+        url: `${BASE}/writing/glossary/${g.id}`,
+        ...(lastModified ? { lastModified } : {}),
+      });
+    }
+  } catch {
+    /* skip glossary on error */
   }
 
   return entries;
