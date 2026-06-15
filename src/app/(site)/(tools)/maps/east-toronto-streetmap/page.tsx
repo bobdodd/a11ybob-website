@@ -270,6 +270,14 @@ export default function MapsEastTorontoStreetmap() {
             <h2>Reading on</h2>
             <ul>
               <li>
+                <Link href="/maps/how-its-built">
+                  How an accessible map is built
+                </Link>{" "}
+                &mdash; the shared model behind the family: typed
+                nodes, the convenience graph, the polar circuit, and
+                how it is exposed to assistive technology.
+              </li>
+              <li>
                 <Link href="/research/cisna-model">
                   The CISNA Model
                 </Link>{" "}

@@ -406,6 +406,16 @@ export default function Maps() {
               </Link>
               , applied to spatial cognition.
             </p>
+            <p>
+              The build-level account of this &mdash; the digraph
+              beneath the pins, the circuit that orders the polar
+              sweep, and the markup that exposes them &mdash; is set
+              out in{" "}
+              <Link href="/maps/how-its-built">
+                how an accessible map is built
+              </Link>
+              .
+            </p>
             <p className="muted">
               <small>
                 This is paper-shaped substance that has not yet
@@ -629,6 +639,14 @@ export default function Maps() {
           >
             <h2>Reading on</h2>
             <ul>
+              <li>
+                <Link href="/maps/how-its-built">
+                  How an accessible map is built
+                </Link>{" "}
+                &mdash; the shared model the four demos are instances
+                of: the digraph, the polar circuit, and how it is
+                exposed to assistive technology.
+              </li>
               <li>
                 <Link href="/maps/search-and-map-pins">
                   Search and map pin demo

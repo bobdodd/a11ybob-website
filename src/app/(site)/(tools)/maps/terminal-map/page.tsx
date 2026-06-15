@@ -560,6 +560,12 @@ export default function MapsTerminalMap() {
                 what that means for this map.
               </li>
               <li>
+                <Link href="/maps/how-its-built">
+                  How an accessible map is built
+                </Link>{" "}
+                &mdash; the shared model the whole family is built on.
+              </li>
+              <li>
                 <Link href="/research/cisna-model">The CISNA Model</Link>{" "}
                 &mdash; the layered architecture the map is built from.
               </li>
