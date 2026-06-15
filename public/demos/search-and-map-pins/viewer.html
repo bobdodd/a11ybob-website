@@ -1183,6 +1183,7 @@
 						pin.setAttribute("tabindex","0");
 						pin.setAttribute("pointer-events","visible");
 						pin.setAttribute("role", "button");
+						pin.setAttribute("aria-labelledby", this.elId + "Heading");
 
 						parent.append(pin);
 
@@ -1199,7 +1200,7 @@
 						heading.style.width = 20;
 						heading.style.fontSize = "1px";
 						heading.style.overflow = "hidden";
-						pin.appendChild(heading);
+						parent.insertBefore(heading, pin);
 
 						let outerCircle = this.outerCircle = document.createElementNS("http://www.w3.org/2000/svg","circle");
 						outerCircle.setAttribute("cx",this.x);
@@ -1458,7 +1459,7 @@
 				<rect class="ymca" x="1232" y="147" width="270" height="163" stroke="black" fill="none" />
 				<rect class="ymca" x="1233" y="218" width="50" height="90" stroke="none" fill="white" />
 				<rect class="ymca" x="1280" y="148" width="220" height="162" stroke="none" fill="white" />
-				<text class="ymca" x="1290" y="170" class="expandedPinText" stroke="black" fill="black" >James YMCA</text>
+				<text class="ymca expandedPinText" x="1290" y="170"  stroke="black" fill="black" >James YMCA</text>
 				<image class="ymca" href="ymca.png" x="1290" y="173" width="200"/>
 			  </g>
 
@@ -1466,7 +1467,7 @@
 				<rect class="laws" x="980" y="57" width="270" height="153" stroke="black" fill="none" />
 				<rect class="laws" x="981" y="128" width="50" height="80" stroke="none" fill="white" />
 				<rect class="laws" x="1029" y="58" width="220" height="151" stroke="none" fill="white" />
-				<text class="laws" x="1035" y="78" class="expandedPinText" stroke="black" fill="black" >Laws Tacos</text>
+				<text class="laws expandedPinText" x="1035" y="78"  stroke="black" fill="black" >Laws Tacos</text>
 				<image class="laws" href="Laws.png" x="1035" y="88" width="200"/>
 			  </g>
 
@@ -1474,7 +1475,7 @@
 				<rect class="marketplace" x="1012" y="157" width="270" height="188" stroke="black" fill="none" />
 				<rect class="marketplace" x="1013" y="228" width="50" height="116" stroke="none" fill="white" />
 				<rect class="marketplace" x="1060" y="158" width="220" height="186" stroke="none" fill="white" />
-				<text class="marketplace" x="1074" y="180" class="expandedPinText" stroke="black" fill="black" >James Marketplace</text>
+				<text class="marketplace expandedPinText" x="1074" y="180"  stroke="black" fill="black" >James Marketplace</text>
 				<image class="marketplace" href="marketplace.png" x="1074" y="188" width="200"/>
 			  </g>
 
@@ -1483,41 +1484,41 @@
 				<rect class="king" x="1185" y="437" width="270" height="153" stroke="black" fill="none" />
 				<rect class="king" x="1186" y="508" width="50" height="80" stroke="none" fill="white" />
 				<rect class="king" x="1233" y="438" width="220" height="151" stroke="none" fill="white" />
-				<text class="king" x="1238" y="458" class="expandedPinText" 4stroke="black" fill="black" >Prince Johns Antiques</text>
+				<text class="king expandedPinText" x="1238" y="458"  stroke="black" fill="black" >Prince Johns Antiques</text>
 				<image class="king" href="PrinceJohns.png" x="1242" y="467" width="200"/>
 			  </g>
 
-			  <g id="lot27" class="lot27 lot" role="button">
-				<path id class="lot27 lot" stroke="black" stroke-width="3" fill="white" d="M 800 507 l 160 0 l 20 -20 l 20 20 h 20 v 300 h -220 Z"  />
-				<text class="lot27 lot" x="818" y="530" class="expandedPinText" stroke="black" fill="black" >Shield Collection</text>
-				<text class="lot27 lot" x="818" y="550" class="expandedPinText" stroke="black" fill="black" role="heading" aria-level="4" >Plot 27</text>
+			  <text id="lot27Heading" class="lot27 lot screen-reader-only" role="heading" aria-level="4" style="font-size:1px;overflow:hidden">Plot 27</text><g id="lot27" class="lot27 lot" role="button">
+				<path class="lot27 lot" stroke="black" stroke-width="3" fill="white" d="M 800 507 l 160 0 l 20 -20 l 20 20 h 20 v 300 h -220 Z"  />
+				<text class="lot27 lot expandedPinText" x="818" y="530"  stroke="black" fill="black" >Shield Collection</text>
+				<text class="lot27 lot expandedPinText" x="818" y="550"  stroke="black" fill="black" >Plot 27</text>
 				<image class="lot27 lot" href="ShieldKitchen.jpg" x="818" y="570" width="180"/>
-				<text class="lot27 lot" x="818" y="710" class="expandedPinText" stroke="black" fill="black" >12258 Vixen Park</text>
-				<text class="lot27 lot" x="818" y="730" class="expandedPinText" stroke="black" fill="black" >2 bed, 2 bath</text>
-				<text class="lot27 lot" x="818" y="775" class="expandedPinText" stroke="black" fill="black" >Priced at</text>
-				<text class="lot27 lot" x="818" y="790" class="expandedPinText" stroke="black" fill="black" >$761,880</text>
+				<text class="lot27 lot expandedPinText" x="818" y="710"  stroke="black" fill="black" >12258 Vixen Park</text>
+				<text class="lot27 lot expandedPinText" x="818" y="730"  stroke="black" fill="black" >2 bed, 2 bath</text>
+				<text class="lot27 lot expandedPinText" x="818" y="775"  stroke="black" fill="black" >Priced at</text>
+				<text class="lot27 lot expandedPinText" x="818" y="790"  stroke="black" fill="black" >$761,880</text>
 			  </g>
 
-			  <g id="lot28" class="lot28 lot" role="button">
+			  <text id="lot28Heading" class="lot28 lot screen-reader-only" role="heading" aria-level="4" style="font-size:1px;overflow:hidden">Plot 28</text><g id="lot28" class="lot28 lot" role="button">
 				<path class="lot28 lot" stroke="black" stroke-width="3" fill="white" d="M 800 507 l 160 0 l 20 -20 l 20 20 h 20 v 300 h -220 Z"  />
-				<text class="lot28 lot" x="818" y="530" class="expandedPinText" stroke="black" fill="black" >Shield Collection</text>
-				<text class="lot28 lot" x="818" y="550" class="expandedPinText" stroke="black" fill="black" role="heading" aria-level="4" >Plot 28</text>
+				<text class="lot28 lot expandedPinText" x="818" y="530"  stroke="black" fill="black" >Shield Collection</text>
+				<text class="lot28 lot expandedPinText" x="818" y="550"  stroke="black" fill="black" >Plot 28</text>
 				<image class="lot28 lot" href="property2.jpg" x="818" y="570" width="180"/>
-				<text class="lot28 lot" x="818" y="730" class="expandedPinText" stroke="black" fill="black" >12262 Vixen Park</text>
-				<text class="lot28 lot" x="818" y="745" class="expandedPinText" stroke="black" fill="black" >3 bed, 3 bath</text>
-				<text class="lot28 lot" x="818" y="775" class="expandedPinText" stroke="black" fill="black" >Priced at</text>
-				<text class="lot28 lot" x="818" y="790" class="expandedPinText" stroke="black" fill="black" >$754,880</text>
+				<text class="lot28 lot expandedPinText" x="818" y="730"  stroke="black" fill="black" >12262 Vixen Park</text>
+				<text class="lot28 lot expandedPinText" x="818" y="745"  stroke="black" fill="black" >3 bed, 3 bath</text>
+				<text class="lot28 lot expandedPinText" x="818" y="775"  stroke="black" fill="black" >Priced at</text>
+				<text class="lot28 lot expandedPinText" x="818" y="790"  stroke="black" fill="black" >$754,880</text>
 			  </g>
 
-			  <g id="lot32" class="lot32 lot">
+			  <text id="lot32Heading" class="lot32 lot screen-reader-only" role="heading" aria-level="4" style="font-size:1px;overflow:hidden">Plot 32</text><g id="lot32" class="lot32 lot" role="button">
 				<path class="lot32 lot" stroke="black" stroke-width="3" fill="white" d="M 800 507 l 160 0 l 20 -20 l 20 20 h 20 v 300 h -220 Z"  />
-				<text class="lot32 lot" x="818" y="530" class="expandedPinText" stroke="black" fill="black" >Shield Collection</text>
-				<text class="lot32 lot" x="818" y="550" class="expandedPinText" stroke="black" fill="black" role="heading" aria-level="4" >Plot 32</text>
+				<text class="lot32 lot expandedPinText" x="818" y="530"  stroke="black" fill="black" >Shield Collection</text>
+				<text class="lot32 lot expandedPinText" x="818" y="550"  stroke="black" fill="black" >Plot 32</text>
 				<image class="lot32 lot" href="property2.jpg" x="818" y="570" width="180"/>
-				<text class="lot32 lot" x="818" y="730" class="expandedPinText" stroke="black" fill="black" >12276 Vixen Park</text>
-				<text class="lot32 lot" x="818" y="745" class="expandedPinText" stroke="black" fill="black" >1 bed, 2 bath</text>
-				<text class="lot32 lot" x="818" y="775" class="expandedPinText" stroke="black" fill="black" >Priced at</text>
-				<text class="lot32 lot" x="818" y="790" class="expandedPinText" stroke="black" fill="black" >$575,880</text>
+				<text class="lot32 lot expandedPinText" x="818" y="730"  stroke="black" fill="black" >12276 Vixen Park</text>
+				<text class="lot32 lot expandedPinText" x="818" y="745"  stroke="black" fill="black" >1 bed, 2 bath</text>
+				<text class="lot32 lot expandedPinText" x="818" y="775"  stroke="black" fill="black" >Priced at</text>
+				<text class="lot32 lot expandedPinText" x="818" y="790"  stroke="black" fill="black" >$575,880</text>
 			  </g>
 
 			  
@@ -1525,7 +1526,7 @@
 				<rect class="jamesHS" x="1185"y="195" width="270" height="153" stroke="black" fill="none" />
 				<rect class="jamesHS" x="1186"y="270" width="50" height="75" stroke="none" fill="white" />
 				<rect class="jamesHS" x="1233"y="195" width="220" height="152" stroke="none" fill="white" />
-				<text class="jamesHS" x="1243" y="225" class="expandedPinText" stroke="black" fill="black" >James High School</text>
+				<text class="jamesHS expandedPinText" x="1243" y="225"  stroke="black" fill="black" >James High School</text>
 				<image class="jamesHS" href="JamesHighSchool.png" x="1245" y="233" width="200"/>
 			  </g>
 
@@ -1533,7 +1534,7 @@
 				<rect class="jamesUnionHS" x="1272"y="205" width="270" height="163" stroke="black" fill="none" />
 				<rect class="jamesUnionHS" x="1273"y="275" width="50" height="90" stroke="none" fill="white" />
 				<rect class="jamesUnionHS" x="1321"y="205" width="220" height="162" stroke="none" fill="white" />
-				<text class="jamesUnionHS" x="1330" y="225" class="expandedPinText" stroke="black" fill="black" >James Union High School</text>
+				<text class="jamesUnionHS expandedPinText" x="1330" y="225"  stroke="black" fill="black" >James Union High School</text>
 				<image class="jamesUnionHS" href="JamesUnionHighSchool.png" x="1330" y="233" width="200"/>
 			  </g>
 
