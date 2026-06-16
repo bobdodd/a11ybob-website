@@ -1,6 +1,32 @@
 class MapDrawing {
 
     /////////////////////////////////////////////////////////////////////////
+    // Label helpers — turn raw OSM tag values into something a user understands.
+    // OSM data is sparse: absent tags arrive as null, and "yes" is OSM's generic
+    // "it is one of these" (e.g. building=yes). Never expose those raw.
+    /////////////////////////////////////////////////////////////////////////
+
+    static humanBuilding(type) {
+        const map = {
+            yes: "building", house: "house", detached: "detached house",
+            semidetached_house: "semi-detached house", apartments: "apartment building",
+            terrace: "terraced house", school: "school building",
+            retail: "retail building", commercial: "commercial building",
+            civic: "civic building", church: "church",
+        };
+        return map[type] || "building";
+    }
+
+    static humanLanduse(use) {
+        const map = {
+            residential: "residential area", retail: "retail area",
+            commercial: "commercial area", industrial: "industrial area",
+            religious: "religious grounds", construction: "construction site",
+        };
+        return map[use] || (use + " area");
+    }
+
+    /////////////////////////////////////////////////////////////////////////
     // Landcover
     /////////////////////////////////////////////////////////////////////////
 
@@ -24,13 +50,14 @@ class MapDrawing {
                 land.setAttribute('stroke', 'black');
                 land.setAttribute('class', 'landOutline');
 
-                let landUse = feature.properties.landuse;
-                let title = '';
-                if (landUse != null) {
-                    title = 'Landuse here is ' + landUse;
+                const landUse = feature.properties.landuse;
+                if (landUse != null && landUse !== '') {
+                    land.setAttribute('aria-label', MapDrawing.humanLanduse(landUse));
+                } else {
+                    // Unknown land use (OSM null) tells the user nothing — keep it
+                    // out of the accessibility tree rather than announce "null".
+                    land.setAttribute('aria-hidden', 'true');
                 }
-
-                land.setAttribute('aria-label', landUse);
 
 
 
@@ -60,7 +87,9 @@ class MapDrawing {
                 forest.setAttribute('fill', 'green');
                 forest.setAttribute('stroke', 'black');
                 forest.setAttribute('class', 'forestOutline');
-                forest.setAttribute('aria-label', feature.properties.name);
+                const fname = feature.properties.name;
+                const fnamed = fname != null && fname !== '' && fname.toLowerCase() !== 'forest';
+                forest.setAttribute('aria-label', fnamed ? fname : 'wooded area');
 
                 map.appendChild(forest);
             }
@@ -118,38 +147,29 @@ class MapDrawing {
                 road.setAttribute('stroke', 'black');
                 road.setAttribute('class', 'roadOutline');
 
-                let title = "";
-                let highway = feature.properties.highway;
+                const highway = feature.properties.highway;
+                const roadName = feature.properties.name;
 
-                if (feature.properties.name !== null) {
-                    title = feature.properties.name;
-                }
-
+                let roadType = "";
                 switch (highway.trim()) {
-                    case 'primary':
-                        title += ", main road";
-                        break;
-                    case 'tertiary':
-                        title += ", local road";
-                        break;
-                    case 'residential':
-                        title += ", residential road";
-                        break;
-                    case 'service':
-                        title += ", laneway";
-                        break;
-                    case 'footway':
-                        title += ", footway";
-                        break;
-                    case 'path':
-                        title += ", path";
-                        break;
+                    case 'primary':     roadType = "main road"; break;
+                    case 'tertiary':    roadType = "local road"; break;
+                    case 'residential': roadType = "residential road"; break;
+                    case 'service':     roadType = "laneway"; break;
+                    case 'footway':     roadType = "footway"; break;
+                    case 'path':        roadType = "path"; break;
                     case 'steps':
-                        title += ", steps";
+                        roadType = "steps";
                         road.setAttribute('stroke', 'firebrick');
                         break;
                 }
 
+                let title;
+                if (roadName != null && roadName !== '') {
+                    title = roadType ? (roadName + ", " + roadType) : roadName;
+                } else {
+                    title = roadType || "road";
+                }
                 road.setAttribute('aria-label', title);
 
                 map.appendChild(road);
@@ -243,15 +263,11 @@ class MapDrawing {
                 building.setAttribute('stroke', 'gray');
                 building.setAttribute('class', 'buildingOutline');
 
-                let title = '';
-
-                if (feature.properties.building !== null) {
-                    title = feature.properties.building;
-                }
-
-                if (title == 'school') {
-                    title += ' building';
-                }
+                const buildingType = feature.properties.building;
+                const buildingName = feature.properties.name;
+                const title = (buildingName != null && buildingName !== '')
+                    ? buildingName
+                    : MapDrawing.humanBuilding(buildingType);
 
                 building.setAttribute('aria-label', title);
 
@@ -331,8 +347,11 @@ class MapDrawing {
                 }
                 circle.setAttribute('stroke-width', '2');
 
-                postalAddr += ', ' + feature.properties["addr:housenumber"] + ' ' + feature.properties["addr:street"];
-                circle.setAttribute('aria-label', postalAddr);
+                const hn = feature.properties["addr:housenumber"];
+                const st = feature.properties["addr:street"];
+                const addr = [hn, st].filter(v => v != null && v !== '').join(' ');
+                if (addr) postalAddr = postalAddr ? (postalAddr + ', ' + addr) : addr;
+                circle.setAttribute('aria-label', postalAddr || 'address');
                 map.appendChild(circle);
             }
         });
