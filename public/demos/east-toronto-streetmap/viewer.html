@@ -310,9 +310,20 @@
                                 return (t && t !== map && t.getAttribute && t.getAttribute('aria-label')) ? t : null;
                             }
 
-                            // focusin = keyboard + TalkBack/VoiceOver focus; mouseover = pointer hover.
+                            // focusin = keyboard + screen-reader focus.
                             map.addEventListener('focusin', function (e) { const f = featureFrom(e); if (f) showTooltip(f); });
-                            map.addEventListener('mouseover', function (e) { const f = featureFrom(e); if (f) showTooltip(f); });
+
+                            // Hover is wired ONLY on devices with a real hover-capable pointer,
+                            // and even then only fires for an actual mouse — so nothing
+                            // touch-related is attached to the map. A plain mouseover handler
+                            // broke TalkBack explore-by-touch on Android (touch fell through to
+                            // a page scroll and elements stopped announcing).
+                            if (window.matchMedia && window.matchMedia('(hover: hover)').matches) {
+                                map.addEventListener('pointerover', function (e) {
+                                    if (e.pointerType !== 'mouse') return;
+                                    const f = featureFrom(e); if (f) showTooltip(f);
+                                });
+                            }
 
                             // Sticky: only Esc (or a different feature) clears it.
                             document.addEventListener('keydown', function (e) {
