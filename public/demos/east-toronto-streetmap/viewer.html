@@ -264,7 +264,12 @@
                             ));
                             MapDrawing.setTabOrder(); // Inital value from radio
 
-                            setupTooltip();
+                            // The tooltip is a pointer/keyboard (hover-capable) affordance.
+                            // On a touch-only device attach nothing to the map at all, so it
+                            // cannot interfere with TalkBack explore-by-touch (diagnostic + fix).
+                            if (window.matchMedia && window.matchMedia('(hover: hover)').matches) {
+                                setupTooltip();
+                            }
                         }
 
                         // ---------- Sticky tooltip on focus / hover (ported from the terminal map) ----------
