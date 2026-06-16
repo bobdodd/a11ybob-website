@@ -23,22 +23,22 @@
                     <div class="filterList">
                         <div>
                             <input class="filterCheckbox" type="checkbox" id="checkboxBuildings"
-                                name="checkboxBuildings" checked tabindex="" 0">
+                                name="checkboxBuildings" checked tabindex="0">
                             <label for="checkboxBuildings">Buildings</label>
                         </div>
                         <div>
                             <input class="filterCheckbox" type="checkbox" id="checkboxTransit" name="checkboxTransit"
-                                checked tabindex="" 0">
+                                checked tabindex="0">
                             <label for="checkboxTransit">Transit stops</label>
                         </div>
                         <div>
                             <input class="filterCheckbox" type="checkbox" id="checkboxShops" name="checkboxShops"
-                                checked tabindex="" 0">
+                                checked tabindex="0">
                             <label for="checkboxShops">Shops</label>
                         </div>
                         <div>
                             <input class="filterCheckbox" type="checkbox" id="checkboxAddresses"
-                                name="checkboxAddresses" checked tabindex="" 0">
+                                name="checkboxAddresses" checked tabindex="0">
                             <label for="checkboxAddresses">Addresses</label>
                         </div>
                     </div>
@@ -123,7 +123,6 @@
                     xmlns:xlink="http://www.w3.org/1999/xlink" xml:lang="en">
                     <!-- <title>Map of Upper Beach Surrounding Area</title> -->
 
-                    <script type="text/ecmascript" href="./js/Constants.js"></script>
 
                     <script type="text/ecmascript" href="./js/MapDataAddresses.js"></script>
                     <script type="text/ecmascript" href="./js/MapDataAmenityPoints.js"></script>
@@ -158,97 +157,9 @@
                     <script type="text/ecmascript">
                         //<![CDATA[
 
-                        /**
-                        * Returns back a NodeList of focusable elements
-                        * that exist within the passed parent HTMLElement, or
-                        * an empty array if no parent passed.
-                        *
-                        * @param {HTMLElement} parent HTML element
-                        * @returns {(NodeList|Array)} The focusable elements that we can find
-                        */
-                       const getAllFocusableElements = parent => {
-                         if (!parent) {
-                           console.warn('You need to pass a parent HTMLElement');
-                           return []; // Return array so length queries will work
-                         }
-                       
-                         return parent.querySelectorAll(
-                            'g[role="button"]:not([disabled])'
-                           //'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"]):not([disabled]), details:not([disabled]), summary:not(:disabled)'
-                         );
-                       };
-                       
-
-                        var keyboardEvent = document.createEvent('KeyboardEvent');
-                        var initMethod = typeof keyboardEvent.initKeyboardEvent !== 'undefined' ? 'initKeyboardEvent' : 'initKeyEvent';
-                        
-                        keyboardEvent[initMethod](
-                          'keydown', // event type: keydown, keyup, keypress
-                          true, // bubbles
-                          true, // cancelable
-                          window, // view: should be window
-                          false, // ctrlKey
-                          false, // altKey
-                          false, // shiftKey
-                          false, // metaKey
-                          9, // keyCode: unsigned long - the virtual key code, else 0
-                          0, // charCode: unsigned long - the Unicode character associated with the depressed key, else 0
-                        );
-                        //<button onclick="document.dispatchEvent(keyboardEvent)">Tab</button>
-
-                        var lastActiveElement = document.activeElement;
-
-                        function detectBlur() {
-                            // Do logic related to blur using document.activeElement;
-                            // You can do change detection too using lastActiveElement as a history
-                        }
-                
-                        function isSameActiveElement() {
-                            var currentActiveElement = document.activeElement;
-                            if(lastActiveElement != currentActiveElement) {
-                                lastActiveElement = currentActiveElement;
-                                return false;
-                            }
-                
-                            return true;
-                        }
-                
-                        function detectFocus() {
-                            // Add logic to detect focus and to see if it has changed or not from the lastActiveElement. 
-                        }
-                
-                        function attachEvents() {
-                            window.addEventListener ? window.addEventListener('focus', detectFocus, true) : window.attachEvent('onfocusout', detectFocus);                  
-                            window.addEventListener ? window.addEventListener('blur', detectBlur, true) : window.attachEvent('onblur', detectBlur);
-                        }
-                
-                
-                        function emulateTab() {
-
-                            const map = document.querySelector('#map');
-
-                            /*
-                            const focusableButtons = map.querySelectorAll('*[tabindex]');
-                            let found = false;
-                            let i=0;
-                            for (i=0; i < focusableButtons.length; ++i) {
-                                if (focusableButtons[i] == document.activeElement) {
-                                    alert('found it!');
-                                    found = true;
-                                    break;
-                                }
-                            }
-                            */
-
-                            console.log(lastActiveElement);
-
-
-
-                        }
 
                         document.addEventListener("DOMContentLoaded", function () {
                             doStuff();
-                            attachEvents();
 
                         });
                     
@@ -259,7 +170,7 @@
 
                             let checkbox = document.querySelector('#checkboxBuildings');
                             checkbox.addEventListener('change', function () {
-                                const buildings = document.querySelectorAll(".buidingOutline");
+                                const buildings = document.querySelectorAll(".buildingOutline");
                                 if (this.checked) {
                                     buildings.forEach(function (bldg) {
                                         bldg.style.visibility = 'visible';
@@ -537,273 +448,10 @@
 
                         function onLoad() {
 
-                            /////////////////////////////////////////////////////////////
-                            // Mouse Events
-                            /////////////////////////////////////////////////////////////
-
-                            window.mouseData = {
-                                "mode": MODE_DEFAULT,
-                                "startX": -1,
-                                "startY": -1,
-                                "endX": -1,
-                                "endY": -1
-                            };
-
-                            const sidebar = document.querySelector("#leftSidebar");
-                            /*
-                            sidebar.addEventListener('mouseleave', (event) => {
-                                console.log('Mouse LEAVE');
-                                const sidebar = document.querySelector("#leftSidebar");
-                                sidebar.style.cursor = "auto";
-                                window.mouseData.mode = MODE_DEFAULT;
-
-                            });
-
-                            sidebar.addEventListener('mouseenter', (event) => {
-                                console.log('Mouse ENTER');
-                            });
-
-
-                            sidebar.addEventListener('mouseover', (event) => {
-                                console.log('Mouse OVER');
-                                return;
-                                // Width can only be adjusted in desktop mode
-                                if (window.mouseData.mode === MODE_MOBILE) return;
-
-                                switch (window.mouseData.mode) {
-                                    case MODE_DEFAULT:
-
-                                        const sidebar = document.querySelector("#leftSidebar");
-                                        const rect = sidebar.getBoundingClientRect();
-                                        if (event.clientX >= (rect.right - (rect.width / 10))) {
-                                            sidebar.style.cursor = "col-resize";
-                                            window.mouseData.mode = MODE_HOVERING;
-                                            console.log('Start HOVERING');
-                                        }
-
-                                        break;
-
-                                    case MODE_HOVERING:
-                                        break;
-
-                                    case MODE_DRAGGING:
-                                        break;
-                                }
-                            });
-
-
-                            sidebar.addEventListener('mousemove', (event) => {
-                                console.log('Mouse MOVE');
-
-                                const sidebar = document.querySelector("#leftSidebar");
-                                const rect = sidebar.getBoundingClientRect();
-                                switch (window.mouseData.mode) {
-
-                                    case MODE_DEFAULT:
-                                        window.mouseData.mode = MODE_HOVERING;
-                                    // fall thru
-
-                                    case MODE_HOVERING:
-                                        if (event.clientX >= (rect.right - (rect.width / 10))) {
-                                            sidebar.style.cursor = "e-resize";
-                                        }
-                                        else {
-                                            sidebar.style.cursor = "auto";
-                                        }
-                                        break;
-
-
-                                    case MODE_DRAGGING:
-
-                                        const dx = event.clientX - mouseData.startX;
-                                        const dy = event.clientY - mouseData.startY;
-
-                                        //sidebar.style.width = '' + rect.width+dx
-                                        sidebar.style.minWidth = '0';
-
-                                        const compStyles = window.getComputedStyle(sidebar);
-                                        const currentWidth = compStyles.getPropertyValue('width').slice(0, -2);
-                                        const newWidth = (Number(currentWidth) + dx) + 'px';
-                                        const n1 = newWidth + 'px';
-                                        //n1 += dx;
-                                        console.log("n1: " + n1);
-
-                                        console.log('currentWidth: ' + currentWidth);
-                                        console.log('newWidth: ' + newWidth);
-                                        sidebar.style.width = newWidth;
-                                        sidebar.style.minWidth = newWidth;
-                                        console.log('Dragged by ' + dx);
-                                        mouseData.startX = event.clientX;
-                                        mouseData.startY = event.clientY;
-
-                                        break;
-
-                                }
-
-                                return;
-
-                                // Width can only be adjusted in desktop mode
-                                if (window.mouseData.mode === MODE_MOBILE) return;
-
-
-                                switch (window.mouseData.mode) {
-                                    case MODE_DEFAULT:
-                                        break;
-
-                                    case MODE_HOVERING:
-
-                                        if (event.clientX < (rect.right - (rect.width / 10))) {
-                                            sidebar.style.cursor = "auto";
-                                            window.mouseData.mode = MODE_DEFAULT;
-                                            console.log('Stop HOVERING');
-                                        }
-                                        break;
-
-                                    case MODE_DRAGGING:
-                                        
-                                        const dx = event.clientX - mouseData.startX;
-                                        const dy = event.clientY - mouseData.startY;
-    
-                                        sidebar.setAttribute('width', rect.width+dx);
-    
-                                        mouseData.startX = event.clientX;
-                                        mouseData.startY = event.clientY;
-                                        
-                                        break;
-
-                                }
-                            });
-
-
-                            sidebar.addEventListener('mousedown', (event) => {
-                                console.log('Mouse DOWN');
-
-                                switch (window.mouseData.mode) {
-
-                                    case MODE_HOVERING:
-                                        const sidebar = document.querySelector("#leftSidebar");
-                                        const rect = sidebar.getBoundingClientRect();
-                                        if (event.clientX >= (rect.right - (rect.width / 10))) {
-                                            sidebar.style.cursor = "move";
-                                            window.mouseData.mode = MODE_DRAGGING;
-                                            window.mouseData.startX = event.clientX;
-                                            window.mouseData.startY = event.clientY;
-                                            console.log('Start DRAGGING');
-
-                                        }
-                                        else {
-                                            //sidebar.style.cursor = "auto";
-                                            //window.mouseData.mode = MODE_DEFAULT;    
-                                        }
-
-                                        break;
-                                }
-
-                                return;
-
-                                // Width can only be adjusted in desktop mode
-                                if (window.mouseData.mode === MODE_MOBILE) return;
-
-
-                                const sidebar = document.querySelector("#leftSidebar");
-                                const rect = sidebar.getBoundingClientRect();
-                                switch (window.mouseData.mode) {
-                                    case MODE_DEFAULT:
-                                        break;
-
-                                    case MODE_HOVERING:
-                                        if (event.clientX >= (rect.right - (rect.width / 10))) {
-                                            sidebar.style.cursor = "e-resize";
-                                            window.mouseData.mode = MODE_DRAGGING;
-                                            window.mouseData.startX = event.clientX;
-                                            window.mouseData.startY = event.clientY;
-                                        }
-                                        else {
-                                            sidebar.style.cursor = "auto";
-                                            window.mouseData.mode = MODE_DEFAULT;
-                                        }
-
-                                        break;
-
-                                    case MODE_DRAGGING:
-
-                                        // Shouldn't happen
-                                        sidebar.style.cursor = "e-auto";
-                                        window.mouseData.mode = MODE_DEFAULT;
-
-                                        break;
-
-                                }
-                            });
-
-
-
-                            sidebar.addEventListener('mouseup', (event) => {
-                                console.log('Mouse UP');
-                                window.mouseData.mode = MODE_DEFAULT;
-                                const sidebar = document.querySelector("#leftSidebar");
-                                sidebar.style.cursor = "auto";
-                                return;
-
-                                // Width can only be adjusted in desktop mode
-                                if (window.mouseData.mode === MODE_MOBILE) return;
-
-                                const rect = sidebar.getBoundingClientRect();
-                                switch (window.mouseData.mode) {
-                                    case MODE_DEFAULT:
-                                        break;
-
-                                    case MODE_HOVERING:
-                                        break;
-
-                                    case MODE_DRAGGING:
-
-                                        window.mouseData.endX = event.clientX;
-                                        window.mouseData.endY = event.clientY;
-
-                                        if (event.clientX >= (rect.right - (rect.width / 10))) {
-                                            sidebar.style.cursor = "col-resize";
-                                            window.mouseData.mode = MODE_HOVERING;
-                                            return;
-                                        }
-                                        else {
-                                            sidebar.style.cursor = "auto";
-                                            window.mouseData.mode = MODE_DEFAULT;
-                                        }
-
-                                        break;
-
-                                }
-
-                            });
-
-
-
-                            sidebar.addEventListener('mouseout', (event) => {
-                                console.log('Mouse OUT');
-                                return;
-
-                                // Width can only be adjusted in desktop mode
-                                if (window.mouseData.mode != MODE_MOBILE) return;
-
-                                window.mouseData.mode = MODE_DEFAULT;
-
-                                const sidebar = document.querySelector("#leftSidebar");
-                                console.log("Mouse Out");
-                            });
-*/
 
                             const map = document.querySelector("#map");
                             map.addEventListener("click", Geometry.mouseToMapOnClick);
 
-                            const mapSection = document.querySelector("#mapSection");
-                            const sectionHt = mapSection.offsetHeight;
-
-                            //const leftSidebar = document.querySelector("#leftSidebar");
-                            //const sidebarHt = leftSidebar.offsetHeight;
-
-                            const header = document.querySelector("#header");
-                            //const headerHt = header.offsetHeight;
                             const headerHt = 0;
 
                             let ht;
@@ -815,11 +463,8 @@
                             }
                             else {
                                 // landscape
-                                //const searchHt = document.getElementById('leftSidebar').offsetHeight;
                                 const searchHt = 300;
                                 ht = Math.max((window.innerHeight - headerHt - 20), searchHt);
-                                //main.style.flexDirection = 'row';
-
                             }
 
                             let dummyDiv = document.querySelector("#dummyDiv");
@@ -836,21 +481,6 @@
                             createBuildingMappings();
                             createRoadMappings();
 
-                            /*
-                            document.querySelector("#baseMap").addEventListener("click", baseMapOnClick);
-                            document.querySelector("#baseMap").addEventListener("wheel", baseMapOnWheel);
-                            document.querySelector("#baseMap").addEventListener("mousedown", baseMapMouseDown);
-                            document.querySelector("#baseMap").addEventListener("mouseup", baseMapMouseUp);
-                            document.querySelector("#baseMap").addEventListener("mouseout", baseMapMouseOut);
-                            document.querySelector("#baseMap").addEventListener("mousemove", baseMapMouseMove);
-  
-                            document.querySelector("#lot27").addEventListener("click", displayLot27);
-                            
-                            createPins(document.querySelector("#MapPins"));
-                            createMapControls(document.querySelector("#MapControlsAndFilters"), 720, 50);
-                            */
-
-                            //drawMap();
                         }
                         //]]>
                     </script>

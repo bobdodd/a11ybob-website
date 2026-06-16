@@ -185,7 +185,7 @@ class MapDrawing {
                 switch (feature.properties.amenity) {
                     case 'parking':
                         title = 'parking lot';
-                        amenity.setAttribute('class', 'aparkingOutline');
+                        amenity.setAttribute('class', 'parkingOutline');
                         break;
                     case 'place_of_worship':
                         title = 'place of worship';
@@ -241,7 +241,7 @@ class MapDrawing {
                 building.setAttribute('stroke-width', '2');
                 building.setAttribute('fill', 'lightgray');
                 building.setAttribute('stroke', 'gray');
-                building.setAttribute('class', 'buidingOutline');
+                building.setAttribute('class', 'buildingOutline');
 
                 let title = '';
 
@@ -470,14 +470,14 @@ class MapDrawing {
         const roads = document.querySelectorAll('.roadOutline');
         const amenityPolygons = document.querySelectorAll('.amenityPolygonOutline');
         const buildings = document.querySelectorAll('.buildingOutline');
-        const waterlines = document.querySelectorAll('.waterutline');
+        const waterlines = document.querySelectorAll('.waterOutline');
         const shops = document.querySelectorAll('.shopOutline');
         const stations = document.querySelectorAll('.stationOutline');
 
         const parking = document.querySelectorAll('.parkingOutline');
         const worshipping = document.querySelectorAll('.worshipOutline');
         const schools = document.querySelectorAll('.schoolOutline');
-        const bicycleParking = document.querySelectorAll('.bicycleParkingutline');
+        const bicycleParking = document.querySelectorAll('.bicycleOutline');
 
 
         landCovers.forEach(elem => {
