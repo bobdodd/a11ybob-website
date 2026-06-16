@@ -264,7 +264,63 @@
                             ));
                             MapDrawing.setTabOrder(); // Inital value from radio
 
+                            setupTooltip();
+                        }
 
+                        // ---------- Sticky tooltip on focus / hover (ported from the terminal map) ----------
+                        // Shows the focused or hovered feature's name in a pill above it.
+                        // Sticky: stays until Esc or another feature replaces it, so
+                        // screen-magnifier users can pan/zoom to read it.
+                        function setupTooltip() {
+                            const tooltip = document.getElementById('poiTooltip');
+                            const map = document.querySelector('#map');
+                            if (!tooltip || !map) return;
+                            const tooltipTitle = tooltip.querySelector('.poi-tooltip-title');
+
+                            function positionTooltip(anchor) {
+                                if (!anchor || !document.contains(anchor)) return;
+                                const rect = anchor.getBoundingClientRect();
+                                const cx = rect.left + rect.width / 2;
+                                const placeBelow = (rect.top - 4) - (tooltip.offsetHeight + 14) < 8;
+                                document.body.classList.toggle('tooltip-below', placeBelow);
+                                const tipW = tooltip.offsetWidth;
+                                const margin = 8;
+                                let left = cx;
+                                if (left - tipW / 2 < margin) left = tipW / 2 + margin;
+                                if (left + tipW / 2 > window.innerWidth - margin) left = window.innerWidth - margin - tipW / 2;
+                                tooltip.style.left = left + 'px';
+                                tooltip.style.top = (placeBelow ? rect.bottom : rect.top) + 'px';
+                            }
+
+                            function showTooltip(anchor) {
+                                const name = anchor && anchor.getAttribute ? anchor.getAttribute('aria-label') : null;
+                                if (!name) { hideTooltip(); return; }
+                                tooltipTitle.textContent = name;
+                                tooltip.hidden = false;
+                                positionTooltip(anchor);
+                            }
+
+                            function hideTooltip() {
+                                tooltip.hidden = true;
+                            }
+
+                            // A feature is any labelled element inside the map (not the map itself).
+                            function featureFrom(e) {
+                                const t = e.target;
+                                return (t && t !== map && t.getAttribute && t.getAttribute('aria-label')) ? t : null;
+                            }
+
+                            // focusin = keyboard + TalkBack/VoiceOver focus; mouseover = pointer hover.
+                            map.addEventListener('focusin', function (e) { const f = featureFrom(e); if (f) showTooltip(f); });
+                            map.addEventListener('mouseover', function (e) { const f = featureFrom(e); if (f) showTooltip(f); });
+
+                            // Sticky: only Esc (or a different feature) clears it.
+                            document.addEventListener('keydown', function (e) {
+                                if (e.key === 'Escape' && !tooltip.hidden) hideTooltip();
+                            });
+
+                            // Avoid a stale position if the map re-lays-out.
+                            window.addEventListener('resize', function () { if (!tooltip.hidden) hideTooltip(); });
                         }
 
                         function pointInPolygon(polygon, point) {
@@ -488,7 +544,11 @@
             </nav>
         </section> <!-- map -->
     </main>
-    <div role="region" id="liveRegion" aria-live="polite">
+    <div role="region" id="liveRegion" aria-live="polite"></div>
+
+    <div id="poiTooltip" class="poi-tooltip" role="tooltip" hidden>
+        <span class="poi-tooltip-title"></span>
+    </div>
 </body>
 
 </html>

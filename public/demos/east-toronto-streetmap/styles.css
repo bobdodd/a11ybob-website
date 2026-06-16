@@ -195,3 +195,44 @@ main {
 
 .filterCheckbox {
 }
+
+/* Sticky tooltip — shows a focused/hovered feature's name on screen (ported
+   from the terminal map). pointer-events:none so it never blocks the marker;
+   sticky so magnifier users can pan/zoom to read it. */
+.poi-tooltip {
+    position: fixed;
+    max-width: 260px;
+    padding: 0.5rem 0.75rem;
+    background: rgba(255, 255, 255, 0.97);
+    color: black;
+    border: 1px solid #1E3A8A;
+    border-radius: 6px;
+    box-shadow: 0 4px 14px rgba(8, 17, 46, 0.22);
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.25;
+    z-index: 200;
+    pointer-events: none;
+    transform: translate(-50%, calc(-100% - 10px));
+    white-space: normal;
+}
+.poi-tooltip[hidden] { display: none; }
+.poi-tooltip::after {
+    content: "";
+    position: absolute;
+    bottom: -7px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0; height: 0;
+    border: 7px solid transparent;
+    border-top-color: rgba(255, 255, 255, 0.97);
+}
+body.tooltip-below .poi-tooltip {
+    transform: translate(-50%, calc(0% + 14px));
+}
+body.tooltip-below .poi-tooltip::after {
+    bottom: auto;
+    top: -7px;
+    border-top-color: transparent;
+    border-bottom-color: rgba(255, 255, 255, 0.97);
+}
