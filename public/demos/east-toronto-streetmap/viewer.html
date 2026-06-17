@@ -290,6 +290,7 @@
                             const map = document.querySelector('#map');
                             if (!tooltip || !map) return;
                             const tooltipTitle = tooltip.querySelector('.poi-tooltip-title');
+                            const marker = document.getElementById('poiMarker');
                             let current = null;  // the feature whose name is currently shown
 
                             // Place the pill at a viewport point (the mouse pointer, or a tap), in
@@ -297,6 +298,8 @@
                             // feature's geometry — keeps it with the cursor whatever the map's zoom:
                             // clientX/clientY and position:fixed share the same coordinate space.
                             function positionAt(x, y) {
+                                // Marker pins the EXACT point (never clamped, constant size).
+                                if (marker) { marker.style.left = x + 'px'; marker.style.top = y + 'px'; }
                                 const margin = 8;
                                 const placeBelow = (y - 4) - (tooltip.offsetHeight + 14) < margin;
                                 document.body.classList.toggle('tooltip-below', placeBelow);
@@ -315,11 +318,13 @@
                                     tooltipTitle.textContent = feature.getAttribute('aria-label');
                                 }
                                 tooltip.hidden = false;
+                                if (marker) marker.hidden = false;
                                 positionAt(x, y);
                             }
 
                             function hideTooltip() {
                                 tooltip.hidden = true;
+                                if (marker) marker.hidden = true;
                                 current = null;
                             }
 
@@ -691,6 +696,8 @@
     <div id="poiTooltip" class="poi-tooltip" aria-hidden="true" hidden>
         <span class="poi-tooltip-title"></span>
     </div>
+
+    <div id="poiMarker" class="poi-marker" aria-hidden="true" hidden></div>
 </body>
 
 </html>

@@ -218,29 +218,48 @@ main {
     line-height: 1.25;
     z-index: 200;
     pointer-events: none;
-    transform: translate(-50%, calc(-100% - 10px));
+    transform: translate(-50%, calc(-100% - 18px));
     white-space: normal;
 }
 .poi-tooltip[hidden] { display: none; }
 .poi-tooltip::after {
     content: "";
     position: absolute;
-    bottom: -7px;
+    bottom: -9px;
     left: 50%;
     transform: translateX(-50%);
     width: 0; height: 0;
-    border: 7px solid transparent;
+    border: 9px solid transparent;
     border-top-color: rgba(255, 255, 255, 0.97);
 }
 body.tooltip-below .poi-tooltip {
-    transform: translate(-50%, calc(0% + 14px));
+    transform: translate(-50%, calc(0% + 18px));
 }
 body.tooltip-below .poi-tooltip::after {
     bottom: auto;
-    top: -7px;
+    top: -9px;
     border-top-color: transparent;
     border-bottom-color: rgba(255, 255, 255, 0.97);
 }
+
+/* Location marker — a constant-size ring pinned at the feature point. Navy ring
+   + white halo so it shows over parks, water, roads and buildings alike. Lives in
+   the screen-space overlay, so it never scales with the map zoom (stays findable
+   when zoomed out). aria-hidden — the name is announced from the feature itself. */
+.poi-marker {
+    position: fixed;
+    box-sizing: border-box;
+    width: 16px;
+    height: 16px;
+    border: 3px solid #1E3A8A;
+    border-radius: 50%;
+    background: transparent;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.95);
+    transform: translate(-50%, -50%);
+    z-index: 199;
+    pointer-events: none;
+}
+.poi-marker[hidden] { display: none; }
 
 /* Map view controls (zoom + pan) — keyboard / switch / voice / pointer. */
 .mapViewBox {
