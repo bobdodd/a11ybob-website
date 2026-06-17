@@ -222,22 +222,41 @@ main {
     white-space: normal;
 }
 .poi-tooltip[hidden] { display: none; }
+.poi-tooltip::before,
 .poi-tooltip::after {
     content: "";
     position: absolute;
-    top: 100%;
     left: 50%;
     transform: translateX(-50%);
     width: 0; height: 0;
-    border: 11px solid transparent;
+    border-style: solid;
+    border-color: transparent;
+}
+/* Navy outline of the tail — continues the bubble's 1px border down the V. */
+.poi-tooltip::before {
+    top: 100%;
+    border-width: 11px;
+    border-top-color: #1E3A8A;
+}
+/* White fill, 1px smaller and nudged 1px back into the bubble so the fill is
+   continuous (no border line across the base) and navy shows only on the sides. */
+.poi-tooltip::after {
+    top: calc(100% - 1px);
+    border-width: 10px;
     border-top-color: rgba(255, 255, 255, 0.97);
 }
 body.tooltip-below .poi-tooltip {
     transform: translate(-50%, calc(0% + 22px));
 }
-body.tooltip-below .poi-tooltip::after {
+body.tooltip-below .poi-tooltip::before {
     top: auto;
     bottom: 100%;
+    border-top-color: transparent;
+    border-bottom-color: #1E3A8A;
+}
+body.tooltip-below .poi-tooltip::after {
+    top: auto;
+    bottom: calc(100% - 1px);
     border-top-color: transparent;
     border-bottom-color: rgba(255, 255, 255, 0.97);
 }
