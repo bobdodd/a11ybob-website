@@ -218,28 +218,28 @@ main {
     line-height: 1.25;
     z-index: 200;
     pointer-events: none;
-    transform: translate(-50%, calc(-100% - 18px));
+    transform: translate(-50%, calc(-100% - 22px));
     white-space: normal;
 }
 .poi-tooltip[hidden] { display: none; }
 .poi-tooltip::after {
     content: "";
     position: absolute;
-    bottom: -9px;
+    bottom: -11px;
     left: 50%;
     transform: translateX(-50%);
     width: 0; height: 0;
-    border: 9px solid transparent;
-    border-top-color: rgba(255, 255, 255, 0.97);
+    border: 11px solid transparent;
+    border-top-color: #1E3A8A;
 }
 body.tooltip-below .poi-tooltip {
-    transform: translate(-50%, calc(0% + 18px));
+    transform: translate(-50%, calc(0% + 22px));
 }
 body.tooltip-below .poi-tooltip::after {
     bottom: auto;
-    top: -9px;
+    top: -11px;
     border-top-color: transparent;
-    border-bottom-color: rgba(255, 255, 255, 0.97);
+    border-bottom-color: #1E3A8A;
 }
 
 /* Location marker — a constant-size ring pinned at the feature point. Navy ring
