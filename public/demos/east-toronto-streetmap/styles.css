@@ -241,3 +241,32 @@ body.tooltip-below .poi-tooltip::after {
     border-top-color: transparent;
     border-bottom-color: rgba(255, 255, 255, 0.97);
 }
+
+/* Map view controls (zoom + pan) — keyboard / switch / voice / pointer. */
+.mapViewBox {
+    font-size: large;
+    display: flex;
+    flex-direction: column;
+    background-color: lavender;
+    border: 1px solid gray;
+    padding: 3px;
+    margin-top: 0.3rem;
+}
+.mapViewBox .mapViewTitle {
+    font-size: large;
+    font-weight: bold;
+    margin: 0 0 0.3rem 0;
+}
+.mapViewBox button {
+    font-size: large;
+    margin: 1px 0;
+    padding: 0.25rem 0.5rem;
+    background-color: white;
+    color: black;
+    border: 1px solid #1E3A8A;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.mapViewBox button:hover {
+    background-color: #e6e6fa;
+}

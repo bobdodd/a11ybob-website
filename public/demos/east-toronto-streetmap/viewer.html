@@ -92,6 +92,19 @@
                 </div>
             </nav>
 
+            <nav aria-labelledby="mapViewHeading">
+                <div class="mapViewBox">
+                    <h2 id="mapViewHeading" class="mapViewTitle">Map view</h2>
+                    <button type="button" id="zoomIn">Zoom in</button>
+                    <button type="button" id="zoomOut">Zoom out</button>
+                    <button type="button" id="zoomReset">Reset view</button>
+                    <button type="button" id="panUp">Pan up</button>
+                    <button type="button" id="panDown">Pan down</button>
+                    <button type="button" id="panLeft">Pan left</button>
+                    <button type="button" id="panRight">Pan right</button>
+                </div>
+            </nav>
+
         </div>
 
 
@@ -410,6 +423,45 @@
                             }, { passive: false });
                             map.addEventListener('touchend', function (e) {
                                 if (e.touches.length < 2) { pinching = false; lastDist = 0; }
+                            });
+
+                            // ----- Button / keyboard zoom + pan (switch, voice, keyboard, pointer) -----
+                            const PAN_STEP = 80;
+                            function announce(msg) {
+                                const lr = document.getElementById('liveRegion');
+                                if (lr) lr.textContent = msg;
+                            }
+                            // Buttons/keys have no pointer focal, so zoom about the map centre.
+                            function zoomByCentred(factor) {
+                                const r = map.getBoundingClientRect();
+                                zoomAt(factor, r.left + r.width / 2, r.top + r.height / 2);
+                                announce('Zoom ' + Math.round(zoom * 100) + ' percent');
+                            }
+                            function panBy(dx, dy) { panX += dx; panY += dy; applyTransform(); }
+                            function resetView() { zoom = 1; panX = 0; panY = 0; applyTransform(); announce('Map view reset'); }
+
+                            function wire(id, fn) { const b = document.getElementById(id); if (b) b.addEventListener('click', fn); }
+                            wire('zoomIn',    function () { zoomByCentred(1.25); });
+                            wire('zoomOut',   function () { zoomByCentred(1 / 1.25); });
+                            wire('zoomReset', resetView);
+                            wire('panUp',     function () { panBy(0,  PAN_STEP); });
+                            wire('panDown',   function () { panBy(0, -PAN_STEP); });
+                            wire('panLeft',   function () { panBy( PAN_STEP, 0); });
+                            wire('panRight',  function () { panBy(-PAN_STEP, 0); });
+
+                            // Shortcuts, only while focus is within the map so arrow keys keep
+                            // scrolling the page everywhere else: +/= zoom in, - out, 0 reset, arrows pan.
+                            document.addEventListener('keydown', function (e) {
+                                if (!(document.activeElement === map || map.contains(document.activeElement))) return;
+                                switch (e.key) {
+                                    case '+': case '=': zoomByCentred(1.25);     e.preventDefault(); break;
+                                    case '-': case '_': zoomByCentred(1 / 1.25); e.preventDefault(); break;
+                                    case '0':           resetView();             e.preventDefault(); break;
+                                    case 'ArrowUp':     panBy(0,  PAN_STEP);      e.preventDefault(); break;
+                                    case 'ArrowDown':   panBy(0, -PAN_STEP);      e.preventDefault(); break;
+                                    case 'ArrowLeft':   panBy( PAN_STEP, 0);      e.preventDefault(); break;
+                                    case 'ArrowRight':  panBy(-PAN_STEP, 0);      e.preventDefault(); break;
+                                }
                             });
                         }
 
