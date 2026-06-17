@@ -264,12 +264,7 @@
                             ));
                             MapDrawing.setTabOrder(); // Inital value from radio
 
-                            // The tooltip is a pointer/keyboard (hover-capable) affordance.
-                            // On a touch-only device attach nothing to the map at all, so it
-                            // cannot interfere with TalkBack explore-by-touch (diagnostic + fix).
-                            if (window.matchMedia && window.matchMedia('(hover: hover)').matches) {
-                                setupTooltip();
-                            }
+                            setupTooltip();
                         }
 
                         // ---------- Sticky tooltip on focus / hover (ported from the terminal map) ----------
@@ -330,15 +325,17 @@
                                 return (t && t !== map && t.getAttribute && t.getAttribute('aria-label')) ? t : null;
                             }
 
-                            // focusin = keyboard + screen-reader focus.
-                            map.addEventListener('focusin', function (e) { const f = featureFrom(e); if (f) showTooltip(f); });
+                            // Every platform: a click (mouse click, touch tap, or TalkBack
+                            // double-tap) on a feature shows its tooltip. Click coexists with
+                            // explore-by-touch — the map's existing click handler always did — so
+                            // this is the touch-safe trigger that doesn't disturb TalkBack.
+                            map.addEventListener('click', function (e) { const f = featureFrom(e); if (f) showTooltip(f); });
 
-                            // Hover is wired ONLY on devices with a real hover-capable pointer,
-                            // and even then only fires for an actual mouse — so nothing
-                            // touch-related is attached to the map. A plain mouseover handler
-                            // broke TalkBack explore-by-touch on Android (touch fell through to
-                            // a page scroll and elements stopped announcing).
+                            // Desktop also previews on keyboard focus and mouse hover. Gated to
+                            // hover-capable devices so the focus wiring is NEVER attached on touch —
+                            // that focus wiring is what broke TalkBack explore-by-touch on Android.
                             if (window.matchMedia && window.matchMedia('(hover: hover)').matches) {
+                                map.addEventListener('focusin', function (e) { const f = featureFrom(e); if (f) showTooltip(f); });
                                 map.addEventListener('pointerover', function (e) {
                                     if (e.pointerType !== 'mouse') return;
                                     const f = featureFrom(e); if (f) showTooltip(f);
@@ -585,7 +582,7 @@
     </main>
     <div role="region" id="liveRegion" aria-live="polite"></div>
 
-    <div id="poiTooltip" class="poi-tooltip" role="tooltip" hidden>
+    <div id="poiTooltip" class="poi-tooltip" aria-hidden="true" hidden>
         <span class="poi-tooltip-title"></span>
     </div>
 </body>
