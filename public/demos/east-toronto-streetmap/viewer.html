@@ -281,25 +281,39 @@
                             const map = document.querySelector('#map');
                             if (!tooltip || !map) return;
                             const tooltipTitle = tooltip.querySelector('.poi-tooltip-title');
+                            let lastAnchor = null;
 
                             function positionTooltip(anchor) {
                                 if (!anchor || !document.contains(anchor)) return;
                                 const rect = anchor.getBoundingClientRect();
-                                const cx = rect.left + rect.width / 2;
-                                const placeBelow = (rect.top - 4) - (tooltip.offsetHeight + 14) < 8;
+                                // A position:fixed pill sits on the VISUAL viewport, which pinch-zoom
+                                // scales and pans independently of the LAYOUT viewport that
+                                // getBoundingClientRect measures against. Map the anchor's rect into
+                                // visual-viewport coords so the pill tracks the feature — otherwise it
+                                // drifts proportionally to the zoom and eventually lands off-screen.
+                                const vv = window.visualViewport;
+                                const sc = vv ? vv.scale : 1;
+                                const ox = vv ? vv.offsetLeft : 0;
+                                const oy = vv ? vv.offsetTop : 0;
+                                const vw = vv ? vv.width : window.innerWidth;
+                                const cx = (rect.left + rect.width / 2 - ox) * sc;
+                                const aTop = (rect.top - oy) * sc;
+                                const aBottom = (rect.bottom - oy) * sc;
+                                const placeBelow = (aTop - 4) - (tooltip.offsetHeight + 14) < 8;
                                 document.body.classList.toggle('tooltip-below', placeBelow);
                                 const tipW = tooltip.offsetWidth;
                                 const margin = 8;
                                 let left = cx;
                                 if (left - tipW / 2 < margin) left = tipW / 2 + margin;
-                                if (left + tipW / 2 > window.innerWidth - margin) left = window.innerWidth - margin - tipW / 2;
+                                if (left + tipW / 2 > vw - margin) left = vw - margin - tipW / 2;
                                 tooltip.style.left = left + 'px';
-                                tooltip.style.top = (placeBelow ? rect.bottom : rect.top) + 'px';
+                                tooltip.style.top = (placeBelow ? aBottom : aTop) + 'px';
                             }
 
                             function showTooltip(anchor) {
                                 const name = anchor && anchor.getAttribute ? anchor.getAttribute('aria-label') : null;
                                 if (!name) { hideTooltip(); return; }
+                                lastAnchor = anchor;
                                 tooltipTitle.textContent = name;
                                 tooltip.hidden = false;
                                 positionTooltip(anchor);
@@ -307,6 +321,7 @@
 
                             function hideTooltip() {
                                 tooltip.hidden = true;
+                                lastAnchor = null;
                             }
 
                             // A feature is any labelled element inside the map (not the map itself).
@@ -335,8 +350,16 @@
                                 if (e.key === 'Escape' && !tooltip.hidden) hideTooltip();
                             });
 
-                            // Avoid a stale position if the map re-lays-out.
+                            // Window (layout) resize re-lays-out the map — drop the stale pill.
                             window.addEventListener('resize', function () { if (!tooltip.hidden) hideTooltip(); });
+
+                            // Pinch-zoom / pan fires on the visual viewport (not window resize):
+                            // re-track the pill so it follows the feature instead of drifting off.
+                            if (window.visualViewport) {
+                                const reflow = function () { if (!tooltip.hidden && lastAnchor) positionTooltip(lastAnchor); };
+                                window.visualViewport.addEventListener('resize', reflow);
+                                window.visualViewport.addEventListener('scroll', reflow);
+                            }
                         }
 
                         function pointInPolygon(polygon, point) {
