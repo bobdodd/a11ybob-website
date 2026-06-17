@@ -327,12 +327,12 @@
                             // pointer/focus wiring attaches on touch — that is what broke TalkBack
                             // explore-by-touch on Android.
                             if (window.matchMedia && window.matchMedia('(hover: hover)').matches) {
-                                // Mouse: the pill follows the cursor while it is over a feature.
-                                map.addEventListener('pointermove', function (e) {
+                                // Mouse: show on entering a feature, at the pointer. Sticky — it
+                                // stays put until Esc, or a different feature replaces it.
+                                map.addEventListener('pointerover', function (e) {
                                     if (e.pointerType !== 'mouse') return;
                                     const f = featureFrom(e);
                                     if (f) showAt(f, e.clientX, e.clientY);
-                                    else if (!tooltip.hidden) hideTooltip();
                                 });
                                 // Keyboard focus has no pointer — anchor to the feature's box.
                                 map.addEventListener('focusin', function (e) {
