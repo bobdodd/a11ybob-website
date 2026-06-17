@@ -131,7 +131,7 @@
                     width="100" height="800" viewBox="0 0 100 800" fill="none" xmlns="http://www.w3.org/2000/svg"
                     xmlns:xlink="http://www.w3.org/1999/xlink" xml:lang="en"> -->
 
-                <svg role="document" aria-labelledby="mapHeading" focusable="true" onload="onLoad()" id="map"
+                <svg role="document" aria-labelledby="mapHeading" focusable="true" onload="onLoad()" id="map" tabindex="-1"
                     width="100" height="800" viewBox="80 80 100 800" fill="none" xmlns="http://www.w3.org/2000/svg"
                     xmlns:xlink="http://www.w3.org/1999/xlink" xml:lang="en">
                     <!-- <title>Map of Upper Beach Surrounding Area</title> -->
@@ -279,6 +279,7 @@
 
                             setupTooltip();
                             setupZoom();
+                            setupF6();
                         }
 
                         // ---------- Sticky tooltip on focus / hover (ported from the terminal map) ----------
@@ -467,6 +468,74 @@
                                     case 'ArrowLeft':   panBy( PAN_STEP, 0);      e.preventDefault(); break;
                                     case 'ArrowRight':  panBy(-PAN_STEP, 0);      e.preventDefault(); break;
                                 }
+                            });
+                        }
+
+                        // ---------- F6 / Shift+F6: cycle focus between the controls and the map ----------
+                        // Ported from the terminal map. Lets keyboard users jump straight between the
+                        // control sidebar and the map without tabbing through everything; each region
+                        // remembers where focus last was. The SVG carries tabindex="-1" so it can be
+                        // the map's focus target when no feature is tabbable (rotor = none).
+                        function setupF6() {
+                            const REGIONS = [
+                                { id: 'controls', name: 'Map controls',
+                                  root: function () { return document.querySelector('.rightSideBar'); },
+                                  fallback: function () { return document.getElementById('checkboxBuildings'); } },
+                                { id: 'map', name: 'Map',
+                                  root: function () { return document.getElementById('mapSection'); },
+                                  fallback: function () {
+                                      return document.querySelector('#map [tabindex]:not([tabindex="-1"])')
+                                          || document.getElementById('map');
+                                  } }
+                            ];
+                            const FOCUSABLE = 'a[href],button:not(:disabled),input:not(:disabled),select:not(:disabled),textarea:not(:disabled),[tabindex]:not([tabindex="-1"])';
+                            const lastInRegion = Object.create(null);
+
+                            function regionOf(el) {
+                                if (!el) return null;
+                                for (const r of REGIONS) { const root = r.root(); if (root && root.contains(el)) return r; }
+                                return null;
+                            }
+                            function usable(el) {
+                                if (!el || el.disabled) return false;
+                                if (el.getAttribute && el.getAttribute('tabindex') === '-1') return false;
+                                if (el.offsetParent === null && getComputedStyle(el).position !== 'fixed') return false;
+                                return true;
+                            }
+                            function firstIn(root) {
+                                if (!root) return null;
+                                const c = root.querySelectorAll(FOCUSABLE);
+                                for (const el of c) { if (usable(el)) return el; }
+                                return null;
+                            }
+                            function announce(msg) {
+                                const lr = document.getElementById('liveRegion');
+                                if (lr) lr.textContent = msg;
+                            }
+
+                            document.addEventListener('focusin', function (e) {
+                                const r = regionOf(e.target);
+                                if (r) lastInRegion[r.id] = e.target;
+                            });
+
+                            function cycle(dir) {
+                                const here = regionOf(document.activeElement);
+                                const start = here ? REGIONS.indexOf(here) : -1;
+                                const len = REGIONS.length;
+                                const next = REGIONS[((start + dir) % len + len) % len];
+                                let target = lastInRegion[next.id];
+                                if (!target || !document.contains(target) || !usable(target)) {
+                                    target = next.fallback() || firstIn(next.root());
+                                }
+                                if (!target) return;
+                                try { target.focus(); } catch (_) { return; }
+                                announce('Moved to ' + next.name + '.');
+                            }
+
+                            document.addEventListener('keydown', function (e) {
+                                if (e.key !== 'F6') return;
+                                e.preventDefault();
+                                cycle(e.shiftKey ? -1 : 1);
                             });
                         }
 
