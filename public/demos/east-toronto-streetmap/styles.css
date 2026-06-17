@@ -134,10 +134,15 @@ main {
     margin: 0;
     padding:0;
     overflow: hidden;
+    /* Two-finger pinch / Ctrl+wheel are handled in JS to zoom only the map.
+       touch-action:none keeps the browser from zooming the whole page instead. */
+    touch-action: none;
 }
 
 #mapSection {
     width: 100%;
+    /* Clip the SVG when it is scaled up by the map zoom transform. */
+    overflow: hidden;
 }
 
 .waterline {

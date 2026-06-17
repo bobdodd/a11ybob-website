@@ -265,6 +265,7 @@
                             MapDrawing.setTabOrder(); // Inital value from radio
 
                             setupTooltip();
+                            setupZoom();
                         }
 
                         // ---------- Sticky tooltip on focus / hover (ported from the terminal map) ----------
@@ -350,6 +351,66 @@
 
                             // Avoid a stale position if the map re-lays-out.
                             window.addEventListener('resize', function () { if (!tooltip.hidden) hideTooltip(); });
+                        }
+
+                        // ---------- Map-owned pinch / Ctrl+wheel zoom ----------
+                        // Take over pinch so the browser never zooms the whole page: zoom only the
+                        // SVG (a CSS transform), keeping the page — and the pointer-anchored,
+                        // position:fixed tooltip — at scale 1. touch-action:none on #map (CSS)
+                        // routes two-finger pinches here instead of to the browser.
+                        function setupZoom() {
+                            const map = document.querySelector('#map');
+                            if (!map) return;
+                            let zoom = 1, panX = 0, panY = 0;
+                            const MIN = 1, MAX = 8;
+
+                            function applyTransform() {
+                                map.style.transformOrigin = '0 0';
+                                map.style.transform = 'translate(' + panX + 'px, ' + panY + 'px) scale(' + zoom + ')';
+                            }
+
+                            // Zoom by ratio k about a focal screen point (fx, fy), keeping it fixed.
+                            function zoomAt(k, fx, fy) {
+                                const newZoom = Math.max(MIN, Math.min(MAX, zoom * k));
+                                const realK = newZoom / zoom;
+                                if (realK === 1) return;
+                                const rect = map.getBoundingClientRect();
+                                panX += (fx - rect.left) * (1 - realK);
+                                panY += (fy - rect.top) * (1 - realK);
+                                zoom = newZoom;
+                                if (zoom === 1) { panX = 0; panY = 0; }  // snap to origin at 1:1
+                                applyTransform();
+                            }
+
+                            // Trackpad pinch / Ctrl+wheel arrives as a wheel event with ctrlKey set.
+                            map.addEventListener('wheel', function (e) {
+                                if (!(e.ctrlKey || e.metaKey)) return;
+                                e.preventDefault();
+                                zoomAt(Math.exp(-e.deltaY * 0.01), e.clientX, e.clientY);
+                            }, { passive: false });
+
+                            // Two-finger touch pinch.
+                            let pinching = false, lastDist = 0;
+                            map.addEventListener('touchstart', function (e) {
+                                if (e.touches.length === 2) {
+                                    pinching = true;
+                                    lastDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX,
+                                                          e.touches[0].clientY - e.touches[1].clientY);
+                                }
+                            }, { passive: true });
+                            map.addEventListener('touchmove', function (e) {
+                                if (!pinching || e.touches.length !== 2) return;
+                                const dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX,
+                                                        e.touches[0].clientY - e.touches[1].clientY);
+                                const fx = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+                                const fy = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+                                if (lastDist > 0) zoomAt(dist / lastDist, fx, fy);
+                                lastDist = dist;
+                                if (e.cancelable) e.preventDefault();
+                            }, { passive: false });
+                            map.addEventListener('touchend', function (e) {
+                                if (e.touches.length < 2) { pinching = false; lastDist = 0; }
+                            });
                         }
 
                         function pointInPolygon(polygon, point) {
