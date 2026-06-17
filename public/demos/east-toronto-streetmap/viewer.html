@@ -276,32 +276,37 @@
                             const map = document.querySelector('#map');
                             if (!tooltip || !map) return;
                             const tooltipTitle = tooltip.querySelector('.poi-tooltip-title');
+                            let current = null;  // the feature whose name is currently shown
 
-                            function positionTooltip(anchor) {
-                                if (!anchor || !document.contains(anchor)) return;
-                                const rect = anchor.getBoundingClientRect();
-                                const cx = rect.left + rect.width / 2;
-                                const placeBelow = (rect.top - 4) - (tooltip.offsetHeight + 14) < 8;
+                            // Place the pill at a viewport point (the mouse pointer, or a tap), in
+                            // its own fixed layer. Anchoring to the pointer's client coords — not the
+                            // feature's geometry — keeps it with the cursor whatever the map's zoom:
+                            // clientX/clientY and position:fixed share the same coordinate space.
+                            function positionAt(x, y) {
+                                const margin = 8;
+                                const placeBelow = (y - 4) - (tooltip.offsetHeight + 14) < margin;
                                 document.body.classList.toggle('tooltip-below', placeBelow);
                                 const tipW = tooltip.offsetWidth;
-                                const margin = 8;
-                                let left = cx;
+                                let left = x;
                                 if (left - tipW / 2 < margin) left = tipW / 2 + margin;
                                 if (left + tipW / 2 > window.innerWidth - margin) left = window.innerWidth - margin - tipW / 2;
                                 tooltip.style.left = left + 'px';
-                                tooltip.style.top = (placeBelow ? rect.bottom : rect.top) + 'px';
+                                tooltip.style.top = y + 'px';
                             }
 
-                            function showTooltip(anchor) {
-                                const name = anchor && anchor.getAttribute ? anchor.getAttribute('aria-label') : null;
-                                if (!name) { hideTooltip(); return; }
-                                tooltipTitle.textContent = name;
+                            function showAt(feature, x, y) {
+                                if (!feature) { hideTooltip(); return; }
+                                if (feature !== current) {
+                                    current = feature;
+                                    tooltipTitle.textContent = feature.getAttribute('aria-label');
+                                }
                                 tooltip.hidden = false;
-                                positionTooltip(anchor);
+                                positionAt(x, y);
                             }
 
                             function hideTooltip() {
                                 tooltip.hidden = true;
+                                current = null;
                             }
 
                             // A feature is any labelled element inside the map (not the map itself).
@@ -310,20 +315,31 @@
                                 return (t && t !== map && t.getAttribute && t.getAttribute('aria-label')) ? t : null;
                             }
 
-                            // Every platform: a click (mouse click, touch tap, or TalkBack
-                            // double-tap) on a feature shows its tooltip. Click coexists with
+                            // Every platform: a click / tap (mouse click, touch tap, TalkBack
+                            // double-tap) shows the pill at the tap point. Click coexists with
                             // explore-by-touch — the map's existing click handler always did — so
                             // this is the touch-safe trigger that doesn't disturb TalkBack.
-                            map.addEventListener('click', function (e) { const f = featureFrom(e); if (f) showTooltip(f); });
+                            map.addEventListener('click', function (e) {
+                                const f = featureFrom(e); if (f) showAt(f, e.clientX, e.clientY);
+                            });
 
-                            // Desktop also previews on keyboard focus and mouse hover. Gated to
-                            // hover-capable devices so the focus wiring is NEVER attached on touch —
-                            // that focus wiring is what broke TalkBack explore-by-touch on Android.
+                            // Desktop pointer + keyboard. Gated to hover-capable devices so no
+                            // pointer/focus wiring attaches on touch — that is what broke TalkBack
+                            // explore-by-touch on Android.
                             if (window.matchMedia && window.matchMedia('(hover: hover)').matches) {
-                                map.addEventListener('focusin', function (e) { const f = featureFrom(e); if (f) showTooltip(f); });
-                                map.addEventListener('pointerover', function (e) {
+                                // Mouse: the pill follows the cursor while it is over a feature.
+                                map.addEventListener('pointermove', function (e) {
                                     if (e.pointerType !== 'mouse') return;
-                                    const f = featureFrom(e); if (f) showTooltip(f);
+                                    const f = featureFrom(e);
+                                    if (f) showAt(f, e.clientX, e.clientY);
+                                    else if (!tooltip.hidden) hideTooltip();
+                                });
+                                // Keyboard focus has no pointer — anchor to the feature's box.
+                                map.addEventListener('focusin', function (e) {
+                                    const f = featureFrom(e);
+                                    if (!f) return;
+                                    const r = f.getBoundingClientRect();
+                                    showAt(f, r.left + r.width / 2, r.top);
                                 });
                             }
 
