@@ -26,7 +26,7 @@ export default function MapsTiledTorontoMap() {
             <p className="lede">
               A step change from the{" "}
               <Link href="/maps/east-toronto-streetmap">
-                East Toronto streetmap
+                East End Toronto streetmap
               </Link>
               . It keeps the ideas &mdash; the addressable SVG, the
               filters, the rotor &mdash; but builds a live,
@@ -47,7 +47,7 @@ export default function MapsTiledTorontoMap() {
           >
             <h2>What it is</h2>
             <p>
-              The East Toronto streetmap is a single rendered tile: one
+              The East End Toronto streetmap is a single rendered tile: one
               SVG of one area. The tiled Toronto map takes the same
               approach to city scale. It emulates the way Google Maps
               and OpenStreetMap work &mdash; a grid of tiles fetched as
@@ -56,7 +56,7 @@ export default function MapsTiledTorontoMap() {
               <strong>pre-rendered SVG tiles</strong>, so the semantic
               map information a raster PNG throws away is preserved all
               the way to the reader. Inside those tiles you get a
-              better-rendered version of the East Toronto content, with
+              better-rendered version of the East End Toronto content, with
               improved navigation and a great deal more of it.
             </p>
           </section>
@@ -90,13 +90,60 @@ export default function MapsTiledTorontoMap() {
             </p>
             <p>
               So the map is served by a separate{" "}
-              <strong>tile server</strong> of its own, one that hands
+              <strong>tile server</strong>{" "}of its own, one that hands
               back efficient, pre-compiled SVG tiles with all the
               semantics already baked in. That is the unique selling
               point of this map against the live OpenStreetMap
               implementations that query an Overpass endpoint at view
               time: the heavy work happens once, at tile-generation
               time, not on every pan.
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
+            <h2>Ideas being tried here</h2>
+            <p>
+              This page is a first pass, but a few of the family&rsquo;s
+              open questions are being explored on this map in
+              particular, because city scale and live positioning make
+              them matter more.
+            </p>
+            <ul>
+              <li>
+                <strong>A multi-select rotor.</strong>{" "}Where the{" "}
+                <Link href="/maps/east-toronto-streetmap">
+                  East End Toronto streetmap
+                </Link>{" "}
+                offers single-select radio buttons &mdash; one category
+                at a time &mdash; the sheer volume of content here pushes
+                the rotor to multi-select checkboxes, so a reader can
+                hold several categories in view at once.
+              </li>
+              <li>
+                <strong>Contextual zoom.</strong>{" "}Rather than a
+                fixed-size focus marker, zoom to frame the focused
+                feature by its size and meaning &mdash; a park or a
+                school ground with some of its locality &mdash; so focus
+                stays findable when the map is zoomed out.
+              </li>
+              <li>
+                <strong>A reader-placed anchor.</strong>{" "}A movable
+                reference point a reader can drop, the way you drag
+                Street View onto a spot in Google Maps, so features can
+                be described relative to it on a map that otherwise has
+                no single anchor.
+              </li>
+            </ul>
+            <p>
+              The reasoning behind each &mdash; and why they are still
+              open &mdash; is in{" "}
+              <Link href="/maps/east-toronto-streetmap/speaking-and-finding-your-place">
+                speaking the map, and finding your place
+              </Link>
+              .
             </p>
           </section>
 

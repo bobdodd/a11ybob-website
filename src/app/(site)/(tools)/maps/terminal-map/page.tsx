@@ -88,10 +88,10 @@ export default function MapsTerminalMap() {
             <h2>What a map is for</h2>
             <p>
               A map is not an in-situ, point-to-point guided
-              navigation tool. It is usable <em>without</em> being at
+              navigation tool. It is usable <em>without</em>{" "}being at
               the place it represents: it lets you explore the space,
               discover spatial relationships, and understand scale
-              from anywhere. It is <em>also</em> usable when you are
+              from anywhere. It is <em>also</em>{" "}usable when you are
               at the location &mdash; if the map knows where you are,
               it can give immediate context and the turn-by-turn
               experience. That second, location-aware experience is,
@@ -121,7 +121,7 @@ export default function MapsTerminalMap() {
               directions. Usability testing has recorded complaints
               like <em>&ldquo;That&rsquo;s no good! What do you mean
               go east? I don&rsquo;t know where east is &mdash; I need
-              to know whether to go forward or not.&rdquo;</em> The
+              to know whether to go forward or not.&rdquo;</em>{" "}The
               modality breaks because the user has no prior experience
               of the concept of a map. People who lost their sight
               later in life tend to understand it; people blind from
@@ -134,7 +134,7 @@ export default function MapsTerminalMap() {
               &mdash; before even the skip links &mdash; are two
               help controls, styled like skip links so they appear
               only on focus:{" "}
-              <em>Help for screen reader users</em> and{" "}
+              <em>Help for screen reader users</em>{" "}and{" "}
               <em>Help for keyboard navigation users</em>, each
               opening a help dialog. The skip-to-map-controls and
               per-pier skip links follow them.
@@ -148,7 +148,7 @@ export default function MapsTerminalMap() {
             <h2>How the map is built</h2>
             <p>
               Major digital mapping companies serve up an{" "}
-              <em>image</em> and then render additional content
+              <em>image</em>{" "}and then render additional content
               &mdash; sometimes SVG &mdash; on top of it to decorate
               it. This terminal map has no underlying image:{" "}
               <strong>everything is drawn as SVG</strong>. Bob took a
@@ -206,37 +206,37 @@ export default function MapsTerminalMap() {
             <p>
               Those blocks are exposed as <strong>ARIA landmarks</strong>:
               the header is a <code>banner</code>, the map is a{" "}
-              <code>main</code> region (the SVG inside it carries{" "}
+              <code>main</code>{" "}region (the SVG inside it carries{" "}
               <code>role=&ldquo;document&rdquo;</code>), and the
               controls are a named <code>region</code>,
               &ldquo;Map controls&rdquo;. A screen-reader user can
               therefore step block-to-block with landmark navigation
-              &mdash; the <kbd>R</kbd> key in JAWS, <kbd>D</kbd> in
+              &mdash; the <kbd>R</kbd>{" "}key in JAWS, <kbd>D</kbd>{" "}in
               NVDA, the Landmarks rotor in VoiceOver.
             </p>
             <p>
               Landmark navigation has a catch: it always lands you at
-              the <em>start</em> of a landmark, which is not always
+              the <em>start</em>{" "}of a landmark, which is not always
               what you want. Having explored by touch to a particular
               point of interest, you may want to dip back into the
               header or controls without losing your place on the
               map. So the three blocks behave like windows in
               Microsoft Windows &mdash; each keeps its own focus
-              history. The <kbd>F6</kbd> key moves focus to the
+              history. The <kbd>F6</kbd>{" "}key moves focus to the
               last-focused location in each block in turn (a default
               the first time), announcing where focus has landed;{" "}
-              <kbd>F6</kbd> cycles left-to-right, <kbd>Shift</kbd>+
-              <kbd>F6</kbd> right-to-left.
+              <kbd>F6</kbd>{" "}cycles left-to-right, <kbd>Shift</kbd>+
+              <kbd>F6</kbd>{" "}right-to-left.
             </p>
             <p>
-              <kbd>F6</kbd> matters beyond screen-reader efficiency.
+              <kbd>F6</kbd>{" "}matters beyond screen-reader efficiency.
               For sighted disabled users with a mobility impairment
               who do not use a screen reader but do use the keyboard
               &mdash; directly, or through assistive technology that
               drives the interface with keyboard events &mdash; it is
               the only quick way around a map interface, especially
               one that lets you tab through map elements. Bob&rsquo;s
-              view is that <kbd>F6</kbd> is the shortcut missing from
+              view is that <kbd>F6</kbd>{" "}is the shortcut missing from
               almost every website that has enough blocks of content
               for landmark navigation to be worthwhile.
             </p>
@@ -246,7 +246,7 @@ export default function MapsTerminalMap() {
               piers A, B, C, D, and E. They are the map&rsquo;s
               equivalent of the traditional skip-to-content link,
               useful on repeated visits and for keyboard-only users.
-              How well they serve <em>switch</em> users is a more
+              How well they serve <em>switch</em>{" "}users is a more
               complicated question, covered in the{" "}
               <Link href="/maps/terminal-map/switch-and-magnifier-support">
                 switch-access and magnifier notes
@@ -292,11 +292,11 @@ export default function MapsTerminalMap() {
             </p>
             <p>
               The description comes at two levels.{" "}
-              <strong>Sticky tooltips</strong> name what is under the
+              <strong>Sticky tooltips</strong>{" "}name what is under the
               finger or at a location and give the immediately useful,
               timely facts &mdash; the current or next flight from a
               gate, whether a shop is open or closed. The{" "}
-              <strong>left-hand panel</strong> gives the richer
+              <strong>left-hand panel</strong>{" "}gives the richer
               account: not just the place itself but where it sits
               relative to the gates and points of interest around it,
               in compass-and-distance terms. That is spatial
@@ -304,7 +304,7 @@ export default function MapsTerminalMap() {
               at all.
             </p>
             <p>
-              The tooltips are deliberately <em>sticky</em> rather
+              The tooltips are deliberately <em>sticky</em>{" "}rather
               than the browser&rsquo;s default{" "}
               <code>title</code>-attribute tooltip, which is not
               accessible: it appears on hover and vanishes the moment
@@ -338,14 +338,14 @@ export default function MapsTerminalMap() {
             <h2>Search</h2>
             <p>
               Search is central to any dense map, and on the web that
-              means the <code>search</code> landmark together with
+              means the <code>search</code>{" "}landmark together with
               explore-by-touch. Here the search field lives in the
               header, reachable by landmark navigation, and it is the
-              default destination for <kbd>F6</kbd> if the user has
+              default destination for <kbd>F6</kbd>{" "}if the user has
               not yet visited the header.
             </p>
             <p>
-              Search is also central to <em>not</em> using the map.
+              Search is also central to <em>not</em>{" "}using the map.
               For most blind and low-vision users, search is where
               they will want to be, so a working principle of the
               design is that{" "}
@@ -360,23 +360,23 @@ export default function MapsTerminalMap() {
             <p>
               In practice the field offers auto-complete, with a live
               region announcing the number of completions as the user
-              types (a <code>role=&ldquo;combobox&rdquo;</code> with{" "}
-              <code>aria-autocomplete=&ldquo;list&rdquo;</code> and a
+              types (a <code>role=&ldquo;combobox&rdquo;</code>{" "}with{" "}
+              <code>aria-autocomplete=&ldquo;list&rdquo;</code>{" "}and a
               shared polite status region). It should also draw on the
               browser&rsquo;s own text history, which means the HTML{" "}
-              <code>autocomplete</code> attribute should be on &mdash;
+              <code>autocomplete</code>{" "}attribute should be on &mdash;
               even the few digital maps that offer search often break
               this.
             </p>
             <p className="muted">
               <small>
-                One honest exception in <em>this</em> demo: its search
+                One honest exception in <em>this</em>{" "}demo: its search
                 and directions forms set{" "}
-                <code>autocomplete=&ldquo;off&rdquo;</code> on purpose.
+                <code>autocomplete=&ldquo;off&rdquo;</code>{" "}on purpose.
                 With it on, the field surfaces the recorder&rsquo;s
                 own past searches, which is not wanted in the demo
                 videos. Production maps should leave{" "}
-                <code>autocomplete</code> on; the demo turns it off
+                <code>autocomplete</code>{" "}on; the demo turns it off
                 only to keep recordings clean.
               </small>
             </p>
@@ -393,7 +393,7 @@ export default function MapsTerminalMap() {
               the results so the user can add several properties before
               exploring them spatially. On the terminal map, selecting
               a result shows that gate or POI&rsquo;s full details in
-              the header <em>and</em> highlights it on the map with a
+              the header <em>and</em>{" "}highlights it on the map with a
               live-region announcement, while focus stays on the
               details for reading. Those details include the
               item&rsquo;s context &mdash; the gates and points of
@@ -404,7 +404,7 @@ export default function MapsTerminalMap() {
               A selected item is highlighted on the map with a pulsing
               halo, but on a busy map that can still be hard to find,
               especially under magnification. The{" "}
-              <strong>&ldquo;Find on map&rdquo; button</strong> answers
+              <strong>&ldquo;Find on map&rdquo; button</strong>{" "}answers
               that by moving the selected result to the exact centre of
               the map viewport &mdash; a known, repeatable location
               &mdash; and moving focus there. Whether a magnifier then
@@ -425,7 +425,7 @@ export default function MapsTerminalMap() {
             <h2>Zoom</h2>
             <p>
               A digital map needs two kinds of zoom: zooming the{" "}
-              <em>map</em>, and zooming the whole <em>page</em> so the
+              <em>map</em>, and zooming the whole <em>page</em>{" "}so the
               header and controls magnify with it &mdash; the latter so
               that low-vision users who need text magnification can read
               all the text on the page, not just the text on the map.
@@ -446,8 +446,8 @@ export default function MapsTerminalMap() {
               The map can draw a route between selected gates or points
               of interest. It is an illustrative route, not real
               pathfinding. The header then offers step-by-step
-              navigation: a <em>Next</em> button announces each segment
-              in turn, an <em>End step-by-step navigation</em> button
+              navigation: a <em>Next</em>{" "}button announces each segment
+              in turn, an <em>End step-by-step navigation</em>{" "}button
               exits, and a segments list lets the user jump to any
               segment &mdash; each entry announces its distance, the
               active one is marked, and the matching segment highlights
@@ -469,7 +469,7 @@ export default function MapsTerminalMap() {
             </p>
             <ul>
               <li>
-                <strong>No location sensing.</strong> It supports
+                <strong>No location sensing.</strong>{" "}It supports
                 exploration &mdash; understanding the space and its
                 relationships from anywhere &mdash; but not the
                 in-situ, point-to-point experience that needs to know
@@ -479,7 +479,7 @@ export default function MapsTerminalMap() {
                 <strong>Switch access is only partially served.</strong>{" "}
                 The skip-to-pier links and rich interactive structure
                 are not a reliable primary accommodation for switch
-                users; landmark structure and <kbd>F6</kbd> region
+                users; landmark structure and <kbd>F6</kbd>{" "}region
                 cycling help more, but the high node count works
                 against them. The{" "}
                 <Link href="/maps/terminal-map/switch-and-magnifier-support">
@@ -488,7 +488,7 @@ export default function MapsTerminalMap() {
                 set out why.
               </li>
               <li>
-                <strong>A high rendered-node count.</strong> Drawing
+                <strong>A high rendered-node count.</strong>{" "}Drawing
                 everything as SVG, rather than image-plus-overlay,
                 produces many more DOM nodes &mdash; more for a switch
                 user to scan through, and a potential rendering cost.
@@ -503,7 +503,7 @@ export default function MapsTerminalMap() {
                 level forced otherwise.
               </li>
               <li>
-                <strong>Two dimensions only.</strong> Buildings are
+                <strong>Two dimensions only.</strong>{" "}Buildings are
                 three-dimensional; the map shows one level (Level 3,
                 Departures). There is a level selector but no visible
                 connectors between levels. A fuller version would add
@@ -520,7 +520,7 @@ export default function MapsTerminalMap() {
                 </strong>{" "}
                 The pulse is deliberate &mdash; it draws attention to a
                 point &mdash; but under{" "}
-                <code>prefers-reduced-motion</code> it should pulse only
+                <code>prefers-reduced-motion</code>{" "}it should pulse only
                 briefly, for a user-configurable time. There is no
                 settings surface for that yet.
               </li>
@@ -542,6 +542,25 @@ export default function MapsTerminalMap() {
               all, and what should a blind screen-reader user know about
               what is happening on the map as they step through a route?
               These are not yet answered.
+            </p>
+            <p>
+              There is also an open question about announcement itself.
+              The terminal map announces through a live region, which
+              lets it draw its own focus highlight rather than inherit
+              the screen reader&rsquo;s rectangular default &mdash; but a
+              live region queues and does not interrupt, so on busy
+              explore-by-touch it can fall behind. The{" "}
+              <Link href="/maps/east-toronto-streetmap">
+                East End Toronto streetmap
+              </Link>{" "}
+              takes the opposite choice: let the screen reader announce,
+              and cede the focus indicator. Which way to resolve that
+              trade-off &mdash; and whether the Web Speech API is the way
+              out &mdash; is worked through in{" "}
+              <Link href="/maps/east-toronto-streetmap/speaking-and-finding-your-place">
+                speaking the map, and finding your place
+              </Link>
+              .
             </p>
           </section>
 

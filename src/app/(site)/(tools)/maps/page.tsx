@@ -74,7 +74,7 @@ export default function Maps() {
             <p>
               &ldquo;Maps need CISNA&rdquo; is not a contemporary
               framing applied to a new project. The doctoral{" "}
-              <em>Design Language</em> chapter from around 2009
+              <em>Design Language</em>{" "}chapter from around 2009
               cites Google Maps as the worked example of CISNA&rsquo;s
               composite-content handling:{" "}
               <em>
@@ -223,8 +223,8 @@ export default function Maps() {
                 visual abilities
               </em>
               , a gap they name explicitly and defer to future work.
-              The <em>data</em> is about accessibility; the{" "}
-              <em>map</em> is not accessible to a non-sighted reader.
+              The <em>data</em>{" "}is about accessibility; the{" "}
+              <em>map</em>{" "}is not accessible to a non-sighted reader.
               That deferred piece &mdash; a map a non-sighted person
               can actually read and reason over &mdash; is where this
               work starts.
@@ -253,8 +253,8 @@ export default function Maps() {
               around them; so it renders a raster base with
               an interactive pin overlay drawn on top, and only the
               pins need to be addressable. The{" "}
-              <strong>East Toronto streetmap</strong> and the{" "}
-              <strong>terminal map</strong> are about exploring the
+              <strong>East End Toronto streetmap</strong>{" "}and the{" "}
+              <strong>terminal map</strong>{" "}are about exploring the
               detailed space itself, so there everything is drawn as
               addressable SVG, and the richer affordances &mdash;
               ARIA landmarks, category filters, the rotor, the F6
@@ -275,7 +275,7 @@ export default function Maps() {
               </li>
               <li>
                 <Link href="/maps/east-toronto-streetmap">
-                  <strong>East Toronto streetmap</strong>
+                  <strong>East End Toronto streetmap</strong>
                 </Link>{" "}
                 &mdash; the earliest OSM-rendering demo, first
                 shown at a 45-minute in-person session at the 2019
@@ -289,7 +289,7 @@ export default function Maps() {
                 <Link href="/maps/tiled-toronto-map">
                   <strong>Tiled Toronto map</strong>
                 </Link>{" "}
-                &mdash; the architectural successor to East Toronto,
+                &mdash; the architectural successor to East End Toronto,
                 taken to city scale: pre-rendered SVG tiles from a
                 custom tile server, and a live, context-aware viewer
                 with far more content. The live demo is still being
@@ -337,7 +337,7 @@ export default function Maps() {
               visual map to screen-reader-mediated audio shifted
               the coordinate system from Cartesian to polar centred
               on a chosen reference point. POIs became{" "}
-              <em>(name, distance, compass direction)</em> arranged
+              <em>(name, distance, compass direction)</em>{" "}arranged
               in onion-skin order from a chosen centre. Same
               asymmetry expressed in coordinate-system terms.
             </p>
@@ -446,7 +446,7 @@ export default function Maps() {
                 elements are individually addressable, focusable,
                 semantically labellable, scalable without resampling.
                 Where the job is to explore the detailed space &mdash;
-                the East Toronto streetmap, the terminal map, the
+                the East End Toronto streetmap, the terminal map, the
                 tiled Toronto map &mdash; everything is
                 drawn as SVG, the opposite of the field&rsquo;s
                 performance-driven raster choice. Where the job is to
@@ -467,7 +467,7 @@ export default function Maps() {
                 an Overpass endpoint, or any spatial database) at
                 runtime. The published demos use one-time static
                 OSM pulls, rendered offline, and served as plain
-                assets &mdash; the East Toronto streetmap, for
+                assets &mdash; the East End Toronto streetmap, for
                 instance, is a single SVG generated from one
                 long-ago OSM extract; the data isn&rsquo;t
                 refreshed. The{" "}
@@ -530,7 +530,7 @@ export default function Maps() {
                 know.
               </li>
               <li>
-                <strong>F6 landmark cycle.</strong> Three-position
+                <strong>F6 landmark cycle.</strong>{" "}Three-position
                 cycle (sidebar &rarr; map &rarr; controls), with
                 last-position memory at each landmark. Two F6
                 taps from a selected map POI returns the user to
@@ -567,7 +567,7 @@ export default function Maps() {
               spatial information about a residential subdivision
               &mdash; the work that produced the polar-coordinate
               finding. The{" "}
-              <strong>East Toronto streetmap</strong> followed:
+              <strong>East End Toronto streetmap</strong>{" "}followed:
               first publicly shown at a 45-minute in-person session
               at the 2019 Guelph Accessibility Conference (a
               low-fidelity, black-and-white, file:///-served
@@ -576,11 +576,11 @@ export default function Maps() {
               model the family of maps now shares. The{" "}
               <strong>tiled Toronto map</strong>{" "}
               followed as the direct architectural successor of
-              East Toronto, scaling the single-tile pipeline to a
+              East End Toronto, scaling the single-tile pipeline to a
               full city with its own SVG tile server &mdash; it has
               its own page now, though the live demo is still being
               prepared. Most recently, the{" "}
-              <strong>terminal map</strong> carries the conceptual
+              <strong>terminal map</strong>{" "}carries the conceptual
               model into an indoor airport surface (worked example:
               YVR&rsquo;s Level 3 departures). Same
               design vocabulary throughout; materially improved
@@ -655,7 +655,7 @@ export default function Maps() {
               </li>
               <li>
                 <Link href="/maps/east-toronto-streetmap">
-                  East Toronto streetmap
+                  East End Toronto streetmap
                 </Link>{" "}
                 &mdash; 2019 origin; introduced the ARIA Landmarks
                 + filters + rotor model the family shares.
@@ -664,7 +664,7 @@ export default function Maps() {
                 <Link href="/maps/tiled-toronto-map">
                   Tiled Toronto map
                 </Link>{" "}
-                &mdash; East Toronto taken to city scale; pre-rendered
+                &mdash; East End Toronto taken to city scale; pre-rendered
                 SVG tiles from a custom server, live and context-aware.
               </li>
               <li>

@@ -44,12 +44,23 @@ export default function MapsSearchAndMapPins() {
               A streetmap of a residential subdivision: a raster (PNG)
               base for sighted context, with a checkbox-curated pin
               overlay as the accessible layer on top. The pins are of
-              two kinds &mdash; the <strong>properties</strong> for sale,
+              two kinds &mdash; the <strong>properties</strong>{" "}for sale,
               which are the search results, and a handful of local{" "}
-              <strong>amenities</strong> around them: a school, shops, a
+              <strong>amenities</strong>{" "}around them: a school, shops, a
               place of worship, somewhere to walk. Cartesian via touch,
               polar on tap; the selected pin sits at the centre of the
               viewport as the datum everything else is described against.
+            </p>
+            <p className="muted">
+              <small>
+                Shown briefly at the 2019 Guelph Accessibility
+                Conference alongside the{" "}
+                <Link href="/maps/east-toronto-streetmap">
+                  East End Toronto streetmap
+                </Link>
+                , where the family&rsquo;s interaction model was first
+                presented.
+              </small>
             </p>
           </section>
 
@@ -59,7 +70,7 @@ export default function MapsSearchAndMapPins() {
           >
             <h2>Why a raster base, and why that&rsquo;s right here</h2>
             <p>
-              The later maps in the family draw <em>everything</em> as
+              The later maps in the family draw <em>everything</em>{" "}as
               addressable SVG, because their job is to let a non-sighted
               user explore the detailed space itself. This demo does not
               work that way, and that is a deliberate, fit-for-purpose
@@ -68,7 +79,7 @@ export default function MapsSearchAndMapPins() {
               the properties are in the subdivision &mdash; not the
               detail of the streets around them. The map renders a raster
               base for sighted context, and the accessible, interactive
-              layer is the <em>pin overlay</em> drawn on top: only the
+              layer is the <em>pin overlay</em>{" "}drawn on top: only the
               pins need to be addressable, focusable, and described,
               because only the pins are what the map is about.
             </p>
@@ -79,7 +90,7 @@ export default function MapsSearchAndMapPins() {
               answers &ldquo;where are the properties, and what is near
               each one?&rdquo;; the{" "}
               <Link href="/maps/east-toronto-streetmap">
-                East Toronto streetmap
+                East End Toronto streetmap
               </Link>{" "}
               and the{" "}
               <Link href="/maps/terminal-map">terminal map</Link> answer
@@ -100,7 +111,7 @@ export default function MapsSearchAndMapPins() {
           >
             <h2>The information behind the pins</h2>
             <p>
-              Each pin is a <em>typed</em> node. A property carries its
+              Each pin is a <em>typed</em>{" "}node. A property carries its
               address and the things a buyer filters on &mdash;
               bedrooms, bathrooms, style, price. An amenity carries its
               name and its class: education, retail, a place of worship,
@@ -134,12 +145,12 @@ export default function MapsSearchAndMapPins() {
               The search filters the properties: bedrooms, bathrooms,
               style, and price narrow which pins the map shows. Choosing
               a result then does something deliberately unobvious &mdash;{" "}
-              <strong>focus stays on the results list</strong> rather
+              <strong>focus stays on the results list</strong>{" "}rather
               than jumping to the property on the map.
             </p>
             <p>
               The reason is the buyer&rsquo;s actual task. People want to
-              pick several candidates and <em>then</em> compare where
+              pick several candidates and <em>then</em>{" "}compare where
               they sit relative to the things they care about; pulling
               focus onto the map at each pick would wreck that. Instead, a
               live region announces &ldquo;property displayed on the
@@ -158,7 +169,7 @@ export default function MapsSearchAndMapPins() {
             <p>
               Because focus does not move, every pin has to be cheap to
               reach by navigation &mdash; so each property is both a{" "}
-              <em>heading</em> and a <em>button</em>. A screen-reader
+              <em>heading</em>{" "}and a <em>button</em>. A screen-reader
               user can jump straight to it by heading or by control,
               whichever rotor they reach for, and activate it once there.
             </p>
@@ -166,7 +177,7 @@ export default function MapsSearchAndMapPins() {
               One subtlety, because it is a common trap: the heading and
               the button are kept as <em>siblings</em>, not nested. ARIA
               treats a button&rsquo;s descendants as presentational, so a
-              heading placed <em>inside</em> a button can be folded into
+              heading placed <em>inside</em>{" "}a button can be folded into
               the button&rsquo;s name and disappear from the headings
               list. Keeping them siblings guarantees the heading stays a
               heading; the reasoning is worked through in{" "}
@@ -183,7 +194,7 @@ export default function MapsSearchAndMapPins() {
               the polar reading made concrete &mdash; closest matters
               most, and the description sweeps around the compass rather
               than scattering across the map. Why that order is a
-              separate problem from the <em>importance</em> of each
+              separate problem from the <em>importance</em>{" "}of each
               amenity &mdash; and why a plain &ldquo;nearest
               first&rdquo; list is not enough &mdash; is worked through in{" "}
               <Link href="/maps/how-its-built">

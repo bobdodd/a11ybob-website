@@ -50,7 +50,7 @@ export default function SwitchAndMagnifierSupport() {
               For keyboard and screen-reader users that is effective,
               because their navigation follows DOM focus. Switch
               scanning is different, and the short answer is that in
-              most cases scanning does <em>not</em> automatically jump
+              most cases scanning does <em>not</em>{" "}automatically jump
               to the target in a useful way. It depends heavily on the
               switch-access software.
             </p>
@@ -58,7 +58,7 @@ export default function SwitchAndMagnifierSupport() {
             <h3>How the main platforms behave</h3>
             <ul>
               <li>
-                <strong>iOS Switch Control</strong> does follow
+                <strong>iOS Switch Control</strong>{" "}does follow
                 programmatic focus shifts, so activating a skip link
                 moves focus to the target and scanning should resume
                 there. It works reasonably well in practice, though the
@@ -66,7 +66,7 @@ export default function SwitchAndMagnifierSupport() {
                 auditory feedback.
               </li>
               <li>
-                <strong>Android Switch Access</strong> is more
+                <strong>Android Switch Access</strong>{" "}is more
                 problematic. It scans by visually walking the UI
                 element tree, and its response to programmatic focus
                 changes has historically been inconsistent: the scan
@@ -117,7 +117,7 @@ export default function SwitchAndMagnifierSupport() {
               landmark structure, reduced overall DOM clutter, and
               logical grouping of interactive elements early in the scan
               order. The terminal map provides the first (landmarks and{" "}
-              <kbd>F6</kbd> region cycling) but, because it draws
+              <kbd>F6</kbd>{" "}region cycling) but, because it draws
               everything as SVG, works against the second: its high
               node count is exactly the clutter that lengthens a switch
               scan. That tension is recorded honestly in the
@@ -179,14 +179,14 @@ export default function SwitchAndMagnifierSupport() {
                 across, particularly outside Safari.
               </li>
               <li>
-                <strong>iOS / iPadOS Zoom</strong> follows focus when
+                <strong>iOS / iPadOS Zoom</strong>{" "}follows focus when
                 used with a keyboard, but only if the app exposes focus
                 to the accessibility layer; purely touch-driven apps
                 that surface no keyboard focus give Zoom nothing to
                 track.
               </li>
               <li>
-                <strong>Android Magnification</strong> is the weakest of
+                <strong>Android Magnification</strong>{" "}is the weakest of
                 the mainstream options &mdash; primarily gesture-driven,
                 with limited focus-following, and it does not reliably
                 track keyboard- or switch-driven focus.
@@ -223,7 +223,7 @@ export default function SwitchAndMagnifierSupport() {
             </p>
             <p>
               It also raises the bar for the visible focus indicator. A
-              magnification user who does <em>not</em> get automatic
+              magnification user who does <em>not</em>{" "}get automatic
               viewport tracking still has to be able to find where focus
               landed, which means the indicator has to be large enough
               and high-contrast enough to be found on its own &mdash;

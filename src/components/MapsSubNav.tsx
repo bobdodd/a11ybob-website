@@ -13,7 +13,7 @@ const SUB_PAGES = [
   { href: "/maps", label: "Maps" },
   { href: "/maps/how-its-built", label: "How it’s built" },
   { href: "/maps/search-and-map-pins", label: "Search and map pins" },
-  { href: "/maps/east-toronto-streetmap", label: "East Toronto streetmap" },
+  { href: "/maps/east-toronto-streetmap", label: "East End Toronto streetmap" },
   { href: "/maps/tiled-toronto-map", label: "Tiled Toronto map" },
   { href: "/maps/terminal-map", label: "Terminal map" },
 ] as const;

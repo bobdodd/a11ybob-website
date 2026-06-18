@@ -19,6 +19,7 @@ const STATIC_PATHS = [
   "lived-user-testing",
   "maps",
   "maps/east-toronto-streetmap",
+  "maps/east-toronto-streetmap/speaking-and-finding-your-place",
   "maps/how-its-built",
   "maps/search-and-map-pins",
   "maps/terminal-map",

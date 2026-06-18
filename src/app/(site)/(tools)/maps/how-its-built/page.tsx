@@ -123,7 +123,7 @@ export default function MapsHowItsBuilt() {
               Open any digital map and ask what is actually stored. It is a
               list of points with coordinates, and some attributes hung off
               each one. That is all. Everything that makes it feel like a{" "}
-              <em>map</em> happens in the head of the person looking at it.
+              <em>map</em>{" "}happens in the head of the person looking at it.
             </p>
             <p>
               A sighted reader does an enormous amount of unconscious work
@@ -160,9 +160,9 @@ export default function MapsHowItsBuilt() {
               reader infers <em>explicit in the data</em>: which points are
               of which kind, which are near which, and which matter most for
               the task at hand. Those relationships &mdash; the{" "}
-              <strong>edges</strong> and their <strong>weights</strong>{" "}
+              <strong>edges</strong>{" "}and their <strong>weights</strong>{" "}
               &mdash; are not metadata decorating a map. On a non-visual map
-              they <em>are</em> the map. Equitable access comes from
+              they <em>are</em>{" "}the map. Equitable access comes from
               expressing them in the rendering: not just the lines, icons,
               and shapes, but the <strong>semantic relationships</strong>{" "}
               between them, in a form assistive technology can pick up.
@@ -171,7 +171,7 @@ export default function MapsHowItsBuilt() {
               This is also why the obvious &ldquo;accessible map&rdquo;
               fails. Put alt text on every pin, or expose a list of
               coordinates, and you have given a screen-reader user every{" "}
-              <em>node</em> and not one <em>relationship</em>. It passes a
+              <em>node</em>{" "}and not one <em>relationship</em>. It passes a
               label audit and conveys nothing about how the places relate
               &mdash; which is the whole map. WCAG 1.3.1 is literally named{" "}
               <em>Info <strong>and Relationships</strong></em>; the second
@@ -193,7 +193,7 @@ export default function MapsHowItsBuilt() {
               A map of this kind has two faces. There is the list of search
               results, and there is the rendered map. The tempting mistake
               is to treat them as two features that happen to sit on the
-              same page. They are not. They are two <em>projections</em> of
+              same page. They are not. They are two <em>projections</em>{" "}of
               a single underlying model: a property exists once, as data,
               and the list and the map are both ways of reading that one
               thing. Search results and map renderings, in other words, are
@@ -202,7 +202,7 @@ export default function MapsHowItsBuilt() {
             <p>
               Holding that line matters because it rules out the move most
               &ldquo;accessible maps&rdquo; quietly make: serving the
-              non-sighted user whichever projection is <em>easiest</em> to
+              non-sighted user whichever projection is <em>easiest</em>{" "}to
               make accessible &mdash; usually the list &mdash; and calling
               the map done. That is not access to the map. It is a polite
               refusal of it. The results list is not the map; the
@@ -213,8 +213,8 @@ export default function MapsHowItsBuilt() {
             </p>
             <p>
               So the job is not to pick a projection. It is to give every
-              user as much access to <em>each</em> projection as the medium
-              allows &mdash; an accessible results list <em>and</em> an
+              user as much access to <em>each</em>{" "}projection as the medium
+              allows &mdash; an accessible results list <em>and</em>{" "}an
               accessible map, both, each on its own terms. That phrase
               &mdash; <em>as much as you can</em> &mdash; is doing real
               work: it is maximisation, not a promise of perfect parity.
@@ -234,7 +234,7 @@ export default function MapsHowItsBuilt() {
             <h2>The information model: a typed digraph</h2>
             <p>
               If the relationships are the map, then the model has to be a
-              structure that <em>holds</em> relationships. The one that fits
+              structure that <em>holds</em>{" "}relationships. The one that fits
               is a <strong>typed directed graph</strong> &mdash; a digraph
               &mdash; and it is worth being precise about its parts, because
               two different kinds of structure are tangled together in it
@@ -245,7 +245,7 @@ export default function MapsHowItsBuilt() {
             <p>
               A pin is a point in space that carries information unique to
               that location, and every pin has a <strong>type</strong>.
-              There are two classes &mdash; <strong>property</strong> and{" "}
+              There are two classes &mdash; <strong>property</strong>{" "}and{" "}
               <strong>amenity</strong> &mdash; and amenities carry their own
               subtypes: education, places of worship, retail, recreation,
               and so on. A property is a thing for sale, with an address and
@@ -262,7 +262,7 @@ export default function MapsHowItsBuilt() {
               hierarchy in which every node has exactly one parent. A school
               is an education amenity is an amenity; it is not also,
               simultaneously, a property. The tree is the part of the
-              structure that answers &ldquo;what <em>kind</em> of thing is
+              structure that answers &ldquo;what <em>kind</em>{" "}of thing is
               this,&rdquo; and because it is a strict hierarchy it gives you
               categorical navigation almost for free.
             </p>
@@ -274,14 +274,14 @@ export default function MapsHowItsBuilt() {
             <p>
               A tree on its own is not enough, and this is the distinction
               that does the most work: what turns the classification tree
-              into a <strong>digraph</strong> is a second kind of edge that
-              does <em>not</em> follow the hierarchy. The obvious one is the{" "}
+              into a <strong>digraph</strong>{" "}is a second kind of edge that
+              does <em>not</em>{" "}follow the hierarchy. The obvious one is the{" "}
               <strong>convenience relation</strong> &mdash; a{" "}
-              <em>directed</em>, <em>weighted</em> link from a property to a
+              <em>directed</em>, <em>weighted</em>{" "}link from a property to a
               nearby amenity, carrying the distance and bearing between
               them. It runs property&nbsp;&rarr;&nbsp;amenity because that is
               the direction a buyer reasons in (&ldquo;how near is the
-              school to <em>this</em> home?&rdquo;), and it is weighted
+              school to <em>this</em>{" "}home?&rdquo;), and it is weighted
               because not every nearby thing matters equally. The tree says
               what a node <em>is</em>; the edges say how nodes{" "}
               <em>relate</em>. Both are needed, and they are not the same
@@ -322,7 +322,7 @@ export default function MapsHowItsBuilt() {
             <p>
               That is what makes the model general rather than a one-off for
               property search. The same pins, drawn in the same positions,
-              yield a <em>different</em> digraph for a different reader,
+              yield a <em>different</em>{" "}digraph for a different reader,
               because the weighting is a function of who is asking. A
               home-buyer weights proximity to shops and a good school. A
               map built for prospective parents would weight a quite
@@ -331,18 +331,18 @@ export default function MapsHowItsBuilt() {
               healthcare. Same coordinates, same pins, same rendered image
               &mdash; and a different weighted digraph underneath each time.
               The digraph is needs-driven, and it is weighted; architecturally
-              that means the weighting is a <em>parameter</em> of the model,
+              that means the weighting is a <em>parameter</em>{" "}of the model,
               not a constant baked into it.
             </p>
             <p>
               And this is precisely where the accessibility pays off,
               because the two structures map onto the two things a
               non-visual reader needs to do. The <strong>type tree</strong>{" "}
-              is the spine of <em>categorical</em> navigation: group and
+              is the spine of <em>categorical</em>{" "}navigation: group and
               filter by class, step through &ldquo;next education
               pin,&rdquo; collapse a whole category you do not care about.
-              The <strong>directed edges</strong> are{" "}
-              <em>relational</em> navigation: stand on a property and walk
+              The <strong>directed edges</strong>{" "}are{" "}
+              <em>relational</em>{" "}navigation: stand on a property and walk
               its edges out to the amenities that make it convenient. Get
               the model right and the navigation is implied by it.
             </p>
@@ -383,7 +383,7 @@ export default function MapsHowItsBuilt() {
               hold in the head than the bag of points we started with
               &mdash; the user just hops randomly around the map. Two
               genuinely different things have to be decided: <em>which</em>{" "}
-              amenities matter (importance), and in <em>what order</em> to
+              amenities matter (importance), and in <em>what order</em>{" "}to
               walk them (sequence). A single weight answers only the first.
             </p>
 
@@ -439,11 +439,11 @@ export default function MapsHowItsBuilt() {
               Because the whole construction hangs off the origin, the
               obvious question is what the origin is when the user has not
               selected a single property. The answer follows selection
-              count. With <strong>one</strong> property selected, the origin
+              count. With <strong>one</strong>{" "}property selected, the origin
               is that property &mdash; the per-property spiral. With{" "}
               <strong>none</strong>, it falls back to the centre of the
               subdivision, and amenities are described relative to that. With{" "}
-              <strong>several</strong> selected for comparison, there is no
+              <strong>several</strong>{" "}selected for comparison, there is no
               single origin, and &mdash; honestly &mdash; this is where the
               model still has open questions: do you anchor on a centroid and
               report each amenity&rsquo;s convenience per property
@@ -464,7 +464,7 @@ export default function MapsHowItsBuilt() {
               A model that lives only in the developer&rsquo;s head helps no
               one. It has to be expressed in the rendering, in a form
               assistive technology can read &mdash; and the first principle
-              is to treat the whole page as <em>one</em> structure, not as an
+              is to treat the whole page as <em>one</em>{" "}structure, not as an
               accessible HTML part with an inaccessible picture bolted to the
               side.
             </p>
@@ -485,7 +485,7 @@ export default function MapsHowItsBuilt() {
             <h3>Every pin is a node you can find and act on</h3>
             <p>
               Within that structure, each pin is exposed as something a
-              reader can both <em>find</em> and <em>act on</em>. In the demo
+              reader can both <em>find</em>{" "}and <em>act on</em>. In the demo
               a property is a <strong>heading</strong> (so it appears when a
               screen-reader user skims by heading) and a{" "}
               <strong>button</strong> (so it appears when they skim by
@@ -499,14 +499,14 @@ export default function MapsHowItsBuilt() {
               The detail that matters here &mdash; and the reason this page
               keeps insisting you understand rather than copy &mdash; is{" "}
               <strong>that the heading and the button are siblings, never
-              nested.</strong> ARIA defines <code>button</code> as a role
+              nested.</strong>{" "}ARIA defines <code>button</code>{" "}as a role
               whose descendants are <em>presentational</em>: by the letter of
-              the spec, a heading placed <em>inside</em> a button should be
+              the spec, a heading placed <em>inside</em>{" "}a button should be
               folded into the button&rsquo;s name and vanish from the
               headings list. A heading nested in a button is therefore a
               heading you cannot rely on. Keeping them as siblings &mdash;
               the button borrowing the heading&rsquo;s text for its name via{" "}
-              <code>aria-labelledby</code> rather than swallowing it &mdash;
+              <code>aria-labelledby</code>{" "}rather than swallowing it &mdash;
               guarantees the heading stays a heading. (In SVG specifically
               the visible title often has to remain inside the card for paint
               reasons, so the robust form is a screen-reader-only heading as
@@ -522,7 +522,7 @@ export default function MapsHowItsBuilt() {
             </p>
             <ul>
               <li>
-                <strong>1.3.1 Info and Relationships</strong> owns the{" "}
+                <strong>1.3.1 Info and Relationships</strong>{" "}owns the{" "}
                 <em>structure itself</em> &mdash; the typed nodes <em>and</em>
                 {" "}the edges between them, made programmatically
                 determinable rather than left to be inferred from pixels. The
@@ -531,7 +531,7 @@ export default function MapsHowItsBuilt() {
                 actually surface.
               </li>
               <li>
-                <strong>4.1.2 Name, Role, Value</strong> governs the{" "}
+                <strong>4.1.2 Name, Role, Value</strong>{" "}governs the{" "}
                 <em>interactive surface</em> &mdash; a pin announcing its name,
                 its role (property, or amenity-of-a-subtype), and its state
                 (selected; current; &ldquo;2 of 5 in this ring&rdquo;); the
@@ -539,9 +539,9 @@ export default function MapsHowItsBuilt() {
                 of that in sync as the user moves.
               </li>
               <li>
-                <strong>2.4.3 Focus Order</strong> is the one the whole
+                <strong>2.4.3 Focus Order</strong>{" "}is the one the whole
                 circuit discussion was really about. The spiral{" "}
-                <em>is</em> a focus order, and 2.4.3&rsquo;s requirement that
+                <em>is</em>{" "}a focus order, and 2.4.3&rsquo;s requirement that
                 order &ldquo;preserve meaning and operability&rdquo; is the
                 formal statement of the rule that the sequence must not
                 scatter. Importance-versus-sequence is not a nicety; it is
@@ -550,12 +550,12 @@ export default function MapsHowItsBuilt() {
             </ul>
             <p>
               One honesty runs under all of this:{" "}
-              <strong>ARIA support in SVG is lax,</strong> and the laxity
+              <strong>ARIA support in SVG is lax,</strong>{" "}and the laxity
               cuts both ways. You can get away with markup that HTML tooling
               would reject &mdash; but the same gap means nothing warns you
               when it is wrong, and behaviour varies across screen readers
               and browser versions. SVG is therefore a place to test{" "}
-              <em>more</em> across real assistive technology, not less. The
+              <em>more</em>{" "}across real assistive technology, not less. The
               quiet success in one screen reader is not the same as a correct
               accessibility tree.
             </p>
@@ -574,11 +574,11 @@ export default function MapsHowItsBuilt() {
               technology, and a map that serves only the most expert locks
               everyone else out. The demo treats the navigation methods as a
               ladder of increasing power, each a fallback for the one above
-              it. <strong>Arrow keys</strong> walk the content in order
+              it. <strong>Arrow keys</strong>{" "}walk the content in order
               &mdash; the most basic skill, and the reason the focus order,
               the circuit, is the floor everyone stands on.{" "}
-              <strong>Heading navigation</strong> jumps between pins for those
-              who know it. <strong>Landmark navigation</strong> jumps between
+              <strong>Heading navigation</strong>{" "}jumps between pins for those
+              who know it. <strong>Landmark navigation</strong>{" "}jumps between
               whole regions for those who know that. Landmark navigation is a
               little more efficient, but each rung is built to work alone, and
               the heading structure and the landmark structure are kept close
@@ -590,9 +590,9 @@ export default function MapsHowItsBuilt() {
 
             <h3>Filters and the rotor are one capability</h3>
             <p>
-              Changing <em>what</em> the map shows is a single capability
-              expressed twice: a <strong>filter</strong> in the visual
-              projection, the screen-reader <strong>rotor</strong> in the
+              Changing <em>what</em>{" "}the map shows is a single capability
+              expressed twice: a <strong>filter</strong>{" "}in the visual
+              projection, the screen-reader <strong>rotor</strong>{" "}in the
               non-visual one. Both choose which nodes and edges are live;
               each is its projection&rsquo;s native control for the same
               operation. What that manipulation touches differs by map. On
@@ -600,7 +600,7 @@ export default function MapsHowItsBuilt() {
               <em>node-side</em> &mdash; the property search narrows which
               property-nodes are shown, and the amenity graph beneath barely
               moves. On a wayfinding map it acts heavily on <em>edges</em>,
-              because there the routes <em>are</em> edges. Same control, very
+              because there the routes <em>are</em>{" "}edges. Same control, very
               different consequences, depending on which part of the graph
               the map is about.
             </p>
@@ -616,17 +616,17 @@ export default function MapsHowItsBuilt() {
             <p>
               That decision repays a close look, because it is
               counter-intuitive and deliberate. When a user picks a result,
-              focus <em>stays</em> on the results list; it does{" "}
-              <em>not</em> jump to the property on the map. The reason is the
+              focus <em>stays</em>{" "}on the results list; it does{" "}
+              <em>not</em>{" "}jump to the property on the map. The reason is the
               buyer&rsquo;s actual task: people want to select several
-              candidates and <em>then</em> go and compare where they sit
+              candidates and <em>then</em>{" "}go and compare where they sit
               relative to the things they care about, and yanking focus onto
               the map at every pick would wreck that workflow. Keeping focus
               put avoids an unexpected change of context (the concern behind
               WCAG 3.2.1 / 3.2.2), and the live-region announcement &mdash;
               &ldquo;Plot 27 displayed on the map&rdquo; &mdash; does the work
               the focus move would have done, as a status message (4.1.3).
-              The cost is real: the property now has to be <em>found</em> on
+              The cost is real: the property now has to be <em>found</em>{" "}on
               the map by navigation rather than handed to you. That cost is
               exactly why every pin is both a heading and a button &mdash; so
               it is cheap to land on from whichever rotor the reader reaches
@@ -646,7 +646,7 @@ export default function MapsHowItsBuilt() {
               that model evaluated for different jobs. The difference between
               them is not a difference of principle &mdash; they share the
               digraph, the polar reading, the one-structure rendering. It is
-              a difference in <em>which part of the graph does the work,</em>
+              a difference in <em>which part of the graph does the work,</em>{" "}
               and the rendering follows from that.
             </p>
             <p>
@@ -662,12 +662,12 @@ export default function MapsHowItsBuilt() {
               need to be addressable, because only the pins are what the map
               is about. The{" "}
               <Link href="/maps/east-toronto-streetmap">
-                East Toronto streetmap
+                East End Toronto streetmap
               </Link>{" "}
               and the{" "}
               <Link href="/maps/terminal-map">terminal map</Link> are about
               their <strong>edges</strong>: in a wayfinding map the routes{" "}
-              <em>are</em> the edges, so filtering and the rotor act on the
+              <em>are</em>{" "}the edges, so filtering and the rotor act on the
               edges directly, the graph is dense, and every feature has to be
               drawn as addressable SVG because the space itself is the
               content. Same model; the weight simply falls in a different
@@ -692,13 +692,13 @@ export default function MapsHowItsBuilt() {
                 The validation around ARIA and roles in SVG is lax; that lets
                 you get away with things, and it equally means nothing flags
                 the things you got wrong. Treat SVG as the place that needs{" "}
-                <em>more</em> testing across real screen readers, not less.
+                <em>more</em>{" "}testing across real screen readers, not less.
               </li>
               <li>
-                <strong>The numbers in the demo are placeholder.</strong> The
+                <strong>The numbers in the demo are placeholder.</strong>{" "}The
                 distances, the prices, the amenities &mdash; mathematical
                 lorem ipsum, not real geography. The demo shows the{" "}
-                <em>form</em> of an accessible description (a thing named,
+                <em>form</em>{" "}of an accessible description (a thing named,
                 placed, and ordered relative to an anchor), not a working
                 subdivision tool. That is the right scope for a demonstration
                 of the model; it is not a product.
@@ -730,7 +730,7 @@ export default function MapsHowItsBuilt() {
               </li>
               <li>
                 <Link href="/maps/east-toronto-streetmap">
-                  East Toronto streetmap
+                  East End Toronto streetmap
                 </Link>{" "}
                 &mdash; where the landmarks, filters, and rotor first
                 appeared.
