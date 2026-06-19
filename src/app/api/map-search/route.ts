@@ -198,6 +198,10 @@ export async function GET(req: NextRequest) {
 }
 
 function num(v: string | null, fallback: number): number {
+  // Guard null/empty FIRST — Number(null) and Number("") are both 0 (finite),
+  // which would silently swallow the fallback (e.g. an absent ?limit became 0,
+  // clamped to size:1, so every search returned a single hit).
+  if (v === null || v.trim() === "") return fallback;
   const n = Number(v);
   return Number.isFinite(n) ? n : fallback;
 }
