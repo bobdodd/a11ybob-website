@@ -166,6 +166,7 @@ export async function GET(req: NextRequest) {
       query,
       _source: [
         "osm_id",
+        "name",
         "display",
         "category",
         "subtype",
@@ -184,24 +185,33 @@ export async function GET(req: NextRequest) {
       _source: Record<string, unknown>;
     }>) ?? [];
 
-  // Collapse exact duplicates — same name AND same spot (to ~1 m) — which are
-  // OSM node/way pairs for one place. Distinct features that merely share a
-  // generic label (every "Tactile paving" crossing, each at its own corner)
-  // have different coordinates, so they're preserved. Highest-ranked instance
-  // of a duplicate wins (hits arrive in score order).
-  const seen = new Set<string>();
+  // Collapse OSM node/way duplicates: one real place mapped as both a point and
+  // a building outline reaches the index twice, with distinct ids and slightly
+  // different representative coordinates (the way's centroid sits metres off the
+  // node). Rule: drop a NAMED feature when an already-kept result shares its
+  // name within ~60 m. Only named features are collapsed — generic-labelled
+  // features ("Tactile paving", "Bench") are legitimately many, each its own
+  // real point, so they're always kept. Hits arrive in score order, so the
+  // best-ranked instance is the one retained.
+  const kept: { name: string; lat: number; lng: number }[] = [];
   const results: Result[] = [];
   for (const h of hits) {
     const s = h._source;
     const lat = s.lat as number;
     const lng = s.lng as number;
-    const display = (s.display as string) ?? "";
-    const key = `${display}@${lat?.toFixed(5)},${lng?.toFixed(5)}`;
-    if (seen.has(key)) continue;
-    seen.add(key);
+    const name = ((s.name as string) ?? "").trim().toLowerCase();
+
+    if (name) {
+      const dupe = kept.some(
+        (k) => k.name === name && metresBetween(k.lat, k.lng, lat, lng) < 60,
+      );
+      if (dupe) continue;
+      kept.push({ name, lat, lng });
+    }
+
     results.push({
       id: h._id,
-      display,
+      display: (s.display as string) ?? "",
       category: s.category as string | undefined,
       subtype: s.subtype as string | undefined,
       lat,
@@ -222,6 +232,16 @@ function num(v: string | null, fallback: number): number {
   if (v === null || v.trim() === "") return fallback;
   const n = Number(v);
   return Number.isFinite(n) ? n : fallback;
+}
+
+// Equirectangular approximation — plenty accurate at the tens-of-metres scale
+// we test against, and far cheaper than haversine.
+function metresBetween(aLat: number, aLng: number, bLat: number, bLng: number): number {
+  const R = 6371000;
+  const rad = Math.PI / 180;
+  const dLat = (bLat - aLat) * rad;
+  const dLng = (bLng - aLng) * rad * Math.cos(((aLat + bLat) / 2) * rad);
+  return R * Math.sqrt(dLat * dLat + dLng * dLng);
 }
 
 function numOrNull(v: string | null): number | null {
