@@ -155,10 +155,14 @@ export async function GET(req: NextRequest) {
     };
   }
 
+  // Oversample so we can drop OSM's node+way duplicates (one real place mapped
+  // as two elements, identical name and position) and still fill `limit`.
+  const fetchSize = Math.min(100, limit * 3);
+
   const res = await opensearch.search({
     index: INDEX,
     body: {
-      size: limit,
+      size: fetchSize,
       query,
       _source: [
         "osm_id",
@@ -180,19 +184,33 @@ export async function GET(req: NextRequest) {
       _source: Record<string, unknown>;
     }>) ?? [];
 
-  const results: Result[] = hits.map((h) => {
+  // Collapse exact duplicates — same name AND same spot (to ~1 m) — which are
+  // OSM node/way pairs for one place. Distinct features that merely share a
+  // generic label (every "Tactile paving" crossing, each at its own corner)
+  // have different coordinates, so they're preserved. Highest-ranked instance
+  // of a duplicate wins (hits arrive in score order).
+  const seen = new Set<string>();
+  const results: Result[] = [];
+  for (const h of hits) {
     const s = h._source;
-    return {
+    const lat = s.lat as number;
+    const lng = s.lng as number;
+    const display = (s.display as string) ?? "";
+    const key = `${display}@${lat?.toFixed(5)},${lng?.toFixed(5)}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    results.push({
       id: h._id,
-      display: (s.display as string) ?? "",
+      display,
       category: s.category as string | undefined,
       subtype: s.subtype as string | undefined,
-      lat: s.lat as number,
-      lng: s.lng as number,
+      lat,
+      lng,
       address: s.address as Record<string, string> | undefined,
       access: s.access as Record<string, string> | undefined,
-    };
-  });
+    });
+    if (results.length >= limit) break;
+  }
 
   return NextResponse.json({ results });
 }
