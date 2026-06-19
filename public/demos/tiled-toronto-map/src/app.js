@@ -5,6 +5,9 @@ import { AccessibilityManager } from './AccessibilityManager.js';
 import { SVGTileManager } from './SVGTileManager.js';
 import { FeatureRenderer } from './FeatureRenderer.js';
 import { Avatar } from './Avatar.js';
+import { TaxonomyClient } from './TaxonomyClient.js';
+import { buildFilterUI } from './FilterUI.js';
+import { setupTooltip } from './Tooltip.js';
 
 class MapApplication {
     constructor() {
@@ -19,35 +22,42 @@ class MapApplication {
         this.isNavigating = false;
         this.hasInitialLocation = false;
         
-        this.init();
-        
+        this.init().catch((e) => console.error('Map init failed:', e));
+
     }
 
-    init() {
+    async init() {
         // Initialize map renderer
         const mapSvg = document.getElementById('map-svg');
         this.mapRenderer = new MapRenderer(mapSvg);
-        
+
         // Check for position parameter in URL
         this.handleInitialPosition();
-        
+
         // Initialize location tracker
         this.locationTracker = new LocationTracker();
-        
+
+        // Load the taxonomy — single source of truth for filters/classes.
+        // Non-fatal: if it fails the map still loads, filters just stay inert.
+        try {
+            this.taxonomy = await TaxonomyClient.load('taxonomy.json');
+        } catch (e) {
+            console.error('Taxonomy load failed; filters disabled:', e);
+            this.taxonomy = new TaxonomyClient({});
+        }
+
+        // Build the filter + rotor controls from the taxonomy (replaces the old hand-coded HTML)
+        buildFilterUI(this.taxonomy, document.getElementById('filter-groups'), 'filter');
+        buildFilterUI(this.taxonomy, document.getElementById('rotor-groups'), 'rotor');
+
         // Initialize filter and accessibility managers
-        this.filterManager = new FilterManager();
-        this.accessibilityManager = new AccessibilityManager();
-        
-        // Override filter manager's updateVisibility to work with tiles
+        this.filterManager = new FilterManager(this.taxonomy);
+        this.accessibilityManager = new AccessibilityManager(this.taxonomy);
+
+        // After a filter change, refresh the rotor's tab order too.
         const originalUpdateVisibility = this.filterManager.updateVisibility.bind(this.filterManager);
-        this.filterManager.updateVisibility = (featureType, visible) => {
-            // Call original method (for non-tile features)
-            originalUpdateVisibility(featureType, visible);
-            
-            // Update tile visibility
-            this.applyFiltersToTiles();
-            
-            // Update accessibility after filter change
+        this.filterManager.updateVisibility = (id, enabled) => {
+            originalUpdateVisibility(id, enabled);
             this.accessibilityManager.updateTabOrder();
         };
         
@@ -60,7 +70,11 @@ class MapApplication {
         
         // Set up event listeners
         this.setupEventListeners();
-        
+
+        // Sticky name tooltip on focus/hover (reads each feature's aria-label).
+        // Delegates on #map-svg, so it covers tiles loaded later too.
+        setupTooltip();
+
         // Set up keyboard navigation
         this.setupKeyboardNavigation();
         
@@ -1058,260 +1072,12 @@ class MapApplication {
     }
     
     applyFiltersToTiles() {
-        // Apply visibility to each layer group in all tiles
-        document.querySelectorAll('.tile').forEach(tile => {
-            // Handle buildings layer
-            const buildingsLayer = tile.querySelector('[id$="-buildings"]');
-            if (buildingsLayer) {
-                buildingsLayer.style.display = this.filterManager.filters.buildings ? '' : 'none';
-            }
-            
-            // Handle roads layer
-            const roadsLayer = tile.querySelector('[id$="-roads"]');
-            if (roadsLayer) {
-                roadsLayer.style.display = this.filterManager.filters.roads ? '' : 'none';
-            }
-            
-            // Handle transit layer
-            const transitLayer = tile.querySelector('[id$="-transit"]');
-            if (transitLayer) {
-                transitLayer.style.display = this.filterManager.filters.transit ? '' : 'none';
-            }
-            
-            // Handle accessibility layer (includes accessible parking, etc.)
-            const accessibilityLayer = tile.querySelector('[id$="-accessibility"]');
-            if (accessibilityLayer) {
-                // Show if any accessibility filter is enabled
-                const showAccessibility = this.filterManager.filters['accessible-parking'] || 
-                                        this.filterManager.filters['accessible-toilets'] ||
-                                        this.filterManager.filters['benches'] ||
-                                        this.filterManager.filters['shelters'];
-                accessibilityLayer.style.display = showAccessibility ? '' : 'none';
-            }
-            
-            // Handle accessible facilities layer
-            const accessibleFacilitiesLayer = tile.querySelector('[id$="-accessible_facilities"]');
-            if (accessibleFacilitiesLayer) {
-                // Show if any accessible facilities filter is enabled
-                const showAccessibleFacilities = 
-                    this.filterManager.filters['accessible-toilets'] ||
-                    this.filterManager.filters['changing-tables'] ||
-                    this.filterManager.filters['elevators'] ||
-                    this.filterManager.filters['automatic-doors'] ||
-                    this.filterManager.filters['wide-doors'] ||
-                    this.filterManager.filters['low-kerbs'] ||
-                    this.filterManager.filters['gentle-inclines'];
-                accessibleFacilitiesLayer.style.display = showAccessibleFacilities ? '' : 'none';
-            }
-            
-            // Handle sensory accessibility layer
-            const sensoryAccessibilityLayer = tile.querySelector('[id$="-sensory_accessibility"]');
-            if (sensoryAccessibilityLayer) {
-                // Show if any sensory accessibility filter is enabled
-                const showSensoryAccessibility = 
-                    this.filterManager.filters['tactile-paving'] ||
-                    this.filterManager.filters['audio-signals'] ||
-                    this.filterManager.filters['tactile-maps'];
-                sensoryAccessibilityLayer.style.display = showSensoryAccessibility ? '' : 'none';
-            }
-            
-            // Handle mobility access layer
-            const mobilityAccessLayer = tile.querySelector('[id$="-mobility_access"]');
-            if (mobilityAccessLayer) {
-                // Show if any mobility access filter is enabled
-                const showMobilityAccess = 
-                    this.filterManager.filters['wheelchair-yes'] ||
-                    this.filterManager.filters['wheelchair-no'] ||
-                    this.filterManager.filters['wheelchair-limited'] ||
-                    this.filterManager.filters['ramps'] ||
-                    this.filterManager.filters['handrails'] ||
-                    this.filterManager.filters['steps'];
-                mobilityAccessLayer.style.display = showMobilityAccess ? '' : 'none';
-            }
-            
-            // Handle accessible transport layer
-            const accessibleTransportLayer = tile.querySelector('[id$="-accessible_transport"]');
-            if (accessibleTransportLayer) {
-                // Show if any accessible transport filter is enabled
-                const showAccessibleTransport = 
-                    this.filterManager.filters['disabled-parking'] ||
-                    this.filterManager.filters['priority-disabled'] ||
-                    this.filterManager.filters['accessible-bus'] ||
-                    this.filterManager.filters['accessible-subway'] ||
-                    this.filterManager.filters['accessible-tram'] ||
-                    this.filterManager.filters['accessible-train'];
-                accessibleTransportLayer.style.display = showAccessibleTransport ? '' : 'none';
-            }
-            
-            // Handle water layer
-            const waterLayer = tile.querySelector('[id$="-water"]');
-            if (waterLayer) {
-                // Show if any water filter is enabled
-                const showWater = this.filterManager.filters['water-bodies'] ||
-                                this.filterManager.filters['rivers'] ||
-                                this.filterManager.filters['streams'] ||
-                                this.filterManager.filters['canals'] ||
-                                this.filterManager.filters['ditches'] ||
-                                this.filterManager.filters['coastlines'];
-                waterLayer.style.display = showWater ? '' : 'none';
-            }
-            
-            // Handle parks layer
-            const parksLayer = tile.querySelector('[id$="-parks"]');
-            if (parksLayer) {
-                parksLayer.style.display = this.filterManager.filters.parks ? '' : 'none';
-            }
-        });
-        
+        // Re-apply every current filter to the (re)loaded tiles. FilterManager
+        // now owns tile filtering (base hide/show, overlay highlight) via the
+        // taxonomy; this just refreshes it after new tiles appear.
+        if (this.filterManager) this.filterManager.applyInitialVisibility();
     }
-    
-    updateAccessibilityForTiles() {
-        // Remove all existing tabindex attributes first
-        document.querySelectorAll('[tabindex]').forEach(element => {
-            if (element.closest('#map-tiles')) {
-                element.removeAttribute('tabindex');
-                // Remove debug attribute
-                element.removeAttribute('data-wcag-visible');
-            }
-        });
-        
-        // Get selected rotor values from AccessibilityManager
-        const selectedRotorValues = this.accessibilityManager.getSelectedRotorValues();
-        
-        // If no rotor values selected, don't add any tabindex
-        if (selectedRotorValues.length === 0) {
-            return;
-        }
-        
-        // Get viewport bounds
-        const mapContainer = document.getElementById('map-container');
-        const containerRect = mapContainer.getBoundingClientRect();
-        
-        // Get all visible features in tiles that are within viewport
-        const visibleFeatures = [];
-        const debugMode = new URLSearchParams(window.location.search).get('debug') === 'true';
-        
-        document.querySelectorAll('.tile').forEach(tile => {
-            // Check each layer group
-            ['buildings', 'roads', 'transit', 'accessibility', 'accessible_facilities', 'sensory_accessibility', 'mobility_access', 'accessible_transport', 'water', 'parks'].forEach(layerId => {
-                const layerGroup = tile.querySelector(`[id$="-${layerId}"]`);
-                if (layerGroup && layerGroup.style.display !== 'none') {
-                    // Get features from this layer
-                    const features = layerGroup.querySelectorAll('polygon, polyline, circle');
-                    features.forEach(feature => {
-                        if (this.shouldIncludeInRotor(feature, selectedRotorValues)) {
-                            const meetsTargetSize = this.isFeatureInViewport(feature, containerRect);
-                            
-                            if (meetsTargetSize) {
-                                visibleFeatures.push(feature);
-                            }
-                            
-                            // In debug mode, mark features that meet/don't meet WCAG requirements
-                            if (debugMode) {
-                                feature.setAttribute('data-wcag-visible', meetsTargetSize ? 'true' : 'false');
-                            }
-                        }
-                    });
-                }
-            });
-        });
-        
-        // Sort features by their position (top to bottom, left to right)
-        visibleFeatures.sort((a, b) => {
-            const aRect = a.getBoundingClientRect();
-            const bRect = b.getBoundingClientRect();
-            
-            // Compare by Y first, then X
-            if (Math.abs(aRect.top - bRect.top) > 10) {
-                return aRect.top - bRect.top;
-            }
-            return aRect.left - bRect.left;
-        });
-        
-        // Assign tabindex values
-        visibleFeatures.forEach((feature, index) => {
-            feature.setAttribute('tabindex', index + 1);
-            
-            // Ensure feature has proper ARIA attributes
-            if (!feature.getAttribute('role')) {
-                feature.setAttribute('role', 'img');
-            }
-            if (!feature.getAttribute('aria-label')) {
-                // Try to generate a label from the feature
-                const label = this.generateFeatureLabel(feature);
-                if (label) {
-                    feature.setAttribute('aria-label', label);
-                }
-            }
-        });
-        
-        // Log summary in debug mode
-        if (debugMode) {
-            console.log(`WCAG Target Size: ${visibleFeatures.length} features meet requirements out of ${document.querySelectorAll('[data-wcag-visible]').length} rotor-selected features in view`);
-        }
-    }
-    
-    shouldIncludeInRotor(feature, selectedRotorValues) {
-        // If no values selected, don't include anything
-        if (selectedRotorValues.length === 0) return false;
-        
-        const parentId = feature.parentElement?.id || '';
-        const featureClasses = feature.className?.baseVal || '';
-        
-        // Check each selected rotor value
-        for (const value of selectedRotorValues) {
-            switch (value) {
-                // Main categories
-                case 'buildings':
-                    if (parentId.includes('buildings') || featureClasses.includes('building')) return true;
-                    break;
-                case 'roads':
-                    if (parentId.includes('roads') || featureClasses.includes('road')) return true;
-                    break;
-                case 'transit':
-                    if (parentId.includes('transit') || featureClasses.includes('transit')) return true;
-                    break;
-                case 'parks':
-                    if (parentId.includes('parks') || featureClasses.includes('park')) return true;
-                    break;
-                case 'water-bodies':
-                    if (parentId.includes('water') || featureClasses.includes('water')) return true;
-                    break;
-                
-                // Accessibility features
-                case 'accessible-parking':
-                    if (parentId.includes('accessibility') || parentId.includes('accessible_facilities')) return true;
-                    break;
-                case 'wheelchair-yes':
-                case 'wheelchair-no':
-                case 'wheelchair-limited':
-                    if (parentId.includes('mobility_access')) return true;
-                    break;
-                case 'tactile-paving':
-                case 'audio-signals':
-                    if (parentId.includes('sensory_accessibility')) return true;
-                    break;
-                    
-                // Waterways
-                case 'rivers':
-                case 'streams':
-                case 'canals':
-                case 'ditches':
-                case 'coastlines':
-                    if (parentId.includes('water')) return true;
-                    break;
-                    
-                // Catch-all for other features
-                default:
-                    // Check if parent layer ID contains the rotor value
-                    if (parentId.includes(value.replace('-', '_'))) return true;
-                    break;
-            }
-        }
-        
-        return false;
-    }
-    
+
     isFeatureInViewport(feature, containerRect) {
         const featureRect = feature.getBoundingClientRect();
         

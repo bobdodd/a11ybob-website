@@ -1,109 +1,10 @@
 export class AccessibilityManager {
-    constructor() {
+    constructor(taxonomy) {
+        this.taxonomy = taxonomy;
         this.currentRotor = 'none';
-        this.featureSelectors = {
-            'none': null,
-            'transit': '.transit-stop',
-            'shops': '.shop',
-            'schools': '.school',
-            'worship': '.worship',
-            'parks': '.park',
-            'hospitals': '.hospital',
-            'pharmacies': '.pharmacy',
-            // Transportation infrastructure
-            'railways': '.railway',
-            'airports': '.airport-way, .airport-terminal, .airport-point',
-            // Barriers (alphabetical order within barriers)
-            'barriers': '.fence, .wall, .hedge, .gate, .bollard',
-            'bollards': '.bollard',
-            'fences': '.fence',
-            'gates': '.gate',
-            'hedges': '.hedge',
-            'walls': '.wall',
-            'enhanced-highways': '.highway-casing, .highway-surface',
-            'transit-platforms': '.transit-platform',
-            'transportation': '.road, .transit-stop, .railway, .airport-way, .airport-terminal, .airport-point, .highway-casing, .highway-surface, .transit-platform',
-            // Financial services
-            'banks': '.bank',
-            'atms': '.atm',
-            'post-offices': '.post-office',
-            'currency-exchange': '.currency-exchange',
-            'financial-services': '.bank, .atm, .post-office, .currency-exchange',
-            // Sustenance & Food
-            'restaurants': '.restaurant',
-            'cafes': '.cafe',
-            'fast-food': '.fast-food',
-            'bars': '.bar',
-            'pubs': '.pub',
-            'food-courts': '.food-court',
-            'sustenance': '.restaurant, .cafe, .fast-food, .bar, .pub, .food-court',
-            // Accommodation & Tourism
-            'hotels': '.hotel',
-            'hostels': '.hostel',
-            'guest-houses': '.guest-house',
-            'campsites': '.campsite',
-            'attractions': '.attraction',
-            'museums': '.museum',
-            'galleries': '.gallery',
-            'viewpoints': '.viewpoint',
-            'tourist-info': '.tourist-info',
-            'accommodation': '.hotel, .hostel, .guest-house, .campsite',
-            'tourism': '.attraction, .museum, .gallery, .viewpoint, .tourist-info',
-            // Entertainment & Culture
-            'cinemas': '.cinema',
-            'theatres': '.theatre',
-            'libraries': '.library',
-            'community-centres': '.community-centre',
-            'arts-centres': '.arts-centre',
-            'sports-centres': '.sports-centre',
-            'swimming-pools': '.swimming-pool',
-            'golf-courses': '.golf-course',
-            'stadiums': '.stadium',
-            'entertainment': '.cinema, .theatre, .community-centre, .arts-centre',
-            'culture': '.library, .museum, .gallery',
-            'sports': '.sports-centre, .swimming-pool, .golf-course, .stadium',
-            // Emergency Services  
-            'police-stations': '.police-station',
-            'fire-stations': '.fire-station',
-            'emergency-phones-civil': '.emergency-phone',
-            'emergency-defibrillators': '.emergency-defibrillator',
-            'emergency-services': '.police-station, .fire-station, .emergency-phone, .emergency-defibrillator',
-            // Historic Features
-            'monuments': '.monument',
-            'memorials': '.memorial',
-            'archaeological-sites': '.archaeological-site',
-            'castles': '.castle',
-            'ruins': '.ruins',
-            'historic-features': '.monument, .memorial, .archaeological-site, .castle, .ruins',
-            // Man-made Structures
-            'bridges': '.bridge',
-            'tunnels': '.tunnel',
-            'towers': '.tower',
-            'masts': '.mast',
-            'piers': '.pier',
-            'breakwaters': '.breakwater',
-            'manmade-structures': '.bridge, .tunnel, .tower, .mast, .pier, .breakwater',
-            // Natural Features
-            'water-bodies': '.water-body',
-            'forests': '.forest',
-            'woods': '.wood',
-            'grasslands': '.grassland',
-            'beaches': '.beach',
-            'cliffs': '.cliff',
-            'peaks': '.peak',
-            'trees': '.tree',
-            'natural-features': '.water-body, .forest, .wood, .grassland, .beach, .cliff, .peak, .tree',
-            // Waterways
-            'rivers': '.river-feature',
-            'streams': '.stream-feature',
-            'canals': '.canal-feature',
-            'ditches': '.ditch-feature',
-            'coastlines': '.coastline-feature',
-            'waterways': '.river-feature, .stream-feature, .canal-feature, .ditch-feature, .coastline-feature',
-            'commerce': '.shop, .bank, .atm, .post-office, .currency-exchange, .restaurant, .cafe, .fast-food, .bar, .pub, .food-court',
-            'everything': '.building, .road, .transit-stop, .shop, .school, .worship, .park, .address, .hospital, .clinic, .doctor, .dentist, .pharmacy, .veterinary, .railway, .airport-way, .airport-terminal, .airport-point, .highway-casing, .highway-surface, .transit-platform, .bank, .atm, .post-office, .currency-exchange, .restaurant, .cafe, .fast-food, .bar, .pub, .food-court, .hotel, .hostel, .guest-house, .campsite, .attraction, .museum, .gallery, .viewpoint, .tourist-info, .cinema, .theatre, .library, .community-centre, .arts-centre, .sports-centre, .swimming-pool, .golf-course, .stadium, .police-station, .fire-station, .emergency-phone, .emergency-defibrillator, .monument, .memorial, .archaeological-site, .castle, .ruins, .bridge, .tunnel, .tower, .mast, .pier, .breakwater, .fence, .wall, .hedge, .gate, .bollard, .water-body, .forest, .wood, .grassland, .beach, .cliff, .peak, .tree, .river, .stream, .canal, .ditch, .coastline'
-        };
-        
+        // The rotor derives its keyboard-navigation targets from the taxonomy
+        // (taxonomy.json) in updateTabOrder() — the single source of truth.
+
         this.SVG_NS = 'http://www.w3.org/2000/svg';
         this.focusOutline = null;
         this.currentFocusedElement = null;
@@ -344,6 +245,16 @@ export class AccessibilityManager {
             outlineElement.setAttribute('cy', element.getAttribute('cy'));
             const radius = parseFloat(element.getAttribute('r') || 5);
             outlineElement.setAttribute('r', radius + 3); // Add offset
+        } else if (element.tagName === 'path') {
+            // Area features (buildings, land, water multipolygons) render as <path>
+            outlineElement = document.createElementNS(this.SVG_NS, 'path');
+            outlineElement.setAttribute('d', element.getAttribute('d'));
+        } else if (element.tagName === 'rect') {
+            outlineElement = document.createElementNS(this.SVG_NS, 'rect');
+            outlineElement.setAttribute('x', element.getAttribute('x'));
+            outlineElement.setAttribute('y', element.getAttribute('y'));
+            outlineElement.setAttribute('width', element.getAttribute('width'));
+            outlineElement.setAttribute('height', element.getAttribute('height'));
         }
         
         if (outlineElement) {
@@ -422,104 +333,52 @@ export class AccessibilityManager {
     }
     
     updateTabOrder() {
-        // First, remove all tabindex from ALL g elements in map-features
-        const allGroups = document.querySelectorAll('#map-features g[tabindex]');
-        allGroups.forEach(element => {
-            element.removeAttribute('tabindex');
-            element.removeAttribute('role');
-        });
-        
-        // Get all selected rotor values
-        const selectedValues = this.getSelectedRotorValues();
-        
-        // If no rotor values selected, don't add any tabindex
-        if (selectedValues.length === 0) {
-            this.announceFeatureCount(0);
+        // Clear any previous rotor tab order from the tile features.
+        document.querySelectorAll('#map-tiles [tabindex]').forEach((el) => el.removeAttribute('tabindex'));
+
+        const region = document.getElementById('map-announcements');
+        const announce = (msg) => { if (region) { region.textContent = ''; region.textContent = msg; } };
+
+        const selectedIds = this.getSelectedRotorValues();
+        if (selectedIds.length === 0 || !this.taxonomy) {
+            announce('Rotor cleared.');
             return;
         }
-        
-        // Map rotor values to feature class selectors
-        const featureSelectors = {
-            // Category groups
-            'buildings': '.building-feature',
-            'transportation': '.road-feature, .transit-feature',
-            'education': '.school-feature, .library-feature',
-            'entertainment': '.cinema-feature, .theatre-feature, .community-centre-feature, .arts-centre-feature, .sports-centre-feature, .swimming-pool-feature, .golf-course-feature, .stadium-feature',
-            'emergency-services': '.police-station-feature, .fire-station-feature, .emergency-phone-feature, .emergency-defibrillator-feature',
-            'commerce': '.shop-feature, .bank-feature, .atm-feature, .post-office-feature, .currency-exchange-feature, .restaurant-feature, .cafe-feature, .fast-food-feature, .bar-feature, .pub-feature, .food-court-feature',
-            'tourism': '.hotel-feature, .hostel-feature, .guest-house-feature, .campsite-feature, .attraction-feature, .museum-feature, .gallery-feature, .viewpoint-feature, .tourist-info-feature',
-            'recreation': '.park-feature',
-            'worship': '.worship-feature',
-            'addresses': '.address-feature',
-            'healthcare': '.hospital-feature, .clinic-feature, .doctor-feature, .dentist-feature, .pharmacy-feature, .veterinary-feature',
-            'historic-features': '.monument-feature, .memorial-feature, .archaeological-site-feature, .castle-feature, .ruins-feature',
-            'manmade-structures': '.bridge-feature, .tunnel-feature, .tower-feature, .mast-feature, .pier-feature, .breakwater-feature',
-            'natural-features': '.water-body-feature, .forest-feature, .wood-feature, .grassland-feature, .beach-feature, .cliff-feature, .peak-feature, .tree-feature',
-            'waterways': '.river-feature, .stream-feature, .canal-feature, .ditch-feature, .coastline-feature',
-            'barriers': '.fence-feature, .wall-feature, .hedge-feature, .gate-feature, .bollard-feature',
-            // Individual feature types
-            'hospitals': '.hospital-feature',
-            'pharmacies': '.pharmacy-feature',
-            'transit': '.transit-feature',
-            'shops': '.shop-feature',
-            'schools': '.school-feature',
-            'parks': '.park-feature',
-            // Accessibility feature groups
-            'accessibility-all': '.accessible-toilet-feature, .accessible-parking-feature, .drinking-water-feature, .bench-feature, .shelter-feature, .crossing-feature, .curb-cut-feature, .elevator-feature, .steps-feature, .tactile-paving-feature, .audio-signal-feature, .tactile-map-feature, .digital-clock-feature, .info-point-feature, .emergency-phone-feature, .defibrillator-feature, .accessible-medical-feature, .barrier-feature',
-            'essential-navigation': '.crossing-feature, .curb-cut-feature, .elevator-feature, .tactile-paving-feature',
-            'public-facilities': '.accessible-toilet-feature, .accessible-parking-feature, .drinking-water-feature, .bench-feature, .shelter-feature',
-            'emergency-features': '.emergency-phone-feature, .defibrillator-feature, .accessible-medical-feature',
-            'everything': '.building-feature, .road-feature, .transit-feature, .shop-feature, .school-feature, .worship-feature, .park-feature, .address-feature, .hospital-feature, .clinic-feature, .doctor-feature, .dentist-feature, .pharmacy-feature, .veterinary-feature, .accessible-toilet-feature, .accessible-parking-feature, .drinking-water-feature, .bench-feature, .shelter-feature, .crossing-feature, .curb-cut-feature, .elevator-feature, .steps-feature, .tactile-paving-feature, .audio-signal-feature, .tactile-map-feature, .digital-clock-feature, .info-point-feature, .emergency-phone-feature, .defibrillator-feature, .accessible-medical-feature, .barrier-feature, .bank-feature, .atm-feature, .post-office-feature, .currency-exchange-feature, .restaurant-feature, .cafe-feature, .fast-food-feature, .bar-feature, .pub-feature, .food-court-feature, .hotel-feature, .hostel-feature, .guest-house-feature, .campsite-feature, .attraction-feature, .museum-feature, .gallery-feature, .viewpoint-feature, .tourist-info-feature, .cinema-feature, .theatre-feature, .library-feature, .community-centre-feature, .arts-centre-feature, .sports-centre-feature, .swimming-pool-feature, .golf-course-feature, .stadium-feature, .police-station-feature, .fire-station-feature, .emergency-phone-feature, .emergency-defibrillator-feature, .monument-feature, .memorial-feature, .archaeological-site-feature, .castle-feature, .ruins-feature, .bridge-feature, .tunnel-feature, .tower-feature, .mast-feature, .pier-feature, .breakwater-feature, .river-feature, .stream-feature, .canal-feature, .ditch-feature, .coastline-feature'
+
+        const labelOf = (id) => {
+            const f = this.taxonomy.getById(id);
+            return f ? (f.label || id) : id;
         };
-        
-        // Combine selectors from all selected values
-        const selectors = [];
-        selectedValues.forEach(value => {
-            if (featureSelectors[value]) {
-                selectors.push(featureSelectors[value]);
-            }
-        });
-        
-        if (selectors.length === 0) return;
-        
-        // Join all selectors with comma to create a combined selector
-        const combinedSelector = selectors.join(', ');
-        
-        // Get all individual feature groups matching any of the selected types
-        const featureGroups = document.querySelectorAll(combinedSelector);
-        
-        // Use a Set to avoid duplicates (since some features might match multiple selectors)
-        const uniqueFeatures = new Set();
-        featureGroups.forEach(fg => uniqueFeatures.add(fg));
-        
-        let tabIndex = 100; // Start tabindex at 100 to come after UI controls
-        let visibleCount = 0;
-        
-        uniqueFeatures.forEach(featureGroup => {
-            // Check if the feature group is visible
-            const children = Array.from(featureGroup.children);
-            const hasVisibleChildren = children.some(child => 
-                child.style.visibility !== 'hidden'
-            );
-            
-            if (hasVisibleChildren) {
-                featureGroup.setAttribute('tabindex', tabIndex.toString());
-                featureGroup.setAttribute('role', 'group');
-                tabIndex++;
-                visibleCount++;
-            }
-        });
-        
-        this.announceFeatureCount(visibleCount);
-        this.announceSelectedCategories(selectedValues);
-        
-        // Ensure focus outline is always on top
-        this.ensureFocusOutlineOnTop();
-        
-        // Also update tile accessibility if we have tile features
-        if (window.mapApp && window.mapApp.updateAccessibilityForTiles) {
-            window.mapApp.updateAccessibilityForTiles();
+        const selectors = selectedIds
+            .map((id) => {
+                const f = this.taxonomy.getById(id);
+                return f ? this.taxonomy.selectorFor(f) : null;
+            })
+            .filter(Boolean);
+
+        const names = selectedIds.map(labelOf).slice(0, 4).join(', ');
+        if (selectors.length === 0) {
+            announce(`Nothing to navigate for: ${names}`);
+            return;
         }
+
+        // Make ONLY the selected categories keyboard-navigable, in document order.
+        // Positive tabindex is intentional (it narrows + orders map navigation — see
+        // the project's rotor design); start at 100 to come after the UI controls.
+        // The tile feature groups already carry role="img" + aria-label from the
+        // generator, so focusing one announces its name.
+        const elements = document.querySelectorAll('#map-tiles ' + selectors.join(', '));
+        let tabIndex = 100;
+        let count = 0;
+        elements.forEach((el) => {
+            // Skip features hidden by a base filter.
+            if (el.closest('[style*="display: none"], [style*="display:none"]')) return;
+            el.setAttribute('tabindex', String(tabIndex++));
+            count++;
+        });
+
+        announce(`${count} feature${count === 1 ? '' : 's'} navigable — ${names}`);
+        this.ensureFocusOutlineOnTop();
     }
     
     ensureFocusOutlineOnTop() {
