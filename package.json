@@ -15,6 +15,7 @@
     "lint": "eslint",
     "seed": "bash scripts/seed-mongo.sh",
     "index": "tsx scripts/index-opensearch.ts",
+    "index-map": "tsx scripts/index-map.ts",
     "import-articles": "tsx scripts/migrate-articles.ts"
   },
   "dependencies": {
