@@ -85,6 +85,37 @@ function nearestOnGeom(pLat: number, pLng: number, geom: Geom): Near {
   return best;
 }
 
+// When the nearest road is within this, treat the user as ON it — so a crossing road
+// is reported by its INTERSECTION, not its perpendicular nearest point. Generous for
+// driving GPS noise.
+const ON_ROAD_M = 30;
+
+// Intersection point of two segments (each [lon,lat]), or null if they don't cross.
+function segCross(p1: number[], p2: number[], p3: number[], p4: number[]): number[] | null {
+  const d = (p2[0] - p1[0]) * (p4[1] - p3[1]) - (p2[1] - p1[1]) * (p4[0] - p3[0]);
+  if (Math.abs(d) < 1e-12) return null; // parallel / collinear
+  const t = ((p3[0] - p1[0]) * (p4[1] - p3[1]) - (p3[1] - p1[1]) * (p4[0] - p3[0])) / d;
+  const u = ((p3[0] - p1[0]) * (p2[1] - p1[1]) - (p3[1] - p1[1]) * (p2[0] - p1[0])) / d;
+  if (t < 0 || t > 1 || u < 0 || u > 1) return null;
+  return [p1[0] + t * (p2[0] - p1[0]), p1[1] + t * (p2[1] - p1[1])]; // [lon,lat]
+}
+
+// All crossing points between two line geometries (each ring is [lon,lat] vertices).
+function geomCrossings(a: Geom, b: Geom): number[][] {
+  const out: number[][] = [];
+  for (const ra of a.c) {
+    for (let i = 0; i + 1 < ra.length; i++) {
+      for (const rb of b.c) {
+        for (let j = 0; j + 1 < rb.length; j++) {
+          const p = segCross(ra[i], ra[i + 1], rb[j], rb[j + 1]);
+          if (p) out.push(p);
+        }
+      }
+    }
+  }
+  return out;
+}
+
 export async function GET(req: NextRequest) {
   const sp = req.nextUrl.searchParams;
   const lat = Number(sp.get("lat"));
@@ -124,27 +155,70 @@ export async function GET(req: NextRequest) {
       _source: Record<string, unknown>;
     }>) ?? [];
 
-  // Exact distance + nearest point per hit; collapse name-duplicate ways to the
-  // nearest, then sort by the true distance.
-  const byName = new Map<string, Result>();
-  for (const h of hits) {
+  // Candidates with their crow-flies nearest point.
+  type Cand = {
+    id: string; display: string; category?: string; subtype?: string;
+    name: string; geom?: Geom; near: Near;
+  };
+  const cands: Cand[] = hits.map((h) => {
     const s = h._source;
     const geom = s.geom as Geom | undefined;
     const near: Near = geom
       ? nearestOnGeom(lat, lng, geom)
       : { dist: metresBetween(lat, lng, s.lat as number, s.lng as number), lat: s.lat as number, lng: s.lng as number };
-
-    const r: Result = {
+    return {
       id: h._id,
       display: (s.display as string) ?? (s.name as string) ?? "",
       category: s.category as string | undefined,
       subtype: s.subtype as string | undefined,
+      name: String(s.name ?? "").trim(),
+      geom,
+      near,
+    };
+  });
+
+  // Which road are we ON? The nearest road, if it's close enough. A CROSSING road is
+  // then reported by its INTERSECTION with our road (so it reads "ahead", ~12 o'clock,
+  // at the real along-road distance) instead of its perpendicular nearest point (which
+  // drove the bug: a cross-street showing "to the left/right" at 3/9 o'clock). Off any
+  // road, everything stays crow-flies nearest-point.
+  let onRoad: string | null = null;
+  let onRoadDist = Infinity;
+  for (const c of cands) {
+    if (c.category === "road" && c.near.dist < onRoadDist) {
+      onRoadDist = c.near.dist;
+      onRoad = c.name.toLowerCase();
+    }
+  }
+  if (onRoadDist > ON_ROAD_M) onRoad = null;
+  const ourRoadGeoms = onRoad
+    ? cands.filter((c) => c.category === "road" && c.name.toLowerCase() === onRoad && c.geom)
+        .map((c) => c.geom as Geom)
+    : [];
+
+  const byName = new Map<string, Result>();
+  for (const c of cands) {
+    let near = c.near;
+    if (onRoad && c.category === "road" && c.geom && c.name.toLowerCase() !== onRoad) {
+      let best: Near | null = null;
+      for (const rg of ourRoadGeoms) {
+        for (const p of geomCrossings(c.geom, rg)) {
+          const d = metresBetween(lat, lng, p[1], p[0]);
+          if (!best || d < best.dist) best = { dist: d, lat: p[1], lng: p[0] };
+        }
+      }
+      if (best) near = best; // crossing road -> distance to the intersection
+    }
+    const r: Result = {
+      id: c.id,
+      display: c.display,
+      category: c.category,
+      subtype: c.subtype,
       lat: Number(near.lat.toFixed(6)),
       lng: Number(near.lng.toFixed(6)),
       distance_m: Math.round(near.dist),
     };
-
-    const key = String(s.name ?? h._id).trim().toLowerCase();
+    const key = (c.name || c.id).toLowerCase();
     const prev = byName.get(key);
     if (!prev || r.distance_m < prev.distance_m) byName.set(key, r);
   }
