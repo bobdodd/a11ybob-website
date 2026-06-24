@@ -57,6 +57,9 @@ const mapping = {
     // for the container surfaces its contents.
     parent: { ...text, fields: { raw: { type: "keyword" } } },
     parent_id: { type: "long" },
+    // Raw geometry vertices, stored in _source for EXACT nearest-point distance in
+    // /api/map-nearby. Not indexed (enabled:false) — we never query it, only read it.
+    geom: { type: "object", enabled: false },
     location: { type: "geo_point" },
     lat: { type: "float" },
     lng: { type: "float" },
