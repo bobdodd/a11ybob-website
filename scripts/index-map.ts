@@ -51,6 +51,12 @@ const mapping = {
     subtype: { type: "keyword" },
     types: text,
     text,
+    // Name of the containing place (school / hospital / park) the spatial-
+    // containment pass assigned, when there is one. Retrieved for display ("in
+    // <place>") and grouping; parent_name is also folded into `text` so a search
+    // for the container surfaces its contents.
+    parent: { ...text, fields: { raw: { type: "keyword" } } },
+    parent_id: { type: "long" },
     location: { type: "geo_point" },
     lat: { type: "float" },
     lng: { type: "float" },

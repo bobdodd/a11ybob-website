@@ -18,7 +18,11 @@
  *   limit   max results (default 20, capped 50).
  *
  * Returns { results: [{ id, display, category, subtype, lat, lng, address?,
- * access? }] } — the shape the viewer's search list consumes directly. */
+ * access?, parent? }] } — the shape the viewer's search list consumes directly.
+ * `parent` is the name of the containing place (a school, hospital, park) when
+ * the generator's spatial-containment pass found one, so a result can say what
+ * it sits inside ("Running track — in King Edward Junior and Senior Public
+ * School") and a search for the container surfaces its contents. */
 
 import { NextRequest, NextResponse } from "next/server";
 import { opensearch } from "@/lib/opensearch";
@@ -63,6 +67,7 @@ type Result = {
   lng: number;
   address?: Record<string, string>;
   access?: Record<string, string>;
+  parent?: string;
 };
 
 export async function GET(req: NextRequest) {
@@ -174,6 +179,7 @@ export async function GET(req: NextRequest) {
         "lng",
         "address",
         "access",
+        "parent",
       ],
     },
   });
@@ -218,6 +224,7 @@ export async function GET(req: NextRequest) {
       lng,
       address: s.address as Record<string, string> | undefined,
       access: s.access as Record<string, string> | undefined,
+      parent: s.parent as string | undefined,
     });
     if (results.length >= limit) break;
   }
