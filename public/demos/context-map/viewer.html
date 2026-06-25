@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Context Map — experimental test software</title>
+    <link rel="stylesheet" href="styles/context-map.css">
+</head>
+<body>
+    <!-- ── Disclaimer gate ───────────────────────────────────────────────────
+         Shown first. The app below stays hidden (and out of the accessibility
+         tree) until the notice is accepted. Acceptance is also the user gesture
+         the phone needs to grant location + compass permission. -->
+    <main id="cm-gate" class="cm-gate">
+        <h1>Context Map</h1>
+        <h2>Important — please read before you start</h2>
+
+        <div class="cm-disclaimer">
+            <p>
+                The Context Map is <strong>experimental, unfinished test software</strong>,
+                shared for evaluation only. It has <strong>not been tested for accuracy or
+                reliability</strong>.
+            </p>
+            <ul>
+                <li>
+                    <strong>It can be wrong.</strong> It may misreport where you are, how far
+                    away things are, or which direction they lie in — or it may say nothing
+                    at all. Information may be missing, out of date, or simply incorrect.
+                </li>
+                <li>
+                    <strong>It is not a navigation or mobility aid.</strong> Do not use it to
+                    find your way, cross roads, judge traffic, avoid hazards, or make any
+                    decision about your safety or movement. It is not a substitute for your
+                    cane, your guide dog, your own orientation and mobility skills, sighted
+                    assistance, or proper navigation tools.
+                </li>
+                <li>
+                    <strong>It depends on things that can fail</strong> — your device's GPS and
+                    compass, your network connection, and map data that may be inaccurate.
+                    Accuracy is often poor among buildings, in crowds, or indoors, and the
+                    compass can point the wrong way.
+                </li>
+                <li>
+                    <strong>Keep using your usual ways of getting around at all times</strong>
+                    and stay aware of your surroundings.
+                </li>
+            </ul>
+            <p class="cm-risk">
+                By continuing you confirm that you have read and understood this notice, that
+                you use the Context Map <strong>entirely at your own risk</strong>, and that —
+                to the fullest extent permitted by law — the author and contributors accept
+                <strong>no liability</strong> for any loss, injury, or damage arising from your
+                use of it. The software is provided &ldquo;as is&rdquo;, with no warranty of
+                any kind.
+            </p>
+        </div>
+
+        <p class="cm-consent">
+            <label>
+                <input type="checkbox" id="cm-accept">
+                I have read and understood this notice. I accept all risk and will not use the
+                Context Map for navigation or for any safety decision.
+            </label>
+        </p>
+
+        <button id="cm-start" class="cm-btn cm-start" type="button" disabled>
+            Start the Context Map
+        </button>
+    </main>
+
+    <!-- ── The app (revealed after acceptance) ─────────────────────────────── -->
+    <main id="cm-app" class="cm-app" hidden>
+        <h1 id="cm-app-title" tabindex="-1">Context Map</h1>
+        <p class="cm-intro">
+            Test software — not for navigation. Three ways to hear what is around you. Finding
+            your location can take a moment after you start.
+        </p>
+
+        <div class="cm-controls">
+            <button id="cm-quick" class="cm-btn" type="button">Quick describe</button>
+            <button id="cm-auto" class="cm-btn" type="button" aria-pressed="false">
+                Describe as I move
+            </button>
+            <button id="cm-detailed" class="cm-btn" type="button">Detailed surroundings</button>
+        </div>
+
+        <!-- Detailed read-out renders here as navigable headings/lists. -->
+        <section id="cm-detail" class="cm-detail" aria-label="Detailed surroundings"></section>
+
+        <!-- Visible transcript of everything spoken (for re-reading, and for sighted
+             or Deaf/deafened users). Not a live region, so it never double-announces. -->
+        <section class="cm-logwrap" aria-label="Spoken so far">
+            <h2>Spoken</h2>
+            <div id="cm-log" class="cm-log"></div>
+        </section>
+    </main>
+
+    <!-- The speech channel: a polite live region that the screen reader announces. -->
+    <div id="cm-live" class="cm-sr-only" aria-live="polite" aria-atomic="true"></div>
+
+    <script type="module" src="src/context-map.js"></script>
+</body>
+</html>
