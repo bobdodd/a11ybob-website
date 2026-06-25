@@ -1,21 +1,28 @@
-/* GET /api/map-nearby?lat=<n>&lng=<n>&limit=<n>
+/* GET /api/map-nearby?lat=<n>&lng=<n>&limit=<n>&off=<csv>&on=<csv>
  *
- * Nearest NAMED map features to a point — the orientation lookup behind the demo's
- * live location tracking ("Where am I?" and the throttled "near <place>"
- * announcements). Same-origin proxy in front of the `map-features` index.
+ * Nearest WORTH-MENTIONING named map features to a point — the orientation lookup
+ * behind the demo's spoken location descriptions (Quick describe, the Auto-describe
+ * running commentary, and the Detailed surroundings read-out). Same-origin proxy in
+ * front of the `map-features` index.
  *
  * Distance + direction are to the NEAREST POINT of the feature, not its centroid —
- * critical for a blind user navigating to it (you can stand 20 m from a long road
- * whose middle is 600 m away). Selection uses the index's multi-point geo_distance
- * (recall); the exact distance and the returned lat/lng are then computed in JS from
- * the stored raw geometry (`geom`), so a road reports "20 m, at 3 o'clock" toward
- * the point you'd actually walk to.
+ * critical for a blind user judging their position (you can stand 20 m from a long
+ * road whose middle is 600 m away). Selection uses the index's multi-point
+ * geo_distance (recall); the exact distance and the returned lat/lng are then
+ * computed in JS from the stored raw geometry (`geom`).
  *
- * Only NAMED features (streets, rivers, parks, named places); repeated segments of
- * one named way are collapsed to the single nearest instance.
+ * Results are NOT just nearest-first. Each feature carries a SIGNIFICANCE tier (0-3,
+ * how much it's worth telling the user unprompted), and ranking blends significance
+ * with distance — a town 400 m away outranks a driveway 40 m away. A higher tier also
+ * "reaches" further (REACH). Significance respects the user's active filters, passed
+ * as `off` (base categories they've HIDDEN -> demoted, mentioned only as background)
+ * and `on` (accessibility/POI overlays they've turned ON -> boosted, because opting in
+ * is them saying "this matters to me"). Tokens are "category" or "category:subtype".
  *
- * Returns { results: [{ id, display, category?, subtype?, lat, lng, distance_m }] }
- * where lat/lng is the nearest point, sorted nearest-first. */
+ * Only NAMED features; repeated segments of one named way collapse to the nearest.
+ *
+ * Returns { results: [{ id, display, category?, subtype?, significance, lat, lng,
+ * distance_m }] }, lat/lng = the nearest point, ranked best-first. */
 
 import { NextRequest, NextResponse } from "next/server";
 import { opensearch } from "@/lib/opensearch";
@@ -24,13 +31,14 @@ export const dynamic = "force-dynamic";
 
 const INDEX = "map-features";
 const DEFAULT_LIMIT = 5;
-const MAX_LIMIT = 10;
+const MAX_LIMIT = 12;
 
 type Result = {
   id: string;
   display: string;
   category?: string;
   subtype?: string;
+  significance: number;
   lat: number;
   lng: number;
   distance_m: number;
@@ -87,7 +95,7 @@ function nearestOnGeom(pLat: number, pLng: number, geom: Geom): Near {
 
 // When the nearest road is within this, treat the user as ON it — so a crossing road
 // is reported by its INTERSECTION, not its perpendicular nearest point. Generous for
-// driving GPS noise.
+// driving / jostled-pedestrian GPS noise.
 const ON_ROAD_M = 30;
 
 // Intersection point of two segments (each [lon,lat]), or null if they don't cross.
@@ -116,24 +124,159 @@ function geomCrossings(a: Geom, b: Geom): number[][] {
   return out;
 }
 
+/* SIGNIFICANCE — how much a feature is worth telling the user about unprompted, 0-3.
+ * Keyed on the real category/subtype values in the map-features index, refined by
+ * whether the feature is named. The accessibility categories (facility / mobility /
+ * sensory / terrain / transport) are deliberately LOW here: a crossing or a stretch of
+ * tactile paving is noise UNLESS the user has asked for it — at which point the `on`
+ * boost lifts it. address nodes (a quarter-million of them) are pure background. */
+function baseSignificance(cat: string, sub: string, named: boolean): number {
+  switch (cat) {
+    case "amenity": {
+      if (sub === "address") return 0; // addr:* nodes are not places
+      const civic = new Set([
+        "hospital", "clinic", "doctors", "pharmacy", "school", "college", "university",
+        "library", "townhall", "community_centre", "police", "fire_station", "courthouse",
+        "place_of_worship", "theatre", "cinema", "bank", "post_office", "fuel", "marketplace",
+      ]);
+      if (civic.has(sub)) return 3;
+      if (["bench", "waste_basket", "drinking_water", "bicycle_parking", "vending_machine"].includes(sub))
+        return 1;
+      return named ? 2 : 1;
+    }
+    case "transit":
+      if (sub === "station" || sub === "tram_stop") return 3;
+      return named ? 2 : 1; // a single stop / platform
+    case "railway":
+      return 2;
+    case "road": {
+      if (["motorway", "trunk", "primary", "secondary"].includes(sub)) return 3;
+      if (["service", "track", "unclassified", "footway", "path", "cycleway", "steps"].includes(sub))
+        return 1;
+      return 2; // tertiary / residential / other named road
+    }
+    case "water":
+      if (sub === "stream") return 2;
+      return named ? 3 : 2; // named lake / river / canal
+    case "religious":
+      return 3;
+    case "tourism":
+      if (["attraction", "museum", "gallery", "hotel", "viewpoint", "theme_park", "zoo"].includes(sub))
+        return 3;
+      return named ? 2 : 1;
+    case "historic":
+      return named ? 2 : 1;
+    case "park":
+      if (["park", "nature_reserve", "garden"].includes(sub)) return named ? 3 : 2;
+      return named ? 2 : 1; // pitch / playground / sport
+    case "aeroway":
+      return sub === "terminal" || sub === "gate" ? 3 : 2;
+    case "shop":
+      return named ? 2 : 1;
+    case "man_made":
+      if (["bridge", "tower", "lighthouse", "pier", "obelisk", "windmill"].includes(sub)) return 2;
+      return 1; // tunnel / mast / breakwater / silo / storage_tank
+    case "building":
+      return named ? 2 : 0; // unnamed buildings are background
+    case "vegetation":
+    case "natural":
+      return named ? 1 : 0;
+    case "landuse":
+    case "barrier":
+      return 0;
+    case "parking":
+      return 1;
+    // Accessibility overlays: invisible until the user opts in (then `on` boosts them).
+    case "facility":
+    case "mobility":
+    case "sensory":
+    case "terrain":
+    case "transport":
+      return 0;
+    default:
+      return named ? 1 : 0;
+  }
+}
+
+function parseTokens(raw: string | null): Set<string> {
+  return new Set((raw ?? "").split(",").map((s) => s.trim().toLowerCase()).filter(Boolean));
+}
+
+// "category" matches any subtype of that category; "category:subtype" is exact.
+function matchTok(cat: string, sub: string, tokens: Set<string>): boolean {
+  if (!tokens.size) return false;
+  const c = cat.toLowerCase();
+  return tokens.has(c) || tokens.has(`${c}:${sub.toLowerCase()}`);
+}
+
+// How far a feature of each significance tier still earns a mention (metres). A town
+// reaches across a sparse landscape; a minor local feature only when you're on it.
+const REACH = [40, 150, 600, 2500];
+// On-the-ground accessibility features are only useful when you're nearly ON them —
+// a crossing or curb cut 2 km away is noise even when the user has opted into it. So
+// they get a short, fixed reach regardless of the significance boost.
+const LOCAL_CATS = new Set(["facility", "mobility", "sensory", "terrain", "transport", "parking", "barrier"]);
+const reachFor = (cat: string, sig: number): number =>
+  LOCAL_CATS.has(cat) ? 100 : REACH[Math.max(0, Math.min(3, sig))];
+
+// Final ranking is significance BLENDED with proximity — not significance alone. Pure
+// "sig desc, dist asc" lets a post office 950 m away outrank the road you're standing
+// on (a town is sig 3, a residential road sig 2), so the thing at your feet falls off
+// the list. The proximity term adds up to PROX_WEIGHT for a feature underfoot, fading
+// to 0 by PROX_RANGE_M: so what you're on/beside leads, then the notable things around.
+const PROX_RANGE_M = 50;
+const PROX_WEIGHT = 2.5;
+const rankScore = (sig: number, dist: number): number =>
+  sig + PROX_WEIGHT * Math.max(0, 1 - dist / PROX_RANGE_M);
+// Don't return more than this many of one category — keeps a Detailed read-out from
+// becoming "bus stop, bus stop, bus stop". Roads get a little more room (the road
+// you're on plus a couple of cross-streets is normal and wanted).
+const PER_CATEGORY_CAP = 3;
+
 export async function GET(req: NextRequest) {
   const sp = req.nextUrl.searchParams;
   const lat = Number(sp.get("lat"));
   const lng = Number(sp.get("lng"));
   const limit = Math.min(MAX_LIMIT, Math.max(1, Number(sp.get("limit")) || DEFAULT_LIMIT));
+  const offTokens = parseTokens(sp.get("off")); // base features the user hid -> demote
+  const onTokens = parseTokens(sp.get("on")); // overlays the user turned on -> boost
+  // Only when TRAVELLING on a road does a cross-street's intersection matter more than
+  // its nearest point (you reach it ahead, not off to the side). Standing still, the
+  // road that runs 30 m to your left is 30 m to your left — report the nearest point.
+  const moving = sp.get("moving") === "1";
 
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
     return NextResponse.json({ results: [] satisfies Result[] });
   }
 
+  // Filter-aware significance: opting IN to an overlay makes it significant; hiding a
+  // base layer demotes it below the "worth mentioning unprompted" line (but not to
+  // nothing — it can still surface as background when little else is around).
+  const sigOf = (cat: string, sub: string, named: boolean): number => {
+    let s = baseSignificance(cat, sub, named);
+    if (matchTok(cat, sub, onTokens)) s = Math.max(s, 3);
+    if (matchTok(cat, sub, offTokens)) s = Math.min(s, 1);
+    return s;
+  };
+
+  // Unnamed features are normally excluded — orientation is about NAMED places. But
+  // if the user has opted into an overlay (crossings, curb cuts, tactile paving…),
+  // include unnamed features of that category too: surfacing them is the whole point
+  // of turning the filter on, and they're identified by TYPE, not by a name.
+  const onShould: Record<string, unknown>[] = [{ exists: { field: "name" } }];
+  for (const tok of onTokens) {
+    const [c, s] = tok.split(":");
+    if (s) onShould.push({ bool: { must: [{ term: { category: c } }, { term: { subtype: s } }] } });
+    else onShould.push({ term: { category: c } });
+  }
+
   const res = await opensearch.search({
     index: INDEX,
     body: {
-      // Oversample generously: the index multi-point geo_distance is for RECALL,
-      // then we re-rank by exact nearest-point distance below — so the true-nearest
-      // must be somewhere in this candidate set, not necessarily at the top yet.
-      size: Math.min(120, limit * 12),
-      query: { bool: { filter: [{ exists: { field: "name" } }] } },
+      // Oversample generously: the index multi-point geo_distance is for RECALL, then
+      // we re-rank by significance + exact nearest-point distance below.
+      size: Math.min(200, limit * 20),
+      query: { bool: { should: onShould, minimum_should_match: 1 } },
       sort: [
         {
           _geo_distance: {
@@ -155,33 +298,37 @@ export async function GET(req: NextRequest) {
       _source: Record<string, unknown>;
     }>) ?? [];
 
-  // Candidates with their crow-flies nearest point.
   type Cand = {
-    id: string; display: string; category?: string; subtype?: string;
-    name: string; geom?: Geom; near: Near;
+    id: string; display: string; category: string; subtype: string;
+    name: string; geom?: Geom; near: Near; sig: number;
   };
   const cands: Cand[] = hits.map((h) => {
     const s = h._source;
     const geom = s.geom as Geom | undefined;
+    const category = String(s.category ?? "");
+    const subtype = String(s.subtype ?? "");
+    const name = String(s.name ?? "").trim();
     const near: Near = geom
       ? nearestOnGeom(lat, lng, geom)
       : { dist: metresBetween(lat, lng, s.lat as number, s.lng as number), lat: s.lat as number, lng: s.lng as number };
     return {
       id: h._id,
-      display: (s.display as string) ?? (s.name as string) ?? "",
-      category: s.category as string | undefined,
-      subtype: s.subtype as string | undefined,
-      name: String(s.name ?? "").trim(),
+      display: (s.display as string) ?? name,
+      category,
+      subtype,
+      name,
       geom,
       near,
+      sig: sigOf(category, subtype, !!name),
     };
   });
 
-  // Which road are we ON? The nearest road, if it's close enough. A CROSSING road is
-  // then reported by its INTERSECTION with our road (so it reads "ahead", ~12 o'clock,
-  // at the real along-road distance) instead of its perpendicular nearest point (which
-  // drove the bug: a cross-street showing "to the left/right" at 3/9 o'clock). Off any
-  // road, everything stays crow-flies nearest-point.
+  // Which road are we ON? The nearest road, if close enough. When TRAVELLING on it, a
+  // crossing road is reported by its INTERSECTION with our road (so it reads "ahead" at
+  // the along-road distance) instead of its perpendicular nearest point. Standing still
+  // this is wrong — a road running 30 m to your side is 30 m to your side, not "70 m at
+  // the corner" — so the override is gated on `moving`. Off any road, or stationary,
+  // everything stays crow-flies nearest-point.
   let onRoad: string | null = null;
   let onRoadDist = Infinity;
   for (const c of cands) {
@@ -190,13 +337,14 @@ export async function GET(req: NextRequest) {
       onRoad = c.name.toLowerCase();
     }
   }
-  if (onRoadDist > ON_ROAD_M) onRoad = null;
+  if (onRoadDist > ON_ROAD_M || !moving) onRoad = null;
   const ourRoadGeoms = onRoad
     ? cands.filter((c) => c.category === "road" && c.name.toLowerCase() === onRoad && c.geom)
         .map((c) => c.geom as Geom)
     : [];
 
-  const byName = new Map<string, Result>();
+  // Collapse repeated segments of one named way to the nearest instance.
+  const byName = new Map<string, Cand & { near: Near }>();
   for (const c of cands) {
     let near = c.near;
     if (onRoad && c.category === "road" && c.geom && c.name.toLowerCase() !== onRoad) {
@@ -209,23 +357,36 @@ export async function GET(req: NextRequest) {
       }
       if (best) near = best; // crossing road -> distance to the intersection
     }
-    const r: Result = {
-      id: c.id,
-      display: c.display,
-      category: c.category,
-      subtype: c.subtype,
-      lat: Number(near.lat.toFixed(6)),
-      lng: Number(near.lng.toFixed(6)),
-      distance_m: Math.round(near.dist),
-    };
     const key = (c.name || c.id).toLowerCase();
     const prev = byName.get(key);
-    if (!prev || r.distance_m < prev.distance_m) byName.set(key, r);
+    if (!prev || near.dist < prev.near.dist) byName.set(key, { ...c, near });
   }
 
-  const results = [...byName.values()]
-    .sort((a, b) => a.distance_m - b.distance_m)
-    .slice(0, limit);
+  // Keep only features within their tier's reach, then rank by significance first,
+  // distance second, and cap each category so the read-out stays varied.
+  const ranked = [...byName.values()]
+    .filter((c) => c.near.dist <= reachFor(c.category, c.sig))
+    .sort((a, b) =>
+      rankScore(b.sig, b.near.dist) - rankScore(a.sig, a.near.dist) || a.near.dist - b.near.dist);
+
+  const perCat = new Map<string, number>();
+  const results: Result[] = [];
+  for (const c of ranked) {
+    const n = perCat.get(c.category) ?? 0;
+    if (n >= PER_CATEGORY_CAP) continue;
+    perCat.set(c.category, n + 1);
+    results.push({
+      id: c.id,
+      display: c.display,
+      category: c.category || undefined,
+      subtype: c.subtype || undefined,
+      significance: c.sig,
+      lat: Number(c.near.lat.toFixed(6)),
+      lng: Number(c.near.lng.toFixed(6)),
+      distance_m: Math.round(c.near.dist),
+    });
+    if (results.length >= limit) break;
+  }
 
   return NextResponse.json({ results });
 }
