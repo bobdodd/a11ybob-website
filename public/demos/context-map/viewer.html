@@ -95,7 +95,8 @@
         </section>
     </main>
 
-    <!-- The speech channel: a polite live region that the screen reader announces. -->
+    <!-- Speech fallback: a polite live region, used only where the Web Speech API
+         (the primary, interruptible speech channel) is unavailable. -->
     <div id="cm-live" class="cm-sr-only" aria-live="polite" aria-atomic="true"></div>
 
     <script type="module" src="src/context-map.js"></script>

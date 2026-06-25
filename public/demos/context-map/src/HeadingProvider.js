@@ -114,10 +114,14 @@ export class HeadingProvider {
         // so the smoothed value lives in the screen-forward frame.
         h = (h + this._screenAngle()) % 360;
         // Low-pass in sin/cos space so the 360->0 wrap doesn't average to garbage.
+        // Light damping (new-sample weight 0.18, close to the original 0.2) — just
+        // enough to take the edge off the noise without lagging the bearing behind
+        // where you actually point. The turn-detection THRESHOLD downstream does the
+        // real work of ignoring small movements, and it adds no lag.
         const a = h * Math.PI / 180;
         const s = Math.sin(a), c = Math.cos(a);
         if (this._sin === null) { this._sin = s; this._cos = c; }
-        else { this._sin = this._sin * 0.8 + s * 0.2; this._cos = this._cos * 0.8 + c * 0.2; }
+        else { this._sin = this._sin * 0.82 + s * 0.18; this._cos = this._cos * 0.82 + c * 0.18; }
         this.heading = (Math.atan2(this._sin, this._cos) * 180 / Math.PI + 360) % 360;
         this.available = true;
     }

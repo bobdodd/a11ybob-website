@@ -19,6 +19,12 @@ class ContextMap {
         this.started = false;
         this.autoDescribe = false;
 
+        // EXPERIMENT: speak via the Web Speech API instead of an aria-live region, so a
+        // newer message can INTERRUPT the current one (cancel-before-speak) rather than
+        // queue behind it — the live-region backlog is what makes fast turning feel
+        // laggy. Falls back to the live region where speechSynthesis isn't available.
+        this.synth = ('speechSynthesis' in window) ? window.speechSynthesis : null;
+
         // proximity / turn state
         this.lastProximityPos = null;
         this.lastProximityTime = 0;
@@ -106,8 +112,8 @@ class ContextMap {
         this._lastNearby = near;
         this._lastNearbyPos = { lat: pos.lat, lng: pos.lng };
         if (!near.length) { this.announceStatus('Nothing notable nearby.'); return; }
-        const { speech, html } = this._describeSurround(pos, near);
-        this.speak(speech);                       // announce to the screen reader
+        const { parts, html } = this._describeSurround(pos, near);
+        this.speakSequence(parts);                // queued short utterances — full read-out, not cut off
         this.renderDetail(html);                  // structured, re-readable block
     }
 
@@ -164,14 +170,19 @@ class ContextMap {
     // spun in a crowd re-orients you to your new facing without re-querying.
     _autoTick() {
         if (!this.autoDescribe) return;
+        // Tuning: announce only a change of at least TURN_MIN degrees that then settles
+        // (drift under SETTLE_BAND) briefly for SETTLE_MS. The THRESHOLD is the main
+        // filter against hand-wobble (and it adds no lag — a real turn still fires the
+        // moment it settles); SETTLE_MS is kept short so it stays responsive.
+        const TURN_MIN = 45, SETTLE_MS = 900, SETTLE_BAND = 12;
         const h = this.heading.getHeading();
         if (h !== null && h !== undefined) {
-            if (this._settleH === null || Math.abs(this._angDiff(h, this._settleH)) > 12) {
-                this._settleH = h; this._settleStart = Date.now();
-            } else if (Date.now() - this._settleStart > 900) {
+            if (this._settleH === null || Math.abs(this._angDiff(h, this._settleH)) > SETTLE_BAND) {
+                this._settleH = h; this._settleStart = Date.now();          // still moving
+            } else if (Date.now() - this._settleStart > SETTLE_MS) {        // held steady
                 if (this._lastFacing === null) {
                     this._lastFacing = h;
-                } else if (Math.abs(this._angDiff(h, this._lastFacing)) >= 30) {
+                } else if (Math.abs(this._angDiff(h, this._lastFacing)) >= TURN_MIN) {
                     this._announceTurn(h, this._angDiff(h, this._lastFacing));
                     this._lastFacing = h;
                 }
@@ -257,15 +268,37 @@ class ContextMap {
             speechParts.push(`${label}: ${phrases.map((p) => p.speech).join('; ')}`);
             htmlParts.push(`<h3>${this._esc(label)}</h3><ul>${phrases.map((p) => p.html).join('')}</ul>`);
         }
-        return { speech: speechParts.join('. ') + '.', html: htmlParts.join('') };
+        return { parts: speechParts, html: htmlParts.join('') };
     }
 
     // ── Output ─────────────────────────────────────────────────────────────────
     // speak(): the screen-reader channel (a polite live region). announceStatus():
     // speak + log a visible line. renderDetail(): a navigable structured block.
     speak(message) {
+        if (this.synth) {
+            // Latest-wins: drop whatever is queued or mid-sentence, then speak the new
+            // message. This is the whole point — when you turn fast, you hear where you
+            // are NOW, not a backlog of where you were.
+            this.synth.cancel();
+            this.synth.speak(new SpeechSynthesisUtterance(message));
+            return;
+        }
         const live = document.getElementById('cm-live');
         if (live) { live.textContent = ''; live.textContent = message; }
+    }
+
+    // Speak a multi-part read-out (the Detailed surroundings): cancel prior speech ONCE,
+    // then queue each part as its own short utterance. Splitting avoids the browser
+    // silently cutting off a single long utterance (the "last bullet missed" bug); a
+    // newer message still interrupts the whole sequence (its cancel() clears the queue).
+    speakSequence(parts) {
+        if (this.synth) {
+            this.synth.cancel();
+            for (const p of parts) this.synth.speak(new SpeechSynthesisUtterance(p));
+            return;
+        }
+        const live = document.getElementById('cm-live');
+        if (live) { live.textContent = ''; live.textContent = parts.join('. ') + '.'; }
     }
 
     announceStatus(message) {
