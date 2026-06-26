@@ -101,7 +101,8 @@ class ContextMap {
         if (onRoad) parts.push(`on ${onRoad.display}`);
         const f = near.find((x) => x !== onRoad);
         if (f) parts.push(`${f.display} ${this._where(pos, f)}, ${this.phraseDistance(f.distance_m)}`);
-        this.announceStatus((parts.join(', ') || 'Location found') + '.');
+        const msg = (parts.join(', ') || 'Location found') + '.';
+        this.announceStatus(msg);
     }
 
     // ── DETAILED surroundings (rendered as navigable text, plus spoken) ─────────

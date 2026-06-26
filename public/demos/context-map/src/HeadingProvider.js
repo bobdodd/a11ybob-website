@@ -104,26 +104,44 @@ export class HeadingProvider {
             this._accurate = e.webkitCompassAccuracy >= 0 && e.webkitCompassAccuracy <= 30;
         }
         let h = null;
+        let applyScreen = true;            // back-azimuth is already a world azimuth -> no screen comp
         if (typeof e.webkitCompassHeading === 'number' && !isNaN(e.webkitCompassHeading)) {
-            h = e.webkitCompassHeading;             // iOS: true compass heading
+            h = e.webkitCompassHeading;    // iOS: tilt-compensated by the OS already
         } else if (typeof e.alpha === 'number' && e.alpha !== null) {
-            h = (360 - e.alpha) % 360;              // Android absolute: 360 - alpha
+            const beta = (typeof e.beta === 'number') ? e.beta : 0;
+            const gamma = (typeof e.gamma === 'number') ? e.gamma : 0;
+            // 360-alpha is only valid flat; held upright it drifts toward north (gimbal
+            // lock near beta=90 — ~64deg of swing flat->vertical, measured). So past ~35
+            // degrees of tilt use the back-of-phone azimuth, which IS the way you face
+            // and stays tilt-stable (already a world azimuth, so no screen comp).
+            if (Math.abs(beta) > 35) { h = this._backAzimuth(e.alpha, beta, gamma); applyScreen = false; }
+            else { h = (360 - e.alpha) % 360; }
         }
         if (h === null || isNaN(h)) return;
-        // Compensate for screen rotation (portrait vs landscape) BEFORE smoothing,
-        // so the smoothed value lives in the screen-forward frame.
-        h = (h + this._screenAngle()) % 360;
+        if (applyScreen) h = (h + this._screenAngle()) % 360;
         // Low-pass in sin/cos space so the 360->0 wrap doesn't average to garbage.
-        // Light damping (new-sample weight 0.18, close to the original 0.2) — just
-        // enough to take the edge off the noise without lagging the bearing behind
-        // where you actually point. The turn-detection THRESHOLD downstream does the
-        // real work of ignoring small movements, and it adds no lag.
         const a = h * Math.PI / 180;
         const s = Math.sin(a), c = Math.cos(a);
         if (this._sin === null) { this._sin = s; this._cos = c; }
         else { this._sin = this._sin * 0.82 + s * 0.18; this._cos = this._cos * 0.82 + c * 0.18; }
         this.heading = (Math.atan2(this._sin, this._cos) * 180 / Math.PI + 360) % 360;
         this.available = true;
+    }
+
+    // Tilt-compensated compass azimuth of the BACK of the phone (device -Z), from the
+    // absolute orientation angles (degrees). This is the direction you face when the
+    // phone is held UPRIGHT, and unlike 360-alpha it stays correct as the phone tilts.
+    // device +Z expressed in the Earth (East, North, Up) frame, then azimuth of -Z.
+    _backAzimuth(alphaDeg, betaDeg, gammaDeg) {
+        const d2r = Math.PI / 180;
+        const a = alphaDeg * d2r, b = betaDeg * d2r, g = gammaDeg * d2r;
+        const sa = Math.sin(a), ca = Math.cos(a);
+        const sb = Math.sin(b);
+        const sg = Math.sin(g), cg = Math.cos(g);
+        const zEast = ca * sg + sa * sb * cg;    // device +Z, East component
+        const zNorth = sa * sg - ca * sb * cg;   // device +Z, North component
+        // Back of the phone is -Z; compass heading = atan2(East, North) of that.
+        return (Math.atan2(-zEast, -zNorth) / d2r + 360) % 360;
     }
 
     // Smoothed compass heading in degrees (0 = North, clockwise), or null if the
