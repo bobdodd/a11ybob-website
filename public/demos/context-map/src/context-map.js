@@ -19,11 +19,16 @@ class ContextMap {
         this.started = false;
         this.autoDescribe = false;
 
-        // EXPERIMENT: speak via the Web Speech API instead of an aria-live region, so a
-        // newer message can INTERRUPT the current one (cancel-before-speak) rather than
-        // queue behind it — the live-region backlog is what makes fast turning feel
-        // laggy. Falls back to the live region where speechSynthesis isn't available.
+        // Pick ONE speech channel up front and never mix them. Where the Web Speech API
+        // is usable we speak through it (cancel-before-speak, so a newer message INTERRUPTS
+        // the current one instead of queuing). Where it is NOT — a de-Googled phone like
+        // GrapheneOS, which omits it or exposes no voice — we use the assertive live region
+        // instead, and the user's own screen reader speaks every message. The live region
+        // MUST NOT run while Web Speech is in use, or a screen-reader user hears it twice;
+        // _probeSpeech() makes that single decision and speak()/speakSequence() honour it.
         this.synth = ('speechSynthesis' in window) ? window.speechSynthesis : null;
+        this._speechOk = false;       // API present AND has a usable voice? (set by _probeSpeech)
+        this._probeSpeech();
 
         // proximity / turn state
         this.lastProximityPos = null;
@@ -296,8 +301,20 @@ class ContextMap {
     // ── Output ─────────────────────────────────────────────────────────────────
     // speak(): the screen-reader channel (a polite live region). announceStatus():
     // speak + log a visible line. renderDetail(): a navigable structured block.
+    // Decide the speech channel ONCE: Web Speech is "usable" when the API exists AND
+    // offers at least one voice. A de-Googled build reports none, which routes us to the
+    // live region. Voices can populate asynchronously, so re-decide if 'voiceschanged'
+    // fires. This is the only place the choice is made — there is no per-utterance
+    // fallback, so the live region can never run alongside a working Web Speech engine.
+    _probeSpeech() {
+        if (!this.synth) return;
+        const decide = () => { this._speechOk = this.synth.getVoices().length > 0; };
+        decide();
+        if (typeof this.synth.addEventListener === 'function') this.synth.addEventListener('voiceschanged', decide);
+    }
+
     speak(message) {
-        if (this.synth) {
+        if (this.synth && this._speechOk) {
             // Latest-wins: drop whatever is queued or mid-sentence, then speak the new
             // message. This is the whole point — when you turn fast, you hear where you
             // are NOW, not a backlog of where you were.
@@ -305,6 +322,13 @@ class ContextMap {
             this.synth.speak(new SpeechSynthesisUtterance(message));
             return;
         }
+        this._announceLive(message);
+    }
+
+    // The screen-reader channel: an assertive, atomic live region, so the user's own AT
+    // speaks the message in their own voice and a newer message interrupts the current
+    // one (latest-wins — the same intent as speechSynthesis.cancel()).
+    _announceLive(message) {
         const live = document.getElementById('cm-live');
         if (live) { live.textContent = ''; live.textContent = message; }
     }
@@ -314,13 +338,12 @@ class ContextMap {
     // silently cutting off a single long utterance (the "last bullet missed" bug); a
     // newer message still interrupts the whole sequence (its cancel() clears the queue).
     speakSequence(parts) {
-        if (this.synth) {
+        if (this.synth && this._speechOk) {
             this.synth.cancel();
             for (const p of parts) this.synth.speak(new SpeechSynthesisUtterance(p));
             return;
         }
-        const live = document.getElementById('cm-live');
-        if (live) { live.textContent = ''; live.textContent = parts.join('. ') + '.'; }
+        this._announceLive(parts.join('. ') + '.');
     }
 
     announceStatus(message) {

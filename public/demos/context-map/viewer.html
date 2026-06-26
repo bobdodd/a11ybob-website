@@ -95,9 +95,11 @@
         </section>
     </main>
 
-    <!-- Speech fallback: a polite live region, used only where the Web Speech API
-         (the primary, interruptible speech channel) is unavailable. -->
-    <div id="cm-live" class="cm-sr-only" aria-live="polite" aria-atomic="true"></div>
+    <!-- Speech fallback: an ASSERTIVE live region, used where the Web Speech API (the
+         primary speech channel) is missing or mute — e.g. de-Googled phones like
+         GrapheneOS. Assertive (not polite) so a newer message interrupts the current one,
+         matching the latest-wins behaviour of speechSynthesis.cancel(). -->
+    <div id="cm-live" class="cm-sr-only" aria-live="assertive" aria-atomic="true"></div>
 
     <script type="module" src="src/context-map.js"></script>
 </body>
