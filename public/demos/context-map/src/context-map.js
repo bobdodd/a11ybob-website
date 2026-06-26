@@ -43,8 +43,14 @@ class ContextMap {
         this._wakeLock = null;   // screen wake lock held while Describe-as-I-move is on
 
         this.locationTracker.onUpdate((p) => this.handleLocationUpdate(p));
-        this.locationTracker.onError((e) =>
-            this.announceStatus('Location problem: ' + (e.message || 'unavailable') + '.'));
+        this.locationTracker.onError((e) => {
+            // A geolocation TIMEOUT is transient — the watch keeps trying and will deliver
+            // a fix once the GPS locks (cold start / rural). Don't alarm the user; the
+            // describe buttons already say "Waiting for GPS" when there's no fix yet. Only
+            // surface a real problem (permission denied, position genuinely unavailable).
+            if (e.code === 3) return;   // 3 = TIMEOUT
+            this.announceStatus('Location problem: ' + (e.message || 'unavailable') + '.');
+        });
 
         this.setupGate();
         this.setupControls();
@@ -110,7 +116,7 @@ class ContextMap {
         this._lastNearby = near;
         this._lastNearbyPos = { lat: pos.lat, lng: pos.lng };
         if (!near.length) { this.announceStatus('Nothing notable nearby.'); return; }
-        const onRoad = near.find((f) => f.category === 'road' && f.distance_m <= 30);
+        const onRoad = this._onRoad(near, pos);
         const heading = this.heading.getHeading();
         const parts = [];
         if (heading !== null) parts.push(`Facing ${this.cardinal(heading)}`);
@@ -125,11 +131,13 @@ class ContextMap {
     async detailedDescribe() {
         const pos = this.locationTracker.getCurrentPosition();
         if (!pos) { this.announceStatus('Waiting for GPS — try again in a moment.'); return; }
-        const near = (await this.fetchNearby(pos.lat, pos.lng, 10)).filter((f) => f.distance_m <= 3000);
+        const { results, summary } = await this._fetchArea(pos.lat, pos.lng, 10);
+        const near = results.filter((f) => f.distance_m <= 3000);
         this._lastNearby = near;
         this._lastNearbyPos = { lat: pos.lat, lng: pos.lng };
-        if (!near.length) { this.announceStatus('Nothing notable nearby.'); return; }
-        const { parts, html } = this._describeSurround(pos, near);
+        const area = this._areaCharacter(summary);   // "feel of the space" lead-in (may be null)
+        if (!near.length && !area) { this.announceStatus('Nothing notable nearby.'); return; }
+        const { parts, html } = this._describeSurround(pos, near, area);
         this.speakSequence(parts);                // queued short utterances — full read-out, not cut off
         this.renderDetail(html);                  // structured, re-readable block
     }
@@ -148,7 +156,7 @@ class ContextMap {
         if (!near.length) return;
         this._lastNearby = near;
         this._lastNearbyPos = { lat: position.lat, lng: position.lng };
-        const onRoad = near.find((f) => f.category === 'road' && f.distance_m <= 30);
+        const onRoad = this._onRoad(near, position);
         let msg = null, id = null;
         if (onRoad && ('road:' + onRoad.id) !== this._lastRoadId) {
             msg = `On ${onRoad.display}.`; id = 'road:' + onRoad.id; this._lastRoadId = id;
@@ -290,8 +298,19 @@ class ContextMap {
         return { hour: null, cardinal: card, bucket: card };
     }
 
-    _describeSurround(pos, near) {
-        const onRoad = near.find((f) => f.category === 'road' && f.distance_m <= 30);
+    // The nearest road we're confidently ON — within ON_ROAD_M, and ONLY when the GPS
+    // fix is accurate enough to mean it. A coarse first fix (poor accuracy, common right
+    // after Start before the GPS locks) near a rural road would otherwise keep claiming
+    // you're "on" it until you move; if we can't locate ourselves to within ON_ROAD_M we
+    // can't claim to be on a road that close, so report nothing.
+    _onRoad(near, pos) {
+        const ON_ROAD_M = 30;
+        if (pos && typeof pos.accuracy === 'number' && pos.accuracy > ON_ROAD_M) return null;
+        return near.find((f) => f.category === 'road' && f.distance_m <= ON_ROAD_M) || null;
+    }
+
+    _describeSurround(pos, near, area) {
+        const onRoad = this._onRoad(near, pos);
         const heading = this.heading.getHeading();
         const lead = [];
         if (heading !== null) lead.push(`Facing ${this.cardinal(heading)}`);
@@ -312,6 +331,10 @@ class ContextMap {
 
         const speechParts = [leadLine];
         const htmlParts = [`<p>${this._esc(leadLine)}</p>`];
+        if (area) {                               // area-character "feel of the space" lead-in
+            speechParts.push(area);
+            htmlParts.push(`<p class="cm-area">${this._esc(area)}</p>`);
+        }
         for (const key of order) {
             const items = groups[key];
             if (!items || !items.length) continue;
@@ -327,6 +350,73 @@ class ContextMap {
             htmlParts.push(`<h3>${this._esc(label)}</h3><ul>${phrases.map((p) => p.html).join('')}</ul>`);
         }
         return { parts: speechParts, html: htmlParts.join('') };
+    }
+
+    // ── AREA CHARACTER (Detailed lead-in) ───────────────────────────────────────
+    // Turn the API's area-character counts into a one-line "feel of the space". PRESENCE
+    // ONLY — never claim absence, since OSM tagging is uneven (kerbs especially are
+    // sparsely mapped, so silence ≠ none). Phase 1: urban density from already-indexed
+    // categories; rural water/landuse richness is Phase 2 (needs index changes).
+    // Thresholds + wording are a first cut, meant to be tuned on real output.
+    _areaCharacter(s) {
+        if (!s) return null;
+        const cat = s.categories || {}, sub = s.subtypes || {}, acc = s.access || {};
+        const sum = (m, keys) => keys.reduce((a, k) => a + (m[k] || 0), 0);
+        const shops = cat.shop || 0;
+        const food = sum(sub, ['cafe', 'restaurant', 'fast_food', 'food_court', 'bar', 'pub', 'ice_cream', 'biergarten']);
+        const crossings = sum(sub, ['signalized_crossing', 'uncontrolled_crossing', 'marked_crossing', 'zebra_crossing', 'crossing']);
+        const transit = (cat.transit || 0) + (cat.transport || 0);
+        const parks = cat.park || 0;
+        const benches = sub.bench || 0;
+        const tactile = acc.tactile_paving || 0;
+        const kerbs = acc.kerb_lowered || 0;
+        const stepfree = acc.wheelchair || 0;
+
+        const clauses = [];
+
+        const retail = [];
+        if (shops >= 25) retail.push('a major shopping area, dozens of shops');
+        else if (shops >= 10) retail.push('a busy retail area, lots of shops');
+        else if (shops >= 4) retail.push('several shops');
+        else if (shops >= 1) retail.push('a shop or two');
+        if (food >= 10) retail.push('plenty of places to eat');
+        else if (food >= 4) retail.push('several places to eat');
+        else if (food >= 1) retail.push('somewhere to eat');
+        if (retail.length) clauses.push(retail.join(', '));
+
+        const a11y = [];
+        if (crossings >= 1) {
+            let c = crossings >= 15 ? 'lots of pedestrian crossings'
+                : crossings >= 5 ? 'several pedestrian crossings'
+                    : `${crossings} pedestrian crossing${crossings === 1 ? '' : 's'}`;
+            if (tactile >= Math.max(3, crossings * 0.3)) c += ', many with tactile paving';
+            else if (tactile >= 1) c += ', some with tactile paving';
+            a11y.push(c);
+        }
+        if (kerbs >= 3) a11y.push('dropped kerbs mapped nearby');
+        if (stepfree >= 20) a11y.push('many step-free places');
+        else if (stepfree >= 5) a11y.push('several step-free places');
+        if (a11y.length) clauses.push(a11y.join(', '));
+
+        if (transit >= 8) clauses.push('lots of transit stops nearby');
+        else if (transit >= 3) clauses.push(`${transit} transit stops nearby`);
+        else if (transit >= 1) clauses.push('a transit stop nearby');
+
+        const rest = [];
+        if (parks >= 3) rest.push('several green spaces');
+        else if (parks >= 1) rest.push('green space nearby');
+        if (benches >= 8) rest.push('plenty of seating');
+        else if (benches >= 3) rest.push('some seating');
+        if (rest.length) clauses.push(rest.join(', '));
+
+        if (!clauses.length) return null;   // sparse — Phase 2 adds water / landuse richness here
+
+        let lead;
+        if (shops >= 10 || food >= 8) lead = 'A busy, built-up area';
+        else if (shops + food + crossings >= 6) lead = 'A mixed, walkable area';
+        else if ((s.total || 0) <= 15) lead = 'A quiet spot';
+        else lead = 'A mostly residential area';
+        return `${lead}: ${clauses.join('; ')}.`;
     }
 
     // ── Output ─────────────────────────────────────────────────────────────────
@@ -405,6 +495,20 @@ class ContextMap {
             return data.results || [];
         } catch (_) {
             return [];
+        }
+    }
+
+    // Like fetchNearby but also asks for the area-character summary (Detailed read-out).
+    async _fetchArea(lat, lng, limit) {
+        try {
+            const qs = new URLSearchParams({ lat: String(lat), lng: String(lng), limit: String(limit), summary: '1' });
+            if (this.heading.isMoving()) qs.set('moving', '1');
+            const res = await fetch(`/api/map-nearby?${qs.toString()}`);
+            if (!res.ok) return { results: [], summary: null };
+            const data = await res.json();
+            return { results: data.results || [], summary: data.summary || null };
+        } catch (_) {
+            return { results: [], summary: null };
         }
     }
 

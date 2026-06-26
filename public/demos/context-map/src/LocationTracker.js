@@ -24,7 +24,12 @@ export class LocationTracker {
         
         const options = {
             enableHighAccuracy: true,
-            timeout: 5000,
+            // Generous: a cold or rural GPS can take far longer than a few seconds to get
+            // its first high-accuracy fix. A short timeout just fires spurious TIMEOUT
+            // errors while the watch is still (successfully) acquiring. watchPosition keeps
+            // trying after a timeout, and the Context Map suppresses the transient TIMEOUT
+            // rather than alarming the user.
+            timeout: 30000,
             maximumAge: 0
         };
 

@@ -44,6 +44,18 @@ type Result = {
   distance_m: number;
 };
 
+// AREA-CHARACTER summary (?summary=1): raw counts of EVERY feature within a small
+// radius — named and unnamed — by category, by subtype, and by accessibility tag.
+// Drives the Detailed read-out's "feel of the space" lead-in. The API only counts;
+// the client turns the counts into phrasing (so wording is tuned without a rebuild).
+type AreaSummary = {
+  radius_m: number;
+  total: number;
+  categories: Record<string, number>;
+  subtypes: Record<string, number>;
+  access: { kerb_lowered: number; tactile_paving: number; wheelchair: number };
+};
+
 // Raw geometry stored on the doc: t:'L' = lines/rings, c = arrays of [lon,lat].
 type Geom = { t: string; c: number[][][] };
 type Near = { dist: number; lat: number; lng: number };
@@ -388,5 +400,47 @@ export async function GET(req: NextRequest) {
     if (results.length >= limit) break;
   }
 
-  return NextResponse.json({ results });
+  // Optional AREA-CHARACTER summary for the Detailed read-out. A second aggregation
+  // query that counts ALL features in a small radius (named AND unnamed), unlike the
+  // named-only results above. The client turns these raw counts into "feel of the
+  // space" phrasing.
+  let summary: AreaSummary | undefined;
+  if (sp.get("summary") === "1") {
+    const radius = Math.min(1500, Math.max(50, Number(sp.get("radius")) || 250));
+    const agg = await opensearch.search({
+      index: INDEX,
+      body: {
+        size: 0,
+        track_total_hits: true,
+        query: { geo_distance: { distance: `${radius}m`, location: { lat, lon: lng } } },
+        aggs: {
+          by_category: { terms: { field: "category", size: 30 } },
+          by_subtype: { terms: { field: "subtype", size: 80 } },
+          kerb_lowered: { filter: { term: { "access.kerb": "lowered" } } },
+          tactile_yes: { filter: { term: { "access.tactile_paving": "yes" } } },
+          wheelchair_yes: { filter: { term: { "access.wheelchair": "yes" } } },
+        },
+      },
+    });
+    const ab = agg.body.aggregations as unknown as Record<
+      string,
+      { buckets?: Array<{ key: string; doc_count: number }>; doc_count?: number }
+    >;
+    const toMap = (b?: Array<{ key: string; doc_count: number }>): Record<string, number> =>
+      Object.fromEntries((b ?? []).map((x) => [x.key, x.doc_count]));
+    const total = (agg.body.hits?.total as unknown as { value: number })?.value ?? 0;
+    summary = {
+      radius_m: radius,
+      total,
+      categories: toMap(ab.by_category.buckets),
+      subtypes: toMap(ab.by_subtype.buckets),
+      access: {
+        kerb_lowered: ab.kerb_lowered.doc_count ?? 0,
+        tactile_paving: ab.tactile_yes.doc_count ?? 0,
+        wheelchair: ab.wheelchair_yes.doc_count ?? 0,
+      },
+    };
+  }
+
+  return NextResponse.json({ results, summary });
 }
