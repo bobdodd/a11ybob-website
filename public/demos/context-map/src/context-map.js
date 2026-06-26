@@ -40,6 +40,7 @@ class ContextMap {
         this._autoTO = null;
         this._lastFacing = null;
         this._hHist = [];        // recent {t, h} headings — turn "settled" is judged from their spread
+        this._wakeLock = null;   // screen wake lock held while Describe-as-I-move is on
 
         this.locationTracker.onUpdate((p) => this.handleLocationUpdate(p));
         this.locationTracker.onError((e) =>
@@ -47,6 +48,12 @@ class ContextMap {
 
         this.setupGate();
         this.setupControls();
+
+        // A screen wake lock is auto-released whenever the page is hidden; re-acquire it
+        // on return to the foreground while the map is open.
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible' && this.started) this._acquireWakeLock();
+        });
     }
 
     // ── Disclaimer gate ───────────────────────────────────────────────────────
@@ -61,7 +68,7 @@ class ContextMap {
         }
     }
 
-    start() {
+    async start() {
         const gate = document.getElementById('cm-gate');
         const app = document.getElementById('cm-app');
         if (gate) gate.hidden = true;
@@ -73,7 +80,12 @@ class ContextMap {
         this.started = true;
         this.locationTracker.startTracking();
         this.heading.start();   // inside the Start gesture, so the permission prompt is allowed
-        this.announceStatus('Context Map started. Finding your location — give it a moment, then use the buttons.');
+        // Keep the screen awake for the whole session (Start is the user gesture the API
+        // needs). The start message reports whether the lock actually engaged, so a user
+        // can tell at once — absence of the phrase means the browser refused/can't do it.
+        const awake = await this._acquireWakeLock();
+        this.announceStatus('Context Map started. Finding your location — give it a moment, then use the buttons.'
+            + (awake ? ' Note: to keep the running description working, the screen will stay on until you change apps or close the page.' : ''));
     }
 
     setupControls() {
@@ -170,6 +182,25 @@ class ContextMap {
 
     _startAutoHeadingWatch() { this._stopAutoHeadingWatch(); this._autoTick(); }
     _stopAutoHeadingWatch() { if (this._autoTO) { clearTimeout(this._autoTO); this._autoTO = null; } }
+
+    // Screen Wake Lock — keep the screen (and so this page) awake while the Context Map
+    // is open, so Describe-as-I-move doesn't die on the screen idle-timeout. Only helps
+    // while the Context Map is the FOREGROUND, on-screen app: the lock is auto-released
+    // when the page is hidden (we re-acquire on return), and continuous background
+    // operation (another app foreground, or screen off in a pocket) is NOT possible for a
+    // web page. Returns whether the lock is now held (so callers can tell the user).
+    async _acquireWakeLock() {
+        if (this._wakeLock) return true;
+        if (!('wakeLock' in navigator)) return false;
+        try {
+            this._wakeLock = await navigator.wakeLock.request('screen');
+            this._wakeLock.addEventListener('release', () => { this._wakeLock = null; });
+            return true;
+        } catch (_) {
+            this._wakeLock = null;   // refused (e.g. low battery) — not fatal
+            return false;
+        }
+    }
 
     // Rotation IS movement: announce a turn once the compass has SETTLED, so being spun
     // in a crowd re-orients you to your new facing without re-querying.

@@ -26,6 +26,7 @@ export class HeadingProvider {
         this._cos = null;
         this._handler = (e) => this._onOrientation(e);
         this._eventName = null;
+        this._firstReadyTO = null;   // quiet-retry timer until the first compass reading lands
         // GPS course-over-ground, fed from the geolocation watch. When you're moving,
         // this is a reliable heading that is IMMUNE to magnetometer error — a
         // miscalibrated compass can read ~180° off (seen on Pixel). Used in preference
@@ -71,10 +72,31 @@ export class HeadingProvider {
             ? 'deviceorientationabsolute' : 'deviceorientation';
         window.addEventListener(this._eventName, this._handler);
         this.started = true;
+        this._watchForFirstReading(0);   // quietly re-attach if the sensor is slow to deliver
         return true;
     }
 
+    // Some devices attach the orientation listener but never deliver the first event —
+    // the magnetometer doesn't "wake" — so the compass appears to time out and
+    // getHeading() stays null. Quietly re-subscribe a few times until a reading lands;
+    // nothing is shown to the user, and callers keep working on the cardinal fallback
+    // meanwhile. Once any reading arrives (_onOrientation sets `available`) this stops.
+    _watchForFirstReading(attempt) {
+        if (this._firstReadyTO) { clearTimeout(this._firstReadyTO); this._firstReadyTO = null; }
+        if (this.available || !this.started || attempt >= 4) return;   // got one, stopped, or give up
+        this._firstReadyTO = setTimeout(() => {
+            this._firstReadyTO = null;
+            if (this.available || !this.started) return;
+            // Re-subscribe — on a stuck sensor this often nudges the first event out. The
+            // existing listener stays valid either way, so this can't lose a reading.
+            window.removeEventListener(this._eventName, this._handler);
+            window.addEventListener(this._eventName, this._handler);
+            this._watchForFirstReading(attempt + 1);
+        }, 1500);
+    }
+
     stop() {
+        if (this._firstReadyTO) { clearTimeout(this._firstReadyTO); this._firstReadyTO = null; }
         if (this._eventName) window.removeEventListener(this._eventName, this._handler);
         this.started = false;
         this.available = false;
