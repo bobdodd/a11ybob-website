@@ -148,13 +148,14 @@ export class HeadingProvider {
     // device has no magnetometer / permission was refused / no reading yet / the
     // reading is currently too inaccurate to trust.
     getHeading() {
-        // Above a walking pace, trust GPS course-over-ground (immune to magnetometer
-        // error) while it's fresh; otherwise fall back to the smoothed magnetometer.
-        // Null if neither is usable.
-        const moving = this._gpsSpeed >= 1.0
-            && this._gpsCourse !== null
-            && (Date.now() - this._gpsCourseTime) < 4000;
-        if (moving) return this._gpsCourse;
+        // TEMP (compass testing): the GPS course-over-ground override is DISABLED — we
+        // return the magnetometer heading ONLY. Stationary GPS drift can fake a speed +
+        // course and hijack the heading for seconds at a time, which is what we're
+        // isolating. To restore, un-comment the `moving` check below.
+        // const moving = this._gpsSpeed >= 1.0
+        //     && this._gpsCourse !== null
+        //     && (Date.now() - this._gpsCourseTime) < 4000;
+        // if (moving) return this._gpsCourse;
         return (this.available && this._accurate) ? this.heading : null;
     }
 

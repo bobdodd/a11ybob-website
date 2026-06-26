@@ -34,8 +34,7 @@ class ContextMap {
         this._lastNearbyPos = null;
         this._autoTO = null;
         this._lastFacing = null;
-        this._settleH = null;
-        this._settleStart = 0;
+        this._hHist = [];        // recent {t, h} headings — turn "settled" is judged from their spread
 
         this.locationTracker.onUpdate((p) => this.handleLocationUpdate(p));
         this.locationTracker.onError((e) =>
@@ -153,7 +152,7 @@ class ContextMap {
         button.setAttribute('aria-pressed', this.autoDescribe);
         if (this.autoDescribe) {
             this.heading.start();
-            this._lastFacing = null; this._settleH = null;
+            this._lastFacing = null; this._hHist = [];
             this._lastRoadId = null; this._lastSpokenId = null;
             this.lastProximityTime = 0; this.lastProximityPos = null;
             this._startAutoHeadingWatch();
@@ -167,29 +166,51 @@ class ContextMap {
     _startAutoHeadingWatch() { this._stopAutoHeadingWatch(); this._autoTick(); }
     _stopAutoHeadingWatch() { if (this._autoTO) { clearTimeout(this._autoTO); this._autoTO = null; } }
 
-    // Rotation IS movement: announce a turn once the compass settles (~1s), so being
-    // spun in a crowd re-orients you to your new facing without re-querying.
+    // Rotation IS movement: announce a turn once the compass has SETTLED, so being spun
+    // in a crowd re-orients you to your new facing without re-querying.
     _autoTick() {
         if (!this.autoDescribe) return;
-        // Tuning: announce only a change of at least TURN_MIN degrees that then settles
-        // (drift under SETTLE_BAND) briefly for SETTLE_MS. The THRESHOLD is the main
-        // filter against hand-wobble (and it adds no lag — a real turn still fires the
-        // moment it settles); SETTLE_MS is kept short so it stays responsive.
-        const TURN_MIN = 45, SETTLE_MS = 900, SETTLE_BAND = 12;
+        // Decide "have I turned, and stopped?" from the NET displacement of the heading
+        // across a short window — the mean of its OLDER half vs the mean of its NEWER
+        // half. Means are the whole point: standing-still jitter AND hand/body sway both
+        // oscillate around a centre (they come back), so the two halves average to nearly
+        // the same value -> net ~0 -> settled; a real turn moves the centre, so the halves
+        // disagree -> still turning. (The earlier spread test mistook that sway for
+        // perpetual motion and so almost never announced.)
+        //   SETTLE_BAND — net shift between the half-means under which rotation is "stopped"
+        //   TURN_MIN    — net turn since the last call-out before it's worth announcing
+        const SETTLE_MS = 700, SETTLE_BAND = 20, TURN_MIN = 45;
         const h = this.heading.getHeading();
         if (h !== null && h !== undefined) {
-            if (this._settleH === null || Math.abs(this._angDiff(h, this._settleH)) > SETTLE_BAND) {
-                this._settleH = h; this._settleStart = Date.now();          // still moving
-            } else if (Date.now() - this._settleStart > SETTLE_MS) {        // held steady
-                if (this._lastFacing === null) {
-                    this._lastFacing = h;
-                } else if (Math.abs(this._angDiff(h, this._lastFacing)) >= TURN_MIN) {
-                    this._announceTurn(h, this._angDiff(h, this._lastFacing));
-                    this._lastFacing = h;
+            const now = Date.now();
+            this._hHist.push({ t: now, h });
+            while (this._hHist.length && now - this._hHist[0].t > SETTLE_MS) this._hHist.shift();
+            if (this._hHist.length >= 4 && now - this._hHist[0].t >= SETTLE_MS * 0.7) {
+                const mid = now - SETTLE_MS / 2;
+                const older = this._hHist.filter((e) => e.t < mid);
+                const newer = this._hHist.filter((e) => e.t >= mid);
+                if (older.length && newer.length) {
+                    const mO = this._circMean(older), mN = this._circMean(newer);
+                    if (Math.abs(this._angDiff(mN, mO)) <= SETTLE_BAND) {       // settled: centre held
+                        if (this._lastFacing === null) {
+                            this._lastFacing = mN;                              // baseline; no call-out yet
+                        } else if (Math.abs(this._angDiff(mN, this._lastFacing)) >= TURN_MIN) {
+                            this._announceTurn(mN, this._angDiff(mN, this._lastFacing));
+                            this._lastFacing = mN;
+                        }
+                    }
                 }
             }
         }
-        this._autoTO = setTimeout(() => this._autoTick(), 400);
+        this._autoTO = setTimeout(() => this._autoTick(), 175);
+    }
+
+    // Circular mean heading (degrees) of a set of {h} samples — averaged in sin/cos space
+    // so the 360->0 wrap doesn't poison it (mean of 350 and 10 is 0, not 180).
+    _circMean(samples) {
+        let sx = 0, sy = 0;
+        for (const e of samples) { const r = e.h * Math.PI / 180; sx += Math.cos(r); sy += Math.sin(r); }
+        return (Math.atan2(sy, sx) * 180 / Math.PI + 360) % 360;
     }
 
     _announceTurn(facing, signed) {
