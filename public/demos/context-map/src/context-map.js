@@ -126,10 +126,9 @@ class ContextMap {
         if (lead.length) sentences.push(lead.join(', '));
         // Urban detail: the nearest cross-street junction at each end of the block, the
         // one ahead of you first.
-        if (onRoad && intersections && intersections.length) {
-            const ordered = this._orderAhead(pos, intersections, heading);
-            const xs = ordered.map((x) => `${x.display}, ${this.phraseDistance(x.distance_m)}, ${this._clockOf(pos, x)}`);
-            sentences.push((xs.length > 1 ? 'Nearest intersections: ' : 'Nearest intersection: ') + xs.join('; '));
+        if (onRoad) {
+            const xl = this._intersectionsLine(pos, intersections, heading);
+            if (xl) sentences.push(xl);
         }
         // The nearest other notable feature.
         const f = near.find((x) => x !== onRoad);
@@ -142,13 +141,13 @@ class ContextMap {
     async detailedDescribe() {
         const pos = this.locationTracker.getCurrentPosition();
         if (!pos) { this.announceStatus('Waiting for GPS — try again in a moment.'); return; }
-        const { results, summary } = await this._fetchArea(pos.lat, pos.lng, 10);
+        const { results, summary, intersections } = await this._fetchArea(pos.lat, pos.lng, 10);
         const near = results.filter((f) => f.distance_m <= 3000);
         this._lastNearby = near;
         this._lastNearbyPos = { lat: pos.lat, lng: pos.lng };
         const area = this._areaCharacter(summary);   // "feel of the space" lead-in (may be null)
         if (!near.length && !area) { this.announceStatus('Nothing notable nearby.'); return; }
-        const { parts, html } = this._describeSurround(pos, near, area);
+        const { parts, html } = this._describeSurround(pos, near, area, intersections);
         this.speakSequence(parts);                // queued short utterances — full read-out, not cut off
         this.renderDetail(html);                  // structured, re-readable block
     }
@@ -163,14 +162,18 @@ class ContextMap {
                 this.lastProximityPos.lat, this.lastProximityPos.lng, position.lat, position.lng);
             if (moved < 12) return;
         }
-        const near = await this.fetchNearby(position.lat, position.lng, 5);
+        const { results: near, intersections } = await this._fetchQuick(position.lat, position.lng, 5);
         if (!near.length) return;
         this._lastNearby = near;
         this._lastNearbyPos = { lat: position.lat, lng: position.lng };
         const onRoad = this._onRoad(near, position);
         let msg = null, id = null;
         if (onRoad && ('road:' + onRoad.id) !== this._lastRoadId) {
-            msg = `On ${onRoad.display}.`; id = 'road:' + onRoad.id; this._lastRoadId = id;
+            // Newly on a road: announce it plus the block-end intersections.
+            msg = `On ${onRoad.display}.`;
+            const xl = this._intersectionsLine(position, intersections, this.heading.getHeading());
+            if (xl) msg += ' ' + xl + '.';
+            id = 'road:' + onRoad.id; this._lastRoadId = id;
         } else {
             const f = near.find((x) => x.significance >= 2 && x.id !== this._lastSpokenId
                 && !(onRoad && x.id === onRoad.id) && x.distance_m <= 120);
@@ -312,6 +315,16 @@ class ContextMap {
         return [...items].sort((a, b) => aheadness(a) - aheadness(b));
     }
 
+    // "Nearest intersection(s): <street>, <distance>, <clock>; ..." — the block-end
+    // junctions ordered ahead-first. Returns null when there are none. No trailing period
+    // (callers add one to suit their sentence joining).
+    _intersectionsLine(pos, intersections, heading) {
+        if (!intersections || !intersections.length) return null;
+        const ordered = this._orderAhead(pos, intersections, heading);
+        const xs = ordered.map((x) => `${x.display}, ${this.phraseDistance(x.distance_m)}, ${this._clockOf(pos, x)}`);
+        return (xs.length > 1 ? 'Nearest intersections: ' : 'Nearest intersection: ') + xs.join('; ');
+    }
+
     _relClock(pos, f) {
         const bearing = this.locationTracker.calculateBearing(pos.lat, pos.lng, f.lat, f.lng);
         const heading = this.heading.getHeading();
@@ -340,7 +353,7 @@ class ContextMap {
         return near.find((f) => f.category === 'road' && f.distance_m <= ON_ROAD_M) || null;
     }
 
-    _describeSurround(pos, near, area) {
+    _describeSurround(pos, near, area, intersections) {
         const onRoad = this._onRoad(near, pos);
         const heading = this.heading.getHeading();
         const lead = [];
@@ -366,6 +379,10 @@ class ContextMap {
             speechParts.push(area);
             htmlParts.push(`<p class="cm-area">${this._esc(area)}</p>`);
         }
+        if (onRoad) {                             // block-end intersections of the street you're on
+            const xl = this._intersectionsLine(pos, intersections, heading);
+            if (xl) { speechParts.push(xl + '.'); htmlParts.push(`<p>${this._esc(xl)}.</p>`); }
+        }
         for (const key of order) {
             const items = groups[key];
             if (!items || !items.length) continue;
@@ -386,8 +403,8 @@ class ContextMap {
     // ── AREA CHARACTER (Detailed lead-in) ───────────────────────────────────────
     // Turn the API's area-character counts into a one-line "feel of the space". PRESENCE
     // ONLY — never claim absence, since OSM tagging is uneven (kerbs especially are
-    // sparsely mapped, so silence ≠ none). Phase 1: urban density from already-indexed
-    // categories; rural water/landuse richness is Phase 2 (needs index changes).
+    // sparsely mapped, so silence ≠ none). Leads with WHERE you are (the zone you're in
+    // + nearest settlement), then urban density, nearby natural (rural), and accessibility.
     // Thresholds + wording are a first cut, meant to be tuned on real output.
     _areaCharacter(s) {
         if (!s) return null;
@@ -402,6 +419,15 @@ class ContextMap {
         const tactile = acc.tactile_paving || 0;
         const kerbs = acc.kerb_lowered || 0;
         const stepfree = acc.wheelchair || 0;
+        // Nearby natural (rural richness). Water comes mostly as the `water` CATEGORY
+        // count: named lakes/rivers carry subtype water_body, but the lake-surface fills
+        // are unnamed (no subtype), so we lead off the category count, not subtypes alone.
+        const waterCat = cat.water || 0;
+        const namedLakes = sum(sub, ['lake', 'reservoir', 'water_body']);
+        const ponds = sub.pond || 0;
+        const wetlands = sum(sub, ['wetland', 'marsh', 'swamp', 'bog', 'fen']);
+        const streams = sum(sub, ['stream', 'river', 'canal']);
+        const woods = sum(sub, ['wood', 'forest']);
 
         const clauses = [];
 
@@ -433,6 +459,22 @@ class ContextMap {
         else if (transit >= 3) clauses.push(`${transit} transit stops nearby`);
         else if (transit >= 1) clauses.push('a transit stop nearby');
 
+        // Nearby natural — water, wetland, woods (the country description). Presence only;
+        // water leads off the category count so the unnamed lake fills aren't dropped.
+        const nat = [];
+        if (namedLakes >= 2 || (namedLakes >= 1 && waterCat >= 6)) nat.push('lakes nearby');
+        else if (namedLakes >= 1) nat.push('a lake nearby');
+        else if (ponds >= 2) nat.push('ponds nearby');
+        else if (ponds >= 1) nat.push('a pond nearby');
+        else if (waterCat >= 8) nat.push('open water all around');
+        else if (waterCat >= 3) nat.push('open water nearby');
+        if (wetlands >= 3) nat.push('wetland all around');
+        else if (wetlands >= 1) nat.push(wetlands === 1 ? 'a wetland' : 'some wetland');
+        if (streams >= 1 && namedLakes === 0 && waterCat < 6) nat.push(streams === 1 ? 'a creek' : 'creeks');
+        if (woods >= 3) nat.push('woods around');
+        else if (woods >= 1) nat.push('some woodland');
+        if (nat.length) clauses.push(nat.join(', '));
+
         const rest = [];
         if (parks >= 3) rest.push('several green spaces');
         else if (parks >= 1) rest.push('green space nearby');
@@ -440,14 +482,47 @@ class ContextMap {
         else if (benches >= 3) rest.push('some seating');
         if (rest.length) clauses.push(rest.join(', '));
 
-        if (!clauses.length) return null;   // sparse — Phase 2 adds water / landuse richness here
+        const lead = this._whereLead(s, shops, food, crossings, nat.length > 0);
+        if (!clauses.length && !lead) return null;
+        if (!clauses.length) return lead + '.';
+        return `${(lead || 'Around you')}: ${clauses.join('; ')}.`;
+    }
 
-        let lead;
-        if (shops >= 10 || food >= 8) lead = 'A busy, built-up area';
-        else if (shops + food + crossings >= 6) lead = 'A mixed, walkable area';
-        else if ((s.total || 0) <= 15) lead = 'A quiet spot';
-        else lead = 'A mostly residential area';
-        return `${lead}: ${clauses.join('; ')}.`;
+    // The lead phrase: the zone you're standing IN (from containment) + the nearest
+    // settlement, falling back to an overall character word.
+    _whereLead(s, shops, food, crossings, hasNature) {
+        const within = s.within || [], settlement = s.settlement || null;
+        let where = null;
+        const zone = within[0];
+        if (zone) {
+            if (zone.category === 'boundary' || (zone.category === 'park' && zone.display && !/area$/i.test(zone.display))) {
+                where = `In ${zone.display}`;                 // a named region / park
+            } else if (zone.category === 'landuse') {
+                const z = {
+                    residential: 'a residential area', commercial: 'a commercial area',
+                    retail: 'a retail area', industrial: 'an industrial area',
+                    farmland: 'open farmland', orchard: 'an orchard', vineyard: 'a vineyard',
+                    cemetery: 'a cemetery', institutional: 'an institutional area',
+                    education: 'a school ground', military: 'a military area',
+                }[zone.subtype];
+                where = z ? `In ${z}` : null;
+            } else if (zone.category === 'park') {
+                where = 'In parkland';
+            }
+        }
+        if (!where) {
+            if (shops >= 10 || food >= 8) where = 'A busy, built-up area';
+            else if (shops + food + crossings >= 6) where = 'A mixed, walkable area';
+            else if (hasNature && (s.total || 0) <= 40) where = 'Open countryside';
+            else if ((s.total || 0) <= 15) where = 'A quiet spot';
+            else where = 'A mostly residential area';
+        }
+        if (settlement && settlement.display) {
+            const km = settlement.distance_m / 1000;
+            if (settlement.distance_m <= 2500) where += `, near ${settlement.display}`;
+            else if (settlement.distance_m <= 15000) where += `, about ${km < 1.5 ? km.toFixed(1) : Math.round(km)} km from ${settlement.display}`;
+        }
+        return where;
     }
 
     // ── Output ─────────────────────────────────────────────────────────────────
@@ -529,17 +604,18 @@ class ContextMap {
         }
     }
 
-    // Like fetchNearby but also asks for the area-character summary (Detailed read-out).
+    // Like fetchNearby but also asks for the area-character summary AND the on-road
+    // block-end intersections (Detailed read-out wants both).
     async _fetchArea(lat, lng, limit) {
         try {
-            const qs = new URLSearchParams({ lat: String(lat), lng: String(lng), limit: String(limit), summary: '1' });
+            const qs = new URLSearchParams({ lat: String(lat), lng: String(lng), limit: String(limit), summary: '1', xings: '1', radius: '500' });
             if (this.heading.isMoving()) qs.set('moving', '1');
             const res = await fetch(`/api/map-nearby?${qs.toString()}`);
-            if (!res.ok) return { results: [], summary: null };
+            if (!res.ok) return { results: [], summary: null, intersections: [] };
             const data = await res.json();
-            return { results: data.results || [], summary: data.summary || null };
+            return { results: data.results || [], summary: data.summary || null, intersections: data.intersections || [] };
         } catch (_) {
-            return { results: [], summary: null };
+            return { results: [], summary: null, intersections: [] };
         }
     }
 

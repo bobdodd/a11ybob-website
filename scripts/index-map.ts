@@ -49,6 +49,10 @@ const mapping = {
     display: { ...text, fields: { raw: { type: "keyword" } } },
     category: { type: "keyword" },
     subtype: { type: "keyword" },
+    // 'area' marks area-character fills (unnamed water / woods / landuse / boundary) —
+    // counted in the area-character aggregation + used for containment, but kept out of
+    // named search. Absent on ordinary findable features.
+    kind: { type: "keyword" },
     types: text,
     text,
     // Name of the containing place (school / hospital / park) the spatial-

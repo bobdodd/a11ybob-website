@@ -54,6 +54,11 @@ type AreaSummary = {
   categories: Record<string, number>;
   subtypes: Record<string, number>;
   access: { kerb_lowered: number; tactile_paving: number; wheelchair: number };
+  // The zone(s) you're standing IN (point-in-polygon): a landuse area ("a residential
+  // area"), a park, a named region. Smallest/most-specific first.
+  within: Array<{ display: string; category: string; subtype: string }>;
+  // Nearest named settlement ("near Buckhorn"), or null if none within reach.
+  settlement: { display: string; subtype: string; distance_m: number; lat: number; lng: number } | null;
 };
 
 // Raw geometry stored on the doc: t:'L' = lines/rings, c = arrays of [lon,lat].
@@ -161,6 +166,41 @@ function roadDirAt(pLat: number, pLng: number, geoms: Geom[]): [number, number] 
 function projAlong(pLat: number, pLng: number, xLat: number, xLng: number, dir: [number, number]): number {
   const rad = Math.PI / 180, R = 6371000, coslat = Math.cos(pLat * rad);
   return (xLng - pLng) * coslat * R * rad * dir[0] + (xLat - pLat) * R * rad * dir[1];
+}
+
+// Is point P inside the (multi-ring) polygon stored in geom? Ray casting per ring, XORed
+// — handles a polygon with holes; for a few disjoint outer rings it's a close-enough
+// approximation. geom.c rings are [lon, lat] vertices. Used for "you're in <zone>".
+function pointInGeom(pLat: number, pLng: number, geom: Geom): boolean {
+  let inside = false;
+  for (const ring of geom.c) {
+    for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+      const xi = ring[i][0], yi = ring[i][1], xj = ring[j][0], yj = ring[j][1];
+      if (((yi > pLat) !== (yj > pLat)) && pLng < ((xj - xi) * (pLat - yi)) / (yj - yi) + xi) {
+        inside = !inside;
+      }
+    }
+  }
+  return inside;
+}
+
+// Rough planar area (m²) of a polygon ring set — to prefer the SMALLEST containing zone
+// (most specific) when several contain the point. Shoelace on the first ring is enough.
+function geomAreaM2(geom: Geom): number {
+  const rad = Math.PI / 180, R = 6371000;
+  let max = 0;
+  for (const ring of geom.c) {
+    if (ring.length < 3) continue;
+    const lat0 = ring[0][1] * rad, coslat = Math.cos(lat0);
+    let a = 0;
+    for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+      const xi = ring[i][0] * rad * coslat * R, yi = ring[i][1] * rad * R;
+      const xj = ring[j][0] * rad * coslat * R, yj = ring[j][1] * rad * R;
+      a += xj * yi - xi * yj;
+    }
+    max = Math.max(max, Math.abs(a) / 2);
+  }
+  return max;
 }
 
 /* SIGNIFICANCE — how much a feature is worth telling the user about unprompted, 0-3.
@@ -456,6 +496,60 @@ export async function GET(req: NextRequest) {
     const toMap = (b?: Array<{ key: string; doc_count: number }>): Record<string, number> =>
       Object.fromEntries((b ?? []).map((x) => [x.key, x.doc_count]));
     const total = (agg.body.hits?.total as unknown as { value: number })?.value ?? 0;
+
+    // Containment — which landuse / park / region polygon you're standing IN. Pull nearby
+    // area polygons with geometry, keep those whose ring contains you, smallest (most
+    // specific) first.
+    const zoneRes = await opensearch.search({
+      index: INDEX,
+      body: {
+        size: 60,
+        query: {
+          bool: {
+            must: [{ terms: { category: ["landuse", "park", "boundary"] } }],
+            filter: [{ geo_distance: { distance: "1500m", location: { lat, lon: lng } } }],
+          },
+        },
+        _source: ["display", "category", "subtype", "name", "geom"],
+      },
+    });
+    const within = ((zoneRes.body.hits?.hits as unknown as Array<{ _source: Record<string, unknown> }>) ?? [])
+      .map((h) => ({ s: h._source, geom: h._source.geom as Geom | undefined }))
+      .filter((z) => z.geom && pointInGeom(lat, lng, z.geom))
+      .sort((a, b) => geomAreaM2(a.geom as Geom) - geomAreaM2(b.geom as Geom))
+      .slice(0, 3)
+      .map((z) => ({
+        display: String(z.s.display ?? z.s.name ?? ""),
+        category: String(z.s.category ?? ""),
+        subtype: String(z.s.subtype ?? ""),
+      }));
+
+    // Nearest named settlement ("near Buckhorn").
+    const placeRes = await opensearch.search({
+      index: INDEX,
+      body: {
+        size: 1,
+        query: {
+          bool: {
+            must: [{ term: { category: "place" } }, { exists: { field: "name" } }],
+            filter: [{ geo_distance: { distance: "12000m", location: { lat, lon: lng } } }],
+          },
+        },
+        sort: [{ _geo_distance: { location: { lat, lon: lng }, order: "asc", unit: "m", distance_type: "plane", mode: "min" } }],
+        _source: ["display", "subtype", "lat", "lng"],
+      },
+    });
+    const pl = ((placeRes.body.hits?.hits as unknown as Array<{ _source: Record<string, unknown> }>) ?? [])[0]?._source;
+    const settlement = pl
+      ? {
+          display: String(pl.display ?? ""),
+          subtype: String(pl.subtype ?? ""),
+          distance_m: Math.round(metresBetween(lat, lng, pl.lat as number, pl.lng as number)),
+          lat: pl.lat as number,
+          lng: pl.lng as number,
+        }
+      : null;
+
     summary = {
       radius_m: radius,
       total,
@@ -466,6 +560,8 @@ export async function GET(req: NextRequest) {
         tactile_paving: ab.tactile_yes.doc_count ?? 0,
         wheelchair: ab.wheelchair_yes.doc_count ?? 0,
       },
+      within,
+      settlement,
     };
   }
 
