@@ -136,6 +136,33 @@ function geomCrossings(a: Geom, b: Geom): number[][] {
   return out;
 }
 
+// Unit direction [east, north] of a road at the point on it nearest P — the local
+// segment's heading. Lets us tell which junctions sit at each END of the block (ahead
+// vs behind ALONG the street), so we report one at each end rather than two the same way.
+function roadDirAt(pLat: number, pLng: number, geoms: Geom[]): [number, number] | null {
+  const rad = Math.PI / 180, R = 6371000, coslat = Math.cos(pLat * rad);
+  let bestD = Infinity, dx = 0, dy = 0;
+  for (const g of geoms)
+    for (const ring of g.c)
+      for (let i = 0; i + 1 < ring.length; i++) {
+        const a = ring[i], b = ring[i + 1];
+        const r = nearestOnSeg(pLat, pLng, a[1], a[0], b[1], b[0]);
+        if (r.dist < bestD) {
+          bestD = r.dist;
+          dx = (b[0] - a[0]) * coslat * R * rad;
+          dy = (b[1] - a[1]) * R * rad;
+        }
+      }
+  const len = Math.hypot(dx, dy);
+  return len > 0 ? [dx / len, dy / len] : null;
+}
+
+// Signed distance (m) of X from P projected onto unit direction dir [east, north].
+function projAlong(pLat: number, pLng: number, xLat: number, xLng: number, dir: [number, number]): number {
+  const rad = Math.PI / 180, R = 6371000, coslat = Math.cos(pLat * rad);
+  return (xLng - pLng) * coslat * R * rad * dir[0] + (xLat - pLat) * R * rad * dir[1];
+}
+
 /* SIGNIFICANCE — how much a feature is worth telling the user about unprompted, 0-3.
  * Keyed on the real category/subtype values in the map-features index, refined by
  * whether the feature is named. The accessibility categories (facility / mobility /
@@ -442,5 +469,80 @@ export async function GET(req: NextRequest) {
     };
   }
 
-  return NextResponse.json({ results, summary });
+  // Optional INTERSECTIONS (?xings=1): for the street you're on/near, the nearest cross-
+  // street junction at EACH END of the block. Quick describe reads these ("on Church
+  // Street; nearest intersection Wellesley Street, 45 m, 6 o'clock"). Computed from a
+  // dedicated nearby-roads query so the cross streets are never crowded out of the main
+  // result set in a dense area.
+  let intersections:
+    | Array<{ display: string; lat: number; lng: number; distance_m: number }>
+    | undefined;
+  if (sp.get("xings") === "1") {
+    const roadRes = await opensearch.search({
+      index: INDEX,
+      body: {
+        size: 60,
+        query: {
+          bool: {
+            must: [{ term: { category: "road" } }, { exists: { field: "name" } }],
+            filter: [{ geo_distance: { distance: "500m", location: { lat, lon: lng } } }],
+          },
+        },
+        sort: [{ _geo_distance: { location: { lat, lon: lng }, order: "asc", unit: "m", distance_type: "plane", mode: "min" } }],
+        _source: ["name", "display", "subtype", "geom"],
+      },
+    });
+    const roads = ((roadRes.body.hits?.hits as unknown as Array<{ _source: Record<string, unknown> }>) ?? [])
+      .map((h) => {
+        const s = h._source;
+        const geom = s.geom as Geom | undefined;
+        return {
+          name: String(s.name ?? "").trim(),
+          display: String(s.display ?? s.name ?? ""),
+          subtype: String(s.subtype ?? ""),
+          geom,
+          near: geom ? nearestOnGeom(lat, lng, geom) : null,
+        };
+      })
+      .filter((r) => r.geom && r.near);
+
+    // The street we're on/near: the nearest named road within ON_ROAD_M.
+    let userRoad: string | null = null;
+    let userDist = Infinity;
+    for (const r of roads) if (r.near!.dist < userDist) { userDist = r.near!.dist; userRoad = r.name.toLowerCase(); }
+    if (userDist > ON_ROAD_M) userRoad = null;
+
+    if (userRoad) {
+      const userGeoms = roads.filter((r) => r.name.toLowerCase() === userRoad).map((r) => r.geom as Geom);
+      const dir = roadDirAt(lat, lng, userGeoms);
+      // "main" cross streets — named through-streets; exclude minor ways that don't define a block.
+      const MINOR = new Set(["service", "track", "footway", "path", "cycleway", "steps", "bridleway", "construction", "platform", "corridor"]);
+      const xs: Array<{ display: string; lat: number; lng: number; dist: number; proj: number }> = [];
+      for (const r of roads) {
+        if (!r.geom || r.name.toLowerCase() === userRoad || MINOR.has(r.subtype)) continue;
+        let best: { lat: number; lng: number; dist: number } | null = null;
+        for (const ug of userGeoms)
+          for (const p of geomCrossings(r.geom, ug)) {
+            const d = metresBetween(lat, lng, p[1], p[0]);
+            if (!best || d < best.dist) best = { lat: p[1], lng: p[0], dist: d };
+          }
+        if (best) xs.push({ display: r.display, lat: best.lat, lng: best.lng, dist: best.dist, proj: dir ? projAlong(lat, lng, best.lat, best.lng, dir) : 0 });
+      }
+      // Nearest junction per cross-street name.
+      const byName = new Map<string, (typeof xs)[number]>();
+      for (const x of xs) { const k = x.display.toLowerCase(); if (!byName.has(k) || x.dist < byName.get(k)!.dist) byName.set(k, x); }
+      const all = [...byName.values()];
+      // One junction at each END of the block (nearest ahead + nearest behind along the
+      // street); if we can't split by direction, just the nearest two.
+      const fwd = all.filter((x) => x.proj >= 0).sort((a, b) => a.dist - b.dist)[0];
+      const back = all.filter((x) => x.proj < 0).sort((a, b) => a.dist - b.dist)[0];
+      let chosen = [fwd, back].filter(Boolean) as typeof all;
+      if (chosen.length < 2) chosen = all.sort((a, b) => a.dist - b.dist).slice(0, 2);
+      intersections = chosen
+        .sort((a, b) => a.dist - b.dist)
+        .map((x) => ({ display: x.display, lat: Number(x.lat.toFixed(6)), lng: Number(x.lng.toFixed(6)), distance_m: Math.round(x.dist) }));
+    }
+  }
+
+  return NextResponse.json({ results, summary, intersections });
 }

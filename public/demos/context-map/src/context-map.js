@@ -112,18 +112,29 @@ class ContextMap {
     async quickDescribe() {
         const pos = this.locationTracker.getCurrentPosition();
         if (!pos) { this.announceStatus('Waiting for GPS — try again in a moment.'); return; }
-        const near = await this.fetchNearby(pos.lat, pos.lng, 4);
+        const { results: near, intersections } = await this._fetchQuick(pos.lat, pos.lng, 4);
         this._lastNearby = near;
         this._lastNearbyPos = { lat: pos.lat, lng: pos.lng };
         if (!near.length) { this.announceStatus('Nothing notable nearby.'); return; }
         const onRoad = this._onRoad(near, pos);
         const heading = this.heading.getHeading();
-        const parts = [];
-        if (heading !== null) parts.push(`Facing ${this.cardinal(heading)}`);
-        if (onRoad) parts.push(`on ${onRoad.display}`);
+        const sentences = [];
+        // Lead: which way you face, and the street you're on.
+        const lead = [];
+        if (heading !== null) lead.push(`Facing ${this.cardinal(heading)}`);
+        if (onRoad) lead.push(`on ${onRoad.display}`);
+        if (lead.length) sentences.push(lead.join(', '));
+        // Urban detail: the nearest cross-street junction at each end of the block, the
+        // one ahead of you first.
+        if (onRoad && intersections && intersections.length) {
+            const ordered = this._orderAhead(pos, intersections, heading);
+            const xs = ordered.map((x) => `${x.display}, ${this.phraseDistance(x.distance_m)}, ${this._clockOf(pos, x)}`);
+            sentences.push((xs.length > 1 ? 'Nearest intersections: ' : 'Nearest intersection: ') + xs.join('; '));
+        }
+        // The nearest other notable feature.
         const f = near.find((x) => x !== onRoad);
-        if (f) parts.push(`${f.display} ${this._where(pos, f)}, ${this.phraseDistance(f.distance_m)}`);
-        const msg = (parts.join(', ') || 'Location found') + '.';
+        if (f) sentences.push(`${f.display} ${this._where(pos, f)}, ${this.phraseDistance(f.distance_m)}`);
+        const msg = (sentences.join('. ') || 'Location found') + '.';
         this.announceStatus(msg);
     }
 
@@ -279,6 +290,26 @@ class ContextMap {
     _where(pos, f) {
         const d = this._relClock(pos, f);
         return d.hour ? `at ${d.hour} o'clock` : `to the ${d.cardinal}`;
+    }
+
+    // Just the clock/cardinal direction to a point (no "at" prefix), for the
+    // "<street>, <distance>, 6 o'clock" intersection phrasing.
+    _clockOf(pos, f) {
+        const d = this._relClock(pos, f);
+        return d.hour ? `${d.hour} o'clock` : `to the ${d.cardinal}`;
+    }
+
+    // Order points by how far AHEAD they are of the way you're facing — the one nearest
+    // 12 o'clock first (that's where your attention is), the one behind you last. Needs
+    // the compass; without it, keep the given order (by distance).
+    _orderAhead(pos, items, heading) {
+        if (heading === null || heading === undefined || items.length < 2) return items;
+        const aheadness = (x) => {
+            const bearing = this.locationTracker.calculateBearing(pos.lat, pos.lng, x.lat, x.lng);
+            const rel = (((bearing - heading) % 360) + 360) % 360;
+            return Math.min(rel, 360 - rel);   // angular distance from straight ahead
+        };
+        return [...items].sort((a, b) => aheadness(a) - aheadness(b));
     }
 
     _relClock(pos, f) {
@@ -509,6 +540,20 @@ class ContextMap {
             return { results: data.results || [], summary: data.summary || null };
         } catch (_) {
             return { results: [], summary: null };
+        }
+    }
+
+    // Like fetchNearby but also asks for the on-road block-end intersections (Quick describe).
+    async _fetchQuick(lat, lng, limit) {
+        try {
+            const qs = new URLSearchParams({ lat: String(lat), lng: String(lng), limit: String(limit), xings: '1' });
+            if (this.heading.isMoving()) qs.set('moving', '1');
+            const res = await fetch(`/api/map-nearby?${qs.toString()}`);
+            if (!res.ok) return { results: [], intersections: [] };
+            const data = await res.json();
+            return { results: data.results || [], intersections: data.intersections || [] };
+        } catch (_) {
+            return { results: [], intersections: [] };
         }
     }
 
