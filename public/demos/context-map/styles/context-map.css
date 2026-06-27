@@ -85,6 +85,14 @@ p { margin: 0 0 0.75rem; }
     text-align: center;
 }
 .cm-btn:hover { background: var(--fill); }
+
+/* TEMPORARY — CNIB @ Pride highlight (remove ~2026-07-04 with the booth POI). Bright
+   CNIB yellow so the booth button stands out; text stays var(--ink) #111, AAA on the
+   yellow. Hover darkens slightly to keep the feedback the grey hover would otherwise
+   lose (the id selector outranks .cm-btn:hover). */
+#cm-cnib-pride { background: #fff100; }
+#cm-cnib-pride:hover { background: #f2e400; }
+
 .cm-btn:focus-visible {
     outline: 3px solid var(--focus);
     outline-offset: 2px;
