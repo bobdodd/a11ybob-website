@@ -101,8 +101,6 @@ class ContextMap {
         if (a) a.addEventListener('click', (e) => this.toggleAutoDescribe(e.currentTarget));
         const d = document.getElementById('cm-detailed');
         if (d) d.addEventListener('click', () => this.detailedDescribe());
-        const c = document.getElementById('cm-cnib-pride');  // TEMPORARY (CNIB @ Pride)
-        if (c) c.addEventListener('click', () => this.cnibAtPride());
     }
 
     handleLocationUpdate(position) {
@@ -137,39 +135,6 @@ class ContextMap {
         if (f) sentences.push(`${f.display} ${this._where(pos, f)}, ${this.phraseDistance(f.distance_m)}`);
         const msg = (sentences.join('. ') || 'Location found') + '.';
         this.announceStatus(msg);
-    }
-
-    // ── TEMPORARY: CNIB @ Pride (remove ~2026-07-04 with the booth POI) ──────────
-    // Like Quick describe, but ALWAYS finishes with the CNIB booth's direction +
-    // distance from where you are — so an attendee can home in on it from anywhere,
-    // even beyond the map-nearby reach. Skips the extra mention only if the booth is
-    // already the landmark Quick describe picked (you're standing right at it).
-    async cnibAtPride() {
-        const pos = this.locationTracker.getCurrentPosition();
-        if (!pos) { this.announceStatus('Waiting for GPS — try again in a moment.'); return; }
-        const BOOTH = { display: 'CNIB @ Pride', lat: 43.66578, lng: -79.38106 };
-        const { results: near, intersections } = await this._fetchQuick(pos.lat, pos.lng, 4);
-        this._lastNearby = near;
-        this._lastNearbyPos = { lat: pos.lat, lng: pos.lng };
-        const onRoad = this._onRoad(near, pos);
-        const heading = this.heading.getHeading();
-        const sentences = [];
-        const lead = [];
-        if (heading !== null) lead.push(`Facing ${this.cardinal(heading)}`);
-        if (onRoad) lead.push(`on ${onRoad.display}`);
-        if (lead.length) sentences.push(lead.join(', '));
-        if (onRoad) {
-            const xl = this._intersectionsLine(pos, intersections, heading);
-            if (xl) sentences.push(xl);
-        }
-        const f = near.find((x) => x !== onRoad);
-        if (f) sentences.push(`${f.display} ${this._where(pos, f)}, ${this.phraseDistance(f.distance_m)}`);
-        // Always end with the booth — unless Quick describe already named it.
-        if (!(f && f.display === BOOTH.display)) {
-            const dist = this.locationTracker.calculateDistance(pos.lat, pos.lng, BOOTH.lat, BOOTH.lng);
-            sentences.push(`${BOOTH.display} ${this._where(pos, BOOTH)}, ${this.phraseDistance(dist)}`);
-        }
-        this.announceStatus((sentences.join('. ') || BOOTH.display) + '.');
     }
 
     // ── DETAILED surroundings (rendered as navigable text, plus spoken) ─────────
