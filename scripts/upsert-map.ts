@@ -25,6 +25,27 @@ const BATCH = 2000; // docs per bulk request (2 lines each)
 
 const os = new Client({ node: OPENSEARCH_URL });
 
+// OpenSearch rejects a field whose name is the empty string ("field name cannot be an
+// empty string"), which fails the whole doc. A few OSM features produce one — e.g. a
+// malformed `addr:` tag becomes address[""] — so drop empty-name keys recursively and
+// let the doc index with its valid fields. (Seen once in Ontario: osm_id 1473121340.)
+let strippedKeys = 0;
+function stripEmptyKeys(v: unknown): unknown {
+  if (Array.isArray(v)) return v.map(stripEmptyKeys);
+  if (v && typeof v === "object") {
+    const out: Record<string, unknown> = {};
+    for (const [k, val] of Object.entries(v as Record<string, unknown>)) {
+      if (k === "") {
+        strippedKeys += 1;
+        continue;
+      }
+      out[k] = stripEmptyKeys(val);
+    }
+    return out;
+  }
+  return v;
+}
+
 async function main() {
   const file = process.argv[2];
   if (!file) {
@@ -77,7 +98,7 @@ async function main() {
     if (!line.trim()) continue;
     let doc: { osm_id?: number };
     try {
-      doc = JSON.parse(line);
+      doc = stripEmptyKeys(JSON.parse(line)) as { osm_id?: number };
     } catch {
       continue;
     }
@@ -91,7 +112,9 @@ async function main() {
   await os.indices.refresh({ index: INDEX });
   const after = (await os.count({ index: INDEX })).body.count;
   console.log(
-    `map-features: read ${read} docs, ${errors} bulk errors. Index ${before} -> ${after}.`,
+    `map-features: read ${read} docs, ${errors} bulk errors${
+      strippedKeys ? `, ${strippedKeys} empty-name keys dropped` : ""
+    }. Index ${before} -> ${after}.`,
   );
 }
 
