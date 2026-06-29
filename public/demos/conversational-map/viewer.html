@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Conversational Map — experimental test software</title>
+    <link rel="stylesheet" href="styles/conversational-map.css">
+</head>
+<body>
+    <!-- ── Disclaimer gate ───────────────────────────────────────────────────
+         Shown first; the app stays hidden (and out of the accessibility tree)
+         until accepted. Acceptance is also the gesture the phone needs to grant
+         location permission. Re-shown every visit (no localStorage). -->
+    <main id="cv-gate" class="cv-gate">
+        <h1>Conversational Map</h1>
+        <h2>Important — please read before you start</h2>
+
+        <div class="cv-disclaimer">
+            <p>
+                The Conversational Map is <strong>experimental, unfinished test
+                software</strong>, shared for evaluation only. It has <strong>not been
+                tested for accuracy or reliability</strong>. You ask questions about where
+                you are, or anywhere on the map, and it answers from map data.
+            </p>
+            <ul>
+                <li>
+                    <strong>It can be wrong.</strong> It may misreport where you are, how
+                    far away things are, or which direction they lie in — or it may answer
+                    a question incorrectly or make something up. Information may be missing,
+                    out of date, or simply incorrect.
+                </li>
+                <li>
+                    <strong>It is not a navigation or mobility aid.</strong> Do not use it
+                    to find your way, cross roads, judge traffic, avoid hazards, or make any
+                    decision about your safety or movement. It is not a substitute for your
+                    cane, your guide dog, your own orientation and mobility skills, sighted
+                    assistance, or proper navigation tools.
+                </li>
+                <li>
+                    <strong>It sends your words and location to an external AI service.</strong>
+                    To understand your questions and write its answers, what you type and your
+                    current location (when available) are sent over the internet to a
+                    third-party AI service (Anthropic's Claude) for processing. Do not type
+                    anything you would not want handled that way.
+                </li>
+                <li>
+                    <strong>It depends on things that can fail</strong> — your device's GPS,
+                    your network connection, the AI service, and map data that may be
+                    inaccurate. Accuracy is often poor among buildings, in crowds, or indoors.
+                </li>
+                <li>
+                    <strong>Keep using your usual ways of getting around at all times</strong>
+                    and stay aware of your surroundings.
+                </li>
+            </ul>
+            <p class="cv-risk">
+                By continuing you confirm that you have read and understood this notice, that
+                you use the Conversational Map <strong>entirely at your own risk</strong>, and
+                that — to the fullest extent permitted by law — the author and contributors
+                accept <strong>no liability</strong> for any loss, injury, or damage arising
+                from your use of it. The software is provided &ldquo;as is&rdquo;, with no
+                warranty of any kind.
+            </p>
+        </div>
+
+        <p class="cv-consent">
+            <label>
+                <input type="checkbox" id="cv-accept">
+                I have read and understood this notice. I accept all risk, I understand my
+                questions and location are sent to an external AI service, and I will not use
+                the Conversational Map for navigation or for any safety decision.
+            </label>
+        </p>
+
+        <button id="cv-start" class="cv-btn cv-start" type="button" disabled>
+            Start the Conversational Map
+        </button>
+    </main>
+
+    <!-- ── The app (revealed after acceptance) ─────────────────────────────── -->
+    <main id="cv-app" class="cv-app" hidden>
+        <h1 id="cv-app-title" tabindex="-1">Conversational Map</h1>
+        <p class="cv-intro">
+            Test software — not for navigation. Ask about where you are now, or anywhere on
+            the map. Finding your location can take a moment after you start.
+        </p>
+
+        <!-- The conversation. NOT a live region: it never double-announces and stays
+             navigable for re-reading. New answers are announced via #cv-live below. -->
+        <section class="cv-logwrap" aria-label="Conversation">
+            <h2 class="cv-sr-only">Conversation</h2>
+            <div id="cv-log" class="cv-log"></div>
+        </section>
+
+        <form id="cv-form" class="cv-form">
+            <label for="cv-input" class="cv-label">Ask about where you are, or anywhere on the map</label>
+            <p id="cv-hint" class="cv-hint">
+                For example: &ldquo;what&rsquo;s near me?&rdquo;, &ldquo;is there a step-free
+                entrance to the library?&rdquo;, or &ldquo;how far is the CN Tower?&rdquo;
+            </p>
+            <div class="cv-inputrow">
+                <input id="cv-input" class="cv-input" type="text" aria-describedby="cv-hint"
+                       autocomplete="off" enterkeyhint="send">
+                <button id="cv-send" class="cv-btn" type="submit">Send</button>
+            </div>
+        </form>
+
+        <!-- Status: "Thinking…", errors. Polite live region (short messages only). -->
+        <p id="cv-status" class="cv-status" role="status" aria-live="polite"></p>
+    </main>
+
+    <!-- The answer is announced here (sr-only, polite). The visible copy lives in the log
+         above; this is what a screen reader speaks when an answer arrives. -->
+    <div id="cv-live" class="cv-sr-only" aria-live="polite" aria-atomic="true"></div>
+
+    <script type="module" src="src/conversational-map.js"></script>
+</body>
+</html>

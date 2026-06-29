@@ -1,0 +1,171 @@
+/* Conversational Map — screen-reader-first chat over the map index. Mirrors the Context
+   Map's design language: mobile-first, large targets, AAA contrast, and grey luminance
+   boundaries so it survives macOS/iOS Invert Colours (coloured edges flip hue and lose
+   contrast — so state and separation ride on grey, not colour). */
+
+:root {
+    --ink: #111;
+    --ink-soft: #333;
+    --line: #5a5a5a;
+    --fill: #f4f6f8;
+    --focus: #0033aa;
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+    margin: 0;
+    padding: 1.25rem;
+    max-width: 42rem;
+    margin-inline: auto;
+    font: 1.125rem/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    color: var(--ink);
+    background: #fff;
+    hyphens: none;
+}
+
+h1 { font-size: 1.6rem; line-height: 1.2; margin: 0 0 0.5rem; }
+h2 { font-size: 1.25rem; margin: 1.5rem 0 0.5rem; }
+h1:focus { outline: none; }   /* programmatic focus target, no visible ring */
+p { margin: 0 0 0.75rem; }
+
+/* ── Disclaimer ─────────────────────────────────────────────────────────── */
+.cv-disclaimer ul { margin: 0.5rem 0 1rem; padding-inline-start: 1.25rem; }
+.cv-disclaimer li { margin: 0 0 0.6rem; }
+
+.cv-risk {
+    padding: 0.875rem 1rem;
+    background: var(--fill);
+    border: 2px solid var(--line);
+    border-radius: 8px;
+    color: var(--ink);
+}
+
+.cv-consent {
+    margin: 1.25rem 0;
+    padding: 0.875rem 1rem;
+    background: var(--fill);
+    border: 2px solid var(--line);
+    border-radius: 8px;
+}
+.cv-consent label {
+    display: flex;
+    gap: 0.625rem;
+    align-items: flex-start;
+    cursor: pointer;
+    font-weight: 600;
+}
+.cv-consent input[type="checkbox"] {
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+    margin: 0.15rem 0 0;
+    flex-shrink: 0;
+    accent-color: var(--focus);
+}
+
+/* ── Buttons (big targets) ──────────────────────────────────────────────── */
+.cv-btn {
+    display: block;
+    inline-size: 100%;
+    min-block-size: 3.25rem;
+    padding: 0.75rem 1rem;
+    margin: 0 0 0.75rem;
+    font: inherit;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--ink);
+    background: #fff;
+    border: 2px solid var(--line);
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: center;
+}
+.cv-btn:hover { background: var(--fill); }
+.cv-btn:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.cv-btn:disabled {
+    color: #6a6a6a;
+    background: #ececec;
+    border-color: #9a9a9a;
+    cursor: not-allowed;
+}
+.cv-start { margin-top: 0.5rem; }
+
+/* ── App ────────────────────────────────────────────────────────────────── */
+.cv-intro { color: var(--ink-soft); }
+
+/* ── Conversation transcript ────────────────────────────────────────────── */
+.cv-logwrap { margin: 1.25rem 0; }
+.cv-log {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+.cv-log:empty { display: none; }
+.cv-msg { margin: 0; }
+.cv-msg__text {
+    margin: 0;
+    padding: 0.625rem 0.875rem;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--fill);
+}
+/* Your question: indented, soft fill. The answer: full width, heavier grey edge so it
+   stands out — separation by border weight and inset, not colour (invert-safe). */
+.cv-msg--user { margin-inline-start: 2rem; }
+.cv-msg--user .cv-msg__text { background: var(--fill); }
+.cv-msg--bot .cv-msg__text {
+    background: #fff;
+    border-width: 2px;
+    border-color: var(--ink);
+}
+
+/* ── Input ──────────────────────────────────────────────────────────────── */
+.cv-label { display: block; font-weight: 600; margin: 0 0 0.25rem; }
+.cv-hint { color: var(--ink-soft); margin: 0 0 0.6rem; }   /* body size, not <small> (AAA 1.4.6) */
+.cv-inputrow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.625rem;
+    align-items: stretch;
+}
+.cv-input {
+    flex: 1 1 12rem;
+    min-block-size: 3.25rem;
+    padding: 0.75rem 0.875rem;
+    font: inherit;
+    color: var(--ink);
+    background: #fff;
+    border: 2px solid var(--line);
+    border-radius: 10px;
+}
+.cv-input:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.cv-inputrow .cv-btn { inline-size: auto; flex: 0 0 auto; margin: 0; }
+
+.cv-status {
+    min-block-size: 1.55em;
+    margin: 0.75rem 0 0;
+    color: var(--ink-soft);
+    font-style: italic;
+}
+.cv-status:empty { min-block-size: 0; }
+
+/* ── Screen-reader-only ─────────────────────────────────────────────────── */
+.cv-sr-only {
+    position: absolute;
+    inline-size: 1px; block-size: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%);
+    white-space: nowrap; border: 0;
+}
+
+@media (prefers-contrast: high) {
+    :root { --line: #000; }
+    .cv-risk, .cv-consent, .cv-btn, .cv-input, .cv-msg__text { border-color: #000; }
+    .cv-btn:disabled { color: #000; border-color: #000; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .cv-btn, .cv-input { transition: background 0.12s ease; }
+}
