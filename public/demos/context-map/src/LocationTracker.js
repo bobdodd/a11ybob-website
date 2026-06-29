@@ -62,6 +62,21 @@ export class LocationTracker {
         }
     }
 
+    // Re-arm after the page was backgrounded: a watchPosition can stop delivering while the
+    // page is hidden (pocketed / screen locked), so the cached position then goes stale until
+    // a reload. Restart the watch and grab an immediate fresh fix on return to the foreground.
+    refresh() {
+        if (!this.isTracking || this.useMockLocation) return;
+        const options = { enableHighAccuracy: true, timeout: 30000, maximumAge: 0 };
+        if (this.watchId !== null) { navigator.geolocation.clearWatch(this.watchId); this.watchId = null; }
+        this.watchId = navigator.geolocation.watchPosition(
+            (position) => this.handlePosition(position),
+            (error) => this.handleError(error),
+            options,
+        );
+        navigator.geolocation.getCurrentPosition((p) => this.handlePosition(p), () => {}, options);
+    }
+
     setMockLocation(lat, lng, accuracy = 10) {
         this.mockLocation = {
             coords: {

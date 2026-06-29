@@ -24,9 +24,12 @@ const start = $("cv-start");
 
 accept.addEventListener("change", () => { start.disabled = !accept.checked; });
 
+let started = false; // app revealed + sensors permitted (gates the on-resume refresh)
+
 start.addEventListener("click", () => {
   gate.hidden = true;
   app.hidden = false;
+  started = true;
   $("cv-app-title").focus();
   // The click is the user gesture both the location prompt and the iOS compass
   // permission need. getHeading() returns null until a reading lands (and on any
@@ -145,4 +148,15 @@ form.addEventListener("submit", async (e) => {
     announce(msg);
     input.focus();
   }
+});
+
+// Phone out of the pocket / screen unlocked: the OS may have suspended the GPS watch and the
+// compass while the page was hidden. Re-arm both so the next question (and its clock direction)
+// come from where the user is NOW, not a stale fix — the reload-to-fix bug.
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState !== "visible" || !started) return;
+  if ("geolocation" in navigator) {
+    navigator.geolocation.getCurrentPosition(onPos, () => {}, { enableHighAccuracy: true, maximumAge: 0, timeout: 15000 });
+  }
+  heading.resume();
 });

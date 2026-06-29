@@ -55,10 +55,16 @@ class ContextMap {
         this.setupGate();
         this.setupControls();
 
-        // A screen wake lock is auto-released whenever the page is hidden; re-acquire it
-        // on return to the foreground while the map is open.
+        // On return to the foreground (phone out of the pocket, screen unlocked, app
+        // switched back): the wake lock was auto-released AND the GPS watch + compass were
+        // suspended, so they can keep handing back a STALE reading until a reload. Re-acquire
+        // the lock and re-arm both sensors so we never read out where the user WAS.
         document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible' && this.started) this._acquireWakeLock();
+            if (document.visibilityState === 'visible' && this.started) {
+                this._acquireWakeLock();
+                this.locationTracker.refresh();
+                this.heading.resume();
+            }
         });
     }
 

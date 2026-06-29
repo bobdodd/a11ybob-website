@@ -104,6 +104,20 @@ export class HeadingProvider {
         this._sin = this._cos = null;
     }
 
+    // Re-arm after the page was backgrounded (pocketed, screen locked, app switched away):
+    // the OS stops delivering orientation events, and on return getHeading() would otherwise
+    // keep handing back the PRE-SUSPEND heading. Re-subscribe to nudge the sensor, distrust
+    // the stale reading until a fresh one lands (callers fall back to cardinal meanwhile), and
+    // reset the low-pass so the first fresh reading isn't dragged toward the old value.
+    resume() {
+        if (!this.started || !this._eventName) return;
+        window.removeEventListener(this._eventName, this._handler);
+        window.addEventListener(this._eventName, this._handler);
+        this.available = false;
+        this._sin = this._cos = null;
+        this._watchForFirstReading(0);
+    }
+
     // Screen-rotation angle so "ahead" tracks the SCREEN's up edge, not the device's
     // natural top: in landscape the magnetometer's top-of-device heading and the
     // forward the user perceives differ by exactly this. Modern path is
