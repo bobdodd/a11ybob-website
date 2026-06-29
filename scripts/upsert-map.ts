@@ -8,8 +8,11 @@
  * and never touches another region's docs. The index mapping is left as-is (the
  * dynamic templates already map access.* / address.* on the live index).
  *
- * Run where OpenSearch lives (OPENSEARCH_URL), pointing at the NDJSON:
+ * Run where OpenSearch lives (OPENSEARCH_URL), pointing at the NDJSON — or pipe it in
+ * with "-" so a huge region (Ontario, BC…) never lands decompressed on the server disk:
  *   tsx scripts/upsert-map.ts /path/to/map-features.ndjson
+ *   zstd -dc region.ndjson.zst | tsx scripts/upsert-map.ts -
+ * It streams (readline + 2000-doc bulk batches), so memory stays bounded either way.
  */
 
 import fs from "node:fs";
@@ -25,10 +28,11 @@ const os = new Client({ node: OPENSEARCH_URL });
 async function main() {
   const file = process.argv[2];
   if (!file) {
-    console.error("usage: tsx scripts/upsert-map.ts <map-features.ndjson>");
+    console.error("usage: tsx scripts/upsert-map.ts <map-features.ndjson | ->");
     process.exit(1);
   }
-  if (!fs.existsSync(file)) {
+  const useStdin = file === "-" || file === "/dev/stdin";
+  if (!useStdin && !fs.existsSync(file)) {
     console.error(`no such file: ${file}`);
     process.exit(1);
   }
@@ -43,12 +47,12 @@ async function main() {
   }
 
   console.log(`OpenSearch: ${OPENSEARCH_URL}`);
-  console.log(`Source:     ${file}`);
+  console.log(`Source:     ${useStdin ? "<stdin>" : file}`);
   const before = (await os.count({ index: INDEX })).body.count;
   console.log(`Index "${INDEX}" holds ${before} docs — appending (no drop).`);
 
   const rl = readline.createInterface({
-    input: fs.createReadStream(file),
+    input: useStdin ? process.stdin : fs.createReadStream(file),
     crlfDelay: Infinity,
   });
 
