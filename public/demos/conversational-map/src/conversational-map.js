@@ -8,10 +8,13 @@
  * No heading/compass yet (v1) — answers use compass bearings. Reusing the Context Map's
  * HeadingProvider to add clock-face directions is the obvious next step. */
 
+import { HeadingProvider } from "./HeadingProvider.js";
+
 const API = "/api/context-chat";
 const MAX_HISTORY = 12; // text turns kept client-side and sent for context
 
 const $ = (id) => document.getElementById(id);
+const heading = new HeadingProvider(); // compass → clock-face directions ("2 o'clock")
 
 // ── Disclaimer gate ───────────────────────────────────────────────────────────
 const gate = $("cv-gate");
@@ -25,7 +28,11 @@ start.addEventListener("click", () => {
   gate.hidden = true;
   app.hidden = false;
   $("cv-app-title").focus();
-  requestLocation(); // the click is the gesture the browser needs to prompt
+  // The click is the user gesture both the location prompt and the iOS compass
+  // permission need. getHeading() returns null until a reading lands (and on any
+  // device without a compass), so answers fall back to compass bearings cleanly.
+  requestLocation();
+  heading.start().catch(() => {});
 });
 
 // ── Location ──────────────────────────────────────────────────────────────────
@@ -103,6 +110,7 @@ form.addEventListener("submit", async (e) => {
   input.value = "";
   setBusy(true, "Thinking…");
   const loc = await freshLocation(); // answer from where they are NOW, not a stale fix
+  if (loc) { const h = heading.getHeading(); if (h != null) loc.heading = Math.round(h); } // facing → clock
 
   try {
     const res = await fetch(API, {

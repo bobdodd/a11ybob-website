@@ -1,0 +1,198 @@
+// Device compass (magnetometer) heading — which way the user is facing — so the
+// map can describe features by CLOCK-FACE direction (12 o'clock = the way you're
+// pointing) instead of cardinal compass points. Falls back silently: if there's
+// no magnetometer, or permission is refused, getHeading() returns null and callers
+// use cardinal directions instead.
+//
+// Cross-device reality this hides:
+//  - iOS exposes `event.webkitCompassHeading` (0 = North, clockwise, already a
+//    true compass bearing) but requires DeviceOrientationEvent.requestPermission()
+//    from a USER GESTURE (we call start() from the Track Location tap).
+//  - Android/Chromium fire `deviceorientationabsolute` with `alpha` measured
+//    counter-clockwise from East-ish; the compass heading is (360 - alpha).
+//  - The reading is noisy, so we low-pass it in sin/cos space (handles the 360->0
+//    wrap) before exposing a heading.
+//
+// Caveat left for later: this is the DEVICE's heading (where the phone's top
+// points), taken as the user's facing direction. Held normally that's true; held
+// flat it's whatever the top edge points at.
+export class HeadingProvider {
+    constructor() {
+        this.heading = null;     // smoothed 0-360, 0 = North, clockwise; null = none
+        this.available = false;
+        this.started = false;
+        this._accurate = true;   // gated down by iOS webkitCompassAccuracy when poor
+        this._sin = null;
+        this._cos = null;
+        this._handler = (e) => this._onOrientation(e);
+        this._eventName = null;
+        this._firstReadyTO = null;   // quiet-retry timer until the first compass reading lands
+        // GPS course-over-ground, fed from the geolocation watch. When you're moving,
+        // this is a reliable heading that is IMMUNE to magnetometer error — a
+        // miscalibrated compass can read ~180° off (seen on Pixel). Used in preference
+        // to the magnetometer above a walking pace; the compass takes over when you
+        // stop (where GPS course is undefined and only the compass knows your facing).
+        this._gpsCourse = null;
+        this._gpsSpeed = 0;
+        this._gpsCourseTime = 0;
+    }
+
+    // Feed the geolocation watch's course (degrees, 0 = North, clockwise) and speed
+    // (m/s). Either may be null when the GPS can't determine them (usually stationary).
+    setGpsCourse(course, speed) {
+        this._gpsSpeed = (typeof speed === 'number' && speed >= 0) ? speed : 0;
+        this._gpsCourse = (typeof course === 'number' && !isNaN(course))
+            ? ((course % 360) + 360) % 360 : null;
+        this._gpsCourseTime = Date.now();
+    }
+
+    isSupported() {
+        return typeof window !== 'undefined' && 'DeviceOrientationEvent' in window;
+    }
+
+    // Must be called from a user-gesture handler (for the iOS permission prompt).
+    // Returns true if a heading source was attached. Idempotent.
+    async start() {
+        if (this.started) return this.available;
+        if (!this.isSupported()) return false;
+        const DOE = window.DeviceOrientationEvent;
+        if (typeof DOE.requestPermission === 'function') {
+            // iOS 13+: needs explicit permission. requestPermission() is invoked
+            // synchronously here so it stays inside the triggering user gesture.
+            try {
+                const res = await DOE.requestPermission();
+                if (res !== 'granted') return false;
+            } catch (_) {
+                return false;
+            }
+        }
+        // Prefer the ABSOLUTE event (real compass) where it exists (Android/Chromium);
+        // iOS has no absolute event but carries webkitCompassHeading on the plain one.
+        this._eventName = ('ondeviceorientationabsolute' in window)
+            ? 'deviceorientationabsolute' : 'deviceorientation';
+        window.addEventListener(this._eventName, this._handler);
+        this.started = true;
+        this._watchForFirstReading(0);   // quietly re-attach if the sensor is slow to deliver
+        return true;
+    }
+
+    // Some devices attach the orientation listener but never deliver the first event —
+    // the magnetometer doesn't "wake" — so the compass appears to time out and
+    // getHeading() stays null. Quietly re-subscribe a few times until a reading lands;
+    // nothing is shown to the user, and callers keep working on the cardinal fallback
+    // meanwhile. Once any reading arrives (_onOrientation sets `available`) this stops.
+    _watchForFirstReading(attempt) {
+        if (this._firstReadyTO) { clearTimeout(this._firstReadyTO); this._firstReadyTO = null; }
+        if (this.available || !this.started || attempt >= 4) return;   // got one, stopped, or give up
+        this._firstReadyTO = setTimeout(() => {
+            this._firstReadyTO = null;
+            if (this.available || !this.started) return;
+            // Re-subscribe — on a stuck sensor this often nudges the first event out. The
+            // existing listener stays valid either way, so this can't lose a reading.
+            window.removeEventListener(this._eventName, this._handler);
+            window.addEventListener(this._eventName, this._handler);
+            this._watchForFirstReading(attempt + 1);
+        }, 1500);
+    }
+
+    stop() {
+        if (this._firstReadyTO) { clearTimeout(this._firstReadyTO); this._firstReadyTO = null; }
+        if (this._eventName) window.removeEventListener(this._eventName, this._handler);
+        this.started = false;
+        this.available = false;
+        this.heading = null;
+        this._sin = this._cos = null;
+    }
+
+    // Screen-rotation angle so "ahead" tracks the SCREEN's up edge, not the device's
+    // natural top: in landscape the magnetometer's top-of-device heading and the
+    // forward the user perceives differ by exactly this. Modern path is
+    // screen.orientation.angle; window.orientation is the legacy iOS fallback
+    // (-90 -> 270 etc).
+    _screenAngle() {
+        const so = window.screen && window.screen.orientation;
+        if (so && typeof so.angle === 'number') return so.angle;
+        if (typeof window.orientation === 'number') return ((window.orientation % 360) + 360) % 360;
+        return 0;
+    }
+
+    _onOrientation(e) {
+        // Calibration gate: iOS reports heading accuracy in degrees; negative means
+        // invalid/uncalibrated, large means coarse. When it's poor we stop trusting
+        // the compass and let callers fall back to cardinal (which comes from GPS
+        // bearing, not the magnetometer, so it stays correct). Android gives no
+        // accuracy, so we assume it's usable.
+        if (typeof e.webkitCompassAccuracy === 'number') {
+            this._accurate = e.webkitCompassAccuracy >= 0 && e.webkitCompassAccuracy <= 30;
+        }
+        let h = null;
+        let applyScreen = true;            // back-azimuth is already a world azimuth -> no screen comp
+        if (typeof e.webkitCompassHeading === 'number' && !isNaN(e.webkitCompassHeading)) {
+            h = e.webkitCompassHeading;    // iOS: tilt-compensated by the OS already
+        } else if (typeof e.alpha === 'number' && e.alpha !== null) {
+            const beta = (typeof e.beta === 'number') ? e.beta : 0;
+            const gamma = (typeof e.gamma === 'number') ? e.gamma : 0;
+            // 360-alpha is only valid flat; held upright it drifts toward north (gimbal
+            // lock near beta=90 — ~64deg of swing flat->vertical, measured). So past ~35
+            // degrees of tilt use the back-of-phone azimuth, which IS the way you face
+            // and stays tilt-stable (already a world azimuth, so no screen comp).
+            if (Math.abs(beta) > 35) { h = this._backAzimuth(e.alpha, beta, gamma); applyScreen = false; }
+            else { h = (360 - e.alpha) % 360; }
+        }
+        if (h === null || isNaN(h)) return;
+        if (applyScreen) h = (h + this._screenAngle()) % 360;
+        // Low-pass in sin/cos space so the 360->0 wrap doesn't average to garbage.
+        const a = h * Math.PI / 180;
+        const s = Math.sin(a), c = Math.cos(a);
+        if (this._sin === null) { this._sin = s; this._cos = c; }
+        else { this._sin = this._sin * 0.82 + s * 0.18; this._cos = this._cos * 0.82 + c * 0.18; }
+        this.heading = (Math.atan2(this._sin, this._cos) * 180 / Math.PI + 360) % 360;
+        this.available = true;
+    }
+
+    // Tilt-compensated compass azimuth of the BACK of the phone (device -Z), from the
+    // absolute orientation angles (degrees). This is the direction you face when the
+    // phone is held UPRIGHT, and unlike 360-alpha it stays correct as the phone tilts.
+    // device +Z expressed in the Earth (East, North, Up) frame, then azimuth of -Z.
+    _backAzimuth(alphaDeg, betaDeg, gammaDeg) {
+        const d2r = Math.PI / 180;
+        const a = alphaDeg * d2r, b = betaDeg * d2r, g = gammaDeg * d2r;
+        const sa = Math.sin(a), ca = Math.cos(a);
+        const sb = Math.sin(b);
+        const sg = Math.sin(g), cg = Math.cos(g);
+        const zEast = ca * sg + sa * sb * cg;    // device +Z, East component
+        const zNorth = sa * sg - ca * sb * cg;   // device +Z, North component
+        // Back of the phone is -Z; compass heading = atan2(East, North) of that.
+        return (Math.atan2(-zEast, -zNorth) / d2r + 360) % 360;
+    }
+
+    // Smoothed compass heading in degrees (0 = North, clockwise), or null if the
+    // device has no magnetometer / permission was refused / no reading yet / the
+    // reading is currently too inaccurate to trust.
+    getHeading() {
+        // TEMP (compass testing): the GPS course-over-ground override is DISABLED — we
+        // return the magnetometer heading ONLY. Stationary GPS drift can fake a speed +
+        // course and hijack the heading for seconds at a time, which is what we're
+        // isolating. To restore, un-comment the `moving` check below.
+        // const moving = this._gpsSpeed >= 1.0
+        //     && this._gpsCourse !== null
+        //     && (Date.now() - this._gpsCourseTime) < 4000;
+        // if (moving) return this._gpsCourse;
+        return (this.available && this._accurate) ? this.heading : null;
+    }
+
+    // True when the heading currently comes from GPS course (i.e. you're moving). Lets
+    // callers explain the source / treat stationary-compass headings more cautiously.
+    isFromGps() {
+        return this._gpsSpeed >= 1.0
+            && this._gpsCourse !== null
+            && (Date.now() - this._gpsCourseTime) < 4000;
+    }
+
+    // True when GPS says you're moving above a walking pace. Drives whether a
+    // cross-street's INTERSECTION (you're travelling toward it) or its NEAREST point
+    // (it's simply off to your side) is the distance worth reporting.
+    isMoving() {
+        return this._gpsSpeed >= 1.0 && (Date.now() - this._gpsCourseTime) < 4000;
+    }
+}
