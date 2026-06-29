@@ -29,17 +29,30 @@ start.addEventListener("click", () => {
 });
 
 // ── Location ──────────────────────────────────────────────────────────────────
-let location_ = null; // { lat, lon } or null
+let location_ = null; // { lat, lon } — kept current by the watch + a fresh read per question
 
 function requestLocation() {
   if (!("geolocation" in navigator)) return;
-  const opts = { enableHighAccuracy: true, maximumAge: 10000, timeout: 20000 };
-  navigator.geolocation.getCurrentPosition(onPos, () => {}, opts);
-  // Keep it fresh as the user moves; failures are silent (we just keep the last fix).
-  navigator.geolocation.watchPosition(onPos, () => {}, opts);
+  navigator.geolocation.getCurrentPosition(onPos, () => {}, { enableHighAccuracy: true, maximumAge: 5000, timeout: 20000 });
+  // Continuous updates as the user moves; failures are silent (we keep the last fix).
+  navigator.geolocation.watchPosition(onPos, () => {}, { enableHighAccuracy: true, maximumAge: 5000, timeout: 25000 });
 }
 function onPos(p) {
   location_ = { lat: +p.coords.latitude.toFixed(6), lon: +p.coords.longitude.toFixed(6) };
+}
+
+// Grab a CURRENT fix right before each question, so the answer is from where the user is
+// NOW — walking from a café to a bus stop must register. Falls back to the last known fix
+// (or null) if a fresh read times out.
+function freshLocation() {
+  return new Promise((resolve) => {
+    if (!("geolocation" in navigator)) return resolve(location_);
+    navigator.geolocation.getCurrentPosition(
+      (p) => { onPos(p); resolve(location_); },
+      () => resolve(location_),
+      { enableHighAccuracy: true, maximumAge: 2000, timeout: 8000 },
+    );
+  });
 }
 
 // ── Conversation ──────────────────────────────────────────────────────────────
@@ -89,6 +102,7 @@ form.addEventListener("submit", async (e) => {
   history.push({ role: "user", content: message });
   input.value = "";
   setBusy(true, "Thinking…");
+  const loc = await freshLocation(); // answer from where they are NOW, not a stale fix
 
   try {
     const res = await fetch(API, {
@@ -96,7 +110,7 @@ form.addEventListener("submit", async (e) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         message,
-        location: location_ || undefined,
+        location: loc || undefined,
         history: history.slice(-MAX_HISTORY - 1, -1), // prior turns, excluding the one just pushed
       }),
     });

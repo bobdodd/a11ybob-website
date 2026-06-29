@@ -342,6 +342,72 @@ export function pathBetween(args: { from: { lat: number; lon: number }; to: { la
   return { distance_m: d, ...direction(args.from.lat, args.from.lon, args.to.lat, args.to.lon, args.heading) };
 }
 
+// ── Tool 5: nearest_intersections (the actual corner, not a guess) ───────────
+// Intersection point of two segments (each [lon,lat]), or null if they don't cross.
+function segCross(p1: number[], p2: number[], p3: number[], p4: number[]): number[] | null {
+  const d = (p2[0] - p1[0]) * (p4[1] - p3[1]) - (p2[1] - p1[1]) * (p4[0] - p3[0]);
+  if (Math.abs(d) < 1e-12) return null;
+  const t = ((p3[0] - p1[0]) * (p4[1] - p3[1]) - (p3[1] - p1[1]) * (p4[0] - p3[0])) / d;
+  const u = ((p3[0] - p1[0]) * (p2[1] - p1[1]) - (p3[1] - p1[1]) * (p2[0] - p1[0])) / d;
+  if (t < 0 || t > 1 || u < 0 || u > 1) return null;
+  return [p1[0] + t * (p2[0] - p1[0]), p1[1] + t * (p2[1] - p1[1])];
+}
+function geomCrossings(a: Geom, b: Geom): number[][] {
+  const out: number[][] = [];
+  for (const ra of a.c) for (let i = 0; i + 1 < ra.length; i++)
+    for (const rb of b.c) for (let j = 0; j + 1 < rb.length; j++) {
+      const p = segCross(ra[i], ra[i + 1], rb[j], rb[j + 1]);
+      if (p) out.push(p);
+    }
+  return out;
+}
+
+export async function nearestIntersections(args: { lat: number; lon: number; heading?: number; limit?: number }) {
+  const ON_ROAD_M = 30;
+  const limit = Math.min(8, Math.max(1, args.limit ?? 5));
+  const res = await opensearch.search({
+    index: INDEX,
+    body: {
+      size: 80,
+      query: { bool: { must: [{ term: { category: "road" } }, { exists: { field: "name" } }], filter: [{ geo_distance: { distance: "500m", location: { lat: args.lat, lon: args.lon } } }] } },
+      sort: [{ _geo_distance: { location: { lat: args.lat, lon: args.lon }, order: "asc", unit: "m", distance_type: "plane", mode: "min" } }],
+      _source: ["name", "display", "geom"],
+    },
+  });
+  type R = { name: string; display: string; geom: Geom; near: Near };
+  const roads: R[] = hitsOf(res)
+    .map((h) => {
+      const s = h._source, geom = s.geom as Geom | undefined;
+      return { name: String(s.name ?? "").trim(), display: String(s.display ?? s.name ?? ""), geom, near: geom ? nearestOnGeom(args.lat, args.lon, geom) : null };
+    })
+    .filter((r): r is R => !!r.geom && !!r.near);
+
+  // The street the user is ON: the nearest named road within ON_ROAD_M.
+  let onRoad: R | null = null;
+  for (const r of roads) if (!onRoad || r.near.dist < onRoad.near.dist) onRoad = r;
+  const userRoad = onRoad && onRoad.near.dist <= ON_ROAD_M ? onRoad : null;
+
+  // Junctions of the user's road (or, off any road, the few nearest roads) with other named
+  // roads — deduped by street pair, nearest first. This is the ACTUAL corner, not a guess.
+  const base = userRoad ? [userRoad] : roads.slice(0, 6);
+  const byPair = new Map<string, { streets: string; lat: number; lng: number; dist: number }>();
+  for (const a of base) for (const b of roads) {
+    if (b.name.toLowerCase() === a.name.toLowerCase()) continue;
+    for (const p of geomCrossings(a.geom, b.geom)) {
+      const d = metresBetween(args.lat, args.lon, p[1], p[0]);
+      const names = [a.display, b.display].sort();
+      const key = names.join("|"), prev = byPair.get(key);
+      if (!prev || d < prev.dist) byPair.set(key, { streets: `${names[0]} and ${names[1]}`, lat: p[1], lng: p[0], dist: d });
+    }
+  }
+  const intersections = [...byPair.values()]
+    .sort((a, b) => a.dist - b.dist)
+    .slice(0, limit)
+    .map((x) => ({ streets: x.streets, distance_m: Math.round(x.dist), ...direction(args.lat, args.lon, x.lat, x.lng, args.heading) }));
+
+  return { on_street: userRoad ? userRoad.display : null, intersections };
+}
+
 // ── Anthropic tool schemas + dispatcher ──────────────────────────────────────
 export const TOOL_SCHEMAS = [
   {
@@ -393,6 +459,12 @@ export const TOOL_SCHEMAS = [
       required: ["from", "to"],
     },
   },
+  {
+    name: "nearest_intersections",
+    description:
+      "The named street the user is on (if any) and the nearest street intersections to a point — each as 'A and B' with distance in metres and direction, computed for you. Use this for 'where am I', 'what corner am I at', and 'what's the nearest intersection'. It gives the ACTUAL junction, so prefer it over guessing cross-streets from a list of roads — and the nearest one IS the corner the user is at.",
+    input_schema: { type: "object", properties: { lat: { type: "number" }, lon: { type: "number" } }, required: ["lat", "lon"] },
+  },
 ];
 
 // Run a tool by name. `heading` (the user's facing, when known) is threaded in by the
@@ -403,6 +475,7 @@ export async function runTool(name: string, input: Record<string, unknown>, head
     case "whats_nearby": return whatsNearby({ ...(input as Parameters<typeof whatsNearby>[0]), heading });
     case "area_summary": return areaSummary(input as Parameters<typeof areaSummary>[0]);
     case "path_between": return pathBetween({ ...(input as Parameters<typeof pathBetween>[0]), heading });
+    case "nearest_intersections": return nearestIntersections({ ...(input as Parameters<typeof nearestIntersections>[0]), heading });
     default: return { error: `unknown tool: ${name}` };
   }
 }
