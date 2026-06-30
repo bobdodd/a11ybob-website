@@ -72,9 +72,6 @@ function requestLocation() {
 }
 function onPos(p) {
   location_ = { lat: +p.coords.latitude.toFixed(6), lon: +p.coords.longitude.toFixed(6) };
-  // Feed GPS course-over-ground to the compass: when you're moving it's a reliable heading
-  // (immune to magnetometer error), used in preference to the device compass for clock directions.
-  heading.setGpsCourse(p.coords.heading, p.coords.speed);
 }
 // A CURRENT fix right before each question (walking from a café to a bus stop must register).
 function freshLocation() {

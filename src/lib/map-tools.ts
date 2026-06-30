@@ -84,9 +84,12 @@ function clockFromHeading(bearingDeg: number, headingDeg: number): string {
 // Direction fields a result carries: always compass; clock too when a heading is given.
 function direction(
   fromLat: number, fromLng: number, toLat: number, toLng: number, heading?: number,
-): { bearing: string; clock?: string } {
+): { bearing?: string; clock?: string } {
   const b = bearing(fromLat, fromLng, toLat, toLng);
-  return { bearing: b.compass, ...(heading != null ? { clock: clockFromHeading(b.deg, heading) } : {}) };
+  // When the user's facing is known, give the CLOCK direction ONLY (relative to the way they
+  // face — what a walker needs) and NEVER the compass name, so the model can't fall back to
+  // "north / south-west". A compass bearing is returned only when there's no heading.
+  return heading != null ? { clock: clockFromHeading(b.deg, heading) } : { bearing: b.compass };
 }
 
 // Drop explicit negatives so an access filter means "IS accessible by that measure",
@@ -419,10 +422,11 @@ function geomCrossings(a: Geom, b: Geom): number[][] {
 }
 
 export async function nearestIntersections(args: { lat: number; lon: number; heading?: number; limit?: number }) {
-  // The "you're on this road" radius. Generous because rural roads have GPS error in the open
-  // AND their stored geometry is simplified (the nearest stored vertex can sit tens of metres
-  // off the real centre-line) — so a road you're plainly on can read ~35 m away. The nearest
-  // road still wins, so this rarely misfires in town.
+  // The "you're on this road" radius. Generous because a rural road's stored geometry is
+  // SIMPLIFIED — a curvy road decimated to a few vertices has its nearest stored segment cut
+  // the corner, so the computed nearest point can sit tens of metres off the real centre-line
+  // and a road you're plainly on reads ~35 m away. The nearest road still wins, so a wider
+  // radius rarely misfires in town.
   const ON_ROAD_M = 45;
   const limit = Math.min(8, Math.max(1, args.limit ?? 5));
   const res = await opensearch.search({
