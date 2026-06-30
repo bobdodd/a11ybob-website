@@ -274,7 +274,7 @@ export async function whatsNearby(args: {
 }
 
 // ── Tool 3: area_summary (character, not a feature list) ──────────────────────
-export async function areaSummary(args: { lat: number; lon: number; radius_m?: number }) {
+export async function areaSummary(args: { lat: number; lon: number; radius_m?: number; heading?: number }) {
   const radius = Math.min(1500, Math.max(50, args.radius_m ?? 250));
   const agg = await opensearch.search({
     index: INDEX,
@@ -315,7 +315,8 @@ export async function areaSummary(args: { lat: number; lon: number; radius_m?: n
   // a hamlet or locality), but "nearest town" wants an ACTUAL town — not whichever hamlet happens
   // to be closest. So return the nearest named place of any rank, the nearest town-or-city, and
   // the nearest city, each tagged with its rank, searching wider for the rarer (bigger) ranks.
-  // heading isn't passed to this tool, so the directions here are compass bearings only.
+  // Each carries a clock direction relative to the way the user is facing when a heading is known
+  // (the demo's idiom), falling back to a compass bearing otherwise.
   const nearestPlace = async (ranks: string[], radiusM: number) => {
     const r = await opensearch.search({
       index: INDEX,
@@ -331,7 +332,7 @@ export async function areaSummary(args: { lat: number; lon: number; radius_m?: n
     return {
       display: String(s.display ?? ""), rank: String(s.subtype ?? ""),
       distance_m: Math.round(metresBetween(args.lat, args.lon, s.lat as number, s.lng as number)),
-      ...direction(args.lat, args.lon, s.lat as number, s.lng as number),
+      ...direction(args.lat, args.lon, s.lat as number, s.lng as number, args.heading),
     };
   };
   const ANY_SETTLEMENT = ["city", "town", "village", "hamlet", "suburb", "neighbourhood", "quarter", "locality", "isolated_dwelling"];
@@ -536,7 +537,7 @@ export async function runTool(
       return findPlace({ ...a, heading });
     }
     case "whats_nearby": return whatsNearby({ ...(input as Parameters<typeof whatsNearby>[0]), heading });
-    case "area_summary": return areaSummary(input as Parameters<typeof areaSummary>[0]);
+    case "area_summary": return areaSummary({ ...(input as Parameters<typeof areaSummary>[0]), heading });
     case "path_between": return pathBetween({ ...(input as Parameters<typeof pathBetween>[0]), heading });
     case "nearest_intersections": return nearestIntersections({ ...(input as Parameters<typeof nearestIntersections>[0]), heading });
     default: return { error: `unknown tool: ${name}` };
