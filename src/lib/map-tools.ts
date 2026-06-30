@@ -110,6 +110,13 @@ type Hit = { _id: string; _score?: number; _source: Record<string, unknown> };
 const hitsOf = (res: { body: { hits?: { hits?: unknown } } }): Hit[] =>
   (res.body.hits?.hits as unknown as Hit[]) ?? [];
 
+// Anonymous map features (kind 'building' / 'path') are indexed for description richness, but
+// the describe side isn't wired to aggregate them yet. Exclude them from every tool meanwhile,
+// so the national reindex can land them in the live index WITHOUT changing any current answer.
+// Remove this guard once whats_nearby/area_summary use them deliberately (building density,
+// nearest laneway, etc.). 'area' fills keep their existing handling and are not touched here.
+const EXCLUDE_ANON = { bool: { must_not: { terms: { kind: ["building", "path"] } } } };
+
 // ── Tool 1: find_place (geocode + finder) ────────────────────────────────────
 export async function findPlace(args: {
   query: string;
@@ -122,7 +129,7 @@ export async function findPlace(args: {
   if (q.length < 2) return { results: [] };
   const limit = Math.min(10, Math.max(1, args.limit ?? 5));
 
-  const filter: unknown[] = [];
+  const filter: unknown[] = [EXCLUDE_ANON];
   const accTag = args.accessibility ? ACCESS_KEYS[args.accessibility] : undefined;
   if (accTag) filter.push(accessFilter(accTag));
 
@@ -219,7 +226,7 @@ export async function whatsNearby(args: {
   // (named or not, since the user has named the type they want).
   const should: Record<string, unknown>[] = [{ exists: { field: "name" } }];
   if (cats.length) should.push({ terms: { category: cats } });
-  const filter: unknown[] = [{ geo_distance: { distance: `${radius}m`, location: { lat: args.lat, lon: args.lon } } }];
+  const filter: unknown[] = [{ geo_distance: { distance: `${radius}m`, location: { lat: args.lat, lon: args.lon } } }, EXCLUDE_ANON];
   if (accTag) filter.push(accessFilter(accTag));
   // Typed loosely (Record<string, unknown>) so the SDK's search overload accepts the
   // dynamically-built should/filter arrays — same pattern as the map-search route.
@@ -273,7 +280,7 @@ export async function areaSummary(args: { lat: number; lon: number; radius_m?: n
     index: INDEX,
     body: {
       size: 0, track_total_hits: true,
-      query: { geo_distance: { distance: `${radius}m`, location: { lat: args.lat, lon: args.lon } } },
+      query: { bool: { filter: [{ geo_distance: { distance: `${radius}m`, location: { lat: args.lat, lon: args.lon } } }], must_not: [{ terms: { kind: ["building", "path"] } }] } },
       aggs: {
         by_category: { terms: { field: "category", size: 25 } },
         crossings: { filter: { term: { category: "crossing" } } },
@@ -303,23 +310,49 @@ export async function areaSummary(args: { lat: number; lon: number; radius_m?: n
     .slice(0, 3)
     .map((z) => String(z.s.display ?? z.s.name ?? "")).filter(Boolean);
 
-  // Nearest named settlement, for "near Buckhorn" in sparse areas.
-  const placeRes = await opensearch.search({
-    index: INDEX,
-    body: {
-      size: 1,
-      query: { bool: { must: [{ term: { category: "place" } }, { exists: { field: "name" } }], filter: [{ geo_distance: { distance: "15000m", location: { lat: args.lat, lon: args.lon } } }] } },
-      sort: [{ _geo_distance: { location: { lat: args.lat, lon: args.lon }, order: "asc", unit: "m", distance_type: "plane", mode: "min" } }],
-      _source: ["display", "lat", "lng"],
-    },
-  });
-  const pl = hitsOf(placeRes)[0]?._source;
-  const settlement = pl ? { display: String(pl.display ?? ""), distance_m: Math.round(metresBetween(args.lat, args.lon, pl.lat as number, pl.lng as number)) } : null;
+  // Settlement ladder, RANK-AWARE. OSM ranks places city > town > village > hamlet > locality,
+  // and people orient by the right tier: "where am I" wants the immediate named spot (often just
+  // a hamlet or locality), but "nearest town" wants an ACTUAL town — not whichever hamlet happens
+  // to be closest. So return the nearest named place of any rank, the nearest town-or-city, and
+  // the nearest city, each tagged with its rank, searching wider for the rarer (bigger) ranks.
+  // heading isn't passed to this tool, so the directions here are compass bearings only.
+  const nearestPlace = async (ranks: string[], radiusM: number) => {
+    const r = await opensearch.search({
+      index: INDEX,
+      body: {
+        size: 1,
+        query: { bool: { must: [{ term: { category: "place" } }, { terms: { subtype: ranks } }, { exists: { field: "name" } }], filter: [{ geo_distance: { distance: `${radiusM}m`, location: { lat: args.lat, lon: args.lon } } }] } },
+        sort: [{ _geo_distance: { location: { lat: args.lat, lon: args.lon }, order: "asc", unit: "m", distance_type: "plane", mode: "min" } }],
+        _source: ["display", "subtype", "lat", "lng"],
+      },
+    });
+    const s = hitsOf(r)[0]?._source;
+    if (!s) return null;
+    return {
+      display: String(s.display ?? ""), rank: String(s.subtype ?? ""),
+      distance_m: Math.round(metresBetween(args.lat, args.lon, s.lat as number, s.lng as number)),
+      ...direction(args.lat, args.lon, s.lat as number, s.lng as number),
+    };
+  };
+  const ANY_SETTLEMENT = ["city", "town", "village", "hamlet", "suburb", "neighbourhood", "quarter", "locality", "isolated_dwelling"];
+  const [immediate, nearestTown, nearestCity] = await Promise.all([
+    nearestPlace(ANY_SETTLEMENT, 20000), // the local spot, any rank (incl. urban subdivisions)
+    nearestPlace(["town", "city"], 80000), // a real town to orient by — towns are sparse, search wide
+    nearestPlace(["city"], 200000), // the nearest city, if reasonably near
+  ]);
+  const sameName = (a: { display: string } | null, b: { display: string } | null) =>
+    !!a && !!b && a.display.toLowerCase() === b.display.toLowerCase();
+  // Don't repeat a place across tiers (the immediate place may already BE the nearest town/city).
+  const settlements = {
+    immediate,
+    nearest_town: sameName(immediate, nearestTown) ? null : nearestTown,
+    nearest_city: sameName(immediate, nearestCity) || sameName(nearestTown, nearestCity) ? null : nearestCity,
+  };
 
   return {
     radius_m: radius,
     contained_by,
-    settlement,
+    settlements,
     total_features: total,
     counts,
     accessibility: {
@@ -465,7 +498,7 @@ export const TOOL_SCHEMAS = [
   {
     name: "area_summary",
     description:
-      "A high-level sense of a place rather than a feature list: the named areas that contain the point (park, campus, neighbourhood, water), how much and what mix is around (counts by kind), the nearest settlement, and an accessibility snapshot (how many crossings, how many with tactile paving). Use for 'what's this area like / is it built up / describe where I am' — questions about character, not specific features.",
+      "A high-level sense of a place rather than a feature list: the named areas that contain the point (park, campus, neighbourhood, water), how much and what mix is around (counts by kind), a RANKED settlement ladder, and an accessibility snapshot (how many crossings, how many with tactile paving). The settlement ladder gives `immediate` (the nearest named place of any rank — often a hamlet or locality), `nearest_town` (the nearest actual town or city), and `nearest_city`, each with its `rank` and distance. Use it for 'what's this area like / is it built up / describe where I am', AND for 'what's the nearest town/city/village' — for which you MUST use the rank, not just whatever place is closest.",
     input_schema: { type: "object", properties: { lat: { type: "number" }, lon: { type: "number" }, radius_m: { type: "integer" } }, required: ["lat", "lon"] },
   },
   {
