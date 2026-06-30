@@ -37,11 +37,13 @@
                     assistance, or proper navigation tools.
                 </li>
                 <li>
-                    <strong>It sends your words and location to an external AI service.</strong>
-                    To understand your questions and write its answers, what you type and your
-                    current location (when available) are sent over the internet to a
-                    third-party AI service (Anthropic's Claude) for processing. Do not type
-                    anything you would not want handled that way.
+                    <strong>It sends your words &mdash; typed or spoken &mdash; and your location
+                    to external services.</strong> To understand your questions and write its
+                    answers, what you type and your current location (when available) are sent over
+                    the internet to a third-party AI service for processing; and if you use the
+                    <strong>Speak</strong> button, your recorded voice is sent to a third-party
+                    speech service to transcribe it. Do not type or say anything you would not want
+                    handled that way.
                 </li>
                 <li>
                     <strong>It depends on things that can fail</strong> — your device's GPS,
@@ -67,8 +69,9 @@
             <label>
                 <input type="checkbox" id="cv-accept">
                 I have read and understood this notice. I accept all risk, I understand my
-                questions and location are sent to an external AI service, and I will not use
-                the Conversational Map for navigation or for any safety decision.
+                questions, my location, and my voice (when I use Speak) are sent to external
+                services, and I will not use the Conversational Map for navigation or for any
+                safety decision.
             </label>
         </p>
 
@@ -82,7 +85,8 @@
         <h1 id="cv-app-title" tabindex="-1">Conversational Map</h1>
         <p class="cv-intro">
             Test software — not for navigation. Ask about where you are now, or anywhere on
-            the map. Finding your location can take a moment after you start.
+            the map — type it, or tap Speak to ask aloud. Finding your location can take a
+            moment after you start.
         </p>
 
         <!-- The conversation. NOT a live region: it never double-announces and stays
@@ -101,6 +105,7 @@
             <div class="cv-inputrow">
                 <input id="cv-input" class="cv-input" type="text" aria-describedby="cv-hint"
                        autocomplete="off" enterkeyhint="send">
+                <button id="cv-speak" class="cv-btn" type="button" aria-pressed="false">Speak</button>
                 <button id="cv-send" class="cv-btn" type="submit">Send</button>
             </div>
         </form>
