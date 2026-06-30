@@ -109,6 +109,40 @@ const ACCESS_KEYS: Record<string, string> = {
   step_free: "ramp",
 };
 
+// Faceting: a requested type → the OSM subtype/category VALUES that satisfy it. OSM splits food
+// shops finely (supermarket vs grocery vs convenience vs greengrocer), so "supermarket"/"grocery"
+// in everyday speech must reach the whole family — a small-town Foodland is a `supermarket`, a
+// corner shop a `convenience`. A term not listed here is used as-is (matched on subtype OR
+// category), so any OSM value still works directly.
+const TYPE_FACETS: Record<string, string[]> = {
+  supermarket: ["supermarket", "grocery", "convenience", "greengrocer", "general"],
+  grocery: ["supermarket", "grocery", "convenience", "greengrocer", "general"],
+  groceries: ["supermarket", "grocery", "convenience", "greengrocer", "general"],
+  food: ["supermarket", "grocery", "convenience", "greengrocer", "general", "bakery", "deli", "butcher"],
+  pharmacy: ["pharmacy", "chemist"],
+  chemist: ["pharmacy", "chemist"],
+  drugstore: ["pharmacy", "chemist"],
+  cafe: ["cafe", "coffee_shop"],
+  coffee: ["cafe", "coffee_shop"],
+  restaurant: ["restaurant", "fast_food", "food_court"],
+  bank: ["bank"],
+  atm: ["atm", "bank"],
+  fuel: ["fuel"],
+  gas: ["fuel"],
+  petrol: ["fuel"],
+  doctor: ["doctors", "clinic"],
+  hospital: ["hospital"],
+};
+function expandTypes(types: string[]): string[] {
+  const out = new Set<string>();
+  for (const t of types) {
+    const k = (t ?? "").toLowerCase().trim();
+    if (!k) continue;
+    for (const v of TYPE_FACETS[k] ?? [k]) out.add(v);
+  }
+  return [...out];
+}
+
 type Hit = { _id: string; _score?: number; _source: Record<string, unknown> };
 const hitsOf = (res: { body: { hits?: { hits?: unknown } } }): Hit[] =>
   (res.body.hits?.hits as unknown as Hit[]) ?? [];
@@ -219,21 +253,29 @@ export async function findPlace(args: {
 // ── Tool 2: whats_nearby (the describe core) ─────────────────────────────────
 export async function whatsNearby(args: {
   lat: number; lon: number; radius_m?: number;
-  categories?: string[]; accessibility?: string; heading?: number;
+  types?: string[]; categories?: string[]; accessibility?: string; heading?: number;
 }) {
-  const radius = Math.min(2000, Math.max(20, args.radius_m ?? 150));
-  const cats = (args.categories ?? []).map((c) => c.toLowerCase());
+  // FACETED filter. When the user asks for a specific kind ("nearest supermarket"), hard-filter
+  // the index to that kind instead of returning the nearest things of every kind — otherwise a
+  // sparse target (a supermarket 900 m off) is drowned out by closer roads/shops and never seen.
+  // A type-filtered search also hunts a sparser thing, so it searches much WIDER and isn't capped
+  // per category. A plain "what's around me" (no type) keeps the local, diversified behaviour.
+  const typeFacets = expandTypes([...(args.types ?? []), ...(args.categories ?? [])]);
+  const filtered = typeFacets.length > 0;
+  const radius = Math.min(filtered ? 20000 : 2000, Math.max(20, args.radius_m ?? (filtered ? 4000 : 150)));
   const accTag = args.accessibility ? ACCESS_KEYS[args.accessibility] : undefined;
 
-  // Return named features and POIs; if specific categories are asked for, those too
-  // (named or not, since the user has named the type they want).
-  const should: Record<string, unknown>[] = [{ exists: { field: "name" } }];
-  if (cats.length) should.push({ terms: { category: cats } });
   const filter: unknown[] = [{ geo_distance: { distance: `${radius}m`, location: { lat: args.lat, lon: args.lon } } }, EXCLUDE_ANON];
   if (accTag) filter.push(accessFilter(accTag));
-  // Typed loosely (Record<string, unknown>) so the SDK's search overload accepts the
-  // dynamically-built should/filter arrays — same pattern as the map-search route.
-  const query: Record<string, unknown> = { bool: { should, minimum_should_match: 1, filter } };
+  // Typed loosely (Record<string, unknown>) so the SDK's search overload accepts the dynamic query.
+  let query: Record<string, unknown>;
+  if (filtered) {
+    // Hard facet: the feature's subtype OR category is one of the requested values.
+    filter.push({ bool: { should: [{ terms: { subtype: typeFacets } }, { terms: { category: typeFacets } }], minimum_should_match: 1 } });
+    query = { bool: { filter } };
+  } else {
+    query = { bool: { should: [{ exists: { field: "name" } }], minimum_should_match: 1, filter } };
+  }
 
   const res = await opensearch.search({
     index: INDEX,
@@ -262,9 +304,12 @@ export async function whatsNearby(args: {
   const cap = new Map<string, number>();
   const results = [];
   for (const r of [...byKey.values()].sort((a, b) => a.near.dist - b.near.dist)) {
-    const n = cap.get(r.category) ?? 0;
-    if (n >= 4) continue; // keep one category from drowning the list
-    cap.set(r.category, n + 1);
+    if (!filtered) {
+      // Only the general "what's around" list caps a category; a type-filtered search shows them all.
+      const n = cap.get(r.category) ?? 0;
+      if (n >= 4) continue; // keep one category from drowning the list
+      cap.set(r.category, n + 1);
+    }
     results.push({
       display: r.display, category: r.category || undefined, subtype: r.subtype || undefined,
       distance_m: Math.round(r.near.dist),
@@ -492,13 +537,14 @@ export const TOOL_SCHEMAS = [
   {
     name: "whats_nearby",
     description:
-      "List map features around a point, nearest first, each with distance in metres and a compass bearing (and a clock direction when a heading is given) — all computed for you; never estimate distances or directions yourself. Use for 'what's around me / around <place>'. Optional category or accessibility filter.",
+      "Map features around a point, nearest first, each with distance + direction (computed for you; never estimate them). TWO modes. (1) NO `types`: a general 'what's around me' snapshot of nearby named features. (2) WITH `types`: a FACETED search for a specific kind ('nearest supermarket / pharmacy / café') — it filters the index to that kind and searches much WIDER, because a sparse target can be a kilometre or more away and would otherwise be buried under closer features of other kinds. Common words are expanded to the family that satisfies them (e.g. 'supermarket' and 'grocery' both cover supermarket/grocery/convenience/greengrocer, so a small-town Foodland or a corner store is found). Each result carries its `subtype` — name it by its real kind.",
     input_schema: {
       type: "object",
       properties: {
         lat: { type: "number" }, lon: { type: "number" },
-        radius_m: { type: "integer", description: "Search radius in metres (default 150)." },
-        categories: { type: "array", items: { type: "string" }, description: "Optional category filter, e.g. ['cafe','bench','crossing','shop']." },
+        radius_m: { type: "integer", description: "Search radius in metres (default 150 general, 4000 when types is set; max 20000 when filtering by type)." },
+        types: { type: "array", items: { type: "string" }, description: "Facet filter — the kind(s) of place wanted, e.g. ['supermarket'], ['pharmacy'], ['cafe','restaurant']. Use this for 'nearest/any <kind of place>'; it triggers a wider, type-restricted search. Omit for a general 'what's around me'." },
+        categories: { type: "array", items: { type: "string" }, description: "Alias for `types` (kept for compatibility)." },
         accessibility: { type: "string", enum: ["wheelchair", "tactile_paving", "step_free"] },
       },
       required: ["lat", "lon"],
