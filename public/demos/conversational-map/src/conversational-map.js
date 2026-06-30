@@ -24,6 +24,20 @@ let speechOk = false;
 const decideSpeech = () => { if (synth) speechOk = synth.getVoices().length > 0; };
 if (synth) { decideSpeech(); if (synth.addEventListener) synth.addEventListener("voiceschanged", decideSpeech); }
 
+// ── Keep the screen awake while the app is open — otherwise it locks mid-sentence while you
+//    read or listen to an answer. The lock is auto-released when the page is hidden, so it's
+//    re-acquired on return to the foreground (in the visibilitychange handler below). A web
+//    page can only do this while it's the visible tab; it can't hold the screen with the phone
+//    locked or in the background — that would need a native app. ──
+let wakeLock = null;
+async function acquireWakeLock() {
+  if (wakeLock || !("wakeLock" in navigator)) return;
+  try {
+    wakeLock = await navigator.wakeLock.request("screen");
+    wakeLock.addEventListener("release", () => { wakeLock = null; });
+  } catch { wakeLock = null; }
+}
+
 // ── Disclaimer gate ───────────────────────────────────────────────────────────
 const gate = $("cv-gate");
 const app = $("cv-app");
@@ -44,6 +58,7 @@ start.addEventListener("click", () => {
   // answers are allowed to speak.
   requestLocation();
   heading.start().catch(() => {});
+  acquireWakeLock(); // keep the screen on so it doesn't lock mid-answer
   speak("Ready. Ask where you are, or about anywhere on the map — type it, or use the Speak button.");
 });
 
@@ -245,4 +260,5 @@ document.addEventListener("visibilitychange", () => {
     navigator.geolocation.getCurrentPosition(onPos, () => {}, { enableHighAccuracy: true, maximumAge: 0, timeout: 15000 });
   }
   heading.resume();
+  acquireWakeLock(); // the wake lock was auto-released while hidden — take it again
 });
