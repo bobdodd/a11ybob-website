@@ -33,6 +33,15 @@ Identical order. The real word "Young" matches exactly and wins
 either way; what puts Yonge on the list at all is that you are
 standing on it.`;
 
+const VOICE_FLOW = `A typed question leaves the device once:
+
+    your words + location  ->  language model     (understands, answers)
+
+A spoken question leaves it twice:
+
+    your voice (audio)     ->  speech-to-text      (becomes words)
+    your words + location  ->  language model`;
+
 export default function MapsConversationalMap() {
   return (
     <main id="main" className="site-main">
@@ -194,10 +203,134 @@ export default function MapsConversationalMap() {
               made. Each map in this family gets one, because the decisions
               behind an accessible map &mdash; what to store, what to match,
               what to leave out &mdash; are the interesting part, and worth
-              showing rather than burying. Two of them shaped this map: how the
-              search copes when a spoken street name arrives mis-spelled, and
-              whether to put back the unnamed paths and buildings that most maps
-              drop.
+              showing rather than burying. Several shaped this one: what it
+              borrows from the maps before it, how you speak to it and where that
+              sends your voice, why a chatbot is the interface at all, how the
+              search copes when a spoken name arrives mis-spelled, and whether to
+              put back the unnamed paths and buildings most maps drop.
+            </p>
+
+            <h3>Built on the maps before it</h3>
+            <p>
+              Open the Conversational map, ask a question aloud, and most of what
+              happens around the answer is not new. The answer read out in a
+              synthetic voice, the clock-face directions relative to the way you
+              are facing, the screen kept awake while you listen &mdash; all of
+              it is machinery lifted, almost unchanged, from the{" "}
+              <Link href="/maps/context-map">Context Map</Link>. These maps are a
+              family, not separate builds, and the family shares its parts.
+            </p>
+            <p>
+              Spoken answers use the browser&rsquo;s own built-in speech, with a
+              fallback: on a phone with no voice of its own &mdash; a de-Googled
+              Android, say &mdash; the answer is written instead into a quiet,
+              polite live region, and the reader&rsquo;s own screen reader speaks
+              it. The two never sound at once. That arrangement was worked out on
+              the Context Map and carried straight over. So was the compass: a
+              tilt-compensated reading of the phone&rsquo;s magnetometer turns
+              &ldquo;north-east&rdquo; into &ldquo;about two o&rsquo;clock&rdquo;
+              &mdash; relative to where you are actually facing, which is what a
+              walker needs &mdash; and that is the Context Map&rsquo;s code,
+              reused whole.
+            </p>
+            <p>
+              And the screen <strong>wake lock</strong>: ask a question and the
+              phone must not lock halfway through reading you the answer, so the
+              page holds the screen awake while it is open and in front of you. It
+              can only do that while it is the visible tab &mdash; it cannot keep
+              the screen on with the phone pocketed or locked, which would need a
+              native app, and this is a web page. The same limit, and the same
+              code, as the Context Map it came from.
+            </p>
+            <p>
+              None of this is remarkable on its own. It is in the colophon because
+              the reuse <em>is</em>{" "}the point: a new idea &mdash; the
+              conversation &mdash; resting on settled, tested machinery rather
+              than rebuilt from nothing.
+            </p>
+
+            <h3>Hearing the question, and where your voice goes</h3>
+            <p>
+              You can type, but you can also tap once and speak. Tapping starts
+              recording; tapping again stops it; the clip is sent off to be turned
+              into text; the text is shown and read back to you &mdash; so a
+              mishearing is caught by ear before it is acted on &mdash; and then
+              it runs exactly as if you had typed it. A short rising tone marks
+              the microphone going live and a falling one marks it stopping, so a
+              blind user knows the state without watching the screen.
+            </p>
+            <p>
+              Turning speech into text is the one part the page cannot do itself.
+              A language model cannot transcribe audio; speech-to-text is always a
+              separate service, and here it is{" "}
+              <a href="https://deepgram.com/">Deepgram</a>, a hosted one. Which
+              means that when you speak your question, the recording of your voice
+              leaves the device and goes to an outside company to be transcribed
+              &mdash; a second outside service, on top of the model that answers.
+            </p>
+            <pre>
+              <code>{VOICE_FLOW}</code>
+            </pre>
+            <p>
+              Deepgram is the current choice for plain, practical reasons: the
+              project already had a key, its models hold up well in noise &mdash;
+              a question asked in a crowd, at a march, on a busy street &mdash;
+              and being someone else&rsquo;s cloud it puts no load on the small
+              server everything else here runs on. The honest preference is to run
+              the speech-to-text on our own machine one day, so the audio never
+              leaves at all; that needs a bigger box than the site currently sits
+              on, so for now it is a hosted service &mdash; openly disclosed, and
+              told to you before you start.
+            </p>
+
+            <h3>Why a chatbot is the interface</h3>
+            <p>
+              All of that &mdash; your words leaving the device, twice over for a
+              spoken question &mdash; follows from one decision: to make a
+              language-model chatbot the interface at all.
+            </p>
+            <p>
+              The <Link href="/maps/context-map">Context Map</Link> answers with
+              three fixed buttons: quick, continuous, detailed. They always work,
+              they never surprise you, and &mdash; this is the part that matters
+              here &mdash; they need no outside help. The descriptions are
+              assembled on our own server from our own map data, and nothing about
+              your question ever leaves. The price of that is that they can only
+              ever tell you the handful of things they were built to tell you.
+            </p>
+            <p>
+              The chatbot trades that property for its opposite. There are no
+              fixed questions, so you can ask the one you actually have &mdash;
+              &ldquo;is the library&rsquo;s side entrance step-free?&rdquo;,
+              &ldquo;where&rsquo;s the nearest bench in the shade?&rdquo; &mdash;
+              and to understand a question phrased any way at all takes a model too
+              large to run on a phone, or realistically on a small server. So it
+              runs as a hosted service, and understanding your question means
+              sending it there. The flexibility and the privacy cost are one
+              decision seen from two sides; you cannot take the first without the
+              second.
+            </p>
+            <p>
+              A language model as an interface carries a second cost: it can be
+              confidently wrong. The guard against it is the division of labour
+              described further up this page &mdash; the model is allowed to choose
+              what to look up and to put the answer into words, and nothing else.
+              It never measures a distance or a direction; those come from the map,
+              computed. It is handed the facts and asked to phrase them, not asked
+              to know them. That does not make it incapable of error &mdash; so the
+              map says so plainly, every time you open it &mdash; but it keeps the
+              errors to wording, not invented geography.
+            </p>
+            <p>
+              So the chatbot is not free, and it is the one place this site reaches
+              outside itself. The rest of the site is self-hosted and sends nothing
+              to anyone; this map, to answer a question it was never specifically
+              built for, sends your words to a model that can. Whether that trade is
+              worth it depends on the question you have &mdash; which is exactly why
+              the fixed-button{" "}
+              <Link href="/maps/context-map">Context Map</Link> is not being
+              retired, but kept alongside it. Two answers to the same need, each
+              giving up something different.
             </p>
 
             <h3>When the map mishears a name</h3>
