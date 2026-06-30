@@ -419,7 +419,11 @@ function geomCrossings(a: Geom, b: Geom): number[][] {
 }
 
 export async function nearestIntersections(args: { lat: number; lon: number; heading?: number; limit?: number }) {
-  const ON_ROAD_M = 30;
+  // The "you're on this road" radius. Generous because rural roads have GPS error in the open
+  // AND their stored geometry is simplified (the nearest stored vertex can sit tens of metres
+  // off the real centre-line) — so a road you're plainly on can read ~35 m away. The nearest
+  // road still wins, so this rarely misfires in town.
+  const ON_ROAD_M = 45;
   const limit = Math.min(8, Math.max(1, args.limit ?? 5));
   const res = await opensearch.search({
     index: INDEX,
