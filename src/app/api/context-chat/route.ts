@@ -102,7 +102,10 @@ export async function POST(req: NextRequest) {
           toolUses.map(async (tu) => {
             let out: unknown;
             try {
-              out = await runTool(tu.name, tu.input as Record<string, unknown>, heading);
+              out = await runTool(
+                tu.name, tu.input as Record<string, unknown>, heading,
+                loc ? { lat: loc.lat, lon: loc.lon } : undefined,
+              );
             } catch (e) {
               out = { error: `tool ${tu.name} failed: ${(e as Error).message}` };
             }

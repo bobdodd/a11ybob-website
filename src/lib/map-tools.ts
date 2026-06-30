@@ -106,7 +106,7 @@ const ACCESS_KEYS: Record<string, string> = {
   step_free: "ramp",
 };
 
-type Hit = { _id: string; _source: Record<string, unknown> };
+type Hit = { _id: string; _score?: number; _source: Record<string, unknown> };
 const hitsOf = (res: { body: { hits?: { hits?: unknown } } }): Hit[] =>
   (res.body.hits?.hits as unknown as Hit[]) ?? [];
 
@@ -126,7 +126,9 @@ export async function findPlace(args: {
   const accTag = args.accessibility ? ACCESS_KEYS[args.accessibility] : undefined;
   if (accTag) filter.push(accessFilter(accTag));
 
-  let query: Record<string, unknown> = {
+  // Fuzzy text relevance so speech-to-text misspellings still match: a dropped or added letter
+  // ("Hanaford" for "Hannaford") is one edit, well inside AUTO's tolerance.
+  const textQuery: Record<string, unknown> = {
     bool: {
       must: {
         dis_max: {
@@ -146,22 +148,42 @@ export async function findPlace(args: {
       filter,
     },
   };
-  // Bias toward `near` when given (soft, not a hard radius — distant exact matches still surface).
-  if (args.near) {
-    query = {
-      function_score: {
-        query,
-        functions: [{ gauss: { location: { origin: { lat: args.near.lat, lon: args.near.lon }, scale: "5km", offset: "200m", decay: 0.5 } } }],
-        boost_mode: "multiply", score_mode: "sum",
-      },
-    };
-  }
+
+  // When we have an anchor (the user's location — the route injects it even if the model
+  // forgets), fold CLOSENESS into the relevance score so the LOCAL match wins. A FLOORED
+  // multiply: final = textScore × (1 + GEO_BOOST × proximity), where proximity is a gauss
+  // 1→0 with distance. Two things matter about the floor (the constant 1):
+  //   • A far-off match keeps its FULL text score (×1), so a distinctive distant place still
+  //     surfaces — "where is the CN Tower" works from another city. (The old code multiplied
+  //     by the bare gauss, which ZEROED anything past ~15 km — that was the real bug.)
+  //   • A nearby match is multiplied UP, so among many same-name matches across the country
+  //     (every "Tim Hortons", every "Hannaford"/"Handford" street) the closest one rises to the
+  //     top — and into the candidate pool in the first place. It's a relative multiplier, so it
+  //     doesn't depend on the absolute scale of BM25 scores.
+  // GEO_BOOST is kept below ~2 so a clearly-better distant match (much higher text score) still
+  // beats a weak nearby one.
+  const GEO_BOOST = 1.5;
+  const query: Record<string, unknown> = args.near
+    ? {
+        function_score: {
+          query: textQuery,
+          functions: [
+            { weight: 1 }, // floor: every match keeps its full text score even when far away
+            { gauss: { location: { origin: { lat: args.near.lat, lon: args.near.lon }, scale: "3km", offset: "100m", decay: 0.5 } }, weight: GEO_BOOST },
+          ],
+          score_mode: "sum", // 1 + GEO_BOOST·proximity
+          boost_mode: "multiply", // × textScore
+        },
+      }
+    : textQuery;
 
   const res = await opensearch.search({
     index: INDEX,
-    body: { size: Math.min(40, limit * 3), query, _source: ["osm_id", "name", "display", "category", "subtype", "lat", "lng", "address", "access", "parent"] },
+    body: { size: Math.min(60, Math.max(40, limit * 6)), query, _source: ["osm_id", "name", "display", "category", "subtype", "lat", "lng", "address", "access", "parent"] },
   });
 
+  // Returned best-first (closeness already folded in above). Drop near-duplicate copies of the
+  // same named feature (OSM splits long roads into segments), keeping the best-ranked instance.
   const kept: { name: string; lat: number; lng: number }[] = [];
   const results = [];
   for (const h of hitsOf(res)) {
@@ -467,11 +489,19 @@ export const TOOL_SCHEMAS = [
   },
 ];
 
-// Run a tool by name. `heading` (the user's facing, when known) is threaded in by the
-// route so directional results can include a clock position.
-export async function runTool(name: string, input: Record<string, unknown>, heading?: number): Promise<unknown> {
+// Run a tool by name. `heading` (the user's facing, when known) and `userLoc` (their current
+// position) are threaded in by the route so results can include a clock position AND so
+// find_place is always anchored to the user — even when the model forgets to pass `near` —
+// which is what makes a nearby match win over a same-spelling one across the country.
+export async function runTool(
+  name: string, input: Record<string, unknown>, heading?: number, userLoc?: { lat: number; lon: number },
+): Promise<unknown> {
   switch (name) {
-    case "find_place": return findPlace({ ...(input as Parameters<typeof findPlace>[0]), heading });
+    case "find_place": {
+      const a = input as Parameters<typeof findPlace>[0];
+      if (!a.near && userLoc) a.near = userLoc; // anchor to the user unless the model named another point
+      return findPlace({ ...a, heading });
+    }
     case "whats_nearby": return whatsNearby({ ...(input as Parameters<typeof whatsNearby>[0]), heading });
     case "area_summary": return areaSummary(input as Parameters<typeof areaSummary>[0]);
     case "path_between": return pathBetween({ ...(input as Parameters<typeof pathBetween>[0]), heading });
