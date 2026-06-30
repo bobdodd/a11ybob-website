@@ -83,7 +83,7 @@ export async function POST(req: NextRequest) {
   // north-west") on descriptive answers, even though the tools hand it only a clock value.
   const facingWord = heading != null ? COMPASS8[Math.round(heading / 45) % 8] : null;
   const facingNote = facingWord
-    ? `, facing ${facingWord}. Their facing is KNOWN, and the app states it for them at the very start of the reply — so do NOT state their compass facing yourself. Give EVERY direction to a place or feature as a clock position relative to that facing ("at 2 o'clock", "ahead", "to your left"), exactly as the tools return, and NEVER a compass point — not even for a distant place you happen to know`
+    ? `, facing ${facingWord}. Their facing is KNOWN, and the app states it for them at the very start of the reply — so do NOT state their compass facing yourself. Give EVERY direction to a place or feature as the EXACT clock number the tool returns — always say the o'clock value, e.g. "at 3 o'clock", "at 9 o'clock", "at 12 o'clock". Do NOT soften or replace it with "to your left", "to your right", "ahead", "behind" or similar vague words, and NEVER use a compass point — not even for a distant place you happen to know. The clock value is precise; the vague words throw that precision away`
     : "";
   const locNote = loc
     ? `\n\n[The user is at latitude ${loc.lat}, longitude ${loc.lon}${facingNote}. Use this for "here"/"nearby"; for anywhere else, find_place first.]`
