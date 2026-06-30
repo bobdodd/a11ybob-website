@@ -178,8 +178,16 @@ async function toggleRecord() {
   }
   try {
     micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-  } catch {
-    speak("I need microphone access to listen. Please allow it, or type your question."); return;
+  } catch (e) {
+    const name = (e && e.name) || "error";
+    const msg = name === "NotAllowedError"
+      ? "Microphone blocked for this site. Allow the microphone for a11ybob.com — the prompt, or the site permissions behind the address-bar icon (not the phone's app settings) — then tap Speak again."
+      : name === "NotFoundError"
+      ? "No microphone was found on this device — please type your question."
+      : `Couldn't start the microphone (${name}). You can type your question instead.`;
+    status.textContent = msg;
+    speak(msg);
+    return;
   }
   chunks = [];
   const mime = pickMime();
