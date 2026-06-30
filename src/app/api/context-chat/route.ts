@@ -23,6 +23,8 @@ export const dynamic = "force-dynamic";
 const MODEL = process.env.CHAT_MODEL ?? "claude-haiku-4-5";
 const MAX_HISTORY = 12; // prior turns kept for context (cost bound)
 const MAX_TOOL_ROUNDS = 6; // safety stop on the tool loop
+// 8-point compass for stating the user's OWN facing (the one place a compass point is used).
+const COMPASS8 = ["north", "north-east", "east", "south-east", "south", "south-west", "west", "north-west"];
 
 const SYSTEM = `You are a spatial guide for blind and low-vision people. You help them understand and explore the world through a map database — where they are now, and anywhere they ask about. You are their eyes on the map: capable, direct, never patronising. The person is in charge; you inform, you do not shepherd.
 
@@ -74,11 +76,14 @@ export async function POST(req: NextRequest) {
     .filter((t) => (t.role === "user" || t.role === "assistant") && typeof t.content === "string")
     .slice(-MAX_HISTORY);
 
-  // When the user's facing is known, force CLOCK directions for the WHOLE reply — the model
-  // otherwise slips into its own compass knowledge ("Bobcaygeon is north-west") on descriptive
-  // answers even though the tools hand it only a clock value.
-  const facingNote = heading != null
-    ? `, facing ${Math.round(heading)}°. Their facing is KNOWN: give EVERY direction as a clock position relative to it (e.g. "at 2 o'clock", "ahead", "to your left"), exactly as the tools return — do NOT use any compass point (north, south, east, west, north-east, south-west, …) anywhere in your reply, not even for distant places you happen to know`
+  // When the user's facing is known: OPEN by telling them which way they face, as a compass
+  // point (this is the ONE legitimate compass use — it's the anchor that makes the clock
+  // directions meaningful), then give every other direction as a clock position. Without this
+  // the model both omits the facing and slips into its own compass knowledge ("Bobcaygeon is
+  // north-west") on descriptive answers, even though the tools hand it only a clock value.
+  const facingWord = heading != null ? COMPASS8[Math.round(heading / 45) % 8] : null;
+  const facingNote = facingWord
+    ? `, facing ${facingWord}. Their facing is KNOWN, and the app states it for them at the very start of the reply — so do NOT state their compass facing yourself. Give EVERY direction to a place or feature as a clock position relative to that facing ("at 2 o'clock", "ahead", "to your left"), exactly as the tools return, and NEVER a compass point — not even for a distant place you happen to know`
     : "";
   const locNote = loc
     ? `\n\n[The user is at latitude ${loc.lat}, longitude ${loc.lon}${facingNote}. Use this for "here"/"nearby"; for anywhere else, find_place first.]`
@@ -129,7 +134,10 @@ export async function POST(req: NextRequest) {
         .map((b) => b.text)
         .join("")
         .trim();
-      return NextResponse.json({ reply: reply || "I'm not sure how to answer that — try rephrasing?" });
+      if (!reply) return NextResponse.json({ reply: "I'm not sure how to answer that — try rephrasing?" });
+      // Lead every answer with the user's facing (the ONE compass point) when known — the anchor
+      // that makes the clock directions in the reply meaningful, exactly like the Context Map.
+      return NextResponse.json({ reply: facingWord ? `You're facing ${facingWord}. ${reply}` : reply });
     }
     return NextResponse.json({ reply: "That question took more steps than I can take in one go — try narrowing it down?" });
   } catch (e) {
