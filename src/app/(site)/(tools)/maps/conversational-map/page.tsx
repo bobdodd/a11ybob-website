@@ -3,6 +3,36 @@ import type { CSSProperties } from "react";
 import { MapsSubNav } from "@/components/MapsSubNav";
 import { NewTabLink } from "@/components/NewTabLink";
 
+const PHONETIC_CODES = `Matching by sound means giving every name a sound-code. The common
+encoder, double metaphone, is too coarse — the codes collide:
+
+    Yonge  ->  ANJ  ANK
+    Young  ->  ANK
+    Wing   ->  ANK          one code, shared by hundreds of words
+
+A precise encoder, Beider-Morse, keeps real sound-alikes together
+and lets nonsense fall away:
+
+    Yong   ->  iank  ionk           (the misheard input)
+    Yonge  ->  iank  iongi ...      shares "iank" with Yong
+    Young  ->  ionk  iunk  ...      shares "ionk" with Yong
+    Hong   ->  ank   onk   ...      shares nothing with Yong`;
+
+const SEARCH_RESULT = `You are standing on Yonge Street. You say "Yonge"; speech-to-text
+writes "Young". The top matches, with the sound-code and without:
+
+    with phonetic              without (what runs today)
+    ------------------------   ------------------------
+    Young Drivers of Canada    Young Drivers of Canada
+    Young Cafe                 Young Cafe
+    Way Young Tech             Way Young Tech
+  > Yonge Street               Yonge Street <
+    ...                        ...
+
+Identical order. The real word "Young" matches exactly and wins
+either way; what puts Yonge on the list at all is that you are
+standing on it.`;
+
 export default function MapsConversationalMap() {
   return (
     <main id="main" className="site-main">
@@ -23,7 +53,8 @@ export default function MapsConversationalMap() {
               fixed descriptions: quick, continuous, and detailed. Useful, but
               one size fits all. The Conversational map removes the buttons and
               lets you simply <em>ask</em> &mdash; in plain language, by typing
-              &mdash; about where you are now, or anywhere on the map at all.
+              or speaking aloud &mdash; about where you are now, or anywhere on
+              the map at all.
             </p>
             <p className="muted">
               <small>
@@ -77,13 +108,16 @@ export default function MapsConversationalMap() {
             <h2>Sending your words elsewhere to answer</h2>
             <p>
               Understanding free-form questions needs a capable language model,
-              and that runs as a hosted service rather than on the
-              page. So to answer you, what you type and your current location
-              (when you have shared it) are sent over the internet to a
-              third-party service to be processed. The rest of the site is
-              self-hosted and sends nothing to anyone; this one feature is the
-              exception, and the notice before you start says so plainly. Do not
-              type anything you would not want handled that way.
+              and that runs as a hosted service rather than on the page. So to
+              answer you, what you type &mdash; or, if you speak your question,
+              the recording of your voice &mdash; together with your current
+              location (when you have shared it) is sent over the internet to a
+              third-party service to be processed; spoken questions go to a
+              separate speech-to-text service first to be turned into words. The
+              rest of the site is self-hosted and sends nothing to anyone; this
+              one feature is the exception, and the notice before you start says
+              so plainly. Do not type or say anything you would not want handled
+              that way.
             </p>
           </section>
 
@@ -129,10 +163,10 @@ export default function MapsConversationalMap() {
             </p>
             <p className="muted">
               <small>
-                Text first. Speaking your question aloud, and hearing the answer
-                read with clock-face directions relative to the way you are
-                facing, are the next things to add &mdash; the heading work from
-                the Context Map carries straight over.
+                You can type your question or speak it aloud and hear the answer
+                read back &mdash; with clock-face directions relative to the way
+                you are facing, the heading work from the Context Map carried
+                straight over.
               </small>
             </p>
           </section>
@@ -149,6 +183,160 @@ export default function MapsConversationalMap() {
                 You will be asked to read and accept the notice, then to allow
                 location access. It opens in its own window; close it to come
                 back here.
+              </small>
+            </p>
+          </section>
+
+          <section className="stack" style={{ "--space": "var(--s1)" } as CSSProperties}>
+            <h2>Colophon</h2>
+            <p>
+              A colophon is the note at the back of a book about how it was
+              made. Each map in this family gets one, because the decisions
+              behind an accessible map &mdash; what to store, what to match,
+              what to leave out &mdash; are the interesting part, and worth
+              showing rather than burying. Two of them shaped this map: how the
+              search copes when a spoken street name arrives mis-spelled, and
+              whether to put back the unnamed paths and buildings that most maps
+              drop.
+            </p>
+
+            <h3>When the map mishears a name</h3>
+            <p>
+              Ask a question out loud and it goes through speech-to-text first,
+              which is good at ordinary words and bad at proper nouns it has
+              never seen &mdash; street names most of all. A real example:
+              spoken aloud, &ldquo;Hannaford Street&rdquo; came back as
+              &ldquo;Hanaford&rdquo;, a letter short, and the street was not
+              found.
+            </p>
+            <p>
+              The obvious diagnosis &mdash; the search should match names by
+              sound, not spelling &mdash; turned out to be wrong about what had
+              actually failed. The spelling-tolerant match had{" "}
+              <em>already</em>{" "}found Hannaford Street; the problem was which
+              one it picked. With no sense of where the question was being asked
+              from, a same-distance look-alike two provinces away &mdash; a
+              &ldquo;Handford&rdquo; near Ottawa &mdash; tied the real street
+              next to you and won. It was a ranking problem wearing a spelling
+              problem&rsquo;s clothes.
+            </p>
+            <p>
+              The fix was to anchor every lookup to where you are standing and
+              let closeness break the tie, so the local street wins. With that
+              in place, ordinary one- or two-letter mishears are absorbed by the
+              spelling-tolerant match anyway &mdash; &ldquo;Spadeena&rdquo; finds
+              Spadina, &ldquo;Bathert&rdquo; finds Bathurst &mdash; and the right
+              feature beside you comes back.
+            </p>
+            <p>
+              That leaves the harder mishears, where the spoken word lands more
+              than a letter or two from the real name. The textbook tool for
+              those is <strong>phonetic matching</strong>: index every name by
+              how it sounds, and match on the sound. We built it, and measured
+              it, before deciding whether to keep it.
+            </p>
+            <p>
+              The common phonetic encoder, double metaphone, proved too coarse
+              to help: it reduces a word to a short sound-code, but the codes
+              collide, so a search for the misheard word drags in hundreds of
+              unrelated names. A precise encoder, Beider-Morse, is far cleaner
+              &mdash; it keeps genuine sound-alikes together while letting
+              nonsense fall away.
+            </p>
+            <pre>
+              <code>{PHONETIC_CODES}</code>
+            </pre>
+            <p>
+              But clean or not, it changed nothing where it mattered. Stand on
+              Yonge Street, say &ldquo;Yonge&rdquo;, and speech-to-text writes
+              &ldquo;Young&rdquo;. &ldquo;Young&rdquo; is a real word &mdash;
+              there are Young Caf&eacute;s and Young Drivers, and they match it{" "}
+              <em>exactly</em>. Phonetic matching pulls Yonge Street into the
+              running, but it sits below those exact matches with the sound-code
+              or without it.
+            </p>
+            <pre>
+              <code>{SEARCH_RESULT}</code>
+            </pre>
+            <p>
+              So we left phonetic search on the shelf. The honest reason is that
+              no sound-code can &mdash; or should &mdash; make &ldquo;Yonge&rdquo;
+              beat an exact &ldquo;Young&rdquo;; that would break every real
+              search for Young. What actually resolves it is{" "}
+              <strong>context</strong>, and the conversational map already has
+              it: it knows you are standing on Yonge Street, and can simply say
+              so &mdash; &ldquo;you&rsquo;re on Yonge Street; did you mean that,
+              or Young Drivers of Canada, two hundred metres away?&rdquo;
+              Re-processing every record in the index, for a heavier index and a
+              result that reorders nothing, was a cost without a benefit. The
+              simpler machinery &mdash; spelling-tolerance, closeness, and the
+              model&rsquo;s knowing where you are &mdash; carries it. Phonetic
+              search here is a thing we tried, measured, and chose against, which
+              is a different thing from one we never thought of.
+            </p>
+
+            <h3>Putting the unnamed map back in</h3>
+            <p>
+              Maps, and map searches especially, are built around names. A named
+              street is findable &mdash; you type it and there it is. An unnamed
+              service lane, a footpath cutting across a park, a building nobody
+              has labelled: these are usually dropped from the searchable map,
+              because there is nothing to type to find them.
+            </p>
+            <p>
+              For a sighted reader that loss is invisible &mdash; they see the
+              laneway, the alley, the dense row of buildings, named or not.
+              Reading the map through description, a blind user gets none of it
+              unless it is in the data, and it is exactly the orientation a
+              sighted reader has for free: that you are hemmed in by buildings,
+              that a footpath cuts off to your left, that this block is dense and
+              the next one open. The principle these maps hold to is that the
+              non-visual reader gets the <em>same</em>{" "}map the sighted one
+              does; the unnamed texture is part of that map, so it has to go back
+              in.
+            </p>
+            <p>
+              Putting it back takes care, because there are millions of these
+              features and they must not clutter a search for named places. So
+              they go in marked description-only, carrying no searchable text
+              &mdash; the same way the map already handles unnamed water,
+              woodland and parkland: as character that colours a description
+              without ever surfacing in a name search. Within that, the two
+              kinds are stored differently, by how much detail earns its keep.
+            </p>
+            <ul>
+              <li>
+                <strong>Unnamed paths and laneways keep their full shape and
+                their accessibility tags.</strong>{" "}An unnamed footpath&rsquo;s
+                surface, width and steps are the whole point of an accessible
+                map, so they are worth the space &mdash; enough for the map to
+                say &ldquo;a footpath about twelve metres to your left&rdquo;.
+              </li>
+              <li>
+                <strong>Anonymous buildings are kept deliberately thin:</strong>{" "}
+                a centre point and a coarse size &mdash; small, medium or large
+                &mdash; and nothing more, no outline. That is enough to feel a
+                place&rsquo;s density (&ldquo;dozens of buildings within a
+                hundred metres, a couple of them large&rdquo;) without the index
+                ballooning under the sheer number of them.
+              </li>
+            </ul>
+            <p>
+              The cost is real but modest, and we measured it rather than
+              guessed. Recovering the unnamed features roughly doubles the
+              feature count in a dense city, but because the thinned buildings
+              are so cheap to store it adds only a few gigabytes across the whole
+              of Canada. A deliberate trade: more to keep, in exchange for a map
+              that can describe the spaces <em>between</em>{" "}the named things,
+              not only the named things themselves.
+            </p>
+            <p className="muted">
+              <small>
+                Both decisions are recent. The spelling-tolerant,
+                closeness-ranked search is already live; the unnamed features
+                are being folded into the map now. This is a test, learned from
+                in the open &mdash; the reasoning is written down because a
+                decision you can see is one you can argue with.
               </small>
             </p>
           </section>

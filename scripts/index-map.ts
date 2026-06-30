@@ -39,7 +39,9 @@ function stripEmptyKeys(v: unknown): unknown {
   return v;
 }
 
-// Same English text analysis the site's other indices use.
+// Same English text analysis the site's other indices use. (Phonetic / sound-alike matching
+// was prototyped and rejected — see the Conversational Map colophon: it was clean but inert,
+// because geo-anchoring + the model's awareness of where you are already resolve mishears.)
 const analysis = {
   filter: {
     english_stop: { type: "stop", stopwords: "_english_" },
@@ -69,10 +71,14 @@ const mapping = {
     display: { ...text, fields: { raw: { type: "keyword" } } },
     category: { type: "keyword" },
     subtype: { type: "keyword" },
-    // 'area' marks area-character fills (unnamed water / woods / landuse / boundary) —
-    // counted in the area-character aggregation + used for containment, but kept out of
-    // named search. Absent on ordinary findable features.
+    // 'area' marks area-character fills (unnamed water / woods / landuse / boundary);
+    // 'path' an unnamed laneway/footway (keeps geometry + accessibility); 'building' an
+    // anonymous building (lightweight — centroid + size_class, no geometry). All three are
+    // counted/aggregated for description + containment but kept OUT of named search (empty
+    // `text`). Absent on ordinary findable features.
     kind: { type: "keyword" },
+    // Coarse footprint size of an anonymous building (small | medium | large).
+    size_class: { type: "keyword" },
     types: text,
     text,
     // Name of the containing place (school / hospital / park) the spatial-
