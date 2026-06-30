@@ -74,8 +74,14 @@ export async function POST(req: NextRequest) {
     .filter((t) => (t.role === "user" || t.role === "assistant") && typeof t.content === "string")
     .slice(-MAX_HISTORY);
 
+  // When the user's facing is known, force CLOCK directions for the WHOLE reply — the model
+  // otherwise slips into its own compass knowledge ("Bobcaygeon is north-west") on descriptive
+  // answers even though the tools hand it only a clock value.
+  const facingNote = heading != null
+    ? `, facing ${Math.round(heading)}°. Their facing is KNOWN: give EVERY direction as a clock position relative to it (e.g. "at 2 o'clock", "ahead", "to your left"), exactly as the tools return — do NOT use any compass point (north, south, east, west, north-east, south-west, …) anywhere in your reply, not even for distant places you happen to know`
+    : "";
   const locNote = loc
-    ? `\n\n[The user is at latitude ${loc.lat}, longitude ${loc.lon}${heading != null ? `, facing ${Math.round(heading)}°` : ""}. Use this for "here"/"nearby"; for anywhere else, find_place first.]`
+    ? `\n\n[The user is at latitude ${loc.lat}, longitude ${loc.lon}${facingNote}. Use this for "here"/"nearby"; for anywhere else, find_place first.]`
     : `\n\n[The user's current location is not available — ask them to name a place, or to enable location.]`;
 
   const messages: Anthropic.Messages.MessageParam[] = [
