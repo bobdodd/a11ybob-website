@@ -277,7 +277,7 @@ export default function MapsConversationalMap() {
               a question asked in a crowd, at a march, on a busy street &mdash;
               and being someone else&rsquo;s cloud it puts no load on the small
               server everything else here runs on. The honest preference is to run
-              the speech-to-text on our own machine one day, so the audio never
+              the speech-to-text on my own machine one day, so the audio never
               leaves at all; that needs a bigger box than the site currently sits
               on, so for now it is a hosted service &mdash; openly disclosed, and
               told to you before you start.
@@ -294,7 +294,7 @@ export default function MapsConversationalMap() {
               three fixed buttons: quick, continuous, detailed. They always work,
               they never surprise you, and &mdash; this is the part that matters
               here &mdash; they need no outside help. The descriptions are
-              assembled on our own server from our own map data, and nothing about
+              assembled on my own server from my own map data, and nothing about
               your question ever leaves. The price of that is that they can only
               ever tell you the handful of things they were built to tell you.
             </p>
@@ -365,7 +365,7 @@ export default function MapsConversationalMap() {
               That leaves the harder mishears, where the spoken word lands more
               than a letter or two from the real name. The textbook tool for
               those is <strong>phonetic matching</strong>: index every name by
-              how it sounds, and match on the sound. We built it, and measured
+              how it sounds, and match on the sound. I built it, and measured
               it, before deciding whether to keep it.
             </p>
             <p>
@@ -392,7 +392,7 @@ export default function MapsConversationalMap() {
               <code>{SEARCH_RESULT}</code>
             </pre>
             <p>
-              So we left phonetic search on the shelf. The honest reason is that
+              So I left phonetic search on the shelf. The honest reason is that
               no sound-code can &mdash; or should &mdash; make &ldquo;Yonge&rdquo;
               beat an exact &ldquo;Young&rdquo;; that would break every real
               search for Young. What actually resolves it is{" "}
@@ -404,8 +404,8 @@ export default function MapsConversationalMap() {
               result that reorders nothing, was a cost without a benefit. The
               simpler machinery &mdash; spelling-tolerance, closeness, and the
               model&rsquo;s knowing where you are &mdash; carries it. Phonetic
-              search here is a thing we tried, measured, and chose against, which
-              is a different thing from one we never thought of.
+              search here is a thing I tried, measured, and chose against, which
+              is a different thing from one I never thought of.
             </p>
 
             <h3>Putting the unnamed map back in</h3>
@@ -455,7 +455,7 @@ export default function MapsConversationalMap() {
               </li>
             </ul>
             <p>
-              The cost is real but modest, and we measured it rather than
+              The cost is real but modest, and I measured it rather than
               guessed. Recovering the unnamed features roughly doubles the
               feature count in a dense city, but because the thinned buildings
               are so cheap to store it adds only a few gigabytes across the whole
