@@ -165,87 +165,165 @@ form.addEventListener("submit", (e) => {
   ask(message);
 });
 
-// ── Voice input: tap Speak to start, tap again to stop → Deepgram → fill + send ─────────
-let mediaRecorder = null, chunks = [], recording = false, micStream = null, audioCtx = null;
+// ── Voice input: STREAMING to Deepgram ─────────────────────────────────────────
+// Tap Speak; speak your question; it sends automatically when you PAUSE (Deepgram's utterance-end
+// detection, which works in background noise), or tap Stop. Audio streams DIRECTLY to Deepgram over
+// a WebSocket using a 30-second token minted server-side (/api/context-stt-token), so the API key
+// never reaches the browser and no audio passes through our server. Diarisation + "voice locking"
+// keep only the MAIN speaker (you) and drop nearby conversations.
+const TOKEN_API = "/api/context-stt-token";
+let recording = false, micStream = null, dgSocket = null, sttCtx = null, sttNode = null, sttSource = null;
+let lockedSpeaker = null, finalWords = [];   // finalWords: [{w,sp}]; transcript = the locked speaker's words
+const speakerCounts = new Map();
 
-// Short tone cue so a blind user knows recording started / stopped (rising = on, falling = off).
+// Short tone cue (rising = listening, falling = stopped) so a blind user hears the state.
 function beep(freq) {
   try {
-    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
-    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
-    o.frequency.value = freq; o.connect(g); g.connect(audioCtx.destination);
-    g.gain.setValueAtTime(0.12, audioCtx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.18);
-    o.start(); o.stop(audioCtx.currentTime + 0.18);
-  } catch { /* audio not available — the status text still says "Listening…" */ }
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.frequency.value = freq; o.connect(g); g.connect(ctx.destination);
+    g.gain.setValueAtTime(0.12, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.18);
+    o.start(); o.stop(ctx.currentTime + 0.18);
+    setTimeout(() => ctx.close().catch(() => {}), 250);
+  } catch { /* audio not available — the status text still cues "Listening…" */ }
 }
 
-function pickMime() {
-  const types = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4", "audio/ogg"];
-  for (const t of types) if (window.MediaRecorder && MediaRecorder.isTypeSupported(t)) return t;
-  return "";
+function lockedTranscript() {
+  return finalWords.filter((x) => x.sp === lockedSpeaker).map((x) => x.w).join(" ")
+    .replace(/\s+([.,!?;:])/g, "$1").trim();
+}
+
+// Voice-locking (Deepgram's "background filtering" pattern): lock onto the first speaker to reach
+// 3 words — the person holding the phone — and keep only their words, dropping nearby chatter that
+// diarisation labels as other speakers.
+function ingestWords(words) {
+  for (const w of words) {
+    const text = w.punctuated_word || w.word || "";
+    if (!text) continue;
+    const sp = (typeof w.speaker === "number") ? w.speaker : 0;
+    finalWords.push({ w: text, sp });
+    if (lockedSpeaker === null) {
+      const c = (speakerCounts.get(sp) || 0) + 1;
+      speakerCounts.set(sp, c);
+      if (c >= 3) lockedSpeaker = sp;
+    }
+  }
 }
 
 async function toggleRecord() {
-  if (recording) { stopRecord(); return; }
-  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.MediaRecorder) {
+  if (recording) { stopStream(true); return; }   // manual stop = finalise + send
+  await startStream();
+}
+
+async function startStream() {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.AudioWorkletNode) {
     speak("Voice input isn't available on this device — please type your question."); return;
   }
+  let token;
   try {
-    micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const [tk, stream] = await Promise.all([
+      fetch(TOKEN_API, { method: "POST" }).then((r) => r.json().catch(() => ({}))),
+      navigator.mediaDevices.getUserMedia({ audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true } }),
+    ]);
+    micStream = stream;
+    if (!tk || !tk.token) throw new Error((tk && tk.error) || "no speech token");
+    token = tk.token;
   } catch (e) {
-    const name = (e && e.name) || "error";
+    if (micStream) { micStream.getTracks().forEach((t) => t.stop()); micStream = null; }
+    const name = (e && e.name) || "";
     const msg = name === "NotAllowedError"
-      ? "Microphone blocked for this site. Allow the microphone for a11ybob.com — the prompt, or the site permissions behind the address-bar icon (not the phone's app settings) — then tap Speak again."
+      ? "Microphone blocked for this site. Allow the microphone for a11ybob.com (the prompt, or the site permissions behind the address-bar icon — not the phone's app settings), then tap Speak again."
       : name === "NotFoundError"
       ? "No microphone was found on this device — please type your question."
-      : `Couldn't start the microphone (${name}). You can type your question instead.`;
-    status.textContent = msg;
-    speak(msg);
-    return;
+      : `Couldn't start speech input (${(e && e.message) || name || "error"}). You can type your question instead.`;
+    status.textContent = msg; speak(msg); return;
   }
-  chunks = [];
-  const mime = pickMime();
-  mediaRecorder = new MediaRecorder(micStream, mime ? { mimeType: mime } : undefined);
-  mediaRecorder.ondataavailable = (e) => { if (e.data && e.data.size) chunks.push(e.data); };
-  mediaRecorder.onstop = onRecordStop;
-  mediaRecorder.start();
+
+  try {
+    sttCtx = new (window.AudioContext || window.webkitAudioContext)();
+    await sttCtx.audioWorklet.addModule("/demos/conversational-map/src/pcm-worklet.js");
+    sttSource = sttCtx.createMediaStreamSource(micStream);
+    sttNode = new AudioWorkletNode(sttCtx, "pcm-worklet");
+    sttSource.connect(sttNode);
+    // forward PCM frames once the socket is open (drops the first few ms before it connects)
+    sttNode.port.onmessage = (e) => { if (dgSocket && dgSocket.readyState === WebSocket.OPEN) dgSocket.send(e.data); };
+  } catch {
+    cleanupStream();
+    const m = "Couldn't start audio capture — please type your question."; status.textContent = m; speak(m); return;
+  }
+
+  const params = new URLSearchParams({
+    model: "nova-3", encoding: "linear16", sample_rate: String(Math.round(sttCtx.sampleRate)), channels: "1",
+    diarize: "true", interim_results: "true", utterance_end_ms: "1000", endpointing: "300",
+    smart_format: "true", punctuate: "true", vad_events: "true",
+  });
+  lockedSpeaker = null; finalWords = []; speakerCounts.clear();
+  openDeepgram(`wss://api.deepgram.com/v1/listen?${params.toString()}`, token);
+
   recording = true;
-  speakBtn.textContent = "Stop";
-  speakBtn.setAttribute("aria-pressed", "true");
-  status.textContent = "Listening… tap Stop when you're done.";
+  speakBtn.textContent = "Stop"; speakBtn.setAttribute("aria-pressed", "true");
+  status.textContent = "Listening… speak your question; it sends when you pause, or tap Stop.";
   beep(880);
 }
 
-function stopRecord() {
-  if (!mediaRecorder || !recording) return;
-  recording = false;
-  speakBtn.textContent = "Speak";
-  speakBtn.setAttribute("aria-pressed", "false");
-  beep(440);
-  mediaRecorder.stop(); // → onRecordStop
+// The temp token rides in the Sec-WebSocket-Protocol header (browsers can't set Authorization on a
+// WS). Deepgram takes a JWT under the 'bearer' subprotocol and an API key under 'token'; we try
+// 'bearer' and fall back to 'token' once if the socket is rejected before it ever opens.
+function openDeepgram(url, token, scheme = "bearer", tried = false) {
+  let opened = false;
+  const ws = new WebSocket(url, [scheme, token]);
+  dgSocket = ws;
+  ws.binaryType = "arraybuffer";
+  ws.onopen = () => { opened = true; };
+  ws.onmessage = (e) => {
+    let msg; try { msg = JSON.parse(e.data); } catch { return; }
+    if (msg.type === "UtteranceEnd") { if (recording && lockedTranscript()) stopStream(true); return; }
+    const alt = msg.channel && msg.channel.alternatives && msg.channel.alternatives[0];
+    if (!alt) return;
+    if (msg.is_final && alt.words && alt.words.length) ingestWords(alt.words);
+    // Live feedback into the INPUT field only (not the aria-live status, which would announce every
+    // word): the locked words so far + the current interim guess.
+    const interim = (!msg.is_final && alt.transcript) ? alt.transcript : "";
+    const shown = [lockedTranscript(), interim].filter(Boolean).join(" ").trim();
+    if (shown) input.value = shown;
+  };
+  ws.onclose = () => {
+    if (!opened && !tried) { openDeepgram(url, token, scheme === "bearer" ? "token" : "bearer", true); return; }
+    if (recording) {                               // dropped while we were listening
+      const t = lockedTranscript();
+      if (!t) { const m = "Speech connection dropped — tap Speak to try again, or type your question."; status.textContent = m; speak(m); }
+      stopStream(!!t);
+    }
+  };
+  ws.onerror = () => { /* surfaced via onclose */ };
 }
 
-async function onRecordStop() {
-  if (micStream) { micStream.getTracks().forEach((t) => t.stop()); micStream = null; }
-  const blob = new Blob(chunks, { type: chunks[0] && chunks[0].type ? chunks[0].type : "audio/webm" });
-  if (blob.size < 800) { status.textContent = "I didn't catch that — try again."; return; }
-  status.textContent = "Transcribing…";
+function cleanupStream() {
+  try { if (sttNode) sttNode.port.onmessage = null; } catch { /* */ }
+  try { if (sttSource) sttSource.disconnect(); } catch { /* */ }
+  try { if (sttNode) sttNode.disconnect(); } catch { /* */ }
+  try { if (sttCtx) sttCtx.close(); } catch { /* */ }
+  try { if (micStream) micStream.getTracks().forEach((t) => t.stop()); } catch { /* */ }
   try {
-    const res = await fetch(STT_API, { method: "POST", headers: { "Content-Type": blob.type }, body: blob });
-    const data = await res.json().catch(() => ({}));
-    const transcript = (data.transcript || "").trim();
-    if (!res.ok || data.error || !transcript) {
-      const msg = data.error || "I didn't catch that — try again.";
-      status.textContent = msg; speak(msg); return;
+    if (dgSocket) {
+      if (dgSocket.readyState === WebSocket.OPEN) { try { dgSocket.send(JSON.stringify({ type: "CloseStream" })); } catch { /* */ } }
+      dgSocket.close();
     }
-    // Show + speak back what was heard (a mishear is caught by ear), then send it.
-    input.value = transcript;
-    speak(`Heard: ${transcript}`);
-    ask(transcript);
-  } catch {
-    const msg = "Couldn't reach the speech service. Check your connection, or type your question.";
-    status.textContent = msg; speak(msg);
+  } catch { /* */ }
+  sttNode = sttSource = sttCtx = micStream = dgSocket = null;
+}
+
+function stopStream(finalise) {
+  if (!recording) return;
+  recording = false;
+  speakBtn.textContent = "Speak"; speakBtn.setAttribute("aria-pressed", "false");
+  beep(440);
+  const t = finalise ? lockedTranscript() : "";
+  cleanupStream();
+  if (finalise) {
+    if (t) { input.value = t; speak(`Heard: ${t}`); ask(t); }   // a mishear is caught by ear
+    else { status.textContent = "I didn't catch that — try again."; }
   }
 }
 
