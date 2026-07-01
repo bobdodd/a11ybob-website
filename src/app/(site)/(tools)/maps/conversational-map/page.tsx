@@ -119,7 +119,7 @@ export default function MapsConversationalMap() {
               Understanding free-form questions needs a capable language model,
               and that runs as a hosted service rather than on the page. So to
               answer you, what you type &mdash; or, if you speak your question,
-              the recording of your voice &mdash; together with your current
+              your voice as you say it &mdash; together with your current
               location (when you have shared it) is sent over the internet to a
               third-party service to be processed; spoken questions go to a
               separate speech-to-text service first to be turned into words. The
@@ -251,36 +251,62 @@ export default function MapsConversationalMap() {
 
             <h3>Hearing the question, and where your voice goes</h3>
             <p>
-              You can type, but you can also tap once and speak. Tapping starts
-              recording; tapping again stops it; the clip is sent off to be turned
-              into text; the text is shown and read back to you &mdash; so a
-              mishearing is caught by ear before it is acted on &mdash; and then
-              it runs exactly as if you had typed it. A short rising tone marks
-              the microphone going live and a falling one marks it stopping, so a
-              blind user knows the state without watching the screen.
+              You can type, or tap Speak and talk. It streams as you go: the words
+              appear in the box in real time, and it sends the moment you stop
+              &mdash; about a second&rsquo;s pause is taken as &ldquo;finished&rdquo;
+              &mdash; so most of the time there is no second tap. Speak and Stop are
+              both still there for when you want them (Stop sends straight away), and
+              a short rising tone marks the microphone going live, a falling one
+              marks it stopping, so a blind user knows the state without watching the
+              screen. What was heard is read back before it is acted on, so a mishear
+              is caught by ear.
             </p>
             <p>
-              Turning speech into text is the one part the page cannot do itself.
-              A language model cannot transcribe audio; speech-to-text is always a
-              separate service, and here it is{" "}
-              <a href="https://deepgram.com/">Deepgram</a>, a hosted one. Which
-              means that when you speak your question, the recording of your voice
-              leaves the device and goes to an outside company to be transcribed
-              &mdash; a second outside service, on top of the model that answers.
+              The hard case is that a blind user is often somewhere loud &mdash; a
+              march, a platform, a busy street &mdash; and the microphone hears all
+              of it, not just them. Two things handle that. The speech service
+              separates the voices it picks up, and the app locks onto the first one
+              to say a few words &mdash; you, holding the phone &mdash; keeping only
+              your words and dropping the conversation happening behind you. And it
+              decides you have finished not from silence, which never comes in a
+              crowd, but from the gaps between <em>your</em>{" "}words &mdash; so the
+              chatter around you doesn&rsquo;t stop it knowing you have stopped. It is
+              a heuristic, not a guarantee &mdash; a bystander who gets a sentence in
+              first could fool the lock &mdash; but for a phone you are holding and
+              talking into it is right nearly always, and it is the whole reason for
+              using a speech service strong in noise rather than the one built into
+              the browser.
+            </p>
+            <p>
+              Turning speech into text is the one part the page cannot do itself: a
+              language model cannot transcribe audio, so that is a separate service
+              &mdash; <a href="https://deepgram.com/">Deepgram</a>. So a spoken
+              question leaves the device <em>twice</em> &mdash; once as sound to be
+              turned into words, once as those words to be answered &mdash; where a
+              typed one leaves it only once.
             </p>
             <pre>
               <code>{VOICE_FLOW}</code>
             </pre>
             <p>
-              Deepgram is the current choice for plain, practical reasons: the
-              project already had a key, its models hold up well in noise &mdash;
-              a question asked in a crowd, at a march, on a busy street &mdash;
-              and being someone else&rsquo;s cloud it puts no load on the small
-              server everything else here runs on. The honest preference is to run
-              the speech-to-text on my own machine one day, so the audio never
-              leaves at all; that needs a bigger box than the site currently sits
-              on, so for now it is a hosted service &mdash; openly disclosed, and
-              told to you before you start.
+              Where the audio goes got better with the streaming, too. Your voice
+              now goes <em>straight</em>{" "}from your browser to the speech service,
+              not through my server on the way. The key that would let anyone run up
+              a bill on that service never reaches your phone; instead my server hands
+              the browser a token good for about thirty seconds &mdash; long enough to
+              open the connection and no longer. So no audio passes through my server,
+              the path is as direct and as quick as it can be, and the credential
+              stays mine.
+            </p>
+            <p>
+              The service is Deepgram, for plain practical reasons: I already had a
+              key, its models hold up well in exactly the noisy conditions above, and
+              being someone else&rsquo;s cloud it puts no load on the small server
+              everything else here runs on. The honest preference is still to run the
+              speech-to-text on my own machine one day, so the audio never leaves at
+              all; that needs a bigger box than the site sits on now, so for the
+              moment it is a hosted service &mdash; openly disclosed, and told to you
+              before you start.
             </p>
 
             <h3>Why a chatbot is the interface</h3>
