@@ -1,7 +1,8 @@
 /* Conversational Map — screen-reader-first chat over the map index. Mirrors the Context
    Map's design language: mobile-first, large targets, AAA contrast, and grey luminance
    boundaries so it survives macOS/iOS Invert Colours (coloured edges flip hue and lose
-   contrast — so state and separation ride on grey, not colour). */
+   contrast — so state and separation ride on grey, not colour). Colour lives in custom
+   properties: light and dark are one ladder, swapped by prefers-color-scheme. */
 
 :root {
     --ink: #111;
@@ -9,6 +10,11 @@
     --line: #5a5a5a;
     --fill: #f4f6f8;
     --focus: #0033aa;
+    --link: #0033aa;
+    --bg: #fff;
+    --disabled-ink: #6a6a6a;
+    --disabled-fill: #ececec;
+    --disabled-line: #9a9a9a;
 }
 
 * { box-sizing: border-box; }
@@ -22,7 +28,7 @@ body {
     margin-inline: auto;
     font: 1.125rem/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     color: var(--ink);
-    background: #fff;
+    background: var(--bg);
     hyphens: none;
 }
 
@@ -30,6 +36,22 @@ h1 { font-size: 1.6rem; line-height: 1.2; margin: 0 0 0.5rem; }
 h2 { font-size: 1.25rem; margin: 1.5rem 0 0.5rem; }
 h1:focus { outline: none; }   /* programmatic focus target, no visible ring */
 p { margin: 0 0 0.75rem; }
+
+/* ── Links ──────────────────────────────────────────────────────────────── */
+a { color: var(--link); text-underline-offset: 0.15em; }
+a:hover { text-decoration-thickness: 2px; }
+
+/* ── Focus ──────────────────────────────────────────────────────────────────
+   A visible ring on EVERY interactive control — buttons, links, inputs,
+   checkboxes. Never removed from an interactive element. The blue --focus stays
+   high-luminance in both themes, so the ring survives Invert Colours. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+[tabindex]:focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
+}
 
 /* ── Disclaimer ─────────────────────────────────────────────────────────── */
 .cv-disclaimer ul { margin: 0.5rem 0 1rem; padding-inline-start: 1.25rem; }
@@ -76,18 +98,17 @@ p { margin: 0 0 0.75rem; }
     font-size: 1.25rem;
     font-weight: 600;
     color: var(--ink);
-    background: #fff;
+    background: var(--bg);
     border: 2px solid var(--line);
     border-radius: 10px;
     cursor: pointer;
     text-align: center;
 }
 .cv-btn:hover { background: var(--fill); }
-.cv-btn:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 .cv-btn:disabled {
-    color: #6a6a6a;
-    background: #ececec;
-    border-color: #9a9a9a;
+    color: var(--disabled-ink);
+    background: var(--disabled-fill);
+    border-color: var(--disabled-line);
     cursor: not-allowed;
 }
 .cv-start { margin-top: 0.5rem; }
@@ -116,7 +137,7 @@ p { margin: 0 0 0.75rem; }
 .cv-msg--user { margin-inline-start: 2rem; }
 .cv-msg--user .cv-msg__text { background: var(--fill); }
 .cv-msg--bot .cv-msg__text {
-    background: #fff;
+    background: var(--bg);
     border-width: 2px;
     border-color: var(--ink);
 }
@@ -136,11 +157,10 @@ p { margin: 0 0 0.75rem; }
     padding: 0.75rem 0.875rem;
     font: inherit;
     color: var(--ink);
-    background: #fff;
+    background: var(--bg);
     border: 2px solid var(--line);
     border-radius: 10px;
 }
-.cv-input:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 .cv-inputrow .cv-btn { inline-size: auto; flex: 0 0 auto; margin: 0; }
 
 .cv-status {
@@ -160,10 +180,30 @@ p { margin: 0 0 0.75rem; }
     white-space: nowrap; border: 0;
 }
 
+/* ── Dark mode — follows the OS ───────────────────────────────────────────
+   Greyscale luminance ladder + one blue accent; same invert-safe philosophy as
+   light — separation rides on grey borders, not hue. */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --ink: #f2f4f6;
+        --ink-soft: #b7bec6;
+        --line: #8b929b;
+        --fill: #22262c;
+        --focus: #86b4ff;
+        --link: #86b4ff;
+        --bg: #14171a;
+        --disabled-ink: #7a828b;
+        --disabled-fill: #1b1e23;
+        --disabled-line: #4a5058;
+    }
+}
+
+/* ── High contrast — push borders to full ink (black in light, near-white in
+   dark). Placed after dark so its --line wins when both are active. */
 @media (prefers-contrast: high) {
-    :root { --line: #000; }
-    .cv-risk, .cv-consent, .cv-btn, .cv-input, .cv-msg__text { border-color: #000; }
-    .cv-btn:disabled { color: #000; border-color: #000; }
+    :root { --line: var(--ink); }
+    .cv-risk, .cv-consent, .cv-btn, .cv-input, .cv-msg__text { border-color: var(--ink); }
+    .cv-btn:disabled { color: var(--ink); border-color: var(--ink); }
 }
 
 @media (prefers-reduced-motion: no-preference) {
