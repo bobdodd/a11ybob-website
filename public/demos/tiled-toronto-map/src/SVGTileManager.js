@@ -29,10 +29,17 @@ const TILE_BASE = (() => {
 // features below the readable-"m" floor for that zoom (see RENDERING_AT_SCALE.md),
 // so zooming out fetches fewer AND lighter tiles.
 const LOD_BANDS = [
-    { name: '',      minZoom: 18 },  // full detail, zoom >= 18
+    { name: 'lod22', minZoom: 22 },  // zoom in: ~individuals, full inspection
+    { name: 'lod21', minZoom: 21 },
+    { name: 'lod20', minZoom: 20 },
+    { name: 'lod19', minZoom: 19 },
+    { name: '',      minZoom: 18 },  // root URL (back-compat), z18
     { name: 'lod17', minZoom: 17 },
     { name: 'lod16', minZoom: 16 },
-    { name: 'lod15', minZoom: 0 },   // coarsest, zoom <= 15
+    { name: 'lod15', minZoom: 15 },
+    { name: 'lod14', minZoom: 14 },
+    { name: 'lod13', minZoom: 13 },
+    { name: 'lod12', minZoom: 0 },   // coarsest, zoom <= 12, ~whole metro
 ];
 
 export class SVGTileManager {
@@ -43,12 +50,22 @@ export class SVGTileManager {
         this.tileIndex = null;
         this.tileVersion = null;
         this.existingTileIds = null; // ids that actually exist (from the index)
+        this.regions = null;   // per-region coverage rectangles (from the combined index)
+        // Tile cache is keyed by BAND:tileId and PERSISTS across band switches, so
+        // zooming out then back reuses tiles instead of re-fetching (smoother zoom,
+        // less traffic). Sized well above one viewport (a z15 view is ~64 tiles) so
+        // the current band + its neighbours + a pan ring all stay resident.
         this.tileCache = new Map();
-        this.maxCacheSize = 20;
+        this.maxCacheSize = 400;
+        this.bandIndex = {};   // band -> {tileIndex, existingTileIds, tileVersion}
         this.tileSize = 0.01; // 0.01 degrees per tile (roughly 1km)
         this.loadedTiles = new Set();
         this.activeRequests = new Map();
     }
+
+    // Cache/request key — band-scoped, since the same tileId is different content
+    // per band.
+    cacheKey(tileId, band = this.currentBand) { return band + ':' + tileId; }
 
     // Which LOD band serves this zoom.
     bandForZoom(zoom) {
@@ -60,23 +77,42 @@ export class SVGTileManager {
         return band ? TILE_BASE + band + '/' : TILE_BASE;
     }
 
-    // Switch the active band: point at its tile dir + index and force a reload of
-    // that index (the existing tile set + cache-bust version differ per band). The
-    // tile cache is keyed by id, and the same id means different content per band,
-    // so it's cleared on a switch. Switches happen only when zoom crosses a band
-    // boundary, so this is rare.
+    // Switch the active band: point at its tile dir + index. The tile cache is
+    // band-scoped and PERSISTS (a zoom back to this band reuses it), and each
+    // band's index is remembered, so switching is fetch-free once a band's been
+    // seen. In-flight requests are NOT cancelled here — letting them finish + cache
+    // means a quick zoom back finds them ready.
     setBand(band) {
         if (band === this.currentBand) return;
         this.currentBand = band;
         const base = this.bandBase(band);
         this.tileBaseUrl = base + 'tiles/';
         this.indexUrl = base + 'tile-index.json';
-        this.tileIndex = null;
-        this.existingTileIds = null;
-        this.tileVersion = null;
-        this.cancelAllRequests();
-        this.tileCache.clear();
-        this.loadedTiles.clear();
+        const bi = this.bandIndex[band];
+        this.tileIndex = bi ? bi.tileIndex : null;
+        this.existingTileIds = bi ? bi.existingTileIds : null;
+        this.tileVersion = bi ? bi.tileVersion : null;
+        if (bi && bi.regions) this.regions = bi.regions; // band-independent; keep last known
+    }
+
+    // Is this point inside ANY mapped region? Drives the "outside the mapped area"
+    // feedback. Prefers the per-region rectangles published in the combined index
+    // (`regions`) — band-independent and exact, since each region fills its whole
+    // bbox so in-rectangle == a tile exists there. Falls back to the actual tile set
+    // if an older index has no `regions` field, and to "assume covered" if we have no
+    // coverage info at all (never cry wolf on missing data).
+    isInCoverage(lat, lng) {
+        const regions = this.regions;
+        if (regions && regions.length) {
+            return regions.some((r) => {
+                const b = r.bounds || r;
+                return lat >= b.south && lat <= b.north && lng >= b.west && lng <= b.east;
+            });
+        }
+        if (this.existingTileIds && this.existingTileIds.size) {
+            return this.existingTileIds.has(this.coordsToTileId(lat, lng));
+        }
+        return true;
     }
 
     async loadTileIndex() {
@@ -94,8 +130,17 @@ export class SVGTileManager {
             // The set of tile ids that actually exist, so empty cells in a sparse
             // map aren't mistaken for load failures.
             this.existingTileIds = new Set((this.tileIndex.tiles || [])
-                .map(t => String(t.file || t.id || '').replace(/\.svg\.gz$/, ''))
+                .map(t => String(t.file || t.id || '').replace(/\.svg(\.gz)?$/, ''))
                 .filter(Boolean));
+            // Per-region coverage rectangles, for the "outside the mapped area" test.
+            this.regions = this.tileIndex.regions || null;
+            // Remember this band's index so a later switch back doesn't re-fetch it.
+            this.bandIndex[this.currentBand] = {
+                tileIndex: this.tileIndex,
+                existingTileIds: this.existingTileIds,
+                tileVersion: this.tileVersion,
+                regions: this.regions,
+            };
             console.log(`Loaded tile index: ${this.tileIndex.tiles?.length || 0} tiles available (v${this.tileVersion || 'none'})`);
             return this.tileIndex;
         } catch (error) {
@@ -118,7 +163,11 @@ export class SVGTileManager {
     }
 
     getTileUrl(tileId) {
-        const tileUrl = this.tileBaseUrl + tileId + '.svg.gz';
+        // Request the LOGICAL .svg; Caddy `precompressed br gzip` serves the
+        // .svg.br (or .svg.gz) variant with Content-Encoding, and the browser
+        // decompresses it natively — so we get plain SVG text, no manual gunzip.
+        // Brotli is ~35-40% smaller than gzip here, cutting served bandwidth.
+        const tileUrl = this.tileBaseUrl + tileId + '.svg';
         return this.tileVersion ? `${tileUrl}?v=${encodeURIComponent(this.tileVersion)}` : tileUrl;
     }
 
@@ -145,26 +194,27 @@ export class SVGTileManager {
     }
 
     async loadTile(tileId) {
-        if (this.tileCache.has(tileId)) {
-            return this.tileCache.get(tileId);
+        const key = this.cacheKey(tileId);
+        if (this.tileCache.has(key)) {
+            return this.tileCache.get(key);
         }
 
-        if (this.activeRequests.has(tileId)) {
-            return this.activeRequests.get(tileId).promise;
+        if (this.activeRequests.has(key)) {
+            return this.activeRequests.get(key).promise;
         }
 
         const url = this.getTileUrl(tileId);
         const controller = new AbortController();
         const promise = this.fetchTile(url, tileId, controller.signal);
-        this.activeRequests.set(tileId, { promise, controller });
+        this.activeRequests.set(key, { promise, controller });
 
         try {
             const svgContent = await promise;
-            this.cacheTree(tileId, svgContent);
-            this.activeRequests.delete(tileId);
+            this.cacheTree(key, svgContent);
+            this.activeRequests.delete(key);
             return svgContent;
         } catch (error) {
-            this.activeRequests.delete(tileId);
+            this.activeRequests.delete(key);
             // Aborted requests (cancelled on pan) are expected, not errors.
             if (error.name !== 'AbortError') {
                 console.error(`Failed to load tile ${tileId}:`, error);
@@ -265,12 +315,13 @@ export class SVGTileManager {
         }
     }
 
-    cacheTree(tileId, svgContent) {
-        if (this.tileCache.size >= this.maxCacheSize) {
+    cacheTree(key, svgContent) {   // key = band:tileId (see cacheKey)
+        if (this.tileCache.has(key)) this.tileCache.delete(key);   // refresh LRU position
+        else if (this.tileCache.size >= this.maxCacheSize) {
             const firstKey = this.tileCache.keys().next().value;
             this.tileCache.delete(firstKey);
         }
-        this.tileCache.set(tileId, svgContent);
+        this.tileCache.set(key, svgContent);
     }
 
     async loadTilesForArea(bounds, zoom) {
@@ -285,6 +336,11 @@ export class SVGTileManager {
         const wanted = (this.existingTileIds && this.existingTileIds.size)
             ? all.filter(tile => this.existingTileIds.has(tile.id))
             : all;
+        // Centre-first: request the tiles nearest the view centre before the edges,
+        // so the part the user is looking at fills in first.
+        const cx = (bounds.east + bounds.west) / 2, cy = (bounds.north + bounds.south) / 2;
+        wanted.sort((a, b) =>
+            ((a.lat - cy) ** 2 + (a.lng - cx) ** 2) - ((b.lat - cy) ** 2 + (b.lng - cx) ** 2));
 
         const results = await Promise.all(wanted.map(tile =>
             this.loadTile(tile.id).then(content => ({ ...tile, content }))
@@ -297,6 +353,41 @@ export class SVGTileManager {
             failed: wanted.length - tiles.length,
         };
         return { tiles, stats, band: this.currentBand };
+    }
+
+    // Warm the cache for an area of a (possibly NON-active) band, in the background,
+    // without rendering — so zooming to that band or panning into that area is
+    // instant. Funded by the Brotli bandwidth saving. Skips tiles already cached or
+    // in flight, and tiles that don't exist in that band's index.
+    async prefetchArea(bounds, band) {
+        if (band == null) return;
+        let bi = this.bandIndex[band];
+        if (!bi) {
+            try {
+                const r = await fetch(this.bandBase(band) + 'tile-index.json?t=' + Date.now());
+                const idx = await r.json();
+                bi = this.bandIndex[band] = {
+                    tileIndex: idx,
+                    existingTileIds: new Set((idx.tiles || [])
+                        .map(t => String(t.file || t.id || '').replace(/\.svg(\.gz)?$/, '')).filter(Boolean)),
+                    tileVersion: idx.version || null,
+                    regions: idx.regions || null,
+                };
+            } catch (_) { return; }
+        }
+        const base = this.bandBase(band) + 'tiles/';
+        const ver = bi.tileVersion;
+        for (const t of this.getTilesForBounds(bounds)) {
+            if (bi.existingTileIds && bi.existingTileIds.size && !bi.existingTileIds.has(t.id)) continue;
+            const key = this.cacheKey(t.id, band);
+            if (this.tileCache.has(key) || this.activeRequests.has(key)) continue;
+            const url = base + t.id + '.svg' + (ver ? '?v=' + encodeURIComponent(ver) : '');
+            const controller = new AbortController();
+            const promise = this.fetchTile(url, t.id, controller.signal);
+            this.activeRequests.set(key, { promise, controller });
+            promise.then(c => { if (c) this.cacheTree(key, c); this.activeRequests.delete(key); })
+                   .catch(() => this.activeRequests.delete(key));
+        }
     }
 
     clearCache() {

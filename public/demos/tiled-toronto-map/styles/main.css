@@ -183,6 +183,17 @@ body {
     white-space: nowrap;
 }
 
+/* TEMPORARY — CNIB @ Pride highlight (remove ~2026-07-04 with the booth POI). The
+   background is a fixed CNIB yellow in BOTH colour schemes, so pin dark text (dark
+   mode otherwise sets the label light -> fails on yellow) and a dark-gold border for
+   an invert-safe luminance edge. id selector outranks .control-button in either mode. */
+#describe-cnib-pride {
+    background: #fff100;
+    color: #1a1a1a;
+    border-color: #8a7400;
+}
+#describe-cnib-pride:hover { background: #f2e400; border-color: #8a7400; }
+
 /* Accordion Styles */
 .accordion-item {
     border: 1px solid #ddd;
@@ -467,6 +478,48 @@ main {
     cursor: pointer;
 }
 
+/* ---- Target size (WCAG 2.5.8): marker dots at a constant 24px SCREEN target ----
+   Markers are baked as r=5 in SVG user units, so they'd scale with zoom. The
+   viewer instead drives the radius from the current scale (MapRenderer.updateViewBox
+   sets --target-r = 12 * 2^(18-zoom) user-units = a 12px screen radius), so every
+   dot renders at a 24px hittable target at EVERY zoom. The CSS geometry property
+   `r` overrides the baked attribute. Aggregation has already spaced markers >=24px
+   apart, so the dots sit tangent, not overlapping. Cluster markers are a little
+   larger so they read as a group. Fallbacks keep markers visible if the var is
+   ever unset. */
+/* POI markers: a SMALL visible dot with a transparent 24px-screen TOUCH ring
+   (WCAG 2.5.8). The dot stays small so it never buries the map (Bob 2026-06-20) —
+   the target size is carried by the transparent stroke (pointer-events:all), not
+   by the visible mark. Sizes are constant-screen via vars set per zoom in
+   MapRenderer.updateViewBox (paint-order:stroke keeps the colour fill on top). */
+#map-tiles circle {
+    r: var(--dot-r, 5px);
+    stroke: transparent;
+    stroke-width: var(--hit-ring, 14px);
+    paint-order: stroke;
+    pointer-events: all;
+}
+#map-tiles g.cluster > circle { r: var(--cluster-r, 7px); }
+
+/* ---- Road rendering pass (target size + low-vision perceptibility) ----
+   Hit-corridor (WCAG 2.5.8): the baked transparent .road-hit stroke makes the
+   whole road a 24px-SCREEN hittable target regardless of its thin visible line.
+   non-scaling-stroke keeps it a constant 24px at every zoom; pointer-events:stroke
+   so only the corridor catches (the visible stroke is pointer-events:none). */
+#map-tiles .road-hit {
+    vector-effect: non-scaling-stroke;
+    stroke: transparent;
+    fill: none;
+    stroke-width: 24px;
+    pointer-events: stroke;
+}
+/* Never-hairline (low vision): pin road + casing strokes to a constant screen
+   width so they never thin to a hair when zoomed out. */
+#map-tiles g.road [stroke]:not([stroke="none"]),
+#map-tiles g.road-casings [stroke]:not([stroke="none"]) {
+    vector-effect: non-scaling-stroke;
+}
+
 /* Ensure proper rendering order */
 #roads-group {
     /* Roads should render under buildings */
@@ -479,6 +532,34 @@ main {
 
 .road {
     /* Road surface */
+}
+
+/* In-road street names. Bob: a thin minor-road casing isn't wide enough to back the
+   name, so it spilled onto the terrain as unreadable dark-on-green. Give the label a
+   WHITE HALO so it stays legible wherever it sits — on the road OR off it. The halo
+   is non-scaling (constant screen width) and painted BEHIND the fill; the text size
+   is the constant-screen --label-size. The dark-map + high-contrast blocks flip the
+   colours (light text, dark halo) and inherit the rest. (Halo + text invert together
+   under macOS Invert, so legibility survives.) */
+#map-tiles text.road-label {
+    font-size: var(--label-size);
+    font-weight: 600;
+    fill: #1a1a1a;
+    stroke: #ffffff;
+    stroke-width: 3.5px;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+    paint-order: stroke;
+}
+
+/* Heading-up rotation: labels RIDE the rotating map (a road name stays in its casing,
+   along the road). When the map's rotation would make a label read UPSIDE-DOWN, the
+   viewer adds .label-flip and we rotate it 180° around its own centre (transform-box:
+   fill-box) so it reads the right way up — still in the casing. */
+#map-tiles text.label-flip {
+    transform-box: fill-box;
+    transform-origin: center;
+    transform: rotate(180deg);
 }
 
 #map-container:focus {
@@ -496,9 +577,119 @@ main {
    contrast media query darkens these further. */
 #map-tiles :is(g.building, g.landuse, g.park, g.vegetation, g.water, g.parking,
                g.religious, g.natural, g.aeroway, g.indoor, g.man_made,
-               g.barrier, g.railway) [stroke]:not([stroke="none"]),
+               g.barrier, g.railway) [stroke]:not([stroke="none"]):not(.level-line):not(.level-halo):not(.level-casing):not(.level-area):not(.underpass-line),
 #map-tiles g.road-casings [stroke]:not([stroke="none"]) {
     stroke: #5f5f5f;
+}
+
+
+/* ---- Multi-level model: independent OVERLAY toggles (checkboxes) -------
+   Tile features carry data-level for off-surface planes (path / subway / above); the
+   street level is untagged. Each plane is an independent checkbox (Bob, 2026-06-23):
+   LevelSwitch adds a `show-<plane>` class to #map-tiles when its box is checked, so
+   you can show any COMBINATION (e.g. street + Gardiner + subway). Pure CSS so it also
+   governs tiles injected later. */
+/* An off-surface plane is hidden UNLESS its toggle is on. */
+#map-tiles:not(.show-above)  [data-level="above"]  { display: none; }
+#map-tiles:not(.show-path)   [data-level="path"]   { display: none; }
+#map-tiles:not(.show-transit) [data-level="transit"] { display: none; }
+/* The street level (untagged groups + their per-category casings) hides only if its
+   own toggle is off. (Exclude the pooled level casings, which follow their plane.) */
+#map-tiles:not(.show-surface) :is([role="img"]:not([data-level]), [class$="-casings"]:not(.levels-casings)) { display: none; }
+/* The whole map keeps working as usual when an overlay is on (Bob, 2026-06-23) —
+   FULL brightness AND fully interactive (hover, keyboard, tooltips). An overlay just
+   sits ON TOP and COVERS its own footprint: where the Gardiner is drawn it's opaque
+   and its wide hit-corridor (below) intercepts the pointer, so you get the Gardiner
+   there, not Lake Shore peeping through — everywhere else the street is untouched. */
+
+/* Active sub-plane PROMINENCE: when its plane is selected, an off-surface feature
+   reads as a BOLD CASED ROUTE over the FULL-BRIGHTNESS street level — a wide light
+   HALO (clear-space moat that punches clear space through the base map) + a dark
+   CASING + a bold coloured line. This halo is what makes the overlay legible without
+   dimming anything else. The .level-* parts are baked by the generator and only
+   paint when the feature is shown (its plane is active); they ride the top z-tier so
+   the halo clears the base. Constant screen width via non-scaling-stroke. */
+#map-tiles :is(.level-halo, .level-casing, .level-line) {
+    fill: none; vector-effect: non-scaling-stroke;
+    stroke-linecap: round; stroke-linejoin: round; pointer-events: none;
+}
+#map-tiles .level-halo   { stroke: #f4f3ef; stroke-width: 18px; }
+#map-tiles .level-casing { stroke: #2c3034; stroke-width: 10px; }
+#map-tiles .level-line   { stroke-width: 6px; stroke-dasharray: none; }
+#map-tiles [data-level="path"]   .level-line { stroke: #1565c0; }
+#map-tiles [data-level="transit"] .level-line { stroke: #7b1fa2; }
+#map-tiles [data-level="above"]  .level-line { stroke: #c0561f; }
+/* The elevated road (Gardiner) COVERS its whole footprint, like a solid deck on top
+   of the map: a WIDE opaque halo spans the parallel carriageways (covering the
+   surface POIs / labels / Lake Shore beneath), the casing is the structure edge, and
+   the orange lanes ride on top. A matching wide HIT-corridor means hovering anywhere
+   across the deck reports "Gardiner Expressway", never the surface peeping through.
+   Scoped to the above plane so the PATH/subway keep their slim cased look. The rest
+   of the map stays fully interactive — only the deck's own footprint is covered. */
+/* NB: the halo is POOLED (a sibling of the feature group, carrying data-level on
+   ITSELF), so it's matched by .level-halo[data-level=...], not a descendant selector.
+   The hit-corridor stays INSIDE the group, so it is a descendant. */
+#map-tiles .level-halo[data-level="above"] { stroke-width: 44px; }  /* light deck surface, spans + COVERS the footprint */
+#map-tiles [data-level="above"] .road-hit  { stroke-width: 44px; }  /* match: whole deck reports the Gardiner */
+/* Off-surface AREAS (e.g. the PATH concourse): solid prominent fill + dark edge. */
+#map-tiles .level-area {
+    vector-effect: non-scaling-stroke; stroke: #2c3034; stroke-width: 2px; paint-order: stroke;
+}
+#map-tiles [data-level="path"]   .level-area { fill: #cfe3f7; fill-opacity: 0.9; }
+#map-tiles [data-level="transit"] .level-area { fill: #e7d6f2; fill-opacity: 0.9; }
+#map-tiles [data-level="above"]  .level-area { fill: #f3ddcf; fill-opacity: 0.9; }
+@media (prefers-color-scheme: dark) {
+    #map-tiles .level-halo   { stroke: #14171a; }
+    #map-tiles .level-casing { stroke: #c9cdd1; }
+    #map-tiles [data-level="path"]   .level-line { stroke: #6db3f2; }
+    #map-tiles [data-level="transit"] .level-line { stroke: #c79df0; }
+    #map-tiles [data-level="above"]  .level-line { stroke: #f0a06b; }
+    #map-tiles .level-area { stroke: #c9cdd1; }
+    #map-tiles [data-level="path"]   .level-area { fill: #16314a; }
+    #map-tiles [data-level="transit"] .level-area { fill: #2e1a40; }
+    #map-tiles [data-level="above"]  .level-area { fill: #43271a; }
+}
+
+/* Underpasses — non-PATH underground pedestrian connections (station underpasses,
+   ped tunnels). A DOTTED surface annotation, shown by default with its own filter
+   (the .underpass group class drives hide/show; this styles the line). Distinct from
+   the PATH (its own plane) and from ordinary footways. Round dots via a 0-length
+   dash + round cap; constant screen size. */
+#map-tiles .underpass-line {
+    stroke: #5a6b7a;
+    stroke-width: 2.5px;
+    stroke-dasharray: 0 7;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+}
+@media (prefers-color-scheme: dark) {
+    #map-tiles .underpass-line { stroke: #a6b6c4; }
+}
+
+/* Underground parking — vehicle infrastructure, OFF by default (its own filter).
+   When toggled on it reads as an 'underground structure': a muted fill with a dashed
+   outline (areas), distinct from surface parking. Carved out of the dark catch-alls
+   so the colour holds. Areas get the dashed stroke; a node keeps its marker hit-ring
+   (stroke only on polygon/path) and just takes the fill colour. */
+#map-tiles .ugparking { fill: #2f6090; }
+#map-tiles :is(polygon, path).ugparking {
+    fill-opacity: 0.45; stroke: #1f4366;
+    stroke-width: 1.5px; stroke-dasharray: 5 3; vector-effect: non-scaling-stroke;
+}
+@media (prefers-color-scheme: dark) {
+    #map-tiles .ugparking { fill: #6fa3d6; }
+    #map-tiles :is(polygon, path).ugparking { fill: #1c3450; fill-opacity: 0.55; stroke: #7ea8d6; }
+}
+
+/* Level switcher control (in the accordion, like Filters / Rotor) */
+#level-switch { border: 0; margin: 0; padding: 0; }
+#level-switch .level-hint { font-size: 0.8125rem; color: #3a3a3a; margin: 0 0 0.5rem; line-height: 1.4; }
+.level-option { display: flex; align-items: baseline; gap: 0.5rem; padding: 0.4rem 0.25rem; cursor: pointer; }
+.level-option input { margin: 0; flex: none; }
+.level-sub { color: #555; }
+@media (prefers-color-scheme: dark) {
+    #level-switch .level-hint { color: #c7c7c7; }
+    .level-sub { color: #b8b8b8; }
 }
 
 
@@ -510,43 +701,50 @@ main {
 
 #destination-search label {
     display: block;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.3rem;
     font-weight: 600;
-    font-size: 0.75rem;
+    font-size: 0.9rem;
 }
 
-#destination-search input {
+/* type="text" ONLY — without it this also matched the filter <input type=checkbox>
+   (ID specificity beating .search-a11y-filter input), blowing the checkbox to 100%
+   width and squeezing its label to zero (the "unlabelled checkboxes" bug). */
+#destination-search input[type="text"] {
     width: 100%;
-    padding: 0.375rem 0.5rem;
+    box-sizing: border-box;
+    padding: 0.55rem 0.65rem;
     border: 1px solid #ddd;
     border-radius: 4px;
-    font-size: 0.75rem;
-    margin-bottom: 0.375rem;
+    font-size: 1rem;          /* readable, and avoids iOS focus-zoom */
+    margin-bottom: 0.5rem;
 }
 
-#destination-search input:focus {
+#destination-search input[type="text"]:focus {
     outline: 3px solid #4285F4;
     outline-offset: 2px;
     border-color: #4285F4;
 }
 
-#destination-search button {
-    padding: 0.375rem 0.75rem;
+/* :not(.search-result) — the result list items are <button>s inside
+   #destination-search too; without this they'd inherit the blue Search-button
+   look (blue card + dark text = poor contrast). They get their own card style. */
+#destination-search button:not(.search-result) {
+    padding: 0.55rem 0.75rem;
     background: #4285F4;
     color: #fff;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 0.75rem;
+    font-size: 0.95rem;
     width: 100%;
     transition: background 0.2s;
 }
 
-#destination-search button:hover {
+#destination-search button:not(.search-result):hover {
     background: #3367D6;
 }
 
-#destination-search button:focus {
+#destination-search button:not(.search-result):focus {
     outline: 2px solid #0066ff;
     outline-offset: 2px;
 }
@@ -1847,7 +2045,7 @@ body.tooltip-below .poi-tooltip::after {
    muted grey a placeholder would be. */
 .search-hint {
     display: block;
-    font-size: 0.75rem;
+    font-size: 0.8125rem;
     line-height: 1.4;
     color: #444;
     margin-top: 0.125rem;
@@ -1882,10 +2080,22 @@ body.tooltip-below .poi-tooltip::after {
     flex: 0 0 auto;
 }
 
-.search-a11y-filter label {
-    font-size: 0.75rem;
-    font-weight: 400;
+/* More specific than `.accordion-content label` (whose display:block + overflow:
+   hidden is meant for the filter panel's long names, but here COLLAPSES this
+   flex-item label to nothing — the "unlabelled checkboxes" bug). Let it sit
+   inline in the row, take the remaining width, and never clip; explicit colour so
+   it survives both themes. */
+.search-a11y-filters .search-a11y-filter label {
+    display: inline;
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+    flex: 1 1 auto;
+    min-width: 0;
     margin: 0;
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: #1a1a1a;
     cursor: pointer;
 }
 
@@ -1912,7 +2122,7 @@ body.tooltip-below .poi-tooltip::after {
     border: 1px solid #ddd;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 0.75rem;
+    font-size: 0.875rem;
 }
 
 .search-result:hover {
@@ -1966,6 +2176,20 @@ body.tooltip-below .poi-tooltip::after {
     white-space: normal;
     overflow: visible;
     text-overflow: clip;
+}
+
+/* Dark-mode treatment for the search panel. Placed AFTER the light-mode search
+   rules so it wins in dark: the light greys (#444 hint, #555 legend/detail, #1a1a1a
+   names) and the white result cards would otherwise read low-contrast / invisible
+   on the dark accordion. */
+@media (prefers-color-scheme: dark) {
+    .search-hint { color: #c4c4c4; }
+    .search-a11y-filters legend { color: #c4c4c4; }
+    .search-a11y-filters .search-a11y-filter label { color: #e8e8e8; }
+    .search-result { background: #2a2a2a; border-color: #444; }
+    .search-result:hover { background: #333; border-color: #5b8def; }
+    .search-result-name { color: #f0f0f0; }
+    .search-result-detail { color: #c4c4c4; }
 }
 
 .accordion-content input,
@@ -2025,8 +2249,14 @@ body.tooltip-below .poi-tooltip::after {
         --c-road:       #6b7280;  --c-road-casing:  #20242a;
     }
 
-    #map-tiles [fill]:not([fill="none"])     { fill: var(--c-misc-fill); }
-    #map-tiles [stroke]:not([stroke="none"]) { stroke: var(--c-misc-stroke); }
+    /* Generic re-colour for tangible features — but NEVER the overlay elements
+       that carry their own treatment: POI marker circles (small colour dot +
+       TRANSPARENT touch ring), the transparent road hit-corridors, and the faint
+       container-region fills/boundaries (.region-area, own dark rule below).
+       Without the :not()s the dark catch-all paints their transparent strokes
+       grey, turning markers into donuts and hit-corridors into thick grey roads. */
+    #map-tiles [fill]:not([fill="none"]):not(circle):not(.region-area):not(.level-area):not(.ugparking)     { fill: var(--c-misc-fill); }
+    #map-tiles [stroke]:not([stroke="none"]):not(circle):not(.road-hit):not(.region-area):not(.level-line):not(.level-halo):not(.level-casing):not(.level-area):not(.underpass-line):not(.ugparking) { stroke: var(--c-misc-stroke); }
 
     #map-tiles g.water [fill]:not([fill="none"])            { fill: var(--c-water-fill); }
     #map-tiles g.water [stroke]:not([stroke="none"])        { stroke: var(--c-water-stroke); }
@@ -2038,8 +2268,18 @@ body.tooltip-below .poi-tooltip::after {
     #map-tiles g.vegetation [stroke]:not([stroke="none"])   { stroke: var(--c-veg-stroke); }
     #map-tiles g.landuse [fill]:not([fill="none"])          { fill: var(--c-land-fill); }
     #map-tiles g.landuse [stroke]:not([stroke="none"])      { stroke: var(--c-land-stroke); }
-    #map-tiles g.road [stroke]:not([stroke="none"])         { stroke: var(--c-road); }
+    #map-tiles g.road [stroke]:not([stroke="none"]):not(.road-hit) { stroke: var(--c-road); }
     #map-tiles g.road-casings [stroke]:not([stroke="none"]) { stroke: var(--c-road-casing); }
+
+    /* In-road labels on the dark map: the baked light-mode dark text would vanish,
+       so flip to a LIGHT fill with a dark halo. (Markers + hit-corridors keep their
+       transparent touch surfaces and POI colours via the :not()s above.) */
+    #map-tiles text.road-label { fill: #ececec; stroke: #16191d; }
+
+    /* Container regions on the dark map: keep the faint fill + a light grey dashed
+       boundary, and flip the centred name to light text with a dark halo. */
+    #map-tiles .region-area    { fill: #c7ccd1; fill-opacity: .08; stroke: #aab0b6; }
+    #map-tiles text.region-label { fill: #e8eaed; stroke: #16191d; }
 }
 
 @media (prefers-contrast: high) {
@@ -2054,8 +2294,119 @@ body.tooltip-below .poi-tooltip::after {
 
     #map-tiles :is(g.building, g.landuse, g.park, g.vegetation, g.water, g.parking,
                    g.religious, g.natural, g.aeroway, g.indoor, g.man_made,
-                   g.barrier, g.railway) [stroke]:not([stroke="none"]),
+                   g.barrier, g.railway) [stroke]:not([stroke="none"]):not(.level-line):not(.level-halo):not(.level-casing):not(.level-area):not(.underpass-line),
     #map-tiles g.road-casings [stroke]:not([stroke="none"]) {
         stroke: #1a1a1a;
     }
+}
+
+/* ── Captions panel: the visible twin of everything spoken ─────────────────────
+   Soft fill + a strong GREY border so the boundary survives macOS Invert Colours
+   (colour edges flip hue and lose contrast; a grey luminance edge doesn't). The
+   latest line is emphasised; older lines stay at body legibility (never shrink
+   below body — re-reading what just went by is exactly when legibility matters). */
+.captions-panel {
+    margin-top: 0.75rem;
+    padding: 0.625rem 0.75rem;
+    background: #f4f6f8;
+    border: 2px solid #5a5a5a;
+    border-radius: 6px;
+}
+.captions-title {
+    margin: 0 0 0.375rem;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #2a2a2a;
+}
+.captions-log {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    max-height: 9rem;
+    overflow-y: auto;
+}
+.captions-log li {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.35;
+    color: #3a3a3a;            /* recent lines: comfortably past AAA 7:1 on the fill */
+}
+.captions-log li:last-child {
+    color: #111;
+    font-weight: 600;          /* the just-spoken line stands out */
+}
+.captions-log:empty::after {
+    content: "Spoken descriptions appear here.";
+    color: #555;
+    font-size: 0.9375rem;
+}
+
+/* ── Detailed surroundings modal ─────────────────────────────────────────────
+   A real dialog for the deliberate one-off read-out (focus trapped in JS, Escape
+   closes, focus returns to its button). The continuous Auto-describe never uses
+   this — it would steal focus every few seconds. Grey panel border for invert. */
+.detail-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.5);
+}
+.detail-modal[hidden] { display: none; }
+.detail-modal__panel {
+    width: 100%;
+    max-width: 32rem;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 1.25rem 1.5rem;
+    background: #fff;
+    border: 2px solid #5a5a5a;
+    border-radius: 8px;
+    box-shadow: 0 6px 30px rgba(0, 0, 0, 0.3);
+}
+.detail-modal__title {
+    margin: 0 0 0.75rem;
+    font-size: 1.25rem;
+    color: #111;
+}
+.detail-modal__body {
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #1a1a1a;
+}
+.detail-modal__body h3 {
+    margin: 0.875rem 0 0.25rem;
+    font-size: 1rem;
+    color: #111;
+}
+.detail-modal__body ul { margin: 0.25rem 0; padding-left: 1.25rem; }
+.detail-modal__body li { margin: 0.15rem 0; }
+.detail-modal__close {
+    margin-top: 1rem;
+    padding: 0.5rem 1.25rem;
+    border: 2px solid #0066ff;
+    border-radius: 6px;
+    background: #fff;
+    color: #0033aa;
+    font-size: 1rem;
+    cursor: pointer;
+}
+.detail-modal__close:hover { background: #e3f2fd; }
+.detail-modal__close:focus { outline: 2px solid #0066ff; outline-offset: 2px; }
+
+@media (prefers-contrast: high) {
+    .captions-panel,
+    .detail-modal__panel { border-color: #000; border-width: 3px; }
+    .captions-log li { color: #000; }
+    .captions-log li:last-child { color: #000; }
+    .detail-modal { background: rgba(0, 0, 0, 0.7); }
+    .detail-modal__close { border-color: #000; color: #000; }
 }

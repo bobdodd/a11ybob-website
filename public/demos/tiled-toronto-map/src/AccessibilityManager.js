@@ -248,8 +248,13 @@ export class AccessibilityManager {
             let transformList = [];
             let currentElement = element;
             
-            // Collect all transforms up to the SVG root
-            while (currentElement && currentElement.tagName !== 'svg') {
+            // Collect transforms from the feature up to the SHARED ancestor of the
+            // feature and the outline (#map-rotate, or the svg root if there's no
+            // rotation wrapper). The outline lives in #map-labels, a sibling subtree
+            // under #map-rotate, so it already INHERITS #map-rotate's transform — if
+            // we collected past it we'd apply the heading-up rotation twice.
+            while (currentElement && currentElement.id !== 'map-rotate'
+                   && currentElement.tagName !== 'svg') {
                 if (currentElement.getAttribute('transform')) {
                     transformList.unshift(currentElement.getAttribute('transform'));
                 }
@@ -269,24 +274,14 @@ export class AccessibilityManager {
             outlineElement.setAttribute('stroke-linecap', 'round');
             outlineElement.setAttribute('vector-effect', 'non-scaling-stroke');
             
-            // For polygons and polylines, add a slight scale transform to offset from shape
-            if (element.tagName !== 'circle') {
-                try {
-                    // Calculate center of element in its local coordinate system
-                    const bbox = element.getBBox();
-                    const centerX = bbox.x + bbox.width / 2;
-                    const centerY = bbox.y + bbox.height / 2;
-                    
-                    // Apply slight scale from center, preserving existing transforms
-                    const existingTransform = outlineElement.getAttribute('transform') || '';
-                    outlineElement.setAttribute('transform', 
-                        `${existingTransform} translate(${centerX}, ${centerY}) scale(1.1) translate(${-centerX}, ${-centerY})`);
-                } catch (e) {
-                    // If getBBox fails, skip transform
-                    console.warn('Could not calculate bbox for element:', e);
-                }
-            }
-            
+            // NOTE: previously the outline was scaled 1.1x from element.getBBox()'s
+            // centre to sit just OUTSIDE the shape. But getBBox returns the FULL
+            // geometry's box (ignoring the tile clip), so for a large / tile-clipped
+            // feature the centre is far from the visible part and the scale visibly
+            // OFFSET the outline from the boundary (Bob's screenshot). Dropped: the
+            // outline now traces the exact geometry, and the non-scaling 4px + 8px
+            // strokes straddle the boundary so it still reads as a ring.
+
             // Add a second, lighter outline for better visibility
             const outerOutline = outlineElement.cloneNode(true);
             outerOutline.setAttribute('stroke', '#4d94ff');
@@ -370,13 +365,19 @@ export class AccessibilityManager {
                    r.bottom > vp.top && r.top < vp.bottom;
         };
 
+        // Multi-level model: keyboard navigation follows whatever is VISIBLE. The
+        // level checkboxes hide off-toggle planes with display:none, so those features
+        // are zero-size and dropped by the onScreen check below — no separate
+        // plane test needed. So Tab visits exactly the planes currently switched on
+        // (e.g. street + Gardiner together), in any combination.
         const elements = document.querySelectorAll('#map-tiles ' + selectors.join(', '));
         let tabIndex = 9000;
         let count = 0;
         elements.forEach((el) => {
             // Skip features hidden by a base filter.
             if (el.closest('[style*="display: none"], [style*="display:none"]')) return;
-            // Skip features outside the visible viewport.
+            // Skip features outside the visible viewport (also skips display:none
+            // off-toggle planes, which have zero size).
             if (!onScreen(el)) return;
             el.setAttribute('tabindex', String(tabIndex++));
             count++;

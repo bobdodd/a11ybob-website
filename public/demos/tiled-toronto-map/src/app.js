@@ -8,6 +8,8 @@ import { TaxonomyClient } from './TaxonomyClient.js';
 import { buildFilterUI } from './FilterUI.js';
 import { setupTooltip } from './Tooltip.js';
 import { SearchManager } from './SearchManager.js';
+import { LevelSwitch } from './LevelSwitch.js';
+import { HeadingProvider } from './HeadingProvider.js';
 
 class MapApplication {
     constructor() {
@@ -20,7 +22,42 @@ class MapApplication {
         this.isTracking = false;
         this.isNavigating = false;
         this.hasInitialLocation = false;
-        
+
+        // Live-tracking SPEECH state. Raw coordinates never auto-announce (the panel
+        // is not a live region); instead we throttle "near <place>" announcements so
+        // a ~1/sec GPS watch can't spam the screen reader — speak only when the user
+        // has moved a real distance AND a quiet interval has passed AND the nearest
+        // NAMED feature has actually changed.
+        this.lastProximityPos = null;   // {lat,lng} we last announced from
+        this.lastProximityTime = 0;     // ms timestamp of last proximity announce
+        this.lastProximityId = null;    // osm id of last-announced nearby feature
+
+        // Device compass (which way the user faces) for clock-face directions; falls
+        // back to cardinal points when there's no magnetometer / permission.
+        this.heading = new HeadingProvider();
+
+        // Heading-up map rotation (opt-in; default north-up). When on, the map turns
+        // with the compass and follows the avatar so it stays centred.
+        this.headingUp = false;
+        this._rotRAF = null;
+
+        // "Describe as I move" — a running spoken commentary. Driven by BOTH position
+        // (handleLocationUpdate) and HEADING: a turn is movement too, so being spun
+        // round in a crowd re-orients you. Off by default — opt-in, never unsolicited.
+        this.autoDescribe = false;
+        this._inCoverage = null;  // last known in/out of the mapped area (null = no fix yet)
+        this._autoTO = null;            // settle-poll timer handle
+        this._lastFacing = null;        // last ANNOUNCED facing (deg) — turn detection
+        this._settleH = null;           // heading the settle window is centred on
+        this._settleStart = 0;          // when the heading last settled
+        this._lastRoadId = null;        // road we last said you were on (transitions)
+        this._lastSpokenId = null;      // last feature announced (avoid repeats)
+        // Cache of the last ranked nearby set + where it was taken, so a TURN can
+        // re-orient the same POIs to your new facing without another query.
+        this._lastNearby = [];
+        this._lastNearbyPos = null;
+        this._modalReturnFocus = null;  // element to restore focus to on modal close
+
         this.init().catch((e) => console.error('Map init failed:', e));
 
     }
@@ -62,6 +99,16 @@ class MapApplication {
             originalUpdateVisibility(id, enabled);
             this.accessibilityManager.updateTabOrder();
         };
+
+        // Vertical plane switcher (street / underground / elevated). Sets the
+        // active plane on #map-tiles (CSS shows one plane at a time) and re-scopes
+        // the rotor to it. Default is street level.
+        this.levelSwitch = new LevelSwitch({
+            announce: (msg) => this.announceStatus(msg),
+            onChange: () => {
+                if (this.accessibilityManager) this.accessibilityManager.updateTabOrder();
+            },
+        });
         
         // Initialize SVG tile manager
         this.svgTileManager = new SVGTileManager();
@@ -213,7 +260,29 @@ class MapApplication {
         document.getElementById('toggle-tracking').addEventListener('click', (e) => {
             this.toggleLocationTracking(e.currentTarget);
         });
-        
+
+        // Three spoken location descriptions at increasing depth.
+        const quickBtn = document.getElementById('describe-quick');
+        if (quickBtn) quickBtn.addEventListener('click', () => this.quickDescribe());
+        const autoBtn = document.getElementById('describe-auto');
+        if (autoBtn) autoBtn.addEventListener('click', (e) => this.toggleAutoDescribe(e.currentTarget));
+        const detailBtn = document.getElementById('describe-detailed');
+        if (detailBtn) detailBtn.addEventListener('click', () => this.detailedDescribe());
+        const cnibBtn = document.getElementById('describe-cnib-pride');  // TEMPORARY (CNIB @ Pride)
+        if (cnibBtn) cnibBtn.addEventListener('click', () => this.cnibAtPride());
+
+        // Detailed-surroundings modal: close button + click-outside.
+        const detailClose = document.getElementById('detail-modal-close');
+        if (detailClose) detailClose.addEventListener('click', () => this.closeDetailModal());
+        const detailModal = document.getElementById('detail-modal');
+        if (detailModal) detailModal.addEventListener('click', (e) => {
+            if (e.target === detailModal) this.closeDetailModal();
+        });
+
+        // Heading-up rotation toggle.
+        const headingUpBtn = document.getElementById('toggle-heading-up');
+        if (headingUpBtn) headingUpBtn.addEventListener('click', (e) => this.toggleHeadingUp(e.currentTarget));
+
         // Debug controls
         document.getElementById('set-location').addEventListener('click', () => {
             this.setMockLocation();
@@ -404,7 +473,7 @@ class MapApplication {
                     const newZoom = this.mapRenderer.zoom + zoomDelta;
                     
                     // Apply zoom if within bounds
-                    if (newZoom >= 15 && newZoom <= 23) {
+                    if (newZoom >= 12 && newZoom <= 23) {
                         this.mapRenderer.setZoom(newZoom);
                         this.updateZoomButtonStates();
                         lastDistance = distance;
@@ -448,7 +517,7 @@ class MapApplication {
                 
                 
                 // Apply zoom if within bounds
-                if (newZoom >= 15 && newZoom <= 23) {
+                if (newZoom >= 12 && newZoom <= 23) {
                     this.mapRenderer.setZoom(newZoom);
                     this.updateZoomButtonStates();
                     // Don't announce every tiny change during continuous zoom
@@ -622,14 +691,25 @@ class MapApplication {
     toggleLocationTracking(button) {
         this.isTracking = !this.isTracking;
         button.setAttribute('aria-pressed', this.isTracking);
-        
+
+        // Swap the icon so the on/off state is glanceable, not just the aria-pressed
+        // tint (which is subtle in the default theme). Decorative — the icon is
+        // aria-hidden; aria-pressed carries the state to screen readers.
+        const icon = button.querySelector('.icon');
+        if (icon) icon.textContent = this.isTracking ? '🛰️' : '📍';
+
         if (this.isTracking) {
             this.locationTracker.startTracking();
+            // Start the compass here too — this click is the user gesture iOS needs
+            // to grant DeviceOrientation permission. Fire-and-forget: if it isn't
+            // available, directions just stay cardinal.
+            this.heading.start();
             this.announceStatus('Location tracking enabled');
         } else {
             this.locationTracker.stopTracking();
+            this.heading.stop();
             this.announceStatus('Location tracking disabled');
-            
+
             // When tracking is disabled, revert avatar to center position
             const center = this.mapRenderer.center;
             this.avatar.setPosition(center.lat, center.lng, false);
@@ -638,12 +718,57 @@ class MapApplication {
 
     // Navigation is now handled by accordion, remove old toggle method
 
+    toggleHeadingUp(button) {
+        this.headingUp = !this.headingUp;
+        button.setAttribute('aria-pressed', this.headingUp);
+        // Swap the icon for a glanceable state, like Track Location does.
+        const icon = button.querySelector('.icon');
+        if (this.headingUp) {
+            if (icon) icon.textContent = '🔼';   // up = the way you face is up
+            this.announceStatus('Heading up. The map turns to face the way you are going.');
+            this.heading.start();              // ensure the compass is running
+            this._startRotationLoop();
+        } else {
+            if (icon) icon.textContent = '🔄';   // back to north-up
+            this._stopRotationLoop();
+            this.mapRenderer.setRotation(0);
+            this.announceStatus('North up.');
+        }
+        // The loaded area differs (heading-up loads the rotated corners), so reload.
+        this.loadMapTiles(true);
+    }
+
+    // Drive the map rotation from the smoothed compass heading. rAF-paced, but only
+    // writes a new transform when the heading actually moved (>0.5 deg) so a steady
+    // hold doesn't thrash the DOM. If there's no usable heading, fall to north-up.
+    _startRotationLoop() {
+        let last = null;
+        const tick = () => {
+            if (!this.headingUp) return;
+            const h = this.heading.getHeading();
+            const target = (h === null) ? 0 : h;
+            const moved = last === null
+                || Math.abs(((target - last + 540) % 360) - 180) > 0.5;
+            if (moved) { this.mapRenderer.setRotation(target); last = target; }
+            this._rotRAF = requestAnimationFrame(tick);
+        };
+        this._rotRAF = requestAnimationFrame(tick);
+    }
+
+    _stopRotationLoop() {
+        if (this._rotRAF) cancelAnimationFrame(this._rotRAF);
+        this._rotRAF = null;
+    }
 
     handleLocationUpdate(position) {
+        // Feed GPS course-over-ground to the compass: while moving it's a reliable
+        // heading immune to magnetometer error (the Pixel read ~180° off in Buckhorn).
+        this.heading.setGpsCourse(position.heading, position.speed);
+
         // Update location display
         const locationElement = document.getElementById('current-location');
         const accuracyElement = document.getElementById('location-accuracy');
-        
+
         locationElement.textContent = `${position.lat.toFixed(6)}, ${position.lng.toFixed(6)}`;
         accuracyElement.textContent = `${Math.round(position.accuracy)}m`;
         
@@ -653,11 +778,442 @@ class MapApplication {
         // Update map
         this.mapRenderer.drawUserLocation(position.lat, position.lng, position.accuracy);
         
-        // Center map on location if first update
+        // Center map on location on the first fix; and keep FOLLOWING it in
+        // heading-up mode, so the avatar stays at the centre the map rotates around.
         if (!this.hasInitialLocation) {
             this.mapRenderer.setCenter(position.lat, position.lng);
             this.hasInitialLocation = true;
+        } else if (this.headingUp) {
+            this.mapRenderer.setCenter(position.lat, position.lng);
         }
+
+        // Crossing the edge of the mapped area (once per transition), then the
+        // throttled, semantic spoken feedback (NOT the raw coordinates above).
+        this.maybeAnnounceCoverage(position);
+        this.maybeAnnounceProximity(position);
+    }
+
+    // Announce crossing INTO or OUT OF the mapped area, once per transition. Like the
+    // rest of the running commentary it only SPEAKS while Auto-describe is on — but it
+    // tracks the in/out state on every fix so the next crossing is detected correctly
+    // regardless. Tested against the regions list in the combined index, so it follows
+    // coverage exactly (and says nothing when we have no coverage info — never cry wolf).
+    maybeAnnounceCoverage(position) {
+        const inside = this.svgTileManager
+            ? this.svgTileManager.isInCoverage(position.lat, position.lng)
+            : true;
+        if (this._inCoverage === null) { this._inCoverage = inside; return; } // first fix: just record
+        if (inside === this._inCoverage) return;                              // no change
+        this._inCoverage = inside;
+        if (!this.autoDescribe) return;                                       // only the running commentary speaks
+        this.announceStatus(inside ? 'Back in the mapped area.' : 'You have left the mapped area.');
+    }
+
+    // On-demand "nothing here" message: distinguish "no map data for this location"
+    // from "there's data, but nothing worth mentioning" — an ambiguity a blind user
+    // can't otherwise resolve. Used by Quick / Detailed describe.
+    _nothingNearbyMsg(pos) {
+        return (this.svgTileManager && !this.svgTileManager.isInCoverage(pos.lat, pos.lng))
+            ? 'You are outside the mapped area.'
+            : 'Nothing notable nearby.';
+    }
+
+    // ── QUICK describe ───────────────────────────────────────────────────────
+    // One short line on demand: which way you face, the road you're on, and the
+    // single most worth-mentioning thing near you. The fast "where am I".
+    async quickDescribe() {
+        const pos = this.locationTracker.getCurrentPosition();
+        if (!pos) {
+            this.announceStatus('Location not available yet. Turn on Track Location first.');
+            return;
+        }
+        const { results: near, intersections } = await this.fetchNearbyFull(pos.lat, pos.lng, 4);
+        this._lastNearby = near;
+        this._lastNearbyPos = { lat: pos.lat, lng: pos.lng };
+        if (!near.length) { this.announceStatus(this._nothingNearbyMsg(pos)); return; }
+        const onRoad = near.find((f) => f.category === 'road' && f.distance_m <= 30);
+        const heading = this.heading ? this.heading.getHeading() : null;
+        const parts = [];
+        if (heading !== null) parts.push(`Facing ${this.cardinal(heading)}`);
+        // The road you're on + the intersection: "on Church Street at Wellesley Street East".
+        const roadLead = this._roadLeadPhrase(onRoad, intersections);
+        if (roadLead) parts.push(roadLead);
+        // Then one nearby landmark — skipping any road already named as a cross street above.
+        const named = new Set((intersections || []).map((x) => x.display));
+        if (onRoad) named.add(onRoad.display);
+        const f = near.find((x) => x !== onRoad && !(x.category === 'road' && named.has(x.display)));
+        if (f) parts.push(`${f.display} ${this._where(pos, f)}, ${this.phraseDistance(f.distance_m)}`);
+        this.announceStatus((parts.join(', ') || 'Location found') + '.');
+    }
+
+    // ── TEMPORARY: CNIB @ Pride (remove ~2026-07-04 with the booth POI) ──────────
+    // Like Quick describe, but ALWAYS finishes with the CNIB booth's direction +
+    // distance from where you are — so an attendee can home in on it from anywhere,
+    // even beyond the map-nearby reach. Skips the extra mention only if the booth is
+    // already the landmark Quick describe picked (you're standing right at it).
+    async cnibAtPride() {
+        const pos = this.locationTracker.getCurrentPosition();
+        if (!pos) {
+            this.announceStatus('Location not available yet. Turn on Track Location first.');
+            return;
+        }
+        const BOOTH = { display: 'CNIB @ Pride', lat: 43.66578, lng: -79.38106 };
+        const { results: near, intersections } = await this.fetchNearbyFull(pos.lat, pos.lng, 4);
+        this._lastNearby = near;
+        this._lastNearbyPos = { lat: pos.lat, lng: pos.lng };
+        const onRoad = near.find((x) => x.category === 'road' && x.distance_m <= 30);
+        const heading = this.heading ? this.heading.getHeading() : null;
+        const parts = [];
+        if (heading !== null) parts.push(`Facing ${this.cardinal(heading)}`);
+        const roadLead = this._roadLeadPhrase(onRoad, intersections);
+        if (roadLead) parts.push(roadLead);
+        const named = new Set((intersections || []).map((x) => x.display));
+        if (onRoad) named.add(onRoad.display);
+        const f = near.find((x) => x !== onRoad && !(x.category === 'road' && named.has(x.display)));
+        if (f) parts.push(`${f.display} ${this._where(pos, f)}, ${this.phraseDistance(f.distance_m)}`);
+        // Always end with the booth — unless Quick describe already named it.
+        if (!(f && f.display === BOOTH.display)) {
+            const dist = this.locationTracker.calculateDistance(pos.lat, pos.lng, BOOTH.lat, BOOTH.lng);
+            parts.push(`${BOOTH.display} ${this._where(pos, BOOTH)}, ${this.phraseDistance(dist)}`);
+        }
+        this.announceStatus((parts.join(', ') || BOOTH.display) + '.');
+    }
+
+    // ── DETAILED surroundings ────────────────────────────────────────────────
+    // The full surround, on demand: facing, the road you're on, then everything
+    // notable grouped by direction (ahead / right / behind / left when there's a
+    // compass, else by compass point). Spoken AND opened in a modal to read.
+    async detailedDescribe() {
+        const pos = this.locationTracker.getCurrentPosition();
+        if (!pos) {
+            this.announceStatus('Location not available yet. Turn on Track Location first.');
+            return;
+        }
+        const { results, intersections } = await this.fetchNearbyFull(pos.lat, pos.lng, 10);
+        const near = results.filter((f) => f.distance_m <= 3000);
+        this._lastNearby = near;
+        this._lastNearbyPos = { lat: pos.lat, lng: pos.lng };
+        if (!near.length) {
+            const msg = this._nothingNearbyMsg(pos);
+            this.announceStatus(msg);
+            this.openDetailModal(`<p>${msg}</p>`);
+            return;
+        }
+        const { speech, html } = this._describeSurround(pos, near, intersections);
+        this.announceStatus(speech);
+        this.openDetailModal(html);
+    }
+
+    // ── AUTO describe (running commentary) ────────────────────────────────────
+    // Position path: called from each GPS fix (gated here on the toggle). Announce a
+    // CHANGE in the road you're on, else the most significant fresh feature in earshot.
+    async maybeAnnounceProximity(position) {
+        if (!this.autoDescribe) return;
+        const now = Date.now();
+        if (now - this.lastProximityTime < 8000) return;            // quiet interval
+        if (this.lastProximityPos) {
+            const moved = this.locationTracker.calculateDistance(
+                this.lastProximityPos.lat, this.lastProximityPos.lng,
+                position.lat, position.lng);
+            if (moved < 12) return;
+        }
+        const near = await this.fetchNearby(position.lat, position.lng, 5);
+        if (!near.length) return;
+        this._lastNearby = near;
+        this._lastNearbyPos = { lat: position.lat, lng: position.lng };
+        const onRoad = near.find((f) => f.category === 'road' && f.distance_m <= 30);
+        let msg = null, id = null;
+        if (onRoad && ('road:' + onRoad.id) !== this._lastRoadId) {
+            msg = `On ${onRoad.display}.`; id = 'road:' + onRoad.id; this._lastRoadId = id;
+        } else {
+            const f = near.find((x) => x.significance >= 2 && x.id !== this._lastSpokenId
+                && !(onRoad && x.id === onRoad.id) && x.distance_m <= 120);
+            if (f) { msg = `${f.display} ${this._where(position, f)}, ${this.phraseDistance(f.distance_m)}.`; id = f.id; }
+        }
+        if (!msg) return;
+        this._lastSpokenId = id;
+        this.lastProximityPos = { lat: position.lat, lng: position.lng };
+        this.lastProximityTime = now;
+        this.announceStatus(msg);
+    }
+
+    toggleAutoDescribe(button) {
+        this.autoDescribe = !this.autoDescribe;
+        button.setAttribute('aria-pressed', this.autoDescribe);
+        const icon = button.querySelector('.icon');
+        if (this.autoDescribe) {
+            if (icon) icon.textContent = '🔊';
+            this.heading.start();                 // turns are announced even before a fix
+            this._lastFacing = null; this._settleH = null;
+            this._lastRoadId = null; this._lastSpokenId = null;
+            this.lastProximityTime = 0; this.lastProximityPos = null;
+            this._startAutoHeadingWatch();
+            this.announceStatus(this.isTracking
+                ? 'Describing as you move. I will call out where you are and tell you when you turn.'
+                : 'Describing as you turn. Turn on Track Location too, to hear places as you move.');
+        } else {
+            if (icon) icon.textContent = '🔇';
+            this._stopAutoHeadingWatch();
+            this.announceStatus('Stopped the running description.');
+        }
+    }
+
+    _startAutoHeadingWatch() { this._stopAutoHeadingWatch(); this._autoTick(); }
+    _stopAutoHeadingWatch() { if (this._autoTO) { clearTimeout(this._autoTO); this._autoTO = null; } }
+
+    // Rotation IS movement: poll the compass and, when it SETTLES (held ~1s, so we
+    // don't babble while you're being pushed around), announce the new facing if you
+    // turned far enough since the last call-out. A turn re-orients the cached POIs to
+    // your new heading without another query — that's the whole point in a crowd.
+    _autoTick() {
+        if (!this.autoDescribe) return;
+        const h = this.heading ? this.heading.getHeading() : null;
+        if (h !== null && h !== undefined) {
+            if (this._settleH === null || Math.abs(this._angDiff(h, this._settleH)) > 12) {
+                this._settleH = h; this._settleStart = Date.now();          // still turning
+            } else if (Date.now() - this._settleStart > 900) {              // settled
+                if (this._lastFacing === null) {
+                    this._lastFacing = h;                                   // first lock, silent
+                } else if (Math.abs(this._angDiff(h, this._lastFacing)) >= 30) {
+                    this._announceTurn(h, this._angDiff(h, this._lastFacing));
+                    this._lastFacing = h;
+                }
+            }
+        }
+        this._autoTO = setTimeout(() => this._autoTick(), 400);
+    }
+
+    _announceTurn(facing, signed) {
+        const dir = signed > 0 ? 'right' : 'left';
+        const a = Math.abs(signed);
+        let mag;
+        if (a >= 150) mag = 'turned right around';
+        else if (a >= 110) mag = `a big turn to your ${dir}`;
+        else if (a >= 65) mag = `a quarter-turn to your ${dir}`;
+        else mag = `a small turn to your ${dir}`;
+        let msg = `Now facing ${this.cardinal(facing)} — ${mag}.`;
+        const pos = (this.locationTracker.getCurrentPosition && this.locationTracker.getCurrentPosition())
+            || this._lastNearbyPos;
+        if (pos && this._lastNearby.length) {
+            const re = this._lastNearby.slice(0, 2).map((f) => `${f.display} ${this._where(pos, f)}`);
+            if (re.length) msg += ' ' + re.join('; ') + '.';
+        }
+        this.announceStatus(msg);
+    }
+
+    // Signed smallest angle a-b in -180..180. Positive = a is clockwise of b (= a
+    // RIGHT turn, since bearings increase clockwise from north).
+    _angDiff(a, b) { return ((((a - b) % 360) + 540) % 360) - 180; }
+
+    // Direction of f from pos as a short phrase: clock-face when we have a compass
+    // ("at 2 o'clock"), else the cardinal word ("to the east").
+    _where(pos, f) {
+        const d = this._relClock(pos, f);
+        return d.hour ? `at ${d.hour} o'clock` : `to the ${d.cardinal}`;
+    }
+
+    // {hour, cardinal, bucket} for f relative to pos. With a heading, hour is the
+    // clock-face position and bucket groups it ahead/right/behind/left; without one,
+    // both fall back to the 8-point compass.
+    _relClock(pos, f) {
+        const bearing = this.locationTracker.calculateBearing(pos.lat, pos.lng, f.lat, f.lng);
+        const heading = this.heading ? this.heading.getHeading() : null;
+        if (heading !== null) {
+            const rel = (((bearing - heading) % 360) + 360) % 360;       // 0 = dead ahead
+            const hour = Math.round(rel / 30) || 12;
+            let bucket;
+            if (rel < 60 || rel >= 300) bucket = 'ahead';
+            else if (rel < 120) bucket = 'right';
+            else if (rel < 240) bucket = 'behind';
+            else bucket = 'left';
+            return { hour, cardinal: null, bucket };
+        }
+        const card = this.cardinal(bearing);
+        return { hour: null, cardinal: card, bucket: card };
+    }
+
+    // The road you're on, NAMING the intersection from the API's `intersections` list
+    // (the cross streets at each end of your block): "on Church Street at Wellesley
+    // Street East" when you're AT the corner (nearest cross street within CORNER_M),
+    // "on Church Street between Wellesley Street East and Maitland Street" mid-block,
+    // "on Church Street near <street>" with only one known, else just "on Church
+    // Street". Null when you're not on a road. The standard O&M crossing call.
+    _roadLeadPhrase(onRoad, intersections) {
+        if (!onRoad) return null;
+        const xs = (intersections || []).slice().sort((a, b) => a.distance_m - b.distance_m);
+        const CORNER_M = 25;  // within this of the crossing point => "at" that corner
+        if (!xs.length) return `on ${onRoad.display}`;
+        if (xs[0].distance_m <= CORNER_M) return `on ${onRoad.display} at ${xs[0].display}`;
+        if (xs.length >= 2) return `on ${onRoad.display} between ${xs[0].display} and ${xs[1].display}`;
+        return `on ${onRoad.display} near ${xs[0].display}`;
+    }
+
+    // Build the Detailed read-out: a lead line (facing + road/intersection) then every
+    // notable feature grouped by direction. Returns plain {speech} and escaped {html}.
+    _describeSurround(pos, near, intersections) {
+        const onRoad = near.find((f) => f.category === 'road' && f.distance_m <= 30);
+        const heading = this.heading ? this.heading.getHeading() : null;
+        const lead = [];
+        if (heading !== null) lead.push(`Facing ${this.cardinal(heading)}`);
+        const roadLead = this._roadLeadPhrase(onRoad, intersections);
+        if (roadLead) lead.push(roadLead);
+        const leadLine = lead.length ? lead.join(', ') + '.' : 'Location found.';
+
+        const order = heading !== null
+            ? ['ahead', 'right', 'behind', 'left']
+            : ['north', 'northeast', 'east', 'southeast', 'south', 'southwest', 'west', 'northwest'];
+        const labels = { ahead: 'Ahead', right: 'To your right', behind: 'Behind you', left: 'To your left' };
+
+        // Roads already named in the lead (the one you're on + its cross streets)
+        // shouldn't repeat among the grouped features.
+        const namedRoads = new Set((intersections || []).map((x) => x.display));
+        if (onRoad) namedRoads.add(onRoad.display);
+        const groups = {};
+        for (const f of near) {
+            if (f === onRoad) continue;
+            if (f.category === 'road' && namedRoads.has(f.display)) continue;
+            const d = this._relClock(pos, f);
+            (groups[d.bucket] ||= []).push({ f, d });
+        }
+
+        const speechParts = [leadLine];
+        const htmlParts = [`<p>${this._esc(leadLine)}</p>`];
+        for (const key of order) {
+            const items = groups[key];
+            if (!items || !items.length) continue;
+            const label = labels[key] || ('To the ' + key);
+            const phrases = items.map(({ f, d }) => {
+                const dist = this.phraseDistance(f.distance_m);
+                const clock = d.hour ? `, ${d.hour} o'clock` : '';
+                // ONE string for both ear and eye — what you hear is what you see.
+                const text = `${f.display}, ${dist}${clock}`;
+                return { speech: text, html: `<li>${this._esc(text)}</li>` };
+            });
+            speechParts.push(`${label}: ${phrases.map((p) => p.speech).join('; ')}`);
+            htmlParts.push(`<h3>${this._esc(label)}</h3><ul>${phrases.map((p) => p.html).join('')}</ul>`);
+        }
+        return { speech: speechParts.join('. ') + '.', html: htmlParts.join('') };
+    }
+
+    openDetailModal(html) {
+        const modal = document.getElementById('detail-modal');
+        const body = document.getElementById('detail-modal-body');
+        if (!modal || !body) return;
+        body.innerHTML = html;
+        this._modalReturnFocus = document.activeElement;
+        modal.hidden = false;
+        const close = document.getElementById('detail-modal-close');
+        if (close) close.focus();
+        // Trap focus on the close button (the only control inside) and close on Escape.
+        this._modalKeydown = (e) => {
+            if (e.key === 'Escape') { e.preventDefault(); this.closeDetailModal(); }
+            else if (e.key === 'Tab') { e.preventDefault(); if (close) close.focus(); }
+        };
+        modal.addEventListener('keydown', this._modalKeydown);
+    }
+
+    closeDetailModal() {
+        const modal = document.getElementById('detail-modal');
+        if (!modal) return;
+        modal.hidden = true;
+        if (this._modalKeydown) { modal.removeEventListener('keydown', this._modalKeydown); this._modalKeydown = null; }
+        if (this._modalReturnFocus && this._modalReturnFocus.focus) this._modalReturnFocus.focus();
+    }
+
+    _esc(s) {
+        return String(s).replace(/[&<>"']/g, (c) =>
+            ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    // Translate the active map filters into significance hints for the API: base
+    // layers the user has HIDDEN -> `off` (demote, mention only as background);
+    // accessibility/POI overlays they've turned ON -> `on` (boost — opting in says
+    // "this matters to me"). Token = "category" or "category:subtype".
+    filterTokens() {
+        const off = new Set(), on = new Set();
+        const fm = this.filterManager;
+        if (fm && this.taxonomy) {
+            for (const [id, enabled] of Object.entries(fm.filters)) {
+                const feat = this.taxonomy.getById(id);
+                if (!feat || !feat.category) continue;
+                const tok = (feat.subtype != null) ? `${feat.category}:${feat.subtype}` : `${feat.category}`;
+                if (fm.isHideShow(feat)) { if (!enabled) off.add(tok); }
+                else if (enabled) on.add(tok);
+            }
+        }
+        return { off: [...off].join(','), on: [...on].join(',') };
+    }
+
+    // Same-origin proxy in front of the map-features geo index. Carries the active
+    // filter state so results are significance-ranked in line with what the user has
+    // asked to see. Returns [] on any failure so tracking never throws.
+    async fetchNearby(lat, lng, limit) {
+        try {
+            const { off, on } = this.filterTokens();
+            const qs = new URLSearchParams({ lat: String(lat), lng: String(lng), limit: String(limit) });
+            if (off) qs.set('off', off);
+            if (on) qs.set('on', on);
+            // Only while travelling does a cross-street's intersection matter more than
+            // its nearest point — tell the API so it doesn't report a road that runs
+            // beside you as "at the corner ahead" when you're standing still.
+            if (this.heading && this.heading.isMoving()) qs.set('moving', '1');
+            const res = await fetch(`/api/map-nearby?${qs.toString()}`);
+            if (!res.ok) return [];
+            const data = await res.json();
+            return data.results || [];
+        } catch (_) {
+            return [];
+        }
+    }
+
+    // Like fetchNearby, but ALSO asks the API for INTERSECTIONS (xings=1) and returns
+    // the whole payload {results, intersections}. Used by the on-demand describes so
+    // they can name the cross street / corner; the throttled running commentary keeps
+    // using the lighter fetchNearby (no xings).
+    async fetchNearbyFull(lat, lng, limit) {
+        try {
+            const { off, on } = this.filterTokens();
+            const qs = new URLSearchParams({ lat: String(lat), lng: String(lng), limit: String(limit), xings: '1' });
+            if (off) qs.set('off', off);
+            if (on) qs.set('on', on);
+            if (this.heading && this.heading.isMoving()) qs.set('moving', '1');
+            const res = await fetch(`/api/map-nearby?${qs.toString()}`);
+            if (!res.ok) return { results: [], intersections: [] };
+            const data = await res.json();
+            return { results: data.results || [], intersections: data.intersections || [] };
+        } catch (_) {
+            return { results: [], intersections: [] };
+        }
+    }
+
+    // 8-point compass word from a bearing in degrees.
+    cardinal(bearing) {
+        const dirs = ['north', 'northeast', 'east', 'southeast',
+                      'south', 'southwest', 'west', 'northwest'];
+        return dirs[Math.round(((bearing % 360) + 360) % 360 / 45) % 8];
+    }
+
+    // Direction phrase from one point to another. With a live compass heading we
+    // describe it as a CLOCK-FACE bearing relative to where the user is facing
+    // (12 o'clock = straight ahead, 3 = to the right, 6 = behind, 9 = to the left);
+    // with no magnetometer / permission we fall back to the cardinal compass word.
+    directionTo(fromLat, fromLng, toLat, toLng) {
+        const bearing = this.locationTracker.calculateBearing(fromLat, fromLng, toLat, toLng);
+        const heading = this.heading ? this.heading.getHeading() : null;
+        if (heading !== null) {
+            const rel = (((bearing - heading) % 360) + 360) % 360; // 0 = dead ahead
+            const hour = Math.round(rel / 30) || 12;               // 0 -> 12 o'clock
+            return `at ${hour} o'clock`;
+        }
+        return `to the ${this.cardinal(bearing)}`;
+    }
+
+    // Spoken distance: "right here" when on top of it, else rounded metres up to a
+    // kilometre, then kilometres — readable, not GPS-precise.
+    phraseDistance(metres) {
+        if (metres < 8) return 'right here';
+        if (metres < 1000) return `${Math.round(metres / 5) * 5} metres`;
+        return `${(metres / 1000).toFixed(1)} kilometres`;
     }
 
     handleLocationError(error) {
@@ -808,9 +1364,25 @@ class MapApplication {
         // other mid-phrase. Polite, not assertive: status should never interrupt
         // the screen reader mid-sentence.
         const region = document.getElementById('map-announcements');
-        if (!region) return;
-        region.textContent = '';
-        region.textContent = message;
+        if (region) {
+            region.textContent = '';
+            region.textContent = message;
+        }
+        // Mirror to the VISIBLE captions panel for Deaf/deafened and sighted users.
+        this._caption(message);
+    }
+
+    // Append a spoken line to the visible captions log. The panel is aria-hidden, so
+    // this never double-announces to a screen reader — the speech comes from the live
+    // region above. Keeps a short scrollback so a line you missed can be re-read.
+    _caption(message) {
+        const log = document.getElementById('captions-log');
+        if (!log) return;
+        const li = document.createElement('li');
+        li.textContent = message;
+        log.appendChild(li);
+        while (log.children.length > 8) log.removeChild(log.firstChild);
+        log.scrollTop = log.scrollHeight;
     }
 
     announceMapChange() {
@@ -864,8 +1436,8 @@ class MapApplication {
                 this._loadedBand = band;
             }
 
-            // Show loading indicator
-            this.announceStatus('Loading map tiles...');
+            // No "loading map tiles…" announcement — tile loading happens on every
+            // pan and zoom, and the user doesn't need to hear it.
 
             // Load SVG tiles for the area (band chosen from the zoom)
             const { tiles, stats } = await this.svgTileManager.loadTilesForArea(bounds, this.mapRenderer.zoom);
@@ -912,10 +1484,16 @@ class MapApplication {
             // Clean up tiles that are far outside the current view
             this.cleanupDistantTiles();
 
-            // Honest completion — report failures rather than counting survivors.
-            this.announceStatus(stats && stats.failed > 0
-                ? `Map loaded — ${stats.loaded} tile${stats.loaded === 1 ? '' : 's'}, ${stats.failed} failed to load.`
-                : `Map loaded. ${stats ? stats.loaded : tiles.length} tile${(stats ? stats.loaded : tiles.length) === 1 ? '' : 's'}.`);
+            // Warm neighbours once the view settles: the adjacent LOD bands (so a
+            // zoom across is instant) and a one-tile pan ring. The persistent
+            // band-cache keeps them; Brotli's bandwidth saving funds the prefetch.
+            this._schedulePrefetch(bounds);
+
+            // Stay silent on a normal load — the user doesn't need a tile count on
+            // every pan/zoom. Only speak up if some tiles actually FAILED to load.
+            if (stats && stats.failed > 0) {
+                this.announceStatus(`Map data: ${stats.failed} tile${stats.failed === 1 ? '' : 's'} failed to load.`);
+            }
         } catch (error) {
             if (gen === this._loadGen) {
                 this.announceStatus('Error loading map. Please try again.');
@@ -941,16 +1519,35 @@ class MapApplication {
         const viewportWidthDegrees = width / pixelsPerDegree;
         const viewportHeightDegrees = height / pixelsPerDegree;
         
-        // Add some padding to ensure we load tiles around the edges
-        // At high zoom levels, reduce padding to avoid loading too many tiles
-        const paddingMultiplier = zoom > 20 ? 0.5 : 1;
-        const padding = degreesPerTile * paddingMultiplier;
-        
+        // A11Y-TREE FIX (downtown TalkBack freeze, confirmed 2026-06-24): load ONLY
+        // the tiles overlapping the visible viewport — NO load-ahead padding. Each
+        // downtown tile carries ~1840 labelled role=img nodes; the old 1-tile padding
+        // ring (+ the 2-tile keep buffer below) put a 5–7-tile square in the DOM,
+        // ballooning the accessibility tree to 60–90k nodes — Chrome serialises that
+        // whole tree to TalkBack and Android's a11y framework ANRs, hanging the PHONE.
+        // Trade-off accepted for now: tiles pop in at the leading edge while panning.
+        // Do NOT restore preloading until explore-by-touch is moved OFF the
+        // screen-reader's a11y tree (planned: custom Web Speech API) — any real
+        // padding/keep ring re-freezes TalkBack downtown.
+        //
+        // EXCEPTION — heading-up mode: a rotated viewport pulls its diagonal CORNERS
+        // into view, so we load a square big enough to cover the rotated view (half-
+        // side = the viewport's half-DIAGONAL) for ANY heading. This is opt-in, so the
+        // default north-up view stays viewport-only and TalkBack-safe.
+        let padLat = 0, padLng = 0;
+        if (this.headingUp) {
+            const halfDiag = 0.5 * Math.sqrt(
+                viewportWidthDegrees * viewportWidthDegrees +
+                viewportHeightDegrees * viewportHeightDegrees);
+            padLat = Math.max(0, halfDiag - viewportHeightDegrees / 2);
+            padLng = Math.max(0, halfDiag - viewportWidthDegrees / 2);
+        }
+
         const bounds = {
-            north: center.lat + viewportHeightDegrees / 2 + padding,
-            south: center.lat - viewportHeightDegrees / 2 - padding,
-            east: center.lng + viewportWidthDegrees / 2 + padding,
-            west: center.lng - viewportWidthDegrees / 2 - padding
+            north: center.lat + viewportHeightDegrees / 2 + padLat,
+            south: center.lat - viewportHeightDegrees / 2 - padLat,
+            east: center.lng + viewportWidthDegrees / 2 + padLng,
+            west: center.lng - viewportWidthDegrees / 2 - padLng
         };
         
         // Ensure bounds cover at least one tile
@@ -970,8 +1567,34 @@ class MapApplication {
         return bounds;
     }
 
+    // Prefetch neighbours after the user pauses (debounced), so it never fires
+    // mid-gesture. Adjacent bands make a zoom across instant; the ring smooths pan.
+    _schedulePrefetch(bounds) {
+        // A11Y-TREE FIX (downtown TalkBack freeze): prefetch DISABLED. It only warms
+        // the in-memory cache (not the DOM), so it isn't the a11y-tree culprit — kept
+        // off so ALL preloading stays off the table. Safe to re-enable once
+        // explore-by-touch is decoupled from the screen-reader a11y tree; harmless to
+        // leave off (it only affected pan/zoom smoothness, not correctness).
+        return;
+        clearTimeout(this._prefetchTimer);
+        this._prefetchTimer = setTimeout(() => {
+            const mgr = this.svgTileManager;
+            const z = this.mapRenderer.zoom;
+            const cur = mgr.bandForZoom(z);
+            const zin = mgr.bandForZoom(z + 1);
+            const zout = mgr.bandForZoom(z - 1);
+            if (zin !== cur) mgr.prefetchArea(bounds, zin);
+            if (zout !== cur) mgr.prefetchArea(bounds, zout);
+            const ts = mgr.tileSize;
+            mgr.prefetchArea({
+                north: bounds.north + ts, south: bounds.south - ts,
+                east: bounds.east + ts, west: bounds.west - ts,
+            }, cur);
+        }, 450);
+    }
+
     renderSVGTiles(tiles) {
-        const tilesGroup = document.querySelector('#map-tiles') || 
+        const tilesGroup = document.querySelector('#map-tiles') ||
                          this.mapRenderer.svg.querySelector('#map-tiles');
         
         if (!tilesGroup) {
@@ -1028,8 +1651,6 @@ class MapApplication {
                 tilesGroup.removeChild(tilesGroup.firstChild);
             }
         }
-        // Announce to screen readers
-        this.announceStatus('Map updating...');
     }
     
     cleanupDistantTiles() {
@@ -1038,8 +1659,10 @@ class MapApplication {
         
         if (!tilesGroup) return;
         
-        // Add a buffer to prevent removing tiles too aggressively
-        const buffer = 0.02; // 2 extra tiles in each direction
+        // A11Y-TREE FIX (downtown TalkBack freeze): keep ONLY viewport tiles in the
+        // DOM (was 0.02 = a 2-tile ring). Smaller DOM = smaller accessibility tree.
+        // Don't restore the ring until explore-by-touch is off the a11y tree.
+        const buffer = 0;
         const expandedBounds = {
             north: bounds.north + buffer,
             south: bounds.south - buffer,
@@ -1269,8 +1892,6 @@ class MapApplication {
         // Define preset positions
         const positions = {
             'toronto': { lat: 43.655, lng: -79.375, zoom: 17 },
-            'vancouver': { lat: 49.195, lng: -123.18, zoom: 16 }, // YVR airport
-            'yvr': { lat: 49.195, lng: -123.18, zoom: 16 }, // Alias for Vancouver
             'downtown-toronto': { lat: 43.651, lng: -79.382, zoom: 17 },
             'cn-tower': { lat: 43.6426, lng: -79.3871, zoom: 18 },
             'uoft': { lat: 43.6629, lng: -79.3957, zoom: 17 }, // University of Toronto

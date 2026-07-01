@@ -6,7 +6,10 @@ export class MapRenderer {
         this.labelsGroup = svgElement.querySelector('#map-labels');
         this.locationGroup = svgElement.querySelector('#user-location');
         this.routeGroup = svgElement.querySelector('#navigation-route');
-        
+        // Wrapper around the map CONTENT (not the avatar) for heading-up rotation.
+        this.rotateGroup = svgElement.querySelector('#map-rotate');
+        this.rotation = 0; // degrees of heading shown "up"; 0 = north-up
+
         this.tileSize = 256;
         this.zoom = 18; // Default = 1:1 with project()'s 1000px/0.01° scale (init sizes the viewBox to viewport.width, which is the zoom-18 size); zoom out to 15, in to 23
         // Center on the middle of the shifted tile coverage area
@@ -61,10 +64,10 @@ export class MapRenderer {
     }
 
     setZoom(zoom) {
-        // Allow zoom up to 23 for detailed accessibility (44x44 pixel touch targets)
-        // At zoom 23, features will be much larger and easier to interact with
+        // Zoom range spans the LOD pyramid: out to 12 (lod12, ~whole metro) and in
+        // to 23 (lod22, ~individual features at a hittable target size).
         const previousZoom = this.zoom;
-        this.zoom = Math.max(15, Math.min(23, zoom));
+        this.zoom = Math.max(12, Math.min(23, zoom));
         
         if (this.zoom !== previousZoom) {
             // Calculate the scale change
@@ -107,7 +110,7 @@ export class MapRenderer {
     }
     
     isMinZoom() {
-        return this.zoom <= 15;
+        return this.zoom <= 12;
     }
     
     initializeCoordinateSystem() {
@@ -192,10 +195,79 @@ export class MapRenderer {
 
     updateViewBox() {
         // Update the SVG viewBox for zooming
-        this.svg.setAttribute('viewBox', 
+        this.svg.setAttribute('viewBox',
             `${this.viewBox.x} ${this.viewBox.y} ${this.viewBox.width} ${this.viewBox.height}`);
+        // Keep the heading-up rotation pinned to the (new) viewBox centre.
+        this.applyRotation();
+        // Constant-screen sizes: counter the viewBox scale (user units = screen px
+        // × 2^(18−zoom)). POI dots stay SMALL and visible; a transparent stroke
+        // ring carries the 24px touch target (WCAG 2.5.8) without burying the map.
+        const f = Math.pow(2, 18 - this.zoom);
+        this.svg.style.setProperty('--dot-r', (5 * f) + 'px');      // 10px visible dot
+        this.svg.style.setProperty('--cluster-r', (7 * f) + 'px');  // 14px cluster dot
+        this.svg.style.setProperty('--hit-ring', (14 * f) + 'px');  // → 24px transparent touch
+        this.svg.style.setProperty('--label-size', (13 * f) + 'px');
     }
-    
+
+    // Heading-up rotation: rotate the map CONTENT so the user's heading points up,
+    // around the current viewBox centre (which, in follow mode, is the avatar). The
+    // avatar + compass UI live outside #map-rotate, so they stay put. Negative angle
+    // because SVG rotate() is clockwise and we're bringing the heading bearing to the
+    // top of the screen.
+    setRotation(deg) {
+        this.rotation = ((deg % 360) + 360) % 360;
+        this.applyRotation();
+    }
+
+    applyRotation() {
+        if (!this.rotateGroup) return;
+        if (!this.rotation) {
+            this.rotateGroup.removeAttribute('transform');
+            this.applyLabelFlips();   // clears flips at north-up
+            return;
+        }
+        const cx = this.viewBox.x + this.viewBox.width / 2;
+        const cy = this.viewBox.y + this.viewBox.height / 2;
+        this.rotateGroup.setAttribute('transform', `rotate(${-this.rotation} ${cx} ${cy})`);
+        this.applyLabelFlips();
+    }
+
+    // Labels ride the rotating map (road names stay in their casing). When the
+    // rotation would make a label read UPSIDE-DOWN — its on-screen reading direction
+    // pointing leftward — add .label-flip so CSS rotates it 180° around its own centre
+    // and it reads the right way up, still in the casing. The baked north-up reading
+    // angle comes from the label's textPath (region labels are horizontal = 0°), cached
+    // on the element. Cheap: the visible label set is viewport-bounded.
+    applyLabelFlips() {
+        if (!this.tilesGroup) return;
+        const rot = this.rotation || 0;
+        const labels = this.tilesGroup.querySelectorAll('text.road-label, text.region-label');
+        labels.forEach((text) => {
+            let angle = text._labelAngle;
+            if (angle === undefined) { angle = this._labelAngle(text); text._labelAngle = angle; }
+            if (angle === null) return;
+            // On-screen reading direction = baked angle + the map's -rot turn; it's
+            // upside-down when the horizontal component goes negative.
+            const flip = Math.cos((angle - rot) * Math.PI / 180) < 0;
+            text.classList.toggle('label-flip', flip);
+        });
+    }
+
+    _labelAngle(text) {
+        if (text.classList.contains('region-label')) return 0;   // placed horizontal
+        const tp = text.querySelector('textPath');
+        const href = tp && (tp.getAttribute('href') || tp.getAttribute('xlink:href'));
+        if (!href) return null;
+        const path = this.svg.querySelector(href);
+        const d = path && path.getAttribute('d');
+        if (!d) return null;
+        const coords = d.match(/-?\d+(?:\.\d+)?,-?\d+(?:\.\d+)?/g);
+        if (!coords || coords.length < 2) return null;
+        const [fx, fy] = coords[0].split(',').map(Number);
+        const [lx, ly] = coords[coords.length - 1].split(',').map(Number);
+        return Math.atan2(ly - fy, lx - fx) * 180 / Math.PI;
+    }
+
     checkAndLoadTiles() {
         // Check if current viewBox extends beyond loaded tiles
         // This would trigger the app.js tile loading logic
