@@ -293,10 +293,15 @@ export async function whatsNearby(args: {
   // per category. A plain "what's around me" (no type) keeps the local, diversified behaviour.
   const typeFacets = expandTypes([...(args.types ?? []), ...(args.categories ?? [])]);
   const filtered = typeFacets.length > 0;
-  const radius = Math.min(filtered ? 20000 : 2000, Math.max(20, args.radius_m ?? (filtered ? 4000 : 150)));
+  // A type search hunts a specific, often sparse thing, so it searches VERY WIDE (up to 100 km) and
+  // reports the nearest even when it is far — it never gives up at a short radius. `nearbyM` is only
+  // the threshold for WORDING ("nothing within 4 km; the nearest is 13 km away"). A plain "what's
+  // around me" (no type) stays local.
+  const nearbyM = Math.min(20000, Math.max(20, args.radius_m ?? 4000));
+  const searchRadius = filtered ? 100000 : Math.min(2000, Math.max(20, args.radius_m ?? 150));
   const accTag = args.accessibility ? ACCESS_KEYS[args.accessibility] : undefined;
 
-  const filter: unknown[] = [{ geo_distance: { distance: `${radius}m`, location: { lat: args.lat, lon: args.lon } } }, EXCLUDE_ANON];
+  const filter: unknown[] = [{ geo_distance: { distance: `${searchRadius}m`, location: { lat: args.lat, lon: args.lon } } }, EXCLUDE_ANON];
   if (accTag) filter.push(accessFilter(accTag));
   // Typed loosely (Record<string, unknown>) so the SDK's search overload accepts the dynamic query.
   let query: Record<string, unknown>;
@@ -365,7 +370,7 @@ export async function whatsNearby(args: {
       if (place) r.in = place;
     }));
   }
-  return { radius_m: radius, results };
+  return { radius_m: searchRadius, ...(filtered ? { nearby_m: nearbyM } : {}), results };
 }
 
 // ── Tool 3: area_summary (character, not a feature list) ──────────────────────
@@ -584,7 +589,7 @@ export const TOOL_SCHEMAS = [
   {
     name: "whats_nearby",
     description:
-      "Map features around a point, nearest first, each with distance + direction (computed for you; never estimate them). TWO modes. (1) NO `types`: a general 'what's around me' snapshot of nearby named features. (2) WITH `types`: a FACETED search for a specific kind ('nearest supermarket / pharmacy / café') — it filters the index to that kind and searches much WIDER, because a sparse target can be a kilometre or more away and would otherwise be buried under closer features of other kinds. Common words are expanded to the family that satisfies them (e.g. 'supermarket' and 'grocery' both cover supermarket/grocery/convenience/greengrocer, so a small-town Foodland or a corner store is found). Each result carries its `subtype` (name it by its real kind), and for a type search also `on_street` (the road it sits on) and `in` (the settlement it's in), so you can say WHERE it is: 'Foodland, on Buckhorn Road in Buckhorn'.",
+      "Map features around a point, nearest first, each with distance + direction (computed for you; never estimate them). TWO modes. (1) NO `types`: a general 'what's around me' snapshot of nearby named features. (2) WITH `types`: a FACETED search for a specific kind ('nearest supermarket / pharmacy / café') — it filters the index to that kind and ALWAYS returns the NEAREST one even when it is far (searched up to 100 km) — never returns 'none' when one exists further out — plus `nearby_m`, the radius counted as 'nearby', so you can say when the nearest isn't close. Common words are expanded to the family that satisfies them (e.g. 'supermarket' and 'grocery' both cover supermarket/grocery/convenience/greengrocer, so a small-town Foodland or a corner store is found). Each result carries its `subtype` (name it by its real kind), and for a type search also `on_street` (the road it sits on) and `in` (the settlement it's in), so you can say WHERE it is: 'Foodland, on Buckhorn Road in Buckhorn'.",
     input_schema: {
       type: "object",
       properties: {
