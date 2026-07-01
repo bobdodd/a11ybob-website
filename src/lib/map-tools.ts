@@ -11,6 +11,7 @@
  * shapes mirror those routes. */
 
 import { opensearch } from "@/lib/opensearch";
+import { nearestAddress } from "@/lib/mapAddress";
 
 const INDEX = "map-features";
 
@@ -566,7 +567,17 @@ export async function nearestIntersections(args: { lat: number; lon: number; hea
     .slice(0, limit)
     .map((x) => ({ streets: x.streets, distance_m: Math.round(x.dist), ...direction(args.lat, args.lon, x.lat, x.lng, args.heading) }));
 
-  return { on_street: userRoad ? userRoad.display : null, intersections };
+  // A nearby REAL house number to anchor by ("near number 120"), preferring one on the
+  // street you're on. OSM carries these sparsely, so it's often null — then it's simply
+  // omitted (never invented). near_number_street lets the caller name the street if the
+  // number happens to sit on a different one from on_street.
+  const addr = await nearestAddress(args.lat, args.lon, userRoad ? userRoad.name : undefined);
+  return {
+    on_street: userRoad ? userRoad.display : null,
+    near_number: addr ? addr.housenumber : null,
+    near_number_street: addr ? addr.street : null,
+    intersections,
+  };
 }
 
 // ── Anthropic tool schemas + dispatcher ──────────────────────────────────────

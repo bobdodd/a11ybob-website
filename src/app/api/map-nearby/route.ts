@@ -26,6 +26,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { opensearch } from "@/lib/opensearch";
+import { nearestAddress } from "@/lib/mapAddress";
 
 export const dynamic = "force-dynamic";
 
@@ -573,6 +574,9 @@ export async function GET(req: NextRequest) {
   let intersections:
     | Array<{ display: string; lat: number; lng: number; distance_m: number }>
     | undefined;
+  // A nearby REAL house number to anchor by ("near number 120"), preferring one on the
+  // street you're on — sparse in OSM, so often absent (then omitted, never invented).
+  let address: { housenumber: string; street: string; distance_m: number } | undefined;
   if (sp.get("xings") === "1") {
     const roadRes = await opensearch.search({
       index: INDEX,
@@ -608,6 +612,8 @@ export async function GET(req: NextRequest) {
     for (const r of roads) if (r.near!.dist < userDist) { userDist = r.near!.dist; userRoad = r.name.toLowerCase(); }
     if (userDist > ON_ROAD_M) userRoad = null;
 
+    address = (await nearestAddress(lat, lng, userRoad ?? undefined)) ?? undefined;
+
     if (userRoad) {
       const userGeoms = roads.filter((r) => r.name.toLowerCase() === userRoad).map((r) => r.geom as Geom);
       const dir = roadDirAt(lat, lng, userGeoms);
@@ -640,5 +646,5 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  return NextResponse.json({ results, summary, intersections });
+  return NextResponse.json({ results, summary, intersections, address });
 }

@@ -118,7 +118,7 @@ class ContextMap {
     async quickDescribe() {
         const pos = this.locationTracker.getCurrentPosition();
         if (!pos) { this.announceStatus('Waiting for GPS — try again in a moment.'); return; }
-        const { results: near, intersections } = await this._fetchQuick(pos.lat, pos.lng, 4);
+        const { results: near, intersections, address } = await this._fetchQuick(pos.lat, pos.lng, 4);
         this._lastNearby = near;
         this._lastNearbyPos = { lat: pos.lat, lng: pos.lng };
         if (!near.length) { this.announceStatus('Nothing notable nearby.'); return; }
@@ -128,7 +128,7 @@ class ContextMap {
         // Lead: which way you face, and the street you're on.
         const lead = [];
         if (heading !== null) lead.push(`Facing ${this.cardinal(heading)}`);
-        if (onRoad) lead.push(`on ${onRoad.display}`);
+        if (onRoad) lead.push(`on ${onRoad.display}${this._roadNum(onRoad, address)}`);
         if (lead.length) sentences.push(lead.join(', '));
         // Urban detail: the nearest cross-street junction at each end of the block, the
         // one ahead of you first.
@@ -147,13 +147,13 @@ class ContextMap {
     async detailedDescribe() {
         const pos = this.locationTracker.getCurrentPosition();
         if (!pos) { this.announceStatus('Waiting for GPS — try again in a moment.'); return; }
-        const { results, summary, intersections } = await this._fetchArea(pos.lat, pos.lng, 10);
+        const { results, summary, intersections, address } = await this._fetchArea(pos.lat, pos.lng, 10);
         const near = results.filter((f) => f.distance_m <= 3000);
         this._lastNearby = near;
         this._lastNearbyPos = { lat: pos.lat, lng: pos.lng };
         const area = this._areaCharacter(summary);   // "feel of the space" lead-in (may be null)
         if (!near.length && !area) { this.announceStatus('Nothing notable nearby.'); return; }
-        const { parts, html } = this._describeSurround(pos, near, area, intersections);
+        const { parts, html } = this._describeSurround(pos, near, area, intersections, address);
         this.speakSequence(parts);                // queued short utterances — full read-out, not cut off
         this.renderDetail(html);                  // structured, re-readable block
     }
@@ -168,7 +168,7 @@ class ContextMap {
                 this.lastProximityPos.lat, this.lastProximityPos.lng, position.lat, position.lng);
             if (moved < 12) return;
         }
-        const { results: near, intersections } = await this._fetchQuick(position.lat, position.lng, 5);
+        const { results: near, intersections, address } = await this._fetchQuick(position.lat, position.lng, 5);
         if (!near.length) return;
         this._lastNearby = near;
         this._lastNearbyPos = { lat: position.lat, lng: position.lng };
@@ -176,7 +176,7 @@ class ContextMap {
         let msg = null, id = null;
         if (onRoad && ('road:' + onRoad.id) !== this._lastRoadId) {
             // Newly on a road: announce it plus the block-end intersections.
-            msg = `On ${onRoad.display}.`;
+            msg = `On ${onRoad.display}${this._roadNum(onRoad, address)}.`;
             const xl = this._intersectionsLine(position, intersections, this.heading.getHeading());
             if (xl) msg += ' ' + xl + '.';
             id = 'road:' + onRoad.id; this._lastRoadId = id;
@@ -296,6 +296,17 @@ class ContextMap {
 
     _angDiff(a, b) { return ((((a - b) % 360) + 540) % 360) - 180; }
 
+    // Approximate house-number anchor for the road you're on. OSM numbers are sparse, so
+    // it's a nearby landmark ("near number 120"), never your exact address — and only when
+    // the address actually sits on THIS road; blank otherwise (never invented).
+    _roadNum(onRoad, address) {
+        if (!onRoad || !address || !address.housenumber) return '';
+        const a = (address.street || '').trim().toLowerCase();
+        const r = (onRoad.display || '').trim().toLowerCase();
+        if (a && a !== r) return '';
+        return `, near number ${address.housenumber}`;
+    }
+
     _where(pos, f) {
         const d = this._relClock(pos, f);
         return d.hour ? `at ${d.hour} o'clock` : `to the ${d.cardinal}`;
@@ -359,12 +370,12 @@ class ContextMap {
         return near.find((f) => f.category === 'road' && f.distance_m <= ON_ROAD_M) || null;
     }
 
-    _describeSurround(pos, near, area, intersections) {
+    _describeSurround(pos, near, area, intersections, address) {
         const onRoad = this._onRoad(near, pos);
         const heading = this.heading.getHeading();
         const lead = [];
         if (heading !== null) lead.push(`Facing ${this.cardinal(heading)}`);
-        if (onRoad) lead.push(`on ${onRoad.display}`);
+        if (onRoad) lead.push(`on ${onRoad.display}${this._roadNum(onRoad, address)}`);
         const leadLine = lead.length ? lead.join(', ') + '.' : 'Location found.';
 
         const order = heading !== null
@@ -619,7 +630,7 @@ class ContextMap {
             const res = await fetch(`/api/map-nearby?${qs.toString()}`);
             if (!res.ok) return { results: [], summary: null, intersections: [] };
             const data = await res.json();
-            return { results: data.results || [], summary: data.summary || null, intersections: data.intersections || [] };
+            return { results: data.results || [], summary: data.summary || null, intersections: data.intersections || [], address: data.address || null };
         } catch (_) {
             return { results: [], summary: null, intersections: [] };
         }
@@ -631,9 +642,9 @@ class ContextMap {
             const qs = new URLSearchParams({ lat: String(lat), lng: String(lng), limit: String(limit), xings: '1' });
             if (this.heading.isMoving()) qs.set('moving', '1');
             const res = await fetch(`/api/map-nearby?${qs.toString()}`);
-            if (!res.ok) return { results: [], intersections: [] };
+            if (!res.ok) return { results: [], intersections: [], address: null };
             const data = await res.json();
-            return { results: data.results || [], intersections: data.intersections || [] };
+            return { results: data.results || [], intersections: data.intersections || [], address: data.address || null };
         } catch (_) {
             return { results: [], intersections: [] };
         }
