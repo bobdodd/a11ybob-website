@@ -250,6 +250,37 @@ export async function findPlace(args: {
   return { results };
 }
 
+// The nearest named road to a point — the street a POI sits on/beside ("Foodland on Buckhorn Road").
+async function nearestNamedRoad(lat: number, lon: number, radiusM = 250): Promise<string | null> {
+  const r = await opensearch.search({
+    index: INDEX,
+    body: {
+      size: 1,
+      query: { bool: { must: [{ term: { category: "road" } }, { exists: { field: "name" } }], filter: [{ geo_distance: { distance: `${radiusM}m`, location: { lat, lon } } }] } },
+      sort: [{ _geo_distance: { location: { lat, lon }, order: "asc", unit: "m", distance_type: "plane", mode: "min" } }],
+      _source: ["display"],
+    },
+  });
+  const s = hitsOf(r)[0]?._source;
+  return s ? (String(s.display ?? "") || null) : null;
+}
+
+// The nearest settlement to a point — the place a POI is in ("in Buckhorn").
+const SETTLEMENT_RANKS = ["city", "town", "village", "hamlet", "suburb", "neighbourhood", "quarter", "locality", "isolated_dwelling"];
+async function nearestSettlement(lat: number, lon: number, radiusM = 20000): Promise<string | null> {
+  const r = await opensearch.search({
+    index: INDEX,
+    body: {
+      size: 1,
+      query: { bool: { must: [{ term: { category: "place" } }, { terms: { subtype: SETTLEMENT_RANKS } }, { exists: { field: "name" } }], filter: [{ geo_distance: { distance: `${radiusM}m`, location: { lat, lon } } }] } },
+      sort: [{ _geo_distance: { location: { lat, lon }, order: "asc", unit: "m", distance_type: "plane", mode: "min" } }],
+      _source: ["display"],
+    },
+  });
+  const s = hitsOf(r)[0]?._source;
+  return s ? (String(s.display ?? "") || null) : null;
+}
+
 // ── Tool 2: whats_nearby (the describe core) ─────────────────────────────────
 export async function whatsNearby(args: {
   lat: number; lon: number; radius_m?: number;
@@ -287,7 +318,7 @@ export async function whatsNearby(args: {
     },
   });
 
-  type Row = { display: string; category: string; subtype: string; near: Near; access?: unknown };
+  type Row = { display: string; category: string; subtype: string; near: Near; access?: unknown; lat: number; lng: number };
   const byKey = new Map<string, Row>();
   for (const h of hitsOf(res)) {
     const s = h._source;
@@ -297,12 +328,12 @@ export async function whatsNearby(args: {
     const key = (((s.name as string) ?? "").trim().toLowerCase()) || h._id;
     const prev = byKey.get(key);
     if (!prev || near.dist < prev.near.dist) {
-      byKey.set(key, { display: (s.display as string) ?? "", category: String(s.category ?? ""), subtype: String(s.subtype ?? ""), near, access: s.access });
+      byKey.set(key, { display: (s.display as string) ?? "", category: String(s.category ?? ""), subtype: String(s.subtype ?? ""), near, access: s.access, lat: s.lat as number, lng: s.lng as number });
     }
   }
 
   const cap = new Map<string, number>();
-  const results = [];
+  const results: Record<string, unknown>[] = [];
   for (const r of [...byKey.values()].sort((a, b) => a.near.dist - b.near.dist)) {
     if (!filtered) {
       // Only the general "what's around" list caps a category; a type-filtered search shows them all.
@@ -314,9 +345,25 @@ export async function whatsNearby(args: {
       display: r.display, category: r.category || undefined, subtype: r.subtype || undefined,
       distance_m: Math.round(r.near.dist),
       ...direction(args.lat, args.lon, r.near.lat, r.near.lng, args.heading),
+      lat: r.lat, lng: r.lng,
       ...(r.access ? { access: r.access } : {}),
     });
     if (results.length >= 15) break;
+  }
+
+  // For a specific-thing search ("nearest supermarket"), enrich the top few with WHERE each is —
+  // the street it sits on and the settlement it's in — so the answer can be "Foodland on Buckhorn
+  // Road in Buckhorn, 23 km", not a bare bearing. (Skipped for a general "what's around" list, where
+  // the user is already there and it would just repeat.)
+  if (filtered) {
+    await Promise.all(results.slice(0, 6).map(async (r) => {
+      const [road, place] = await Promise.all([
+        nearestNamedRoad(r.lat as number, r.lng as number),
+        nearestSettlement(r.lat as number, r.lng as number),
+      ]);
+      if (road) r.on_street = road;
+      if (place) r.in = place;
+    }));
   }
   return { radius_m: radius, results };
 }
@@ -537,7 +584,7 @@ export const TOOL_SCHEMAS = [
   {
     name: "whats_nearby",
     description:
-      "Map features around a point, nearest first, each with distance + direction (computed for you; never estimate them). TWO modes. (1) NO `types`: a general 'what's around me' snapshot of nearby named features. (2) WITH `types`: a FACETED search for a specific kind ('nearest supermarket / pharmacy / café') — it filters the index to that kind and searches much WIDER, because a sparse target can be a kilometre or more away and would otherwise be buried under closer features of other kinds. Common words are expanded to the family that satisfies them (e.g. 'supermarket' and 'grocery' both cover supermarket/grocery/convenience/greengrocer, so a small-town Foodland or a corner store is found). Each result carries its `subtype` — name it by its real kind.",
+      "Map features around a point, nearest first, each with distance + direction (computed for you; never estimate them). TWO modes. (1) NO `types`: a general 'what's around me' snapshot of nearby named features. (2) WITH `types`: a FACETED search for a specific kind ('nearest supermarket / pharmacy / café') — it filters the index to that kind and searches much WIDER, because a sparse target can be a kilometre or more away and would otherwise be buried under closer features of other kinds. Common words are expanded to the family that satisfies them (e.g. 'supermarket' and 'grocery' both cover supermarket/grocery/convenience/greengrocer, so a small-town Foodland or a corner store is found). Each result carries its `subtype` (name it by its real kind), and for a type search also `on_street` (the road it sits on) and `in` (the settlement it's in), so you can say WHERE it is: 'Foodland, on Buckhorn Road in Buckhorn'.",
     input_schema: {
       type: "object",
       properties: {
