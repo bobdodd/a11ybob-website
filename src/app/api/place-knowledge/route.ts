@@ -44,8 +44,11 @@ async function geocode(q: string): Promise<Geo> {
 export async function GET(req: NextRequest) {
   const sp = req.nextUrl.searchParams;
   const q = (sp.get("q") ?? "").trim();
-  let lat = Number(sp.get("lat"));
-  let lng = Number(sp.get("lng"));
+  // Missing params must read as NaN, not 0 — Number(null) is 0, which would silently
+  // query Null Island (0,0) when only `q` is given.
+  const latP = sp.get("lat"), lngP = sp.get("lng");
+  let lat = latP !== null && latP !== "" ? Number(latP) : NaN;
+  let lng = lngP !== null && lngP !== "" ? Number(lngP) : NaN;
   let resolved: Geo = null;
 
   if (q && (!Number.isFinite(lat) || !Number.isFinite(lng))) {
