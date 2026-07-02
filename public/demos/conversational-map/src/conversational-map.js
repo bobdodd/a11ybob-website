@@ -111,11 +111,37 @@ function addMessage(role, text) {
   return wrap;
 }
 
+// ── Busy cue: a soft periodic click while the assistant is "thinking". A screen-reader user
+//    otherwise hears nothing during the wait — the aria-live "Thinking…" announces once, then
+//    silence. A non-speech tick every couple of seconds says "still working" without a spoken
+//    line fighting the screen reader or the answer, and it works even where Web Speech doesn't
+//    (de-Googled phones). One AudioContext, created inside the question gesture (setBusy runs
+//    synchronously from the submit/voice handler) so the later interval ticks are allowed to
+//    sound. ──
+let busyCtx = null, busyTimer = null;
+function softClick() {
+  try {
+    if (!busyCtx) busyCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (busyCtx.state === "suspended") busyCtx.resume();
+    const t = busyCtx.currentTime;
+    const o = busyCtx.createOscillator(), g = busyCtx.createGain();
+    o.type = "sine"; o.frequency.value = 1000;
+    o.connect(g); g.connect(busyCtx.destination);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.05, t + 0.003);    // near-instant soft attack…
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.03);   // …fast decay → a soft click, not a beep
+    o.start(t); o.stop(t + 0.04);
+  } catch { /* no audio — the aria-live "Thinking…" still announces once */ }
+}
+function startBusyTone() { stopBusyTone(); softClick(); busyTimer = window.setInterval(softClick, 2500); }
+function stopBusyTone() { if (busyTimer) { window.clearInterval(busyTimer); busyTimer = null; } }
+
 function setBusy(busy, note) {
   send.disabled = busy;
   input.disabled = busy;
   if (speakBtn) speakBtn.disabled = busy;
   status.textContent = note || "";
+  if (busy) startBusyTone(); else stopBusyTone();   // audible working-cue for non-visual users
 }
 
 // Speak aloud where there's a voice; otherwise set the polite live region (the screen reader
