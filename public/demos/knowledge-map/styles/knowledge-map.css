@@ -1,0 +1,169 @@
+/* Knowledge Map (v2, unlisted testing demo) — screen-reader-first. Cited place knowledge
+   from Wikipedia, via a traffic-warmed cache. Same design language as the other map demos:
+   mobile-first, large targets, AAA contrast, grey luminance boundaries (survives Invert
+   Colours), OS-following dark mode. Colour lives in custom properties — one ladder,
+   swapped by prefers-color-scheme; separation rides on grey, never hue. */
+
+:root {
+    --ink: #111;
+    --ink-soft: #333;
+    --line: #5a5a5a;
+    --fill: #f4f6f8;
+    --focus: #0033aa;
+    --link: #0033aa;
+    --bg: #fff;
+    --disabled-ink: #6a6a6a;
+    --disabled-fill: #ececec;
+    --disabled-line: #9a9a9a;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+    margin: 0;
+    padding: 1.25rem;
+    max-width: 42rem;
+    margin-inline: auto;
+    font: 1.125rem/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+    hyphens: none;
+}
+
+h1 { font-size: 1.6rem; line-height: 1.2; margin: 0 0 0.5rem; }
+h2 { font-size: 1.25rem; margin: 1.5rem 0 0.5rem; }
+h3 { font-size: 1.0625rem; margin: 1rem 0 0.25rem; }
+h1:focus { outline: none; }   /* programmatic focus target */
+p { margin: 0 0 0.75rem; }
+
+/* ── Links ──────────────────────────────────────────────────────────────── */
+a { color: var(--link); text-underline-offset: 0.15em; }
+a:hover { text-decoration-thickness: 2px; }
+
+/* ── Focus — a visible ring on every interactive control, never removed ───── */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+[tabindex]:focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
+}
+
+/* ── Disclaimer gate ────────────────────────────────────────────────────── */
+.km-disclaimer ul { margin: 0.5rem 0 1rem; padding-inline-start: 1.25rem; }
+.km-disclaimer li { margin: 0 0 0.6rem; }
+.km-risk, .km-consent {
+    padding: 0.875rem 1rem;
+    background: var(--fill);
+    border: 2px solid var(--line);
+    border-radius: 8px;
+    color: var(--ink);
+}
+.km-consent { margin: 1.25rem 0; }
+.km-consent label { display: flex; gap: 0.625rem; align-items: flex-start; cursor: pointer; font-weight: 600; }
+.km-consent input[type="checkbox"] { inline-size: 1.5rem; block-size: 1.5rem; margin: 0.15rem 0 0; flex-shrink: 0; accent-color: var(--focus); }
+
+/* ── Buttons ────────────────────────────────────────────────────────────── */
+.km-btn {
+    display: block;
+    inline-size: 100%;
+    min-block-size: 3.25rem;
+    padding: 0.75rem 1rem;
+    margin: 0 0 0.75rem;
+    font: inherit;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--ink);
+    background: var(--bg);
+    border: 2px solid var(--line);
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: center;
+}
+.km-btn:hover { background: var(--fill); }
+.km-btn:disabled { color: var(--disabled-ink); background: var(--disabled-fill); border-color: var(--disabled-line); cursor: not-allowed; }
+.km-start { margin-top: 0.5rem; }
+
+/* ── Query controls ─────────────────────────────────────────────────────── */
+.km-intro { color: var(--ink-soft); }
+.km-field { margin: 1rem 0; }
+.km-label { display: block; font-weight: 600; margin: 0 0 0.25rem; }
+.km-hint { color: var(--ink-soft); margin: 0 0 0.6rem; font-size: 1rem; }
+.km-inputrow { display: flex; flex-wrap: wrap; gap: 0.625rem; align-items: stretch; }
+.km-input {
+    flex: 1 1 12rem;
+    min-block-size: 3.25rem;
+    padding: 0.75rem 0.875rem;
+    font: inherit;
+    color: var(--ink);
+    background: var(--bg);
+    border: 2px solid var(--line);
+    border-radius: 10px;
+}
+.km-inputrow .km-btn { inline-size: auto; flex: 0 0 auto; margin: 0; }
+.km-coords { display: flex; gap: 0.625rem; flex-wrap: wrap; }
+.km-coords .km-input { flex: 1 1 8rem; }
+
+.km-status { min-block-size: 1.55em; margin: 0.75rem 0 0; color: var(--ink-soft); font-style: italic; }
+.km-status:empty { min-block-size: 0; }
+
+/* ── Results ────────────────────────────────────────────────────────────── */
+.km-results:empty { display: none; }
+.km-results { margin: 1.25rem 0; }
+.km-provenance {
+    padding: 0.5rem 0.75rem;
+    margin: 0 0 0.75rem;
+    background: var(--fill);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    color: var(--ink-soft);
+    font-size: 1rem;
+}
+.km-article {
+    margin: 0 0 0.875rem;
+    padding: 0.875rem 1rem;
+    background: var(--fill);
+    border: 2px solid var(--line);
+    border-radius: 8px;
+}
+.km-article h3 { margin: 0 0 0.35rem; }
+.km-article p { margin: 0 0 0.5rem; }
+.km-meta { color: var(--ink-soft); font-size: 1rem; margin: 0; }
+.km-meta a { white-space: nowrap; }
+
+/* ── Screen-reader-only live region ─────────────────────────────────────── */
+.km-sr-only {
+    position: absolute;
+    inline-size: 1px; block-size: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%);
+    white-space: nowrap; border: 0;
+}
+
+/* ── Dark mode — follows the OS (greyscale ladder + one blue accent) ──────── */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --ink: #f2f4f6;
+        --ink-soft: #b7bec6;
+        --line: #8b929b;
+        --fill: #22262c;
+        --focus: #86b4ff;
+        --link: #86b4ff;
+        --bg: #14171a;
+        --disabled-ink: #7a828b;
+        --disabled-fill: #1b1e23;
+        --disabled-line: #4a5058;
+    }
+}
+
+/* ── High contrast — borders to full ink (visible in both themes) ─────────── */
+@media (prefers-contrast: high) {
+    :root { --line: var(--ink); }
+    .km-risk, .km-consent, .km-btn, .km-input, .km-article, .km-provenance { border-color: var(--ink); }
+    .km-btn:disabled { color: var(--ink); border-color: var(--ink); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .km-btn, .km-input { transition: background 0.12s ease; }
+}

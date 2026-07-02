@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Knowledge Map — experimental test software</title>
+    <link rel="stylesheet" href="styles/knowledge-map.css">
+</head>
+<body>
+    <!-- ── Disclaimer gate ───────────────────────────────────────────────────
+         The app below stays hidden (and out of the accessibility tree) until the
+         notice is accepted. Acceptance is also the user gesture the phone needs to
+         grant location permission. -->
+    <main id="km-gate" class="km-gate">
+        <h1>Knowledge Map</h1>
+        <h2>Important — please read before you start</h2>
+
+        <div class="km-disclaimer">
+            <p>
+                The Knowledge Map is <strong>experimental, unfinished test software</strong>,
+                shared for evaluation only. It looks up <strong>publicly available information
+                about a place</strong> — right now, from <strong>Wikipedia</strong> — and reads
+                it back to you.
+            </p>
+            <ul>
+                <li>
+                    <strong>It can be wrong or out of date.</strong> The information comes from
+                    Wikipedia and may be inaccurate, incomplete, or stale. Everything is
+                    labelled with its source and how recently it was fetched — weigh it accordingly.
+                </li>
+                <li>
+                    <strong>It is not a navigation or mobility aid.</strong> It describes what is
+                    <em>known</em> about an area, not how to get anywhere. Keep using your usual
+                    ways of getting around.
+                </li>
+                <li>
+                    <strong>Your location and searches are sent to the server</strong> to look up
+                    the area, and the server fetches matching public articles from Wikipedia.
+                </li>
+            </ul>
+            <p class="km-risk">
+                By continuing you confirm that you have read and understood this notice, that you
+                use the Knowledge Map <strong>entirely at your own risk</strong>, and that — to the
+                fullest extent permitted by law — the author accepts <strong>no liability</strong>
+                for any loss arising from your use of it. Provided &ldquo;as is&rdquo;, with no
+                warranty of any kind.
+            </p>
+        </div>
+
+        <p class="km-consent">
+            <label>
+                <input type="checkbox" id="km-accept">
+                I have read and understood this notice, and I accept all risk.
+            </label>
+        </p>
+
+        <button id="km-start" class="km-btn km-start" type="button" disabled>
+            Start the Knowledge Map
+        </button>
+    </main>
+
+    <!-- ── The app (revealed after acceptance) ─────────────────────────────── -->
+    <main id="km-app" class="km-app" hidden>
+        <h1 id="km-app-title" tabindex="-1">Knowledge Map</h1>
+        <p class="km-intro">
+            Test software. Look up what&rsquo;s <em>known</em> about a place — where you are, or
+            anywhere you name — from Wikipedia, cited and dated.
+        </p>
+
+        <div class="km-field">
+            <label class="km-label" for="km-place">Look up a place by name</label>
+            <p class="km-hint" id="km-place-hint">A town, neighbourhood, park, or landmark — for example, Buckhorn.</p>
+            <div class="km-inputrow">
+                <input class="km-input" id="km-place" type="text" autocomplete="off" aria-describedby="km-place-hint" value="Buckhorn">
+                <button id="km-place-go" class="km-btn" type="button">Look up</button>
+            </div>
+        </div>
+
+        <button id="km-here" class="km-btn" type="button">Use my location</button>
+
+        <details class="km-field">
+            <summary>Or enter coordinates</summary>
+            <div class="km-coords" style="margin-top:0.75rem">
+                <span>
+                    <label class="km-label" for="km-lat">Latitude</label>
+                    <input class="km-input" id="km-lat" type="text" inputmode="decimal" autocomplete="off" value="44.562">
+                </span>
+                <span>
+                    <label class="km-label" for="km-lng">Longitude</label>
+                    <input class="km-input" id="km-lng" type="text" inputmode="decimal" autocomplete="off" value="-78.329">
+                </span>
+            </div>
+            <button id="km-coords-go" class="km-btn" type="button" style="margin-top:0.75rem">Look up these coordinates</button>
+        </details>
+
+        <p id="km-status" class="km-status" role="status"></p>
+
+        <!-- Cited results render here as navigable headings + text. -->
+        <section id="km-results" class="km-results" aria-label="What's known about this place"></section>
+    </main>
+
+    <!-- Assertive live region for the spoken-summary fallback / status where the Web
+         Speech API is unavailable. -->
+    <div id="km-live" class="km-sr-only" aria-live="assertive" aria-atomic="true"></div>
+
+    <script type="module" src="src/knowledge-map.js"></script>
+</body>
+</html>
