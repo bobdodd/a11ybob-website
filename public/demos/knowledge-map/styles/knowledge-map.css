@@ -88,6 +88,8 @@ input:focus-visible,
 /* ── Query controls ─────────────────────────────────────────────────────── */
 .km-intro { color: var(--ink-soft); }
 .km-field { margin: 1rem 0; }
+/* Revealed content inside the "enter coordinates" <details> gets breathing room below the summary. */
+.km-field > summary ~ * { margin-block-start: 0.75rem; }
 .km-label { display: block; font-weight: 600; margin: 0 0 0.25rem; }
 .km-hint { color: var(--ink-soft); margin: 0 0 0.6rem; font-size: 1rem; }
 .km-inputrow { display: flex; flex-wrap: wrap; gap: 0.625rem; align-items: stretch; }

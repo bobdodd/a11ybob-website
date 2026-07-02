@@ -72,7 +72,7 @@
             <label class="km-label" for="km-place">Look up a place by name</label>
             <p class="km-hint" id="km-place-hint">A town, neighbourhood, park, or landmark — for example, Buckhorn.</p>
             <div class="km-inputrow">
-                <input class="km-input" id="km-place" type="text" autocomplete="off" aria-describedby="km-place-hint" value="Buckhorn">
+                <input class="km-input" id="km-place" type="text" aria-describedby="km-place-hint" value="Buckhorn">
                 <button id="km-place-go" class="km-btn" type="button">Look up</button>
             </div>
         </div>
@@ -81,17 +81,17 @@
 
         <details class="km-field">
             <summary>Or enter coordinates</summary>
-            <div class="km-coords" style="margin-top:0.75rem">
+            <div class="km-coords">
                 <span>
                     <label class="km-label" for="km-lat">Latitude</label>
-                    <input class="km-input" id="km-lat" type="text" inputmode="decimal" autocomplete="off" value="44.562">
+                    <input class="km-input" id="km-lat" type="text" inputmode="decimal" value="44.562">
                 </span>
                 <span>
                     <label class="km-label" for="km-lng">Longitude</label>
-                    <input class="km-input" id="km-lng" type="text" inputmode="decimal" autocomplete="off" value="-78.329">
+                    <input class="km-input" id="km-lng" type="text" inputmode="decimal" value="-78.329">
                 </span>
             </div>
-            <button id="km-coords-go" class="km-btn" type="button" style="margin-top:0.75rem">Look up these coordinates</button>
+            <button id="km-coords-go" class="km-btn" type="button">Look up these coordinates</button>
         </details>
 
         <p id="km-status" class="km-status" role="status"></p>
