@@ -9,100 +9,123 @@
 </head>
 <body>
     <!-- ── Disclaimer gate ───────────────────────────────────────────────────
-         The app below stays hidden (and out of the accessibility tree) until the
-         notice is accepted. Acceptance is also the user gesture the phone needs to
-         grant location permission. -->
-    <main id="km-gate" class="km-gate">
+         Shown first; the app stays hidden (and out of the accessibility tree)
+         until accepted. Acceptance is also the gesture the phone needs to grant
+         location permission. Re-shown every visit (no localStorage). -->
+    <main id="cv-gate" class="cv-gate">
         <h1>Knowledge Map</h1>
         <h2>Important — please read before you start</h2>
 
-        <div class="km-disclaimer">
+        <div class="cv-disclaimer">
             <p>
-                The Knowledge Map is <strong>experimental, unfinished test software</strong>,
-                shared for evaluation only. It looks up <strong>publicly available information
-                about a place</strong> — right now, from <strong>Wikipedia</strong> — and reads
-                it back to you.
+                The Knowledge Map is <strong>experimental, unfinished test
+                software</strong>, shared for evaluation only. It has <strong>not been
+                tested for accuracy or reliability</strong>. You ask questions about where
+                you are, or anywhere on the map, and it answers from map data — and, for
+                what a place is <em>known</em> for, from <strong>Wikipedia</strong>.
             </p>
             <ul>
                 <li>
-                    <strong>It can be wrong or out of date.</strong> The information comes from
-                    Wikipedia and may be inaccurate, incomplete, or stale. Everything is
-                    labelled with its source and how recently it was fetched — weigh it accordingly.
+                    <strong>It can be wrong.</strong> It may misreport where you are, how
+                    far away things are, or which direction they lie in — or it may answer
+                    a question incorrectly or make something up. Information may be missing,
+                    out of date, or simply incorrect.
                 </li>
                 <li>
-                    <strong>It is not a navigation or mobility aid.</strong> It describes what is
-                    <em>known</em> about an area, not how to get anywhere. Keep using your usual
-                    ways of getting around.
+                    <strong>Facts about a place come from Wikipedia.</strong> They are
+                    shown with their source and how recently they were fetched, but can be
+                    inaccurate, incomplete, or out of date — weigh them accordingly.
                 </li>
                 <li>
-                    <strong>Your location and searches are sent to the server</strong> to look up
-                    the area, and the server fetches matching public articles from Wikipedia.
+                    <strong>It is not a navigation or mobility aid.</strong> Do not use it
+                    to find your way, cross roads, judge traffic, avoid hazards, or make any
+                    decision about your safety or movement. It is not a substitute for your
+                    cane, your guide dog, your own orientation and mobility skills, sighted
+                    assistance, or proper navigation tools.
+                </li>
+                <li>
+                    <strong>It sends your words &mdash; typed or spoken &mdash; and your location
+                    to external services.</strong> To understand your questions and write its
+                    answers, what you type and your current location (when available) are sent over
+                    the internet to a third-party AI service for processing; and if you use the
+                    <strong>Speak</strong> button, your voice is streamed live to a third-party
+                    speech service to transcribe it. Do not type or say anything you would not want
+                    handled that way.
+                </li>
+                <li>
+                    <strong>It depends on things that can fail</strong> — your device's GPS,
+                    your network connection, the AI service, and map data that may be
+                    inaccurate. Accuracy is often poor among buildings, in crowds, or indoors.
+                </li>
+                <li>
+                    <strong>Keep using your usual ways of getting around at all times</strong>
+                    and stay aware of your surroundings.
                 </li>
             </ul>
-            <p class="km-risk">
-                By continuing you confirm that you have read and understood this notice, that you
-                use the Knowledge Map <strong>entirely at your own risk</strong>, and that — to the
-                fullest extent permitted by law — the author accepts <strong>no liability</strong>
-                for any loss arising from your use of it. Provided &ldquo;as is&rdquo;, with no
+            <p class="cv-risk">
+                By continuing you confirm that you have read and understood this notice, that
+                you use the Knowledge Map <strong>entirely at your own risk</strong>, and
+                that — to the fullest extent permitted by law — the author and contributors
+                accept <strong>no liability</strong> for any loss, injury, or damage arising
+                from your use of it. The software is provided &ldquo;as is&rdquo;, with no
                 warranty of any kind.
             </p>
         </div>
 
-        <p class="km-consent">
+        <p class="cv-consent">
             <label>
-                <input type="checkbox" id="km-accept">
-                I have read and understood this notice, and I accept all risk.
+                <input type="checkbox" id="cv-accept">
+                I have read and understood this notice. I accept all risk, I understand my
+                questions, my location, and my voice (when I use Speak) are sent to external
+                services, and I will not use the Knowledge Map for navigation or for any
+                safety decision.
             </label>
         </p>
 
-        <button id="km-start" class="km-btn km-start" type="button" disabled>
+        <button id="cv-start" class="cv-btn cv-start" type="button" disabled>
             Start the Knowledge Map
         </button>
     </main>
 
     <!-- ── The app (revealed after acceptance) ─────────────────────────────── -->
-    <main id="km-app" class="km-app" hidden>
-        <h1 id="km-app-title" tabindex="-1">Knowledge Map</h1>
-        <p class="km-intro">
-            Test software. Look up what&rsquo;s <em>known</em> about a place — where you are, or
-            anywhere you name — from Wikipedia, cited and dated.
+    <main id="cv-app" class="cv-app" hidden>
+        <h1 id="cv-app-title" tabindex="-1">Knowledge Map</h1>
+        <p class="cv-intro">
+            Test software — not for navigation. Ask about where you are now, or anywhere on
+            the map — what&rsquo;s around you, and what a place is <em>known</em> for (from
+            Wikipedia, cited and dated). Type it, or tap Speak to ask aloud. Finding your
+            location can take a moment after you start.
         </p>
 
-        <div class="km-field">
-            <label class="km-label" for="km-place">Look up a place by name</label>
-            <p class="km-hint" id="km-place-hint">A town, neighbourhood, park, or landmark — for example, Buckhorn.</p>
-            <div class="km-inputrow">
-                <input class="km-input" id="km-place" type="text" aria-describedby="km-place-hint" value="Buckhorn">
-                <button id="km-place-go" class="km-btn" type="button">Look up</button>
+        <!-- The conversation. NOT a live region: it never double-announces and stays
+             navigable for re-reading. New answers are announced via #cv-live below. -->
+        <section class="cv-logwrap" aria-label="Conversation">
+            <h2 class="cv-sr-only">Conversation</h2>
+            <div id="cv-log" class="cv-log"></div>
+        </section>
+
+        <form id="cv-form" class="cv-form">
+            <label for="cv-input" class="cv-label">Ask about where you are, or anywhere on the map</label>
+            <p id="cv-hint" class="cv-hint">
+                For example: &ldquo;what&rsquo;s near me?&rdquo;, &ldquo;is there a step-free
+                entrance to the library?&rdquo;, &ldquo;how far is the CN Tower?&rdquo;, or
+                &ldquo;what&rsquo;s this area known for?&rdquo;
+            </p>
+            <div class="cv-inputrow">
+                <input id="cv-input" class="cv-input" type="text" aria-describedby="cv-hint"
+                       enterkeyhint="send">
+                <button id="cv-speak" class="cv-btn" type="button" aria-pressed="false">Speak</button>
+                <button id="cv-send" class="cv-btn" type="submit">Send</button>
             </div>
-        </div>
+        </form>
 
-        <button id="km-here" class="km-btn" type="button">Use my location</button>
-
-        <details class="km-field">
-            <summary>Or enter coordinates</summary>
-            <div class="km-coords">
-                <span>
-                    <label class="km-label" for="km-lat">Latitude</label>
-                    <input class="km-input" id="km-lat" type="text" inputmode="decimal" value="44.562">
-                </span>
-                <span>
-                    <label class="km-label" for="km-lng">Longitude</label>
-                    <input class="km-input" id="km-lng" type="text" inputmode="decimal" value="-78.329">
-                </span>
-            </div>
-            <button id="km-coords-go" class="km-btn" type="button">Look up these coordinates</button>
-        </details>
-
-        <p id="km-status" class="km-status" role="status"></p>
-
-        <!-- Cited results render here as navigable headings + text. -->
-        <section id="km-results" class="km-results" aria-label="What's known about this place"></section>
+        <!-- Status: "Thinking…", errors. Polite live region (short messages only). -->
+        <p id="cv-status" class="cv-status" role="status" aria-live="polite"></p>
     </main>
 
-    <!-- Assertive live region for the spoken-summary fallback / status where the Web
-         Speech API is unavailable. -->
-    <div id="km-live" class="km-sr-only" aria-live="assertive" aria-atomic="true"></div>
+    <!-- The answer is announced here (sr-only, polite). The visible copy lives in the log
+         above; this is what a screen reader speaks when an answer arrives. -->
+    <div id="cv-live" class="cv-sr-only" aria-live="polite" aria-atomic="true"></div>
 
     <script type="module" src="src/knowledge-map.js"></script>
 </body>
