@@ -144,12 +144,28 @@ function setBusy(busy, note) {
   if (busy) startBusyTone(); else stopBusyTone();   // audible working-cue for non-visual users
 }
 
-// Speak aloud where there's a voice; otherwise set the polite live region (the screen reader
-// reads it). Latest-wins (cancel) so a new answer interrupts an older one.
-function speak(text) {
-  if (synth && speechOk) { synth.cancel(); synth.speak(new SpeechSynthesisUtterance(text)); return; }
+// Speak aloud where there's a voice; otherwise set the polite live region (the screen reader reads
+// it). Latest-wins (cancel) so a new answer interrupts an older one. `onDone` (optional) fires when
+// the app has FINISHED speaking — used to re-open the mic for a hands-free follow-up. Web Speech
+// gives a real end event; the screen-reader fallback has none, so we ESTIMATE the spoken duration
+// from the text length (best-effort — de-Googled phones).
+function speak(text, onDone) {
+  let done = false;
+  const finish = onDone ? () => { if (!done) { done = true; onDone(); } } : null;
+  if (synth && speechOk) {
+    synth.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    if (finish) {
+      u.onend = finish;
+      u.onerror = finish;                                                  // cancelled/failed still releases the mic
+      window.setTimeout(finish, Math.min(20000, 1500 + text.length * 70)); // safety net if no event fires
+    }
+    synth.speak(u);
+    return;
+  }
   live.textContent = "";
   window.setTimeout(() => { live.textContent = text; }, 60);
+  if (finish) window.setTimeout(finish, Math.min(12000, 900 + text.length * 55)); // estimated read time
 }
 
 async function ask(message) {
@@ -168,18 +184,22 @@ async function ask(message) {
     const data = await res.json().catch(() => ({}));
     if (!res.ok || data.error) {
       const msg = data.error || `Something went wrong (${res.status}).`;
-      setBusy(false, msg); speak(msg); input.focus(); return;
+      setBusy(false, msg);
+      if (convo) { convo = false; clearIdle(); setConvoButton(false); }   // stop the hands-free loop on error
+      speak(msg); input.focus(); return;
     }
     const reply = (data.reply || "").trim() || "I'm not sure how to answer that.";
     addMessage("bot", reply);
     history.push({ role: "assistant", content: reply });
     if (history.length > MAX_HISTORY * 2) history.splice(0, history.length - MAX_HISTORY * 2);
     setBusy(false, "");
-    speak(reply);
+    speak(reply, onAnswerSpoken);   // in a voice conversation, re-open the mic once this answer finishes
     input.focus();
   } catch {
     const msg = "I couldn't reach the assistant. Check your connection and try again.";
-    setBusy(false, msg); speak(msg); input.focus();
+    setBusy(false, msg);
+    if (convo) { convo = false; clearIdle(); setConvoButton(false); }   // stop the hands-free loop on error
+    speak(msg); input.focus();
   }
 }
 
@@ -191,16 +211,23 @@ form.addEventListener("submit", (e) => {
   ask(message);
 });
 
-// ── Voice input: STREAMING to Deepgram ─────────────────────────────────────────
-// Tap Speak; speak your question; it sends automatically when you PAUSE (Deepgram's utterance-end
-// detection, which works in background noise), or tap Stop. Audio streams DIRECTLY to Deepgram over
-// a WebSocket using a 30-second token minted server-side (/api/context-stt-token), so the API key
-// never reaches the browser and no audio passes through our server. Diarisation + "voice locking"
-// keep only the MAIN speaker (you) and drop nearby conversations.
+// ── Voice input: STREAMING to Deepgram, hands-free conversation ─────────────────────────────────
+// Tap Speak ONCE to start a conversation. You speak; it sends automatically when you PAUSE
+// (Deepgram's utterance-end detection, which works in background noise); the app answers; then the
+// mic RE-OPENS for a follow-up. It re-opens only AFTER the app has finished speaking, so it never
+// hears its own voice. ~10s of silence, or tapping Stop, ends the conversation. Audio streams
+// DIRECTLY to Deepgram over a WebSocket using a 30-second token minted server-side
+// (/api/context-stt-token), so the API key never reaches the browser and no audio passes through
+// our server. Diarisation + "voice locking" keep only the MAIN speaker (you) and drop nearby chatter.
 const TOKEN_API = "/api/context-stt-token";
 let recording = false, micStream = null, dgSocket = null, sttCtx = null, sttNode = null, sttSource = null;
 let lockedSpeaker = null, finalWords = [];   // finalWords: [{w,sp}]; transcript = the locked speaker's words
 const speakerCounts = new Map();
+
+// Hands-free conversation state (see the flow above).
+const LISTEN_IDLE_MS = 10000;   // silence after the app speaks before the conversation winds down
+let convo = false;              // a conversation session is active (from Speak until Stop / silence)
+let idleTimer = null;           // re-arming "no speech" timeout for the current listen window
 
 // Short tone cue (rising = listening, falling = stopped) so a blind user hears the state.
 function beep(freq) {
@@ -237,14 +264,64 @@ function ingestWords(words) {
   }
 }
 
-async function toggleRecord() {
-  if (recording) { stopStream(true); return; }   // manual stop = finalise + send
-  await startStream();
+function setConvoButton(on) {
+  speakBtn.textContent = on ? "Stop" : "Speak";
+  speakBtn.setAttribute("aria-pressed", on ? "true" : "false");
 }
 
-async function startStream() {
+// The 10-second listen window is an IDLE timer: it re-arms on every scrap of recognised speech, so
+// it never cuts you off mid-sentence — it only fires after ~10s of actual silence, winding the
+// conversation down.
+function armIdle() {
+  clearIdle();
+  idleTimer = window.setTimeout(() => { closeMic(); endConvo("Finished listening. Tap Speak to talk again."); }, LISTEN_IDLE_MS);
+}
+function clearIdle() { if (idleTimer) { window.clearTimeout(idleTimer); idleTimer = null; } }
+
+// The Speak button is the master switch for the whole hands-free conversation.
+async function toggleRecord() {
+  if (convo) { endConvo("Conversation ended. Tap Speak to start again."); return; }
+  convo = true;
+  setConvoButton(true);
+  await startListen();
+}
+
+// Close the mic/socket for THIS turn without ending the conversation (used at utterance-end before
+// we answer, and before each re-open).
+function closeMic() { clearIdle(); recording = false; cleanupStream(); }
+
+// End the whole conversation: mic off, any answer speech stopped, back to tap-to-talk.
+function endConvo(message) {
+  convo = false;
+  clearIdle();
+  recording = false;
+  cleanupStream();
+  try { if (synth) synth.cancel(); } catch { /* */ }
+  setConvoButton(false);
+  beep(440);
+  if (message) { status.textContent = message; live.textContent = message; }
+}
+
+// A recognised utterance ended: send it. In a conversation, ask() re-opens the mic when it answers.
+function handleUtterance(t) {
+  input.value = t;
+  speak(`Heard: ${t}`);   // a mishear is caught by ear
+  ask(t);
+}
+
+// The app has finished speaking an answer → re-open the mic for a hands-free follow-up.
+function onAnswerSpoken() { if (convo && !recording) startListen(); }
+
+// Couldn't open the mic — surface why and drop out of conversation mode.
+function bailListen(msg) {
+  status.textContent = msg;
+  speak(msg);
+  if (convo) { convo = false; setConvoButton(false); }
+}
+
+async function startListen() {
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.AudioWorkletNode) {
-    speak("Voice input isn't available on this device — please type your question."); return;
+    bailListen("Voice input isn't available on this device — please type your question."); return;
   }
   let token;
   try {
@@ -263,7 +340,7 @@ async function startStream() {
       : name === "NotFoundError"
       ? "No microphone was found on this device — please type your question."
       : `Couldn't start speech input (${(e && e.message) || name || "error"}). You can type your question instead.`;
-    status.textContent = msg; speak(msg); return;
+    bailListen(msg); return;
   }
 
   try {
@@ -276,7 +353,7 @@ async function startStream() {
     sttNode.port.onmessage = (e) => { if (dgSocket && dgSocket.readyState === WebSocket.OPEN) dgSocket.send(e.data); };
   } catch {
     cleanupStream();
-    const m = "Couldn't start audio capture — please type your question."; status.textContent = m; speak(m); return;
+    bailListen("Couldn't start audio capture — please type your question."); return;
   }
 
   const params = new URLSearchParams({
@@ -288,9 +365,9 @@ async function startStream() {
   openDeepgram(`wss://api.deepgram.com/v1/listen?${params.toString()}`, token);
 
   recording = true;
-  speakBtn.textContent = "Stop"; speakBtn.setAttribute("aria-pressed", "true");
-  status.textContent = "Listening… speak your question; it sends when you pause, or tap Stop.";
+  status.textContent = "Listening… ask your question, or reply. It sends when you pause; tap Stop to end.";
   beep(880);
+  armIdle();   // ~10s to start speaking, then the conversation winds down (re-arms while you talk)
 }
 
 // The temp token rides in the Sec-WebSocket-Protocol header (browsers can't set Authorization on a
@@ -304,7 +381,10 @@ function openDeepgram(url, token, scheme = "bearer", tried = false) {
   ws.onopen = () => { opened = true; };
   ws.onmessage = (e) => {
     let msg; try { msg = JSON.parse(e.data); } catch { return; }
-    if (msg.type === "UtteranceEnd") { if (recording && lockedTranscript()) stopStream(true); return; }
+    if (msg.type === "UtteranceEnd") {
+      if (recording && lockedTranscript()) { const t = lockedTranscript(); closeMic(); handleUtterance(t); }
+      return;
+    }
     const alt = msg.channel && msg.channel.alternatives && msg.channel.alternatives[0];
     if (!alt) return;
     if (msg.is_final && alt.words && alt.words.length) ingestWords(alt.words);
@@ -312,14 +392,15 @@ function openDeepgram(url, token, scheme = "bearer", tried = false) {
     // word): the locked words so far + the current interim guess.
     const interim = (!msg.is_final && alt.transcript) ? alt.transcript : "";
     const shown = [lockedTranscript(), interim].filter(Boolean).join(" ").trim();
-    if (shown) input.value = shown;
+    if (shown) { input.value = shown; armIdle(); }   // recognised speech: re-arm the idle window (don't cut them off)
   };
   ws.onclose = () => {
     if (!opened && !tried) { openDeepgram(url, token, scheme === "bearer" ? "token" : "bearer", true); return; }
     if (recording) {                               // dropped while we were listening
       const t = lockedTranscript();
-      if (!t) { const m = "Speech connection dropped — tap Speak to try again, or type your question."; status.textContent = m; speak(m); }
-      stopStream(!!t);
+      closeMic();
+      if (t) handleUtterance(t);                    // salvage what we caught; the conversation carries on
+      else if (convo) endConvo("Speech connection dropped — tap Speak to try again, or type your question.");
     }
   };
   ws.onerror = () => { /* surfaced via onclose */ };
@@ -338,19 +419,6 @@ function cleanupStream() {
     }
   } catch { /* */ }
   sttNode = sttSource = sttCtx = micStream = dgSocket = null;
-}
-
-function stopStream(finalise) {
-  if (!recording) return;
-  recording = false;
-  speakBtn.textContent = "Speak"; speakBtn.setAttribute("aria-pressed", "false");
-  beep(440);
-  const t = finalise ? lockedTranscript() : "";
-  cleanupStream();
-  if (finalise) {
-    if (t) { input.value = t; speak(`Heard: ${t}`); ask(t); }   // a mishear is caught by ear
-    else { status.textContent = "I didn't catch that — try again."; }
-  }
 }
 
 if (speakBtn) speakBtn.addEventListener("click", toggleRecord);
