@@ -74,6 +74,7 @@ function requestLocation() {
 }
 function onPos(p) {
   location_ = { lat: +p.coords.latitude.toFixed(6), lon: +p.coords.longitude.toFixed(6) };
+  if (following) maybeFollowMove();
 }
 // A CURRENT fix right before each question (walking from a café to a bus stop must register).
 function freshLocation() {
@@ -95,10 +96,17 @@ const speakBtn = $("cv-speak");
 const log = $("cv-log");
 const status = $("cv-status");
 const live = $("cv-live");
+const followBtn = $("cv-follow");
 
 const history = []; // { role: 'user' | 'assistant', content: string }
 let lastUserInput = ""; // the user's last real question (spoken or typed) — for "what did I say?"
 let pending = null;     // AbortController for the in-flight answer, so a mid-flight shush can cancel it
+
+// "Follow me" — narrate where you are as you move (full first, then pithy), and call out turns.
+let following = false, followLastPos = null, followLastTime = 0, followFacing = null, followHHist = [], followTO = null;
+const FOLLOW_MOVE_M = 15;    // announce a new location after moving this far…
+const FOLLOW_GAP_MS = 8000;  // …and at least this long since the last call-out
+const COMPASS8 = ["north", "north-east", "east", "south-east", "south", "south-west", "west", "north-west"];
 
 function addMessage(role, text) {
   const wrap = document.createElement("div");
@@ -270,6 +278,11 @@ function lockedTranscript() {
   return finalWords.filter((x) => x.sp === lockedSpeaker).map((x) => x.w).join(" ")
     .replace(/\s+([.,!?;:])/g, "$1").trim();
 }
+// Fallback for SHORT utterances that never reach the 3-word speaker-lock (e.g. "follow me", "shush",
+// "mute"): use every recognised word. A short command has little room for background chatter anyway.
+function rawTranscript() {
+  return finalWords.map((x) => x.w).join(" ").replace(/\s+([.,!?;:])/g, "$1").trim();
+}
 
 // Voice-locking (Deepgram's "background filtering" pattern): lock onto the first speaker to reach
 // 3 words — the person holding the phone — and keep only their words, dropping nearby chatter that
@@ -335,11 +348,15 @@ const QUIET = new Set(["shush", "hush", "quiet", "be quiet", "silence", "silent"
 const normCmd = (s) => s.toLowerCase().replace(/[^\p{L}\s]/gu, " ").replace(/\s+/g, " ").trim();
 const isQuiet = (n) => QUIET.has(n.replace(/^please\s+/, "").replace(/\s+please$/, "").trim());
 const isRepeat = (n) => /^(what did i( just)? (say|ask)|what was my( last)? (question|message)|repeat (that|my (question|message|last))|say that again)$/.test(n);
+const isFollow = (n) => /^(follow me|start following|follow)$/.test(n);
+const isUnfollow = (n) => /^(stop following( me)?|unfollow|stop follow)$/.test(n);
 
 function handleInput(message, spoken) {
   const n = normCmd(message);
   if (isQuiet(n)) { quietCommand(); return; }
   if (isRepeat(n)) { repeatCommand(); return; }
+  if (isFollow(n)) { if (following) followAsk(false); else startFollow(); return; }
+  if (isUnfollow(n)) { if (following) stopFollow(); return; }
   lastUserInput = message;
   // Experiment: the "Heard: …" echo is removed for a more natural flow — "what did I say?" gives it
   // on demand. (`spoken` is kept on the signature so the echo is easy to restore.)
@@ -451,7 +468,8 @@ function openDeepgram(url, token, scheme = "bearer", tried = false) {
   ws.onmessage = (e) => {
     let msg; try { msg = JSON.parse(e.data); } catch { return; }
     if (msg.type === "UtteranceEnd") {
-      if (recording && lockedTranscript()) { const t = lockedTranscript(); closeMic(); handleUtterance(t); }
+      const t = lockedTranscript() || rawTranscript();   // short commands never lock — fall back to raw
+      if (recording && t) { closeMic(); handleUtterance(t); }
       return;
     }
     const alt = msg.channel && msg.channel.alternatives && msg.channel.alternatives[0];
@@ -466,7 +484,7 @@ function openDeepgram(url, token, scheme = "bearer", tried = false) {
   ws.onclose = () => {
     if (!opened && !tried) { openDeepgram(url, token, scheme === "bearer" ? "token" : "bearer", true); return; }
     if (recording) {                               // dropped while we were listening
-      const t = lockedTranscript();
+      const t = lockedTranscript() || rawTranscript();
       closeMic();
       if (t) handleUtterance(t);                    // salvage what we caught; the conversation carries on
       else if (convo) endConvo("Speech connection dropped — tap Speak to try again, or type your question.");
@@ -510,6 +528,110 @@ document.addEventListener("click", (e) => {
   if (window.getSelection && String(window.getSelection())) return;   // don't interrupt a text selection
   quietCommand();
 });
+
+// ── "Follow me": narrate where you are as you move (full first, then pithy), and call out turns ────
+// Output-only — it never opens the mic. Announcements are deferred while the app is speaking or
+// thinking, or the mic is open (a conversation takes priority), so follow mode fills the quiet gaps.
+function setFollowButton(on) {
+  if (!followBtn) return;
+  followBtn.setAttribute("aria-pressed", on ? "true" : "false");
+  followBtn.textContent = on ? "Stop following" : "Follow me";
+}
+function followBusy() { return (synth && synth.speaking) || pending != null || recording; }
+
+function startFollow() {
+  following = true; setFollowButton(true);
+  followFacing = null; followHHist = [];
+  heading.start().catch(() => {});
+  startFollowHeadingWatch();
+  followAsk(false);   // a full "where am I" now; movement + turns give pithy updates after
+}
+function stopFollow() {
+  following = false; setFollowButton(false);
+  stopFollowHeadingWatch();
+  speak("Stopped following.");
+}
+if (followBtn) followBtn.addEventListener("click", () => { if (following) stopFollow(); else startFollow(); });
+
+// A where-am-I for follow mode: full, or a one-line pithy update. Speaks WITHOUT re-opening the mic,
+// drops itself if a conversation takes over mid-fetch, and is kept out of the conversation history.
+async function followAsk(brief) {
+  if (!following || followBusy()) return;
+  const loc = await freshLocation();
+  if (!loc || !following || followBusy()) return;
+  const h = heading.getHeading(); if (h != null) loc.heading = Math.round(h);
+  followLastPos = { lat: loc.lat, lon: loc.lon }; followLastTime = Date.now();
+  const message = brief
+    ? "I'm following along as I move — where am I now? Answer in ONE short line: just the street or place I'm at, and at most the single nearest notable thing. No area description, no lists."
+    : "Where am I?";
+  try {
+    const res = await fetch(CHAT_API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message, location: loc, history: [] }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok || data.error || !following || followBusy()) return;
+    const reply = (data.reply || "").trim();
+    if (!reply) return;
+    addMessage("bot", reply);
+    speak(reply);   // no onAnswerSpoken — follow mode never opens the mic
+  } catch { /* transient — the next move/turn tries again */ }
+}
+
+// Movement trigger (from onPos): a pithy update once you've moved far enough and it's quiet.
+function maybeFollowMove() {
+  if (!following || !location_) return;
+  if (Date.now() - followLastTime < FOLLOW_GAP_MS) return;
+  if (followLastPos && metresBetween(followLastPos.lat, followLastPos.lon, location_.lat, location_.lon) < FOLLOW_MOVE_M) return;
+  if (followBusy()) return;   // wait for a quiet moment
+  followAsk(true);
+}
+
+// Turn call-outs (copied from the Context Map's Describe-as-I-move): watch the compass, and when it
+// SETTLES ≥45° from the last announced facing, say the new facing and the turn taken. Fires standing
+// still, no movement needed. Comparing the mean of the older vs newer half of a short window detects
+// "turned and then stopped" without being fooled by standing-still sway.
+function startFollowHeadingWatch() { stopFollowHeadingWatch(); followTick(); }
+function stopFollowHeadingWatch() { if (followTO) { window.clearTimeout(followTO); followTO = null; } }
+function followTick() {
+  if (!following) return;
+  const SETTLE_MS = 700, SETTLE_BAND = 20, TURN_MIN = 45;
+  const h = heading.getHeading();
+  if (h != null) {
+    const now = Date.now();
+    followHHist.push({ t: now, h });
+    while (followHHist.length && now - followHHist[0].t > SETTLE_MS) followHHist.shift();
+    if (followHHist.length >= 4 && now - followHHist[0].t >= SETTLE_MS * 0.7) {
+      const mid = now - SETTLE_MS / 2;
+      const older = followHHist.filter((e) => e.t < mid), newer = followHHist.filter((e) => e.t >= mid);
+      if (older.length && newer.length) {
+        const mO = circMean(older), mN = circMean(newer);
+        if (Math.abs(angDiff(mN, mO)) <= SETTLE_BAND) {          // settled
+          if (followFacing === null) followFacing = mN;          // baseline; the starting facing isn't announced
+          else {
+            const signed = angDiff(mN, followFacing);
+            if (Math.abs(signed) >= TURN_MIN && !followBusy()) { announceTurn(mN, signed); followFacing = mN; }
+          }
+        }
+      }
+    }
+  }
+  followTO = window.setTimeout(followTick, 175);
+}
+function announceTurn(facing, signed) {
+  const dir = signed > 0 ? "right" : "left", a = Math.abs(signed);
+  const mag = a >= 150 ? "turned right around" : a >= 110 ? `a big turn to your ${dir}` : a >= 65 ? `a quarter-turn to your ${dir}` : `a small turn to your ${dir}`;
+  speak(`Now facing ${COMPASS8[Math.round(facing / 45) % 8]} — ${mag}.`);
+}
+function circMean(s) { let sx = 0, sy = 0; for (const e of s) { const r = e.h * Math.PI / 180; sx += Math.cos(r); sy += Math.sin(r); } return (Math.atan2(sy, sx) * 180 / Math.PI + 360) % 360; }
+function angDiff(a, b) { return ((((a - b) % 360) + 540) % 360) - 180; }
+function metresBetween(lat1, lon1, lat2, lon2) {
+  const R = 6371000, p1 = lat1 * Math.PI / 180, p2 = lat2 * Math.PI / 180;
+  const dp = (lat2 - lat1) * Math.PI / 180, dl = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dp / 2) ** 2 + Math.cos(p1) * Math.cos(p2) * Math.sin(dl / 2) ** 2;
+  return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
 
 // Phone out of the pocket / screen unlocked: the OS may have suspended the GPS watch and the
 // compass while the page was hidden. Re-arm both so the next question (and its clock direction)
