@@ -353,7 +353,10 @@ function quietCommand() {
 // mic afterwards so the flow continues.
 function repeatCommand() {
   const line = lastUserInput ? `You said: ${lastUserInput}` : "You haven't asked me anything yet.";
-  speak(line, convo ? onAnswerSpoken : undefined);
+  // Delay like the "Heard" echo: right after the mic closes the OS audio session is still in ducked
+  // record mode, so speaking immediately comes out quiet. Let it settle first; onAnswerSpoken then
+  // re-opens the mic only once this finishes.
+  window.setTimeout(() => speak(line, convo ? onAnswerSpoken : undefined), 500);
 }
 
 // The app has finished speaking an answer → re-open the mic for a hands-free follow-up.
