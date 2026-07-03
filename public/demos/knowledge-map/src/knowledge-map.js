@@ -478,6 +478,25 @@ function cleanupStream() {
 
 if (speakBtn) speakBtn.addEventListener("click", toggleRecord);
 
+// ── "Shush" shortcuts: Escape, or a tap/click anywhere on the page ────────────────────────────────
+// While the map is TALKING (or in a listen window), Escape or a tap/click on any non-control part of
+// the page stops the speech and hands the turn back (re-opens the mic / re-arms the window) — the
+// same as the spoken/typed "shush". Gated so a stray click when idle (or mid-"thinking") does nothing,
+// and clicks on controls or during a text selection are left alone. One click listener covers both a
+// mouse click and a touch tap (the browser synthesises a click on tap).
+function shushActive() {
+  return (synth && synth.speaking) || (convo && recording);
+}
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && started && shushActive()) quietCommand();
+});
+document.addEventListener("click", (e) => {
+  if (!started || !shushActive()) return;
+  if (e.target.closest("button, a, input, textarea, select, label, summary, [role='button']")) return;
+  if (window.getSelection && String(window.getSelection())) return;   // don't interrupt a text selection
+  quietCommand();
+});
+
 // Phone out of the pocket / screen unlocked: the OS may have suspended the GPS watch and the
 // compass while the page was hidden. Re-arm both so the next question (and its clock direction)
 // come from where the user is NOW, not a stale fix — the reload-to-fix bug.
