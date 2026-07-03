@@ -320,11 +320,11 @@ export async function whatsNearby(args: {
       size: 120,
       query,
       sort: [{ _geo_distance: { location: { lat: args.lat, lon: args.lon }, order: "asc", unit: "m", distance_type: "plane", mode: "min" } }],
-      _source: ["name", "display", "category", "subtype", "lat", "lng", "geom", "access"],
+      _source: ["name", "display", "category", "subtype", "lat", "lng", "geom", "access", "types"],
     },
   });
 
-  type Row = { display: string; category: string; subtype: string; near: Near; access?: unknown; lat: number; lng: number };
+  type Row = { display: string; category: string; subtype: string; near: Near; access?: unknown; types?: unknown; lat: number; lng: number };
   const byKey = new Map<string, Row>();
   for (const h of hitsOf(res)) {
     const s = h._source;
@@ -334,7 +334,7 @@ export async function whatsNearby(args: {
     const key = (((s.name as string) ?? "").trim().toLowerCase()) || h._id;
     const prev = byKey.get(key);
     if (!prev || near.dist < prev.near.dist) {
-      byKey.set(key, { display: (s.display as string) ?? "", category: String(s.category ?? ""), subtype: String(s.subtype ?? ""), near, access: s.access, lat: s.lat as number, lng: s.lng as number });
+      byKey.set(key, { display: (s.display as string) ?? "", category: String(s.category ?? ""), subtype: String(s.subtype ?? ""), near, access: s.access, types: s.types, lat: s.lat as number, lng: s.lng as number });
     }
   }
 
@@ -353,6 +353,7 @@ export async function whatsNearby(args: {
       ...direction(args.lat, args.lon, r.near.lat, r.near.lng, args.heading),
       lat: r.lat, lng: r.lng,
       ...(r.access ? { access: r.access } : {}),
+      ...(r.types ? { types: r.types } : {}),   // descriptive labels: audible signals, surface quality, etc.
     });
     if (results.length >= 15) break;
   }

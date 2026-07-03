@@ -14,7 +14,7 @@ import { placeKnowledge } from "./placeKnowledge";
 export const PLACE_KNOWLEDGE_SCHEMA = {
   name: "place_knowledge",
   description:
-    "Cited encyclopedic knowledge about a place and what is notable around a point, from Wikipedia (served via a cache). Use it for a place's IDENTITY — what it is known for, its history, character, or notable nearby features — NOT for 'where am I' or 'nearest X' spatial questions (the map tools answer those). Give it the user's current coordinates for 'here', or a find_place result's coordinates for a place they name. Returns short extracts, each with a title, source URL, and distance, plus the source name and how fresh the cache is. Narrate them faithfully; never invent; always state the source and freshness.",
+    "Cited knowledge about a place and what is notable around a point, from two open sources (served via a cache): WIKIPEDIA (facts about places, landmarks and features) and WIKIVOYAGE (the travel-guide character of a district or area — what it's like, what it's known for). Use it for a place's IDENTITY — history, character, notable nearby features — NOT for 'where am I' or 'nearest X' spatial questions (the map tools answer those). Give it the user's current coordinates for 'here', or a find_place result's coordinates for a place they name. Returns entries grouped by source, each entry with a title, extract, URL and distance, and each source with how fresh the cache is. Narrate faithfully; never invent; always state WHICH source each fact came from and its freshness.",
   input_schema: {
     type: "object",
     properties: {
@@ -45,14 +45,16 @@ export async function runPlaceKnowledge(
   }
   const k = await placeKnowledge(lat, lon);
   return {
-    source: k.source, // "wikipedia"
-    freshness: freshnessLabel(k.fetchedAt),
-    count: k.articles.length,
-    articles: k.articles.slice(0, 6).map((a) => ({
-      title: a.title,
-      extract: a.extract,
-      url: a.url,
-      distance_m: a.distance_m,
+    sources: k.sources.map((s) => ({
+      source: s.label, // "Wikipedia" | "Wikivoyage"
+      freshness: freshnessLabel(s.fetchedAt),
+      count: s.articles.length,
+      articles: s.articles.slice(0, 6).map((a) => ({
+        title: a.title,
+        extract: a.extract,
+        url: a.url,
+        distance_m: a.distance_m,
+      })),
     })),
   };
 }
