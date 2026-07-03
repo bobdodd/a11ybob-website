@@ -98,6 +98,7 @@ const live = $("cv-live");
 
 const history = []; // { role: 'user' | 'assistant', content: string }
 let lastUserInput = ""; // the user's last real question (spoken or typed) — for "what did I say?"
+let pending = null;     // AbortController for the in-flight answer, so a mid-flight shush can cancel it
 
 function addMessage(role, text) {
   const wrap = document.createElement("div");
@@ -187,6 +188,8 @@ async function ask(message) {
   addMessage("user", message);
   history.push({ role: "user", content: message });
   setBusy(true, "Thinking…");
+  const ctrl = new AbortController();
+  pending = ctrl;   // a mid-flight shush can abort this
   const loc = await freshLocation();
   if (loc) { const h = heading.getHeading(); if (h != null) loc.heading = Math.round(h); } // facing → clock
 
@@ -195,8 +198,10 @@ async function ask(message) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message, location: loc || undefined, history: history.slice(-MAX_HISTORY - 1, -1) }),
+      signal: ctrl.signal,
     });
     const data = await res.json().catch(() => ({}));
+    if (ctrl.signal.aborted) return;   // shushed while finishing — quietCommand handled it
     if (!res.ok || data.error) {
       const msg = data.error || `Something went wrong (${res.status}).`;
       setBusy(false, msg);
@@ -210,11 +215,14 @@ async function ask(message) {
     setBusy(false, "");
     speak(reply, onAnswerSpoken);   // in a voice conversation, re-open the mic once this answer finishes
     input.focus();
-  } catch {
+  } catch (e) {
+    if (e && e.name === "AbortError") return;   // mid-flight shush — quietCommand says "Aborted" + re-opens
     const msg = "I couldn't reach the assistant. Check your connection and try again.";
     setBusy(false, msg);
     if (convo) { convo = false; clearIdle(); setConvoButton(false); }   // stop the hands-free loop on error
     speak(msg); input.focus();
+  } finally {
+    if (pending === ctrl) pending = null;
   }
 }
 
@@ -338,16 +346,22 @@ function handleInput(message, spoken) {
   ask(message);
 }
 
-// "Be quiet / shush" — stop the CURRENT speech and the thinking cue, then wait for the user: re-open
-// the mic for the 10s window, staying in the hands-free loop. NOT the same as Stop (which ends it).
-// Typed while an answer plays this cuts it off and starts listening; spoken in the listen window it
-// just restarts the window.
+// "Be quiet / shush" — stop what the map is doing and hand the turn back, staying in the hands-free
+// loop (NOT the same as Stop). If a question is still IN FLIGHT, cancel it and SAY "Aborted" — else the
+// cancelled answer is just silence and the user is left waiting; the 10s window then starts when
+// "Aborted" finishes. Otherwise (speech playing, or a listen window) cut it off and re-open the mic.
 function quietCommand() {
-  try { if (synth) synth.cancel(); } catch { /* */ }   // cut off the current answer immediately
+  convo = true;   // stay in the hands-free loop
+  if (pending) {
+    pending.abort(); pending = null;      // cancel the in-flight question so its answer never speaks
+    setBusy(false, "");                   // stop the thinking cue + re-enable the input
+    speak("Aborted.", onAnswerSpoken);    // say so (not silence); onAnswerSpoken re-opens the mic after
+    return;
+  }
+  try { if (synth) synth.cancel(); } catch { /* */ }   // cut off the current speech
   stopBusyTone();
-  convo = true;                 // stay in the hands-free loop (NOT the same as Stop)
   if (recording) armIdle();     // already listening → just restart the 10s window
-  else startListen();           // stop → re-open the mic for the 10s window (guarded vs the speak-poll)
+  else startListen();           // re-open the mic for the 10s window (guarded vs the speak-poll)
 }
 
 // "What did I say?" — repeat the user's last real question, spoken. In a conversation, re-open the
@@ -479,13 +493,13 @@ function cleanupStream() {
 if (speakBtn) speakBtn.addEventListener("click", toggleRecord);
 
 // ── "Shush" shortcuts: Escape, or a tap/click anywhere on the page ────────────────────────────────
-// While the map is TALKING (or in a listen window), Escape or a tap/click on any non-control part of
-// the page stops the speech and hands the turn back (re-opens the mic / re-arms the window) — the
-// same as the spoken/typed "shush". Gated so a stray click when idle (or mid-"thinking") does nothing,
-// and clicks on controls or during a text selection are left alone. One click listener covers both a
-// mouse click and a touch tap (the browser synthesises a click on tap).
+// While the map is talking, thinking, or in a listen window, Escape or a tap/click on any non-control
+// part of the page shushes — stop the speech, or cancel an in-flight question ("Aborted"), then hand
+// the turn back — the same as the spoken/typed "shush". Gated so a stray click when fully idle does
+// nothing, and clicks on controls or during a text selection are left alone. One click listener covers
+// both a mouse click and a touch tap (the browser synthesises a click on tap).
 function shushActive() {
-  return (synth && synth.speaking) || (convo && recording);
+  return (synth && synth.speaking) || (convo && recording) || pending != null;
 }
 document.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && started && shushActive()) quietCommand();
