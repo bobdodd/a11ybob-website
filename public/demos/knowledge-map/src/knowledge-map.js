@@ -158,16 +158,28 @@ function speak(text, onDone) {
     synth.cancel();
     const u = new SpeechSynthesisUtterance(text);
     if (finish) {
-      u.onend = finish;
-      u.onerror = finish;                                                  // cancelled/failed still releases the mic
-      window.setTimeout(finish, Math.min(20000, 1500 + text.length * 70)); // safety net if no event fires
+      // Re-open the mic ONLY once speech has ACTUALLY finished — never mid-sentence. onend fires
+      // unreliably and a length estimate is outrun by a long answer (which then re-opens the mic
+      // while the app is still talking, so it hears itself). So gate on the real synth.speaking
+      // state: wait until it has been speaking and then stops. onend only counts once speech was
+      // seen; a hard cap prevents a stuck-closed mic if the engine never reports speaking.
+      let sawSpeaking = false, waited = 0;
+      const poll = window.setInterval(() => {
+        waited += 250;
+        if (done) { window.clearInterval(poll); return; }
+        if (synth.speaking) sawSpeaking = true;
+        if ((sawSpeaking && !synth.speaking) || waited >= 60000) { window.clearInterval(poll); finish(); }
+      }, 250);
+      u.onend = () => { if (sawSpeaking) finish(); };
+      u.onerror = finish; // a hard speech error should still release the mic
     }
     synth.speak(u);
     return;
   }
   live.textContent = "";
   window.setTimeout(() => { live.textContent = text; }, 60);
-  if (finish) window.setTimeout(finish, Math.min(12000, 900 + text.length * 55)); // estimated read time
+  // No speaking signal on the screen-reader fallback — estimate the read time (best-effort).
+  if (finish) window.setTimeout(finish, Math.min(12000, 900 + text.length * 55));
 }
 
 async function ask(message) {
@@ -307,7 +319,11 @@ function endConvo(message) {
 // A recognised utterance ended: send it. In a conversation, ask() re-opens the mic when it answers.
 function handleUtterance(t) {
   input.value = t;
-  speak(`Heard: ${t}`);   // a mishear is caught by ear
+  // Speak the echo after a short beat. Right after the mic closes the OS audio session is still in
+  // (ducked) record mode, so an immediate "Heard: …" comes out quiet and uneven; ~0.5s lets playback
+  // return to normal for full, consistent volume. Skip it if a (fast) answer has already arrived so
+  // we never talk over it — send.disabled is still true only while "thinking".
+  window.setTimeout(() => { if (send.disabled) speak(`Heard: ${t}`); }, 500);   // a mishear is caught by ear
   ask(t);
 }
 
