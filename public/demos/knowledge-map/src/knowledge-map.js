@@ -97,6 +97,7 @@ const status = $("cv-status");
 const live = $("cv-live");
 
 const history = []; // { role: 'user' | 'assistant', content: string }
+let lastUserInput = ""; // the user's last real question (spoken or typed) — for "what did I say?"
 
 function addMessage(role, text) {
   const wrap = document.createElement("div");
@@ -222,7 +223,7 @@ form.addEventListener("submit", (e) => {
   const message = input.value.trim();
   if (!message || send.disabled) return;
   input.value = "";
-  ask(message);
+  handleInput(message, false);
 });
 
 // ── Voice input: STREAMING to Deepgram, hands-free conversation ─────────────────────────────────
@@ -242,6 +243,7 @@ const speakerCounts = new Map();
 const LISTEN_IDLE_MS = 10000;   // silence after the app speaks before the conversation winds down
 let convo = false;              // a conversation session is active (from Speak until Stop / silence)
 let idleTimer = null;           // re-arming "no speech" timeout for the current listen window
+let opening = false;            // a mic open is in flight — guards against a double re-open
 
 // Short tone cue (rising = listening, falling = stopped) so a blind user hears the state.
 function beep(freq) {
@@ -317,14 +319,43 @@ function endConvo(message) {
 }
 
 // A recognised utterance ended: send it. In a conversation, ask() re-opens the mic when it answers.
-function handleUtterance(t) {
-  input.value = t;
-  // Speak the echo after a short beat. Right after the mic closes the OS audio session is still in
-  // (ducked) record mode, so an immediate "Heard: …" comes out quiet and uneven; ~0.5s lets playback
-  // return to normal for full, consistent volume. Skip it if a (fast) answer has already arrived so
-  // we never talk over it — send.disabled is still true only while "thinking".
-  window.setTimeout(() => { if (send.disabled) speak(`Heard: ${t}`); }, 500);   // a mishear is caught by ear
-  ask(t);
+function handleUtterance(t) { input.value = t; handleInput(t, true); }
+
+// ── Voice/text commands, intercepted before anything is sent to the assistant ────────────────────
+// "quiet" family → stop talking and go silent; "what did I say" → repeat the user's last input.
+const QUIET = new Set(["shush", "hush", "quiet", "be quiet", "silence", "silent", "pause", "mute", "stop", "stop talking", "shut up", "enough", "thats enough"]);
+const normCmd = (s) => s.toLowerCase().replace(/[^\p{L}\s]/gu, " ").replace(/\s+/g, " ").trim();
+const isQuiet = (n) => QUIET.has(n.replace(/^please\s+/, "").replace(/\s+please$/, "").trim());
+const isRepeat = (n) => /^(what did i( just)? (say|ask)|what was my( last)? (question|message)|repeat (that|my (question|message|last))|say that again)$/.test(n);
+
+function handleInput(message, spoken) {
+  const n = normCmd(message);
+  if (isQuiet(n)) { quietCommand(); return; }
+  if (isRepeat(n)) { repeatCommand(); return; }
+  lastUserInput = message;
+  // Voice echo of what was heard, after a short beat so it isn't ducked (see speak()); skip if a fast
+  // answer already arrived. Typed input needs no echo.
+  if (spoken) window.setTimeout(() => { if (send.disabled) speak(`Heard: ${message}`); }, 500);
+  ask(message);
+}
+
+// "Be quiet / shush" — stop the CURRENT speech and the thinking cue, then wait for the user: re-open
+// the mic for the 10s window, staying in the hands-free loop. NOT the same as Stop (which ends it).
+// Typed while an answer plays this cuts it off and starts listening; spoken in the listen window it
+// just restarts the window.
+function quietCommand() {
+  try { if (synth) synth.cancel(); } catch { /* */ }   // cut off the current answer immediately
+  stopBusyTone();
+  convo = true;                 // stay in the hands-free loop (NOT the same as Stop)
+  if (recording) armIdle();     // already listening → just restart the 10s window
+  else startListen();           // stop → re-open the mic for the 10s window (guarded vs the speak-poll)
+}
+
+// "What did I say?" — repeat the user's last real question, spoken. In a conversation, re-open the
+// mic afterwards so the flow continues.
+function repeatCommand() {
+  const line = lastUserInput ? `You said: ${lastUserInput}` : "You haven't asked me anything yet.";
+  speak(line, convo ? onAnswerSpoken : undefined);
 }
 
 // The app has finished speaking an answer → re-open the mic for a hands-free follow-up.
@@ -332,12 +363,15 @@ function onAnswerSpoken() { if (convo && !recording) startListen(); }
 
 // Couldn't open the mic — surface why and drop out of conversation mode.
 function bailListen(msg) {
+  opening = false;
   status.textContent = msg;
   speak(msg);
   if (convo) { convo = false; setConvoButton(false); }
 }
 
 async function startListen() {
+  if (recording || opening) return;   // already listening or mid-open — don't double up (e.g. shush racing the speak-poll)
+  opening = true;
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.AudioWorkletNode) {
     bailListen("Voice input isn't available on this device — please type your question."); return;
   }
@@ -383,6 +417,7 @@ async function startListen() {
   openDeepgram(`wss://api.deepgram.com/v1/listen?${params.toString()}`, token);
 
   recording = true;
+  opening = false;
   status.textContent = "Listening… ask your question, or reply. It sends when you pause; tap Stop to end.";
   beep(880);
   armIdle();   // ~10s to start speaking, then the conversation winds down (re-arms while you talk)
