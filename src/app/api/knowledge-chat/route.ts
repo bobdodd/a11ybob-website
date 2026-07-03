@@ -19,6 +19,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { TOOL_SCHEMAS, runTool } from "@/lib/map-tools";
 import { PLACE_KNOWLEDGE_SCHEMA, runPlaceKnowledge } from "@/lib/knowledgeTool";
+import { TRANSIT_NEARBY_SCHEMA, runTransitNearby } from "@/lib/transitTool";
 
 export const dynamic = "force-dynamic";
 
@@ -59,7 +60,12 @@ Knowledge — what a place is KNOWN for (in ADDITION to what's around it):
 
 Letting people know the knowledge is there (they won't ask unless told):
 - When you answer a "where am I" or location question and you have just NAMED where they are (a place, area, or settlement), END with a SHORT, natural invitation that there's more you can tell them about it — e.g. "I can tell you a bit about this area, if you'd like." or "Ask me what this place is known for, if you want." Vary the wording; keep it to one short clause.
-- Offer it only when you have just named a NEW place or area — not on every turn, not once they're already asking about that place, and never when you had to say you find nothing there.`;
+- Offer it only when you have just named a NEW place or area — not on every turn, not once they're already asking about that place, and never when you had to say you find nothing there.
+
+Transit — routes serving nearby stops (from the STATIC schedule):
+- You also have transit_nearby: the public-transit routes serving stops near a point, from agencies' published static schedules (GTFS). Use it for "what transit / buses / streetcars / trains serve here", "how do I get around from here", "nearest stop", or when transit is clearly relevant to a place. For "here" use the current coordinates; for a place they NAME, find_place first, then transit_nearby there.
+- It returns nearby stops, each with the routes serving it (number + name + mode + \`dest\`, the destination(s)/direction it heads there), the agency, distance, and a coarse service pattern. ALWAYS give a route as its number AND name AND where it heads — e.g. "the 20 Cliffside bus, towards Victoria Park Station" or "the 501 Queen streetcar, towards Neville Park and Long Branch" — never just the number. Say which stop and how far, and the agency. Lead with the nearest stop / most useful routes; summarise when there are many.
+- KNOWLEDGE, NOT live times. NEVER give a departure time, "next bus", "in X minutes", or how long until one comes — you have no real-time data and must not imply you do. If asked when the next one is, say you have the routes and the schedule coverage, not live times. Mention the service pattern when useful ("runs daily", "weekdays only"). If transit_nearby returns nothing, say there's no stop mapped nearby in the schedule data.`;
 
 type Turn = { role: "user" | "assistant"; content: string };
 
@@ -113,8 +119,8 @@ export async function POST(req: NextRequest) {
   const system: Anthropic.Messages.TextBlockParam[] = [
     { type: "text", text: SYSTEM, cache_control: { type: "ephemeral" } },
   ];
-  // Map tools + the knowledge tool. Cache the last entry so the whole tool block is cached.
-  const allTools = [...TOOL_SCHEMAS, PLACE_KNOWLEDGE_SCHEMA];
+  // Map tools + the knowledge & transit tools. Cache the last entry so the whole tool block is cached.
+  const allTools = [...TOOL_SCHEMAS, PLACE_KNOWLEDGE_SCHEMA, TRANSIT_NEARBY_SCHEMA];
   const tools = allTools.map((t, i) =>
     i === allTools.length - 1 ? { ...t, cache_control: { type: "ephemeral" as const } } : t,
   ) as unknown as Anthropic.Messages.Tool[];
@@ -132,6 +138,11 @@ export async function POST(req: NextRequest) {
               out = tu.name === "place_knowledge"
                 ? await runPlaceKnowledge(
                     tu.input as { lat?: number; lon?: number },
+                    loc ? { lat: loc.lat, lon: loc.lon } : undefined,
+                  )
+                : tu.name === "transit_nearby"
+                ? await runTransitNearby(
+                    tu.input as { lat?: number; lon?: number; radius_m?: number },
                     loc ? { lat: loc.lat, lon: loc.lon } : undefined,
                   )
                 : await runTool(
