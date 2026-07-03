@@ -13,7 +13,7 @@ const INDEX = "transit-stops";
 export const TRANSIT_NEARBY_SCHEMA = {
   name: "transit_nearby",
   description:
-    "Public-transit routes serving stops near a point, from static GTFS schedules (agency open data). Use it for 'what transit / buses / trains / streetcars serve here', 'how do I get around', 'nearest stop', or when a place's transit is relevant. Returns nearby stops, each with the ROUTES that serve it (name + mode: bus/streetcar/subway/train/ferry), the agency, distance, and a coarse service pattern (daily / weekdays only / weekends only). This is KNOWLEDGE, not live info — NEVER give departure times, 'next bus', or 'how long until'. Give the user's current coordinates for 'here', or a find_place result's coordinates for a place they name.",
+    "Public-transit routes serving stops near a point, from static GTFS schedules (agency open data). Use it for 'what transit / buses / trains / streetcars serve here', 'how do I get around', 'nearest stop', when transit is relevant to a place, or when asked how early/late/often a service runs. Returns nearby stops, each with the ROUTES that serve it (number + name + mode: bus/streetcar/subway/train/ferry + destination), the agency, distance, a coarse service pattern (daily / weekdays only / weekends only), and per route a typical timetable `sched` (first & last departure + typical frequency, split weekday/Saturday/Sunday). This is KNOWLEDGE from the published schedule — first/last and typical frequency are fine, but NEVER give a live 'next bus' / 'in X minutes'. Give the user's current coordinates for 'here', or a find_place result's coordinates for a place they name.",
   input_schema: {
     type: "object",
     properties: {
