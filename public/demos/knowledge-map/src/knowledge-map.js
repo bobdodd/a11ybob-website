@@ -333,9 +333,8 @@ function handleInput(message, spoken) {
   if (isQuiet(n)) { quietCommand(); return; }
   if (isRepeat(n)) { repeatCommand(); return; }
   lastUserInput = message;
-  // Voice echo of what was heard, after a short beat so it isn't ducked (see speak()); skip if a fast
-  // answer already arrived. Typed input needs no echo.
-  if (spoken) window.setTimeout(() => { if (send.disabled) speak(`Heard: ${message}`); }, 500);
+  // Experiment: the "Heard: …" echo is removed for a more natural flow — "what did I say?" gives it
+  // on demand. (`spoken` is kept on the signature so the echo is easy to restore.)
   ask(message);
 }
 
