@@ -148,12 +148,42 @@ type Hit = { _id: string; _score?: number; _source: Record<string, unknown> };
 const hitsOf = (res: { body: { hits?: { hits?: unknown } } }): Hit[] =>
   (res.body.hits?.hits as unknown as Hit[]) ?? [];
 
-// Anonymous map features (kind 'building' / 'path') are indexed for description richness, but
-// the describe side isn't wired to aggregate them yet. Exclude them from every tool meanwhile,
-// so the national reindex can land them in the live index WITHOUT changing any current answer.
-// Remove this guard once whats_nearby/area_summary use them deliberately (building density,
-// nearest laneway, etc.). 'area' fills keep their existing handling and are not touched here.
+// Anonymous map features (kind 'building' / 'path') — nameless buildings + paths the national
+// reindex added for description richness. They're kept OUT of the NAMED result lists (find_place,
+// the "what's around" named list) via this guard, and surfaced DELIBERATELY as separate, typed,
+// secondary context instead: whats_nearby returns the nearest anon building/path, area_summary
+// counts them for building density. So the named answers stay clean while the richness gets used.
 const EXCLUDE_ANON = { bool: { must_not: { terms: { kind: ["building", "path"] } } } };
+
+// The nearest anonymous feature of a kind to a point — a nameless building (with its size_class)
+// or an unnamed path (with its subtype: track / footway / …). Nearest-point-on-geom for linear
+// paths. Returned as secondary context, never mixed into the named result list.
+async function nearestAnon(
+  kind: "building" | "path", lat: number, lon: number, radiusM: number, heading?: number,
+): Promise<Record<string, unknown> | null> {
+  const res = await opensearch.search({
+    index: INDEX,
+    body: {
+      size: 1,
+      query: { bool: { filter: [{ term: { kind } }, { geo_distance: { distance: `${radiusM}m`, location: { lat, lon } } }] } },
+      sort: [{ _geo_distance: { location: { lat, lon }, order: "asc", unit: "m", distance_type: "plane", mode: "min" } }],
+      _source: ["subtype", "size_class", "lat", "lng", "geom"],
+    },
+  });
+  const h = hitsOf(res)[0];
+  if (!h) return null;
+  const s = h._source;
+  const geom = s.geom as Geom | undefined;
+  const near: Near = geom ? nearestOnGeom(lat, lon, geom)
+    : { dist: metresBetween(lat, lon, s.lat as number, s.lng as number), lat: s.lat as number, lng: s.lng as number };
+  return {
+    kind,
+    ...(s.size_class ? { size_class: String(s.size_class) } : {}),
+    ...(s.subtype ? { subtype: String(s.subtype) } : {}),
+    distance_m: Math.round(near.dist),
+    ...direction(lat, lon, near.lat, near.lng, heading),
+  };
+}
 
 // ── Tool 1: find_place (geocode + finder) ────────────────────────────────────
 export async function findPlace(args: {
@@ -372,7 +402,19 @@ export async function whatsNearby(args: {
       if (place) r.in = place;
     }));
   }
-  return { radius_m: searchRadius, ...(filtered ? { nearby_m: nearbyM } : {}), results };
+  // Anonymous features — nameless buildings + paths the reindex added — surfaced as secondary,
+  // typed context for a general "what's around", especially where named features are sparse.
+  const extra: Record<string, unknown> = {};
+  if (!filtered) {
+    const anonR = Math.min(1000, Math.max(searchRadius, 500));
+    const [b, p] = await Promise.all([
+      nearestAnon("building", args.lat, args.lon, anonR, args.heading),
+      nearestAnon("path", args.lat, args.lon, anonR, args.heading),
+    ]);
+    if (b) extra.nearest_building = b;
+    if (p) extra.nearest_unnamed_path = p;
+  }
+  return { radius_m: searchRadius, ...(filtered ? { nearby_m: nearbyM } : {}), results, ...extra };
 }
 
 // ── Tool 3: area_summary (character, not a feature list) ──────────────────────
@@ -452,12 +494,28 @@ export async function areaSummary(args: { lat: number; lon: number; radius_m?: n
     nearest_city: sameName(immediate, nearestCity) || sameName(nearestTown, nearestCity) ? null : nearestCity,
   };
 
+  // Building density + unnamed-path network — the anonymous features the reindex added, so
+  // "how built up is this area" is now real: total building footprints and nameless paths nearby.
+  const dens = await opensearch.search({
+    index: INDEX,
+    body: {
+      size: 0,
+      query: { bool: { filter: [{ geo_distance: { distance: `${radius}m`, location: { lat: args.lat, lon: args.lon } } }] } },
+      aggs: {
+        buildings: { filter: { term: { category: "building" } } },
+        unnamed_paths: { filter: { bool: { must: [{ term: { category: "path" } }], must_not: [{ exists: { field: "name" } }] } } },
+      },
+    },
+  });
+  const dbb = dens.body.aggregations as unknown as Record<string, { doc_count?: number }>;
+
   return {
     radius_m: radius,
     contained_by,
     settlements,
     total_features: total,
     counts,
+    built_up: { buildings: dbb.buildings.doc_count ?? 0, unnamed_paths: dbb.unnamed_paths.doc_count ?? 0 },
     accessibility: {
       crossings: ab.crossings.doc_count ?? 0,
       crossings_with_tactile: ab.tactile.doc_count ?? 0,
@@ -601,7 +659,7 @@ export const TOOL_SCHEMAS = [
   {
     name: "whats_nearby",
     description:
-      "Map features around a point, nearest first, each with distance + direction (computed for you; never estimate them). TWO modes. (1) NO `types`: a general 'what's around me' snapshot of nearby named features. (2) WITH `types`: a FACETED search for a specific kind ('nearest supermarket / pharmacy / café') — it filters the index to that kind and ALWAYS returns the NEAREST one even when it is far (searched up to 100 km) — never returns 'none' when one exists further out — plus `nearby_m`, the radius counted as 'nearby', so you can say when the nearest isn't close. Common words are expanded to the family that satisfies them (e.g. 'supermarket' and 'grocery' both cover supermarket/grocery/convenience/greengrocer, so a small-town Foodland or a corner store is found). Each result carries its `subtype` (name it by its real kind), and for a type search also `on_street` (the road it sits on) and `in` (the settlement it's in), so you can say WHERE it is: 'Foodland, on Buckhorn Road in Buckhorn'.",
+      "Map features around a point, nearest first, each with distance + direction (computed for you; never estimate them). TWO modes. (1) NO `types`: a general 'what's around me' snapshot of nearby named features. (2) WITH `types`: a FACETED search for a specific kind ('nearest supermarket / pharmacy / café') — it filters the index to that kind and ALWAYS returns the NEAREST one even when it is far (searched up to 100 km) — never returns 'none' when one exists further out — plus `nearby_m`, the radius counted as 'nearby', so you can say when the nearest isn't close. Common words are expanded to the family that satisfies them (e.g. 'supermarket' and 'grocery' both cover supermarket/grocery/convenience/greengrocer, so a small-town Foodland or a corner store is found). Each result carries its `subtype` (name it by its real kind), and for a type search also `on_street` (the road it sits on) and `in` (the settlement it's in), so you can say WHERE it is: 'Foodland, on Buckhorn Road in Buckhorn'. For a general 'what's around me' (no `types`) it also returns `nearest_building` (a nameless building, with its `size_class`) and `nearest_unnamed_path` (an unnamed path, with its `subtype` like track/footway) as SECONDARY context — texture to add after the named things, most useful where named features are sparse.",
     input_schema: {
       type: "object",
       properties: {
@@ -617,7 +675,7 @@ export const TOOL_SCHEMAS = [
   {
     name: "area_summary",
     description:
-      "A high-level sense of a place rather than a feature list: the named areas that contain the point (park, campus, neighbourhood, water), how much and what mix is around (counts by kind), a RANKED settlement ladder, and an accessibility snapshot (how many crossings, how many with tactile paving). The settlement ladder gives `immediate` (the nearest named place of any rank — often a hamlet or locality), `nearest_town` (the nearest actual town or city), and `nearest_city`, each with its `rank` and distance. Use it for 'what's this area like / is it built up / describe where I am', AND for 'what's the nearest town/city/village' — for which you MUST use the rank, not just whatever place is closest.",
+      "A high-level sense of a place rather than a feature list: the named areas that contain the point (park, campus, neighbourhood, water), how much and what mix is around (counts by kind), a RANKED settlement ladder, and an accessibility snapshot (how many crossings, how many with tactile paving). The settlement ladder gives `immediate` (the nearest named place of any rank — often a hamlet or locality), `nearest_town` (the nearest actual town or city), and `nearest_city`, each with its `rank` and distance. Use it for 'what's this area like / is it built up / describe where I am', AND for 'what's the nearest town/city/village' — for which you MUST use the rank, not just whatever place is closest. It also returns `built_up`: counts of building footprints and unnamed paths nearby — use these for how developed the area is ('dozens of buildings' = dense; 'a handful' = sparse/rural).",
     input_schema: { type: "object", properties: { lat: { type: "number" }, lon: { type: "number" }, radius_m: { type: "integer" } }, required: ["lat", "lon"] },
   },
   {

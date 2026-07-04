@@ -13,7 +13,7 @@ const INDEX = "transit-stops";
 export const TRANSIT_NEARBY_SCHEMA = {
   name: "transit_nearby",
   description:
-    "Public-transit routes serving stops near a point, from static GTFS schedules (agency open data). Use it for 'what transit / buses / trains / streetcars serve here', 'how do I get around', 'nearest stop', when transit is relevant to a place, or when asked how early/late/often a service runs. Returns nearby stops, each with the ROUTES that serve it (number + name + mode: bus/streetcar/subway/train/ferry + destination), the agency, distance, a coarse service pattern (daily / weekdays only / weekends only), and per route a typical timetable `sched` (first & last departure + typical frequency, split weekday/Saturday/Sunday). This is KNOWLEDGE from the published schedule — first/last and typical frequency are fine, but NEVER give a live 'next bus' / 'in X minutes'. Give the user's current coordinates for 'here', or a find_place result's coordinates for a place they name.",
+    "Public-transit routes serving stops near a point, from static GTFS schedules (agency open data). Use it for 'what transit / buses / trains / streetcars serve here', 'how do I get around', 'nearest stop', when transit is relevant to a place, or when asked how early/late/often a service runs. Returns nearby stops, each with the ROUTES that serve it (number + name + mode: bus/streetcar/subway/train/ferry + destination), the agency, distance, a coarse service pattern (daily / weekdays only / weekends only), and per route a typical timetable `sched` (first & last departure + typical frequency, split weekday/Saturday/Sunday). Also step-free accessibility: each stop's `wheelchair` (yes/no = wheelchair-accessible boarding) and, where the agency tags it, each route's `wheel` (yes/no/some = wheelchair-accessible vehicles). This is KNOWLEDGE from the published schedule — first/last and typical frequency are fine, but NEVER give a live 'next bus' / 'in X minutes'. Give the user's current coordinates for 'here', or a find_place result's coordinates for a place they name.",
   input_schema: {
     type: "object",
     properties: {
@@ -25,7 +25,7 @@ export const TRANSIT_NEARBY_SCHEMA = {
   },
 };
 
-type Stop = { name?: string; agency?: string; routes?: unknown; modes?: unknown; service?: string; feed_date?: string };
+type Stop = { name?: string; agency?: string; routes?: unknown; modes?: unknown; service?: string; feed_date?: string; wheelchair?: string };
 
 export async function runTransitNearby(
   input: { lat?: number; lon?: number; radius_m?: number },
@@ -45,7 +45,7 @@ export async function runTransitNearby(
         size: 8,
         query: { bool: { filter: [{ geo_distance: { distance: `${radius}m`, location: { lat, lon } } }] } },
         sort: [{ _geo_distance: { location: { lat, lon }, order: "asc", unit: "m", distance_type: "plane" } }],
-        _source: ["name", "agency", "routes", "modes", "service", "feed_date"],
+        _source: ["name", "agency", "routes", "modes", "service", "feed_date", "wheelchair"],
       },
     });
     const hits = (res.body.hits?.hits as unknown as Array<{ _source: Stop; sort?: number[] }>) ?? [];
@@ -57,6 +57,7 @@ export async function runTransitNearby(
       modes: h._source.modes ?? [],
       service: h._source.service || "",
       feed_date: h._source.feed_date || "",
+      wheelchair: h._source.wheelchair || "",
     }));
     return { count: stops.length, radius_m: radius, stops };
   } catch (e) {

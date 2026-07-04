@@ -29,12 +29,25 @@ const SOURCES = {
 } as const;
 export type SourceKey = keyof typeof SOURCES;
 
+export type WikidataFacts = {
+  type?: string;       // what it is (instance of)
+  heritage?: string;   // heritage designation
+  built?: string;      // inception year
+  opened?: string;     // official opening year
+  architect?: string;
+  style?: string;      // architectural style
+  operator?: string;
+  website?: string;
+  height?: string;     // e.g. "553 metre"
+  population?: string;
+};
 export type KnowledgeArticle = {
   title: string;
   extract: string;
   url: string;
   distance_m: number;
   wikidata?: string;
+  facts?: WikidataFacts;   // curated Wikidata claims — OFFER these, don't auto-recite
 };
 export type SourceKnowledge = {
   source: SourceKey;
@@ -61,6 +74,103 @@ async function getJson(url: string): Promise<unknown> {
   });
   if (!res.ok) throw new Error(`mediawiki ${res.status}`);
   return res.json();
+}
+
+/* ── Wikidata structured facts ───────────────────────────────────────────────────────────
+ * Each MediaWiki article carries a Wikidata id (pageprops wikibase_item). For notable places we
+ * pull a CURATED set of claims — what it is, when built/opened, architect, style, heritage status,
+ * operator, website, height, population — so the caller can OFFER them ("this is a historic
+ * building — want more?") rather than reciting. Two batched calls: claims, then a label pass for
+ * entity-valued claims. Cached with the article, so the cost is amortised. */
+const WD_API = "https://www.wikidata.org/w/api.php";
+const WD_ENTITY_PROPS: Record<string, keyof WikidataFacts> = {
+  P31: "type", P1435: "heritage", P84: "architect", P149: "style", P137: "operator",
+};
+const WD_TIME_PROPS: Record<string, keyof WikidataFacts> = { P571: "built", P1619: "opened" };
+
+type WdSnak = { snaktype?: string; datavalue?: { value?: unknown; type?: string } };
+type WdClaim = { mainsnak?: WdSnak; rank?: string };
+type WdEntity = { claims?: Record<string, WdClaim[]>; labels?: { en?: { value?: string } } };
+
+function wdFirstSnak(claims?: WdClaim[]): WdSnak | undefined {
+  if (!claims?.length) return undefined;
+  return (claims.find((c) => c.rank === "preferred") ?? claims[0]).mainsnak;
+}
+function wdEntityValue(claims?: WdClaim[]): string | undefined {
+  const s = wdFirstSnak(claims);
+  if (s?.snaktype === "value" && s.datavalue?.type === "wikibase-entityid") return (s.datavalue.value as { id?: string }).id;
+  return undefined;
+}
+function wdYear(claims?: WdClaim[]): string | undefined {
+  const s = wdFirstSnak(claims);
+  if (s?.snaktype !== "value" || s.datavalue?.type !== "time") return undefined;
+  const m = /^([+-])(\d+)-/.exec((s.datavalue.value as { time?: string }).time ?? "");
+  if (!m) return undefined;
+  const y = parseInt(m[2], 10);
+  return m[1] === "-" ? `${y} BCE` : String(y);
+}
+function wdString(claims?: WdClaim[]): string | undefined {
+  const s = wdFirstSnak(claims);
+  return s?.snaktype === "value" && typeof s.datavalue?.value === "string" ? (s.datavalue.value as string) : undefined;
+}
+function wdQuantity(claims?: WdClaim[]): { amount: string; unit?: string } | undefined {
+  const s = wdFirstSnak(claims);
+  if (s?.snaktype !== "value" || s.datavalue?.type !== "quantity") return undefined;
+  const q = s.datavalue.value as { amount?: string; unit?: string };
+  const amount = (q.amount ?? "").replace(/^\+/, "");
+  if (!amount) return undefined;
+  return { amount, unit: /Q\d+$/.exec(q.unit ?? "")?.[0] };
+}
+async function wbEntities(ids: string[], props: string): Promise<Record<string, WdEntity>> {
+  const r = (await getJson(
+    `${WD_API}?action=wbgetentities&format=json&ids=${ids.join("%7C")}&props=${props}&languages=en`,
+  )) as { entities?: Record<string, WdEntity> };
+  return r.entities ?? {};
+}
+
+export async function fetchWikidataFacts(qids: string[]): Promise<Record<string, WikidataFacts>> {
+  const ids = [...new Set(qids)].slice(0, 50);
+  if (!ids.length) return {};
+  const ents = await wbEntities(ids, "claims");
+
+  const facts: Record<string, WikidataFacts> = {};
+  const need = new Set<string>();
+  const entityFields: Array<[string, keyof WikidataFacts, string]> = [];
+  const heightUnits: Array<[string, string]> = [];
+
+  for (const [qid, ent] of Object.entries(ents)) {
+    const c = ent.claims ?? {};
+    const f: WikidataFacts = {};
+    for (const [prop, field] of Object.entries(WD_ENTITY_PROPS)) {
+      const v = wdEntityValue(c[prop]);
+      if (v) { need.add(v); entityFields.push([qid, field, v]); }
+    }
+    for (const [prop, field] of Object.entries(WD_TIME_PROPS)) {
+      const y = wdYear(c[prop]);
+      if (y) f[field] = y;
+    }
+    const web = wdString(c.P856);
+    if (web) f.website = web;
+    const h = wdQuantity(c.P2048);
+    if (h) { f.height = h.amount; if (h.unit) { need.add(h.unit); heightUnits.push([qid, h.unit]); } }
+    const pop = wdQuantity(c.P1082);
+    if (pop) f.population = Number(pop.amount).toLocaleString("en");
+    facts[qid] = f;
+  }
+
+  if (need.size) {
+    const lents = await wbEntities([...need].slice(0, 50), "labels");
+    const label = (vid: string) => lents[vid]?.labels?.en?.value || "";
+    for (const [qid, field, vid] of entityFields) {
+      const l = label(vid);
+      if (l) (facts[qid] as Record<string, string>)[field] = l;
+    }
+    for (const [qid, unit] of heightUnits) {
+      const l = label(unit);
+      if (l && facts[qid].height) facts[qid].height = `${facts[qid].height} ${l}`;
+    }
+  }
+  return facts;
 }
 
 /* Pure connector: nearby articles with short intro extracts + Wikidata id, from any MediaWiki wiki
@@ -93,6 +203,15 @@ export async function fetchMediaWikiNear(
       wikidata: d?.pageprops?.wikibase_item,
     });
   }
+  // Enrich with curated Wikidata facts (offered, not auto-recited). A Wikidata hiccup must never
+  // sink the whole knowledge fetch, so failures are swallowed.
+  try {
+    const qids = out.map((a) => a.wikidata).filter((q): q is string => !!q);
+    if (qids.length) {
+      const facts = await fetchWikidataFacts(qids);
+      for (const a of out) if (a.wikidata && facts[a.wikidata]) a.facts = facts[a.wikidata];
+    }
+  } catch { /* facts are a bonus; never fail the fetch over them */ }
   return out.sort((a, b) => a.distance_m - b.distance_m);
 }
 

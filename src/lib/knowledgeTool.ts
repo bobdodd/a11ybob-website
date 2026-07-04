@@ -14,7 +14,7 @@ import { placeKnowledge } from "./placeKnowledge";
 export const PLACE_KNOWLEDGE_SCHEMA = {
   name: "place_knowledge",
   description:
-    "Cited knowledge about a place and what is notable around a point, from two open sources (served via a cache): WIKIPEDIA (facts about places, landmarks and features) and WIKIVOYAGE (the travel-guide character of a district or area — what it's like, what it's known for). Use it for a place's IDENTITY — history, character, notable nearby features — NOT for 'where am I' or 'nearest X' spatial questions (the map tools answer those). Give it the user's current coordinates for 'here', or a find_place result's coordinates for a place they name. Returns entries grouped by source, each entry with a title, extract, URL and distance, and each source with how fresh the cache is. Narrate faithfully; never invent; always state WHICH source each fact came from and its freshness.",
+    "Cited knowledge about a place and what is notable around a point, from two open sources (served via a cache): WIKIPEDIA (facts about places, landmarks and features) and WIKIVOYAGE (the travel-guide character of a district or area — what it's like, what it's known for). Use it for a place's IDENTITY — history, character, notable nearby features — NOT for 'where am I' or 'nearest X' spatial questions (the map tools answer those). Give it the user's current coordinates for 'here', or a find_place result's coordinates for a place they name. Returns entries grouped by source, each entry with a title, extract, URL and distance, and each source with how fresh the cache is. Some entries also include structured `facts` (from Wikidata: what it is, when built/opened, architect, heritage designation, operator, website, height, population) — OFFER these rather than reciting them, and only elaborate if the user says yes. Narrate faithfully; never invent; always state WHICH source each fact came from and its freshness.",
   input_schema: {
     type: "object",
     properties: {
@@ -54,6 +54,7 @@ export async function runPlaceKnowledge(
         extract: a.extract,
         url: a.url,
         distance_m: a.distance_m,
+        facts: a.facts, // curated Wikidata facts — OFFER ("want more?"), don't auto-recite
       })),
     })),
   };

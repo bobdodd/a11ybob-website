@@ -458,6 +458,19 @@ class ContextMap {
         else if (food >= 1) retail.push('somewhere to eat');
         if (retail.length) clauses.push(retail.join(', '));
 
+        // Built environment — building footprints (mostly the unnamed ones the national reindex
+        // added) give the "how developed is this" sense; unnamed paths and tracks add rural
+        // richness. Both counts come from the area aggregation, which includes anonymous features.
+        const buildings = cat.building || 0;
+        const paths = cat.path || 0;
+        if (buildings >= 60) clauses.push('densely built up, buildings all around');
+        else if (buildings >= 20) clauses.push('built up, plenty of buildings');
+        else if (buildings >= 5) clauses.push('a scattering of buildings');
+        else if (buildings >= 1) clauses.push('a building or two');
+        if (paths >= 8) clauses.push('a network of paths and tracks');
+        else if (paths >= 3) clauses.push('several paths and tracks nearby');
+        else if (paths >= 1) clauses.push('a path or track nearby');
+
         const a11y = [];
         if (crossings >= 1) {
             let c = crossings >= 15 ? 'lots of pedestrian crossings'

@@ -34,6 +34,7 @@ const MAPPING = {
       modes: { type: "keyword" },
       service: { type: "keyword" },
       feed_date: { type: "keyword" },
+      wheelchair: { type: "keyword" }, // stop step-free access: yes / no / "" (routes carry their own)
     },
   },
 };
