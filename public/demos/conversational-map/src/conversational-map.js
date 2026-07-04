@@ -160,6 +160,9 @@ function setBusy(busy, note) {
 // gives a real end event; the screen-reader fallback has none, so we ESTIMATE the spoken duration
 // from the text length (best-effort — de-Googled phones).
 function speak(text, onDone) {
+  clearIdle();   // the app is about to talk: never let the follow-up idle timer run DURING speech.
+                 // It is re-armed only AFTER speech ends (onAnswerSpoken → startListen → armIdle),
+                 // so the 10s window can only ever run in the listening pause, never mid-answer.
   let done = false;
   const finish = onDone ? () => { if (!done) { done = true; onDone(); } } : null;
   if (synth && speechOk) {
@@ -477,7 +480,10 @@ function openDeepgram(url, token, scheme = "bearer", tried = false) {
     // word): the locked words so far + the current interim guess.
     const interim = (!msg.is_final && alt.transcript) ? alt.transcript : "";
     const shown = [lockedTranscript(), interim].filter(Boolean).join(" ").trim();
-    if (shown) { input.value = shown; armIdle(); }   // recognised speech: re-arm the idle window (don't cut them off)
+    // Re-arm the idle window on recognised speech — but ONLY while still recording. A Deepgram
+    // message can arrive just after closeMic() (socket closes async); without this guard it would
+    // re-arm the 10s timer, which then fires DURING the answer and clips it.
+    if (recording && shown) { input.value = shown; armIdle(); }
   };
   ws.onclose = () => {
     if (!opened && !tried) { openDeepgram(url, token, scheme === "bearer" ? "token" : "bearer", true); return; }
