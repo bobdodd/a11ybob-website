@@ -46,6 +46,29 @@ export default function MapsContextMap() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
+            <h2>Try the interactive demo</h2>
+            <p>
+              <NewTabLink
+                className="pill"
+                href="/demos/context-map/viewer.html"
+              >
+                Open the Context Map
+              </NewTabLink>
+            </p>
+            <p className="muted">
+              <small>
+                You will be asked to read and accept the notice, then to
+                allow location access. The demo takes over screen-reader
+                announcements and runs on its own surface, which is why
+                it opens in a new window. Close it to come back here.
+              </small>
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
             <h2>What it is</h2>
             <p>
               Take the tiled Toronto map, remove the map, and keep the
@@ -358,29 +381,6 @@ export default function MapsContextMap() {
               If the compass is slow to start, or a location request
               times out, it retries in the background instead of throwing
               an error into your ear in the middle of the pavement.
-            </p>
-          </section>
-
-          <section
-            className="stack"
-            style={{ "--space": "var(--s0)" } as CSSProperties}
-          >
-            <h2>Try the interactive demo</h2>
-            <p>
-              <NewTabLink
-                className="pill"
-                href="/demos/context-map/viewer.html"
-              >
-                Open the Context Map
-              </NewTabLink>
-            </p>
-            <p className="muted">
-              <small>
-                You will be asked to read and accept the notice, then to
-                allow location access. The demo takes over screen-reader
-                announcements and runs on its own surface, which is why
-                it opens in a new window. Close it to come back here.
-              </small>
             </p>
           </section>
 

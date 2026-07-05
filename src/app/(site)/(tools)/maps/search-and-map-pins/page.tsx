@@ -39,6 +39,30 @@ export default function MapsSearchAndMapPins() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
+            <h2>Try the interactive demo</h2>
+            <p>
+              <NewTabLink
+                className="pill"
+                href="/demos/search-and-map-pins/viewer.html"
+              >
+                Open the search and map pin demo
+              </NewTabLink>
+            </p>
+            <p className="muted">
+              <small>
+                Once opened, the demo takes over keyboard navigation,
+                focus management, and screen-reader announcements, so it
+                runs on its own surface rather than inside this page
+                &mdash; which is why it opens in a new window. Close it to
+                come back here.
+              </small>
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
             <h2>What it is</h2>
             <p>
               A streetmap of a residential subdivision: a raster (PNG)
@@ -229,30 +253,6 @@ export default function MapsSearchAndMapPins() {
               as much as to this demo&rsquo;s residential streets. The
               simplicity here is what made the generalisation visible;
               the richer demos use it without re-discovering it.
-            </p>
-          </section>
-
-          <section
-            className="stack"
-            style={{ "--space": "var(--s0)" } as CSSProperties}
-          >
-            <h2>Try the interactive demo</h2>
-            <p>
-              <NewTabLink
-                className="pill"
-                href="/demos/search-and-map-pins/viewer.html"
-              >
-                Open the search and map pin demo
-              </NewTabLink>
-            </p>
-            <p className="muted">
-              <small>
-                Once opened, the demo takes over keyboard navigation,
-                focus management, and screen-reader announcements, so it
-                runs on its own surface rather than inside this page
-                &mdash; which is why it opens in a new window. Close it to
-                come back here.
-              </small>
             </p>
           </section>
 

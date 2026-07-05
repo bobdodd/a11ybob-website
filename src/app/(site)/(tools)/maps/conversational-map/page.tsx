@@ -74,6 +74,22 @@ export default function MapsConversationalMap() {
           </header>
 
           <section className="stack" style={{ "--space": "var(--s0)" } as CSSProperties}>
+            <h2>Try the interactive demo</h2>
+            <p>
+              <NewTabLink className="pill" href="/demos/conversational-map/viewer.html">
+                Open the Conversational map
+              </NewTabLink>
+            </p>
+            <p className="muted">
+              <small>
+                You will be asked to read and accept the notice, then to allow
+                location access. It opens in its own window; close it to come
+                back here.
+              </small>
+            </p>
+          </section>
+
+          <section className="stack" style={{ "--space": "var(--s0)" } as CSSProperties}>
             <h2>What it is</h2>
             <p>
               A plain text box. You ask a question &mdash; &ldquo;what&rsquo;s
@@ -176,22 +192,6 @@ export default function MapsConversationalMap() {
                 read back &mdash; with clock-face directions relative to the way
                 you are facing, the heading work from the Context Map carried
                 straight over.
-              </small>
-            </p>
-          </section>
-
-          <section className="stack" style={{ "--space": "var(--s0)" } as CSSProperties}>
-            <h2>Try the interactive demo</h2>
-            <p>
-              <NewTabLink className="pill" href="/demos/conversational-map/viewer.html">
-                Open the Conversational map
-              </NewTabLink>
-            </p>
-            <p className="muted">
-              <small>
-                You will be asked to read and accept the notice, then to allow
-                location access. It opens in its own window; close it to come
-                back here.
               </small>
             </p>
           </section>

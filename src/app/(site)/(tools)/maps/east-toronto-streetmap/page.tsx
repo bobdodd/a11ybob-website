@@ -45,6 +45,30 @@ export default function MapsEastTorontoStreetmap() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
+            <h2>Try the interactive demo</h2>
+            <p>
+              <NewTabLink
+                className="pill"
+                href="/demos/east-toronto-streetmap/viewer.html"
+              >
+                Open the East End Toronto streetmap
+              </NewTabLink>
+            </p>
+            <p className="muted">
+              <small>
+                Once opened, the demo takes over keyboard navigation,
+                focus management, and screen-reader announcements, so it
+                runs on its own surface rather than inside this page
+                &mdash; which is why it opens in a new window. Close it to
+                come back here.
+              </small>
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
             <h2>A map of the city fabric, not a set of pins</h2>
             <p>
               It helps to set this map against the{" "}
@@ -584,30 +608,6 @@ export default function MapsEastTorontoStreetmap() {
               (which carries the same conceptual model into an indoor
               airport surface), and this demo itself, which remains live
               as the architectural reference.
-            </p>
-          </section>
-
-          <section
-            className="stack"
-            style={{ "--space": "var(--s0)" } as CSSProperties}
-          >
-            <h2>Try the interactive demo</h2>
-            <p>
-              <NewTabLink
-                className="pill"
-                href="/demos/east-toronto-streetmap/viewer.html"
-              >
-                Open the East End Toronto streetmap
-              </NewTabLink>
-            </p>
-            <p className="muted">
-              <small>
-                Once opened, the demo takes over keyboard navigation,
-                focus management, and screen-reader announcements, so it
-                runs on its own surface rather than inside this page
-                &mdash; which is why it opens in a new window. Close it to
-                come back here.
-              </small>
             </p>
           </section>
 

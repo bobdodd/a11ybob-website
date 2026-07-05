@@ -34,12 +34,15 @@ export default function MapsKnowledgeMap() {
               this family, and adds two of its own. It carries the spoken chat of
               the{" "}
               <Link href="/maps/conversational-map">Conversational map</Link>;
-              the accessibility detail recorded on map features, including mapped
-              barriers in your vicinity; unnamed roads, paths and buildings for
-              better area context; some knowledge of transit routes and schedule
-              patterns; estimated house numbers on blocks the map never fully
-              numbered; and cited place knowledge from Wikipedia and Wikivoyage.
-              You can ask about where you are, or about anywhere on the map.
+              the <Link href="/maps/context-map">Context Map</Link>&rsquo;s
+              follow-me narration &mdash; detailed when it starts, terse as you
+              move or turn; the accessibility detail recorded on map features,
+              including mapped barriers in your vicinity; unnamed roads, paths
+              and buildings for better area context; some knowledge of transit
+              routes and schedule patterns; estimated house numbers on blocks
+              the map never fully numbered; and cited place knowledge from
+              Wikipedia and Wikivoyage. You can ask about where you are, or
+              about anywhere on the map.
             </p>
             <p className="muted">
               <small>
@@ -48,6 +51,22 @@ export default function MapsKnowledgeMap() {
               </small>
             </p>
           </header>
+
+          <section className="stack" style={{ "--space": "var(--s0)" } as CSSProperties}>
+            <h2>Try the interactive demo</h2>
+            <p>
+              <NewTabLink className="pill" href="/demos/knowledge-map/viewer.html">
+                Open the Knowledge map
+              </NewTabLink>
+            </p>
+            <p className="muted">
+              <small>
+                You will be asked to read and accept the notice, then to allow
+                location access. It opens in its own window; close it to come
+                back here.
+              </small>
+            </p>
+          </section>
 
           <section className="stack" style={{ "--space": "var(--s0)" } as CSSProperties}>
             <h2>What it is</h2>
@@ -162,6 +181,30 @@ export default function MapsKnowledgeMap() {
           </section>
 
           <section className="stack" style={{ "--space": "var(--s0)" } as CSSProperties}>
+            <h2>Follow me</h2>
+            <p>
+              The <Link href="/maps/context-map">Context Map</Link>&rsquo;s
+              follow-along mode, carried over. Press Follow me &mdash; or say it
+              &mdash; and the map narrates as you go: a full description of where
+              you are when it starts, then, as you walk, terse one-line updates
+              &mdash; the street or place you have reached and at most the
+              nearest notable thing &mdash; and a call-out when you turn, naming
+              the turn and your new facing. Turns are read from the compass, so
+              they are called even when you turn on the spot without moving.
+            </p>
+            <p>
+              It is deliberately output-only and second in line: it never opens
+              the microphone, and it holds its tongue while you are asking
+              something or an answer is being spoken &mdash; the conversation
+              takes priority, and follow mode fills the quiet between. Updates
+              come at least eight seconds apart and only after you have moved
+              about fifteen metres, so it marks corners and new streets rather
+              than chattering at every step. Pressing the button again &mdash;
+              or saying &ldquo;stop following&rdquo; &mdash; ends it.
+            </p>
+          </section>
+
+          <section className="stack" style={{ "--space": "var(--s0)" } as CSSProperties}>
             <h2>What a place is known for</h2>
             <p>
               The layer that gives this map its name. Ask what a place is, what
@@ -271,22 +314,6 @@ export default function MapsKnowledgeMap() {
             </p>
           </section>
 
-          <section className="stack" style={{ "--space": "var(--s0)" } as CSSProperties}>
-            <h2>Try the interactive demo</h2>
-            <p>
-              <NewTabLink className="pill" href="/demos/knowledge-map/viewer.html">
-                Open the Knowledge map
-              </NewTabLink>
-            </p>
-            <p className="muted">
-              <small>
-                You will be asked to read and accept the notice, then to allow
-                location access. It opens in its own window; close it to come
-                back here.
-              </small>
-            </p>
-          </section>
-
           <section className="stack" style={{ "--space": "var(--s1)" } as CSSProperties}>
             <h2>Colophon</h2>
             <p>
@@ -310,7 +337,12 @@ export default function MapsKnowledgeMap() {
               unchanged, from the{" "}
               <Link href="/maps/conversational-map">Conversational map</Link>,
               and through it from the{" "}
-              <Link href="/maps/context-map">Context Map</Link>. The unnamed
+              <Link href="/maps/context-map">Context Map</Link>. The Follow me
+              mode is the Context Map&rsquo;s describe-as-I-move carried over
+              &mdash; its turn call-outs are that map&rsquo;s code, reused
+              &mdash; re-voiced through the conversation: the full opening
+              description and the terse updates are answers from the same chat,
+              just asked for you. The unnamed
               features and the accessibility-first reading of a place come the
               same way. What is new here is the transit schedule data, the
               knowledge layer with its cache, and the hands-free conversation

@@ -21,14 +21,17 @@ export default function Maps() {
               Seven years of work on something the accessibility
               field has effectively abandoned: real spatial
               cognition for non-sighted users, not turn-by-turn
-              navigation. Three working demos across building,
-              subdivision, and city-neighbourhood scales &mdash;
-              deliberately different from one another, because there
-              is no one right way to render a map; it depends on what
-              the map is for. What they share is an approach to
-              spatial cognition, and one theoretical contribution
-              about how coordinate systems collapse under modality
-              conversion.
+              navigation. Seven working demos, from a single
+              building interior to the whole of Canada: four
+              rendered maps explored with a screen reader, keyboard,
+              touch or voice, and three described maps that speak
+              &mdash; from fixed descriptions to a free-form
+              conversation. Deliberately different from one another,
+              because there is no one right way to render a map; it
+              depends on what the map is for. What they share is an
+              approach to spatial cognition, and one theoretical
+              contribution about how coordinate systems collapse
+              under modality conversion.
             </p>
           </header>
 
@@ -235,15 +238,24 @@ export default function Maps() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
-            <h2>Three working demos</h2>
+            <h2>Seven working demos</h2>
             <p>
-              Each demo is a full-screen interactive map at its own
-              URL; the page here is the brief that frames the demo
-              and links out to it. What the three share is the
-              approach to spatial cognition &mdash; pin-as-datum at
-              viewport centre, dual-mode interaction (Cartesian via
-              touch, polar via keyboard) &mdash; not the rendering or
-              the feature set, which differ on purpose.
+              Each demo runs at its own URL; the pages here are the
+              briefs that frame them and link out. The demos divide
+              into two families by how the map reaches the reader:
+              four <strong>rendered maps</strong>{" "}draw the space
+              and make it addressable, and three{" "}
+              <strong>described maps</strong>{" "}have no graphics at
+              all &mdash; they speak.
+            </p>
+
+            <h3>Rendered maps</h3>
+            <p>
+              What the four share is the approach to spatial
+              cognition &mdash; pin-as-datum at viewport centre,
+              dual-mode interaction (Cartesian via touch, polar via
+              keyboard) &mdash; not the rendering or the feature set,
+              which differ on purpose.
             </p>
             <p>
               The difference is fit-for-purpose. In the{" "}
@@ -289,11 +301,12 @@ export default function Maps() {
                 <Link href="/maps/tiled-toronto-map">
                   <strong>Tiled Toronto map</strong>
                 </Link>{" "}
-                &mdash; the architectural successor to East End Toronto,
-                taken to city scale: pre-rendered SVG tiles from a
-                custom tile server, and a live, context-aware viewer
-                with far more content. The live demo is still being
-                prepared.
+                &mdash; the architectural successor to East End
+                Toronto, taken to city scale: pre-rendered SVG tiles
+                from a custom tile server, and a live, context-aware
+                viewer with far more content, including a search
+                over everything the map knows. Live, covering the
+                whole of Toronto.
               </li>
               <li>
                 <Link href="/maps/terminal-map">
@@ -301,10 +314,64 @@ export default function Maps() {
                 </Link>{" "}
                 &mdash; interior airport-terminal wayfinding (the
                 worked example is YVR&rsquo;s Level 3 departures).
-                The most feature-rich demo: gates, security,
-                washrooms, retail, services. The terminal-grade
-                demonstration that the approach scales beyond
-                residential subdivisions.
+                The most feature-rich of the rendered demos: gates,
+                security, washrooms, retail, services. The
+                terminal-grade demonstration that the approach
+                scales beyond residential subdivisions.
+              </li>
+            </ul>
+
+            <h3>Described maps</h3>
+            <p>
+              Built for a phone in the hand rather than a desktop,
+              these start from where you are standing &mdash; or any
+              place you name &mdash; and answer from a search index
+              built in the same offline OSM parse as the tiled
+              map&rsquo;s tiles, covering the whole of Canada and a
+              set of trial cities elsewhere. They describe and
+              orient; none of them navigates, and each says so
+              before it starts.
+            </p>
+            <ul>
+              <li>
+                <Link href="/maps/context-map">
+                  <strong>Context Map</strong>
+                </Link>{" "}
+                &mdash; your surroundings in three fixed spoken
+                descriptions: a quick sketch, a continuous
+                commentary as you move, and a detailed read-out.
+                Assembled on the site&rsquo;s own server from the
+                map index; nothing you ask ever leaves the site. The
+                fixed menu is also the limit &mdash; it can only
+                tell you what it was built to tell you.
+              </li>
+              <li>
+                <Link href="/maps/conversational-map">
+                  <strong>Conversational map</strong>
+                </Link>{" "}
+                &mdash; removes the buttons: ask in plain language,
+                typed or spoken, about where you are or anywhere on
+                the map. A language model interprets the question
+                and chooses the map lookups; every distance and
+                direction is computed from the map, never guessed.
+                The trade is stated before you start: your words and
+                location are sent to a hosted model to be
+                understood.
+              </li>
+              <li>
+                <Link href="/maps/knowledge-map">
+                  <strong>Knowledge map</strong>
+                </Link>{" "}
+                &mdash; the same conversation with more behind it:
+                accessibility detail down to mapped barriers in your
+                vicinity, unnamed roads, paths and buildings for
+                area context, transit routes and schedule patterns
+                from published timetables, house numbers real and
+                estimated, a hands-free voice conversation, the
+                Context Map&rsquo;s follow-me narration as you walk,
+                and cited place knowledge from Wikipedia and
+                Wikivoyage &mdash; each such answer naming its
+                source and its age.
               </li>
             </ul>
           </section>
@@ -460,12 +527,12 @@ export default function Maps() {
               </li>
               <li>
                 <strong>
-                  Pre-rendered SVG, no runtime spatial-database
-                  queries.
+                  Pre-rendered SVG; OpenStreetMap never queried at
+                  runtime.
                 </strong>{" "}
                 Nothing on the platform queries OpenStreetMap (or
-                an Overpass endpoint, or any spatial database) at
-                runtime. The published demos use one-time static
+                an Overpass endpoint) at runtime. The published
+                demos use one-time static
                 OSM pulls, rendered offline, and served as plain
                 assets &mdash; the East End Toronto streetmap, for
                 instance, is a single SVG generated from one
@@ -482,7 +549,11 @@ export default function Maps() {
                 from a tile server Bob maintains. The viewer
                 fetches tiles from that server as the viewport
                 pans; the spatial database is touched only at
-                tile-generation time, never at view time.
+                tile-generation time, never at view time. The map
+                search and the described maps do query at runtime
+                &mdash; but a self-hosted index, built in the same
+                offline parse as the tiles; OpenStreetMap itself is
+                still never touched at view time.
               </li>
               <li>
                 <strong>CSS-based filtering for clutter management.</strong>{" "}
@@ -577,14 +648,21 @@ export default function Maps() {
               <strong>tiled Toronto map</strong>{" "}
               followed as the direct architectural successor of
               East End Toronto, scaling the single-tile pipeline to a
-              full city with its own SVG tile server &mdash; it has
-              its own page now, though the live demo is still being
-              prepared. Most recently, the{" "}
-              <strong>terminal map</strong>{" "}carries the conceptual
+              full city with its own SVG tile server &mdash; live
+              now, covering the whole of Toronto. The{" "}
+              <strong>terminal map</strong>{" "}carried the conceptual
               model into an indoor airport surface (worked example:
-              YVR&rsquo;s Level 3 departures). Same
-              design vocabulary throughout; materially improved
-              engineering and visual quality at each step.
+              YVR&rsquo;s Level 3 departures). Most recently the
+              family changed modality: the{" "}
+              <strong>Context Map</strong>{" "}reads your surroundings
+              aloud in three fixed descriptions, the{" "}
+              <strong>Conversational map</strong>{" "}puts the same
+              index behind free-form questions, and the{" "}
+              <strong>Knowledge map</strong>{" "}adds transit schedule
+              patterns and cited place knowledge to the
+              conversation. Same design vocabulary throughout;
+              materially improved engineering at each step &mdash;
+              first in rendering, now in description.
             </p>
           </section>
 
@@ -597,10 +675,13 @@ export default function Maps() {
               <li>
                 <strong>Surface-under-foot announcement</strong>{" "}
                 &mdash; Audiom has it (Esri facility data carries
-                surface metadata); OSM doesn&rsquo;t carry surface
-                tags consistently for pedestrian-relevant
-                features. A data-source limitation, not a design
-                oversight.
+                surface metadata). The newer demos now read
+                OSM&rsquo;s surface and smoothness tags where they
+                exist &mdash; the tiled map can filter on them, and
+                the described maps speak them &mdash; but OSM
+                doesn&rsquo;t carry them consistently for
+                pedestrian-relevant features, so coverage is patchy.
+                A data-source limitation, not a design oversight.
               </li>
               <li>
                 <strong>Configurable step size on arrow-key movement</strong>{" "}
@@ -670,6 +751,24 @@ export default function Maps() {
               <li>
                 <Link href="/maps/terminal-map">Terminal map</Link>{" "}
                 &mdash; interior wayfinding, airport scale.
+              </li>
+              <li>
+                <Link href="/maps/context-map">Context Map</Link>{" "}
+                &mdash; your surroundings read aloud in three fixed
+                descriptions; self-hosted end to end.
+              </li>
+              <li>
+                <Link href="/maps/conversational-map">
+                  Conversational map
+                </Link>{" "}
+                &mdash; free-form questions over the same map index;
+                the model phrases, the map measures.
+              </li>
+              <li>
+                <Link href="/maps/knowledge-map">Knowledge map</Link>{" "}
+                &mdash; the conversation plus richer map detail,
+                transit schedule patterns, and cited place
+                knowledge.
               </li>
               <li>
                 <Link href="/research/cisna-model">
