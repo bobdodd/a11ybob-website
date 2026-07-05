@@ -17,6 +17,7 @@ const SUB_PAGES = [
   { href: "/maps/tiled-toronto-map", label: "Tiled Toronto map" },
   { href: "/maps/context-map", label: "Context Map" },
   { href: "/maps/conversational-map", label: "Conversational map" },
+  { href: "/maps/knowledge-map", label: "Knowledge map" },
   { href: "/maps/terminal-map", label: "Terminal map" },
 ] as const;
 
