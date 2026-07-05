@@ -26,7 +26,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { opensearch } from "@/lib/opensearch";
-import { nearestAddress } from "@/lib/mapAddress";
+import { nearestAddress, interpolatedAddress } from "@/lib/mapAddress";
 
 export const dynamic = "force-dynamic";
 
@@ -577,6 +577,9 @@ export async function GET(req: NextRequest) {
   // A nearby REAL house number to anchor by ("near number 120"), preferring one on the
   // street you're on — sparse in OSM, so often absent (then omitted, never invented).
   let address: { housenumber: string; street: string; distance_m: number } | undefined;
+  // Fallback estimate from an addr:interpolation range where no real number is close. Spoken
+  // as "about number N" (an estimate of position along the block), NEVER "at"/"near".
+  let addressApprox: { number: string; street: string; distance_m: number } | undefined;
   if (sp.get("xings") === "1") {
     const roadRes = await opensearch.search({
       index: INDEX,
@@ -613,6 +616,7 @@ export async function GET(req: NextRequest) {
     if (userDist > ON_ROAD_M) userRoad = null;
 
     address = (await nearestAddress(lat, lng, userRoad ?? undefined)) ?? undefined;
+    if (!address) addressApprox = (await interpolatedAddress(lat, lng, userRoad ?? undefined)) ?? undefined;
 
     if (userRoad) {
       const userGeoms = roads.filter((r) => r.name.toLowerCase() === userRoad).map((r) => r.geom as Geom);
@@ -646,5 +650,5 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  return NextResponse.json({ results, summary, intersections, address });
+  return NextResponse.json({ results, summary, intersections, address, addressApprox });
 }

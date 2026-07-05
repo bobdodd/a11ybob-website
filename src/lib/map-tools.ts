@@ -11,7 +11,7 @@
  * shapes mirror those routes. */
 
 import { opensearch } from "@/lib/opensearch";
-import { nearestAddress } from "@/lib/mapAddress";
+import { nearestAddress, interpolatedAddress } from "@/lib/mapAddress";
 import { phoneticKeys } from "@/lib/phonetic";
 
 const INDEX = "map-features";
@@ -160,7 +160,7 @@ const EXCLUDE_ANON = { bool: { must_not: { terms: { kind: ["building", "path"] }
 // or an unnamed path (with its subtype: track / footway / …). Nearest-point-on-geom for linear
 // paths. Returned as secondary context, never mixed into the named result list.
 async function nearestAnon(
-  kind: "building" | "path", lat: number, lon: number, radiusM: number, heading?: number,
+  kind: "building" | "path" | "obstacle", lat: number, lon: number, radiusM: number, heading?: number,
 ): Promise<Record<string, unknown> | null> {
   const res = await opensearch.search({
     index: INDEX,
@@ -168,7 +168,7 @@ async function nearestAnon(
       size: 1,
       query: { bool: { filter: [{ term: { kind } }, { geo_distance: { distance: `${radiusM}m`, location: { lat, lon } } }] } },
       sort: [{ _geo_distance: { location: { lat, lon }, order: "asc", unit: "m", distance_type: "plane", mode: "min" } }],
-      _source: ["subtype", "size_class", "lat", "lng", "geom"],
+      _source: ["display", "subtype", "size_class", "lat", "lng", "geom"],
     },
   });
   const h = hitsOf(res)[0];
@@ -179,6 +179,7 @@ async function nearestAnon(
     : { dist: metresBetween(lat, lon, s.lat as number, s.lng as number), lat: s.lat as number, lng: s.lng as number };
   return {
     kind,
+    ...(s.display ? { display: String(s.display) } : {}),
     ...(s.size_class ? { size_class: String(s.size_class) } : {}),
     ...(s.subtype ? { subtype: String(s.subtype) } : {}),
     distance_m: Math.round(near.dist),
@@ -287,7 +288,7 @@ export async function findPlace(args: {
 
   const res = await opensearch.search({
     index: INDEX,
-    body: { size: Math.min(60, Math.max(40, limit * 6)), query, _source: ["osm_id", "name", "display", "category", "subtype", "lat", "lng", "address", "access", "parent"] },
+    body: { size: Math.min(60, Math.max(40, limit * 6)), query, _source: ["osm_id", "name", "display", "category", "subtype", "lat", "lng", "address", "access", "parent", "info"] },
   });
 
   // Returned best-first (closeness already folded in above). Drop near-duplicate copies of the
@@ -304,10 +305,12 @@ export async function findPlace(args: {
     results.push({
       display: (s.display as string) ?? "",
       category: s.category as string | undefined,
+      subtype: (s.subtype as string) || undefined,
       lat, lng,
       ...(args.near ? { distance_m: Math.round(metresBetween(args.near.lat, args.near.lon, lat, lng)), ...dir } : {}),
       ...(s.parent ? { in: s.parent as string } : {}),
       ...(s.access ? { access: s.access } : {}),
+      ...(s.info ? { info: s.info } : {}),   // heritage / hours / phone / website / wikipedia link
     });
     if (results.length >= limit) break;
   }
@@ -383,11 +386,11 @@ export async function whatsNearby(args: {
       size: 120,
       query,
       sort: [{ _geo_distance: { location: { lat: args.lat, lon: args.lon }, order: "asc", unit: "m", distance_type: "plane", mode: "min" } }],
-      _source: ["name", "display", "category", "subtype", "lat", "lng", "geom", "access", "types"],
+      _source: ["name", "display", "category", "subtype", "lat", "lng", "geom", "access", "types", "info"],
     },
   });
 
-  type Row = { display: string; category: string; subtype: string; near: Near; access?: unknown; types?: unknown; lat: number; lng: number };
+  type Row = { display: string; category: string; subtype: string; near: Near; access?: unknown; types?: unknown; info?: unknown; lat: number; lng: number };
   const byKey = new Map<string, Row>();
   for (const h of hitsOf(res)) {
     const s = h._source;
@@ -397,7 +400,7 @@ export async function whatsNearby(args: {
     const key = (((s.name as string) ?? "").trim().toLowerCase()) || h._id;
     const prev = byKey.get(key);
     if (!prev || near.dist < prev.near.dist) {
-      byKey.set(key, { display: (s.display as string) ?? "", category: String(s.category ?? ""), subtype: String(s.subtype ?? ""), near, access: s.access, types: s.types, lat: s.lat as number, lng: s.lng as number });
+      byKey.set(key, { display: (s.display as string) ?? "", category: String(s.category ?? ""), subtype: String(s.subtype ?? ""), near, access: s.access, types: s.types, info: s.info, lat: s.lat as number, lng: s.lng as number });
     }
   }
 
@@ -417,6 +420,7 @@ export async function whatsNearby(args: {
       lat: r.lat, lng: r.lng,
       ...(r.access ? { access: r.access } : {}),
       ...(r.types ? { types: r.types } : {}),   // descriptive labels: audible signals, surface quality, etc.
+      ...(r.info ? { info: r.info } : {}),       // heritage designation, hours/phone/website, wikipedia/wikidata
     });
     if (results.length >= 15) break;
   }
@@ -440,12 +444,14 @@ export async function whatsNearby(args: {
   const extra: Record<string, unknown> = {};
   if (!filtered) {
     const anonR = Math.min(1000, Math.max(searchRadius, 500));
-    const [b, p] = await Promise.all([
+    const [b, p, o] = await Promise.all([
       nearestAnon("building", args.lat, args.lon, anonR, args.heading),
       nearestAnon("path", args.lat, args.lon, anonR, args.heading),
+      nearestAnon("obstacle", args.lat, args.lon, Math.min(anonR, 150), args.heading),  // obstacles are underfoot — keep it close
     ]);
     if (b) extra.nearest_building = b;
     if (p) extra.nearest_unnamed_path = p;
+    if (o) extra.nearest_obstacle = o;
   }
   return { radius_m: searchRadius, ...(filtered ? { nearby_m: nearbyM } : {}), results, ...extra };
 }
@@ -700,10 +706,17 @@ export async function nearestIntersections(args: { lat: number; lon: number; hea
   // omitted (never invented). near_number_street lets the caller name the street if the
   // number happens to sit on a different one from on_street.
   const addr = await nearestAddress(args.lat, args.lon, userRoad ? userRoad.name : undefined);
+  // Where no real number is close, estimate one from a nearby addr:interpolation range. This
+  // is an ESTIMATE of the position along the block — the caller MUST say "about number N",
+  // never "at"/"near" (those are reserved for the real number above). Only one of the two is
+  // ever set: a real anchor beats an estimate.
+  const approx = addr ? null : await interpolatedAddress(args.lat, args.lon, userRoad ? userRoad.name : undefined);
   return {
     on_street: userRoad ? userRoad.display : null,
     near_number: addr ? addr.housenumber : null,
     near_number_street: addr ? addr.street : null,
+    about_number: approx ? approx.number : null,
+    about_number_street: approx ? approx.street : null,
     intersections,
   };
 }
@@ -713,7 +726,7 @@ export const TOOL_SCHEMAS = [
   {
     name: "find_place",
     description:
-      "Find a named place, business, address, or category anywhere in the indexed map (all of Canada plus a few cities). Use it to answer 'where is X / find me X', AND to get coordinates for any place the user names so you can then describe around it. If 'near' is given, each result also includes distance in metres and a compass bearing (and a clock direction when a heading is provided).",
+      "Find a named place, business, address, or category anywhere in the indexed map (all of Canada plus a few cities). Use it to answer 'where is X / find me X', AND to get coordinates for any place the user names so you can then describe around it. If 'near' is given, each result also includes distance in metres and a compass bearing (and a clock direction when a heading is provided). A result may carry an `info` block — a heritage listing, opening_hours, phone, website, operator, or wikipedia/wikidata link — offer the relevant detail rather than reciting it all; a wikipedia/wikidata identifier means you can go deeper on that place if asked.",
     input_schema: {
       type: "object",
       properties: {
@@ -728,7 +741,7 @@ export const TOOL_SCHEMAS = [
   {
     name: "whats_nearby",
     description:
-      "Map features around a point, nearest first, each with distance + direction (computed for you; never estimate them). TWO modes. (1) NO `types`: a general 'what's around me' snapshot of nearby named features. (2) WITH `types`: a FACETED search for a specific kind ('nearest supermarket / pharmacy / café') — it filters the index to that kind and ALWAYS returns the NEAREST one even when it is far (searched up to 100 km) — never returns 'none' when one exists further out — plus `nearby_m`, the radius counted as 'nearby', so you can say when the nearest isn't close. Common words are expanded to the family that satisfies them (e.g. 'supermarket' and 'grocery' both cover supermarket/grocery/convenience/greengrocer, so a small-town Foodland or a corner store is found). Each result carries its `subtype` (name it by its real kind), and for a type search also `on_street` (the road it sits on) and `in` (the settlement it's in), so you can say WHERE it is: 'Foodland, on Buckhorn Road in Buckhorn'. For a general 'what's around me' (no `types`) it also returns `nearest_building` (a nameless building, with its `size_class`) and `nearest_unnamed_path` (an unnamed path, with its `subtype` like track/footway) as SECONDARY context — texture to add after the named things, most useful where named features are sparse.",
+      "Map features around a point, nearest first, each with distance + direction (computed for you; never estimate them). TWO modes. (1) NO `types`: a general 'what's around me' snapshot of nearby named features. (2) WITH `types`: a FACETED search for a specific kind ('nearest supermarket / pharmacy / café') — it filters the index to that kind and ALWAYS returns the NEAREST one even when it is far (searched up to 100 km) — never returns 'none' when one exists further out — plus `nearby_m`, the radius counted as 'nearby', so you can say when the nearest isn't close. Common words are expanded to the family that satisfies them (e.g. 'supermarket' and 'grocery' both cover supermarket/grocery/convenience/greengrocer, so a small-town Foodland or a corner store is found). Each result carries its `subtype` (name it by its real kind), and for a type search also `on_street` (the road it sits on) and `in` (the settlement it's in), so you can say WHERE it is: 'Foodland, on Buckhorn Road in Buckhorn'. For a general 'what's around me' (no `types`) it also returns `nearest_building` (a nameless building, with its `size_class`) and `nearest_unnamed_path` (an unnamed path, with its `subtype` like track/footway) as SECONDARY context — texture to add after the named things, most useful where named features are sparse. It may also return `nearest_obstacle`: a physical barrier right by the user on the path — a bollard, gate, kissing gate, cattle grid, or a tactile map/model — with a plain `display` label; mention it when close and frame it for the user (awkward to get through with a chair or a guide dog; a tactile map is a helpful landmark to seek out). And any result may carry an `info` block of real-world detail — a heritage designation, opening_hours, phone, website, operator, or wikipedia/wikidata link — surface what's relevant and offer to say more rather than reciting it all.",
     input_schema: {
       type: "object",
       properties: {
@@ -763,7 +776,7 @@ export const TOOL_SCHEMAS = [
   {
     name: "nearest_intersections",
     description:
-      "The named street the user is on (if any) and the nearest street intersections to a point — each as 'A and B' with distance in metres and direction, computed for you. Use this for 'where am I', 'what corner am I at', and 'what's the nearest intersection'. It gives the ACTUAL junction, so prefer it over guessing cross-streets from a list of roads — and the nearest one IS the corner the user is at.",
+      "The named street the user is on (if any) and the nearest street intersections to a point — each as 'A and B' with distance in metres and direction, computed for you. Use this for 'where am I', 'what corner am I at', and 'what's the nearest intersection'. It gives the ACTUAL junction, so prefer it over guessing cross-streets from a list of roads — and the nearest one IS the corner the user is at. It also returns `near_number` (with `near_number_street`): a real nearby house number to anchor by — say it as 'near number 120'. If OSM never numbered the block, it instead returns `about_number` (with `about_number_street`), an ESTIMATE of your position along the street from an interpolation range — say this as 'about number N', and NEVER as 'at' or 'near', because it is a computed estimate, not a real number on the ground. Only one of the two is ever present.",
     input_schema: { type: "object", properties: { lat: { type: "number" }, lon: { type: "number" } }, required: ["lat", "lon"] },
   },
 ];
