@@ -18,6 +18,7 @@
 import fs from "node:fs";
 import readline from "node:readline";
 import { Client } from "@opensearch-project/opensearch";
+import { phoneticKeys } from "../src/lib/phonetic";
 
 const OPENSEARCH_URL = process.env.OPENSEARCH_URL ?? "http://localhost:9200";
 const INDEX = "map-features";
@@ -102,6 +103,11 @@ async function main() {
     } catch {
       continue;
     }
+    // Phonetic key for the accent / Deaf-voice search layer — computed here so it's present on
+    // EVERY upsert (including the enrich-reindex re-upserts, which would otherwise strip it).
+    const nd = doc as { name?: string; display?: string; name_phonetic?: string[] };
+    const keys = phoneticKeys(nd.name || nd.display);
+    if (keys.length) nd.name_phonetic = keys;
     body.push({ index: { _index: INDEX, _id: String(doc.osm_id) } });
     body.push(doc);
     read += 1;

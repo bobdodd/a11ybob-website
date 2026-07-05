@@ -12,6 +12,7 @@
 import fs from "node:fs";
 import readline from "node:readline";
 import { Client } from "@opensearch-project/opensearch";
+import { phoneticKeys } from "../src/lib/phonetic";
 
 const OPENSEARCH_URL = process.env.OPENSEARCH_URL ?? "http://localhost:9200";
 const INDEX = "map-features";
@@ -68,6 +69,9 @@ const mapping = {
   properties: {
     osm_id: { type: "long" },
     name: text,
+    // Double-Metaphone keys of the distinctive name words — the accent / Deaf-voice phonetic
+    // search layer (matched as a boosted, geo-scoped candidate source in find_place).
+    name_phonetic: { type: "keyword" },
     display: { ...text, fields: { raw: { type: "keyword" } } },
     category: { type: "keyword" },
     subtype: { type: "keyword" },
@@ -147,6 +151,9 @@ async function main() {
     } catch {
       continue;
     }
+    const nd = doc as { name?: string; display?: string; name_phonetic?: string[] };
+    const keys = phoneticKeys(nd.name || nd.display);
+    if (keys.length) nd.name_phonetic = keys;
     body.push({ index: { _index: INDEX, _id: String(doc.osm_id) } });
     body.push(doc);
     read += 1;

@@ -32,6 +32,7 @@
     "@codemirror/view": "^6.42.1",
     "@opensearch-project/opensearch": "^3.6.0",
     "css-tree": "^3.2.1",
+    "double-metaphone": "^2.0.1",
     "exceljs": "^4.4.0",
     "mongodb": "^7.2.0",
     "next": "16.2.4",

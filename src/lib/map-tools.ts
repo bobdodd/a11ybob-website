@@ -12,6 +12,7 @@
 
 import { opensearch } from "@/lib/opensearch";
 import { nearestAddress } from "@/lib/mapAddress";
+import { phoneticKeys } from "@/lib/phonetic";
 
 const INDEX = "map-features";
 
@@ -203,6 +204,37 @@ export async function findPlace(args: {
 
   // Fuzzy text relevance so speech-to-text misspellings still match: a dropped or added letter
   // ("Hanaford" for "Hannaford") is one edit, well inside AUTO's tolerance.
+  // Street-aware search. A street type in the query (St/Street, Ave, Rd, Dr, Blvd, Lane…) means the
+  // user wants a ROAD, so boost roads matching the BASE name (the query minus the street-type and
+  // direction words) ABOVE similarly-spelled POIs — that's what buried "Gerrard Street East" under
+  // the "Gerrard"/"Girard" POIs. Stripping the direction also lets "Gerrard Street" match both
+  // "Gerrard Street East" and "…West" (the general name covers its directional halves).
+  const STREET_TYPES = /\b(st|street|ave|avenue|rd|road|dr|drive|blvd|boulevard|ln|lane|cres|crescent|crt|court|ct|way|trail|terrace|terr|pl|place|cir|circle|hwy|highway|pkwy|parkway|sq|square|gardens|gdns|close|walk|row|line|sideroad|concession)\b/i;
+  const isStreet = STREET_TYPES.test(q);
+  const baseName = isStreet
+    ? q.replace(new RegExp(STREET_TYPES.source, "gi"), " ")
+       .replace(/\b(e|east|w|west|n|north|s|south|ne|nw|se|sw)\b/gi, " ")
+       .replace(/\s+/g, " ").trim()
+    : "";
+  const shoulds: unknown[] = [];
+  if (isStreet && baseName.length >= 2) {
+    // Road-boost: float the actual road above similarly-spelled POIs.
+    shoulds.push({ bool: {
+      filter: [{ term: { category: "road" } }],
+      must: [{ multi_match: { query: baseName, type: "best_fields", fields: ["display^3", "name^3"], fuzziness: "AUTO" } }],
+      boost: 8,
+    } });
+  }
+  // Phonetic candidate source (accent / Deaf-voice). ADDITIVE and modest — it surfaces
+  // same-sounding names (Girard↔Gerrard↔Gerard); the geo function-score then scopes them to the
+  // anchor (GPS for "here", or the resolved AREA for a place elsewhere), which is what picks the
+  // right one. Never a filter, so it can't flood the results.
+  const phon = phoneticKeys(isStreet && baseName ? baseName : q);
+  if (phon.length) {
+    shoulds.push({ terms: { name_phonetic: phon, boost: 4 } });
+    if (isStreet) shoulds.push({ bool: { filter: [{ term: { category: "road" } }], must: [{ terms: { name_phonetic: phon } }], boost: 6 } });
+  }
+
   const textQuery: Record<string, unknown> = {
     bool: {
       must: {
@@ -220,6 +252,7 @@ export async function findPlace(args: {
           tie_breaker: 0.3,
         },
       },
+      ...(shoulds.length ? { should: shoulds } : {}),
       filter,
     },
   };
@@ -509,12 +542,48 @@ export async function areaSummary(args: { lat: number; lon: number; radius_m?: n
   });
   const dbb = dens.body.aggregations as unknown as Record<string, { doc_count?: number }>;
 
+  // Nearby NAMED landmarks — notable POIs (museums, attractions, historic sites, major civic
+  // buildings, parks) within a WIDER radius than whats_nearby's local snapshot, so "where am I"
+  // can orient by a landmark across the road ("near the Canadian Canoe Museum") even when its
+  // point is a few hundred metres off and thus not in the immediate list.
+  const LANDMARK_CATS = ["tourism", "historic", "religious", "park"];
+  const LANDMARK_SUBS = ["university", "college", "hospital", "library", "theatre", "arts_centre",
+    "community_centre", "townhall", "courthouse", "stadium", "sports_centre", "museum", "gallery",
+    "tower", "lighthouse", "marina", "attraction", "nature_reserve"];
+  const landRes = await opensearch.search({
+    index: INDEX,
+    body: {
+      size: 6,
+      query: { bool: {
+        must: [{ exists: { field: "name" } }],
+        should: [{ terms: { category: LANDMARK_CATS } }, { terms: { subtype: LANDMARK_SUBS } }],
+        minimum_should_match: 1,
+        filter: [{ geo_distance: { distance: "600m", location: { lat: args.lat, lon: args.lon } } }],
+      } },
+      sort: [{ _geo_distance: { location: { lat: args.lat, lon: args.lon }, order: "asc", unit: "m", distance_type: "plane", mode: "min" } }],
+      _source: ["display", "name", "category", "subtype", "lat", "lng", "geom"],
+    },
+  });
+  const seenLm = new Set<string>();
+  const landmarks = hitsOf(landRes).map((h) => {
+    const s = h._source;
+    const geom = s.geom as Geom | undefined;
+    const near: Near = geom ? nearestOnGeom(args.lat, args.lon, geom)
+      : { dist: metresBetween(args.lat, args.lon, s.lat as number, s.lng as number), lat: s.lat as number, lng: s.lng as number };
+    return {
+      display: String(s.display ?? s.name ?? ""), subtype: String(s.subtype ?? "") || undefined,
+      distance_m: Math.round(near.dist),
+      ...direction(args.lat, args.lon, near.lat, near.lng, args.heading),
+    };
+  }).filter((l) => l.display && !seenLm.has(l.display.toLowerCase()) && !!seenLm.add(l.display.toLowerCase()));
+
   return {
     radius_m: radius,
     contained_by,
     settlements,
     total_features: total,
     counts,
+    landmarks,
     built_up: { buildings: dbb.buildings.doc_count ?? 0, unnamed_paths: dbb.unnamed_paths.doc_count ?? 0 },
     accessibility: {
       crossings: ab.crossings.doc_count ?? 0,
@@ -675,7 +744,7 @@ export const TOOL_SCHEMAS = [
   {
     name: "area_summary",
     description:
-      "A high-level sense of a place rather than a feature list: the named areas that contain the point (park, campus, neighbourhood, water), how much and what mix is around (counts by kind), a RANKED settlement ladder, and an accessibility snapshot (how many crossings, how many with tactile paving). The settlement ladder gives `immediate` (the nearest named place of any rank — often a hamlet or locality), `nearest_town` (the nearest actual town or city), and `nearest_city`, each with its `rank` and distance. Use it for 'what's this area like / is it built up / describe where I am', AND for 'what's the nearest town/city/village' — for which you MUST use the rank, not just whatever place is closest. It also returns `built_up`: counts of building footprints and unnamed paths nearby — use these for how developed the area is ('dozens of buildings' = dense; 'a handful' = sparse/rural).",
+      "A high-level sense of a place rather than a feature list: the named areas that contain the point (park, campus, neighbourhood, water), how much and what mix is around (counts by kind), a RANKED settlement ladder, and an accessibility snapshot (how many crossings, how many with tactile paving). The settlement ladder gives `immediate` (the nearest named place of any rank — often a hamlet or locality), `nearest_town` (the nearest actual town or city), and `nearest_city`, each with its `rank` and distance. Use it for 'what's this area like / is it built up / describe where I am', AND for 'what's the nearest town/city/village' — for which you MUST use the rank, not just whatever place is closest. It also returns `built_up`: counts of building footprints and unnamed paths nearby — use these for how developed the area is ('dozens of buildings' = dense; 'a handful' = sparse/rural). And `landmarks`: nearby NAMED notable POIs (museums, historic sites, major civic buildings, parks) within ~600 m, nearest first — use the closest to orient the user even when it's across a road and not in the immediate list.",
     input_schema: { type: "object", properties: { lat: { type: "number" }, lon: { type: "number" }, radius_m: { type: "integer" } }, required: ["lat", "lon"] },
   },
   {
