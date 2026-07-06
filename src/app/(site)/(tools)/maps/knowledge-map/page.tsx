@@ -31,7 +31,7 @@ export default function MapsKnowledgeMap() {
             <h1>Knowledge map</h1>
             <p className="lede">
               A conversational map that brings together the pieces built across
-              this family, and adds two of its own. It carries the spoken chat of
+              this family, and adds three of its own. It carries the spoken chat of
               the{" "}
               <Link href="/maps/conversational-map">Conversational map</Link>;
               the <Link href="/maps/context-map">Context Map</Link>&rsquo;s
@@ -40,9 +40,10 @@ export default function MapsKnowledgeMap() {
               including mapped barriers in your vicinity; unnamed roads, paths
               and buildings for better area context; some knowledge of transit
               routes and schedule patterns; estimated house numbers on blocks
-              the map never fully numbered; and cited place knowledge from
-              Wikipedia and Wikivoyage. You can ask about where you are, or
-              about anywhere on the map.
+              the map never fully numbered; cited place knowledge from
+              Wikipedia and Wikivoyage; and a personal memory for places and
+              notes, kept on your own device. You can ask about where you are,
+              or about anywhere on the map.
             </p>
             <p className="muted">
               <small>
@@ -205,6 +206,40 @@ export default function MapsKnowledgeMap() {
           </section>
 
           <section className="stack" style={{ "--space": "var(--s0)" } as CSSProperties}>
+            <h2>A personal memory</h2>
+            <p>
+              Memory &mdash; yours, mine, anyone&rsquo;s &mdash; is not always
+              reliable, so the map can carry some of the load. Say
+              &ldquo;remember where I am&rdquo; and it saves the spot, named by
+              its street or by whatever you choose to call it (&ldquo;remember
+              this as the cottage dock&rdquo;). Ask later &mdash; &ldquo;where&rsquo;s
+              the cottage dock?&rdquo; &mdash; and it answers relative to where
+              you are standing <em>now</em>: the distance, and the clock
+              direction. It also remembers information, not just places:
+              &ldquo;remember that 135 bus for me&rdquo; keeps the substance of
+              what it just told you &mdash; the route, where it heads, first and
+              last, how often &mdash; and &ldquo;keep a list of those
+              schools&rdquo; keeps the list, so both can be read back later
+              without a fresh lookup. &ldquo;What do I have remembered?&rdquo;
+              lists everything; &ldquo;forget the schools&rdquo; or
+              &ldquo;forget everything&rdquo; removes it, and nothing is ever
+              removed unless you ask.
+            </p>
+            <p>
+              Where it lives matters. Your saved places and notes are stored on
+              your own device, in this browser &mdash; not on the site&rsquo;s
+              server, which keeps no record of them. The principle: personal
+              information stays as close to the user as possible, even though
+              &mdash; like your location today &mdash; it travels along with
+              each question you ask, so the model can answer from it. The
+              limits are the honest price of that choice: memory is per device
+              and per browser, it does not sync anywhere, and clearing this
+              site&rsquo;s browsing data erases it. Nothing expires on its own
+              &mdash; a saved place stays until you say forget.
+            </p>
+          </section>
+
+          <section className="stack" style={{ "--space": "var(--s0)" } as CSSProperties}>
             <h2>What a place is known for</h2>
             <p>
               The layer that gives this map its name. Ask what a place is, what
@@ -345,8 +380,8 @@ export default function MapsKnowledgeMap() {
               just asked for you. The unnamed
               features and the accessibility-first reading of a place come the
               same way. What is new here is the transit schedule data, the
-              knowledge layer with its cache, and the hands-free conversation
-              loop.
+              knowledge layer with its cache, the hands-free conversation
+              loop, and the personal memory.
             </p>
 
             <h3>Hands-free, in a noisy world</h3>
@@ -394,6 +429,33 @@ export default function MapsKnowledgeMap() {
               after going stale. The load on the shared services tracks actual
               use, which is the only shape that scales to a whole country on a
               small server.
+            </p>
+
+            <h3>Two memories, two homes</h3>
+            <p>
+              This map now holds two kinds of remembered thing, and they
+              deliberately live in opposite places. The knowledge cache is
+              <em> everyone&rsquo;s</em> &mdash; what Wikipedia says about a
+              square is the same for every visitor &mdash; so it lives on the
+              server, where one person&rsquo;s visit warms it for all. Your
+              personal memory is <em>yours alone</em> &mdash; where you parked,
+              the bus you need, the schools you were comparing &mdash; so it
+              lives on your device, and the server keeps no copy. The rule
+              underneath both: shared knowledge belongs where sharing helps;
+              personal information stays as close to the user as possible, even
+              when it must transit elsewhere for a moment to answer the
+              user&rsquo;s own question.
+            </p>
+            <p>
+              Two design choices follow from who this is for. Nothing expires:
+              for someone leaning on the map <em>because</em> memory is
+              unreliable, a note that quietly evaporates is worse than no note
+              at all &mdash; so the only way anything leaves is an explicit
+              &ldquo;forget&rdquo;. And a remembered note keeps the{" "}
+              <em>substance</em>, not a pointer: &ldquo;remember that
+              bus&rdquo; stores the route, its destination, its first and last
+              and frequency as told, so reading it back later needs no fresh
+              lookup and cannot silently change under you.
             </p>
 
             <h3>Schedule knowledge, not arrivals</h3>

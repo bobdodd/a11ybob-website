@@ -20,6 +20,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { TOOL_SCHEMAS, runTool } from "@/lib/map-tools";
 import { PLACE_KNOWLEDGE_SCHEMA, runPlaceKnowledge } from "@/lib/knowledgeTool";
 import { TRANSIT_NEARBY_SCHEMA, runTransitNearby } from "@/lib/transitTool";
+import { MEMORY_TOOL_SCHEMAS, MemoryStore, runMemoryTool } from "@/lib/memoryTool";
 
 export const dynamic = "force-dynamic";
 
@@ -58,7 +59,7 @@ Hard rules:
 
 How to speak (this is read aloud by a screen reader or spoken):
 - Lead with the answer. One or two sentences, then stop. Offer to go deeper rather than dumping everything.
-- For "where am I", "what corner am I at", and "nearest intersection" questions the EXACT spot matters most. Call nearest_intersections for the actual junction — its NEAREST result is the corner the user is at, so use that one (never a farther cross-street) — and whats_nearby for the named place they are at or beside. Lead with those specifics: the place and the corner. Give the area's general character only briefly and AFTER the specifics; never open with a feature count or just "a densely built-up area". A clear place plus the corner IS the answer ("You're at McDonald's, on the corner of Gerrard Street East and Sibley Avenue"). When nearest_intersections returns a \`near_number\`, weave it into the street phrase as an APPROXIMATE anchor — "on Church Street, near number 120, between Wellesley Street and Alexander Street". Always say "near number", NEVER "at number": OSM carries house numbers sparsely, so it is a nearby landmark to orient by, not the user's exact address. If \`near_number_street\` names a different street from the one they're on, say it that way instead ("near 120 Oak Street"). When \`near_number\` is null but \`about_number\` is present, use that instead but say it AS AN ESTIMATE — "about number 118 on Gerrard Street East" (\`about_number_street\` names its street) — never "at" or "near", because it is computed from an interpolation range, not a real number on the ground. When both are null, say nothing about a number — never invent one. If area_summary's \`landmarks\` lists a notable named POI close by (a museum, historic site, major building, park), name the NEAREST as an orienting landmark even when you're not AT it — "on Ashburnham Drive, near the Canadian Canoe Museum" — a landmark across the road is exactly how people place themselves.
+- For "where am I", "what corner am I at", and "nearest intersection" questions the EXACT spot matters most. Call nearest_intersections for the actual junction — its NEAREST result is the corner the user is at, so use that one (never a farther cross-street) — and whats_nearby for the named place they are at or beside. Lead with those specifics: the place and the corner. Give the area's general character only briefly and AFTER the specifics; never open with a feature count or just "a densely built-up area". A clear place plus the corner IS the answer ("You're at McDonald's, on the corner of Gerrard Street East and Sibley Avenue"). When nearest_intersections returns a \`near_number\`, weave it into the street phrase as an APPROXIMATE anchor — "on Church Street, near number 120, between Wellesley Street and Alexander Street". Always say "near number", NEVER "at number": OSM carries house numbers sparsely, so it is a nearby landmark to orient by, not the user's exact address. If \`near_number_street\` names a different street from the one they're on, say it that way instead ("near 120 Oak Street"). When \`near_number\` is null but \`about_number\` is present, use that instead but say it AS AN ESTIMATE — "about number 118 on Gerrard Street East" (\`about_number_street\` names its street) — never "at" or "near", because it is computed from an interpolation range, not a real number on the ground. When both are null, say nothing about a number — never invent one. If area_summary's \`landmarks\` lists a notable named POI close by (a museum, historic site, major building, park), name the NEAREST as an orienting landmark even when you're not AT it — "on Ashburnham Drive, near the Canadian Canoe Museum" — a landmark across the road is exactly how people place themselves. Saying "between A and B" means the user stands BETWEEN those two corners, so A and B MUST lie in roughly OPPOSITE directions from them (check each intersection's clock/bearing — e.g. one at 12 o'clock and one at 6). Two junctions in the SAME direction are both on one side — never say "between" those; instead give the nearest each way, or phrase it directionally ("Swanwick Avenue is about 70 metres behind you").
 - When there are many results, summarise the shape ("several cafés within 100 metres — the nearest is Blandford, about 30 metres east") instead of listing them all. List individually only when asked, or when there are just a few.
 - Nearest or most relevant first. Plain, concrete language — no visual-only words, no filler, no false cheer.
 - If a place name is ambiguous, take the nearest match and say which ("the nearest Tim Hortons, on King Street"), or briefly ask which they mean.
@@ -90,7 +91,16 @@ Transit — routes serving nearby stops (from the STATIC schedule):
 - It returns nearby stops, each with the routes serving it (number + name + mode + \`dest\`, the destination(s)/direction it heads there), the agency, distance, and a coarse service pattern. ALWAYS give a route as its number AND name AND where it heads — e.g. "the 20 Cliffside bus, towards Victoria Park Station" or "the 501 Queen streetcar, towards Neville Park and Long Branch" — never just the number. Say which stop and how far, and the agency. Lead with the nearest stop / most useful routes; summarise when there are many.
 - Each route also carries \`sched\`: the typical timetable at that stop, split into weekday / saturday / sunday. Each has \`first\` and \`last\` (first and last departure as a 24h clock — "05:20" is 5:20am, "01:10" is 1:10am after midnight) and \`headway\` (typical minutes between departures per period: am_peak, midday, pm_peak, evening). Use it when someone asks how early/late, how often, or how well-served a route is: give the first/last bus and a typical frequency in plain words — "the first 9 Mall Express is about 6:40am, the last around 10:15pm, roughly hourly through the day". Call out weekday-vs-weekend differences when they matter ("less on Sundays — first one's about 10:30am"). Round and hedge ("about", "roughly", "typically") — it's the published schedule and can change. Not every route has \`sched\`.
 - Accessibility: each stop has \`wheelchair\` — "yes" = step-free / wheelchair-accessible boarding, "no" = it is not (empty = the agency didn't say). Some routes also carry \`wheel\` (yes / no / some) for wheelchair-accessible vehicles. Surface it when accessibility is relevant, or as useful colour for a blind or mobility-impaired traveller ("that stop is step-free"). State it only when the data says so — never guess when it's empty.
-- KNOWLEDGE, NOT live times. First/last and typical frequency are fine — they're the timetable. But NEVER give an actual "next bus", "in X minutes", or how long until one comes — you have no real-time data and must not imply you do. If asked when the very next one is, say you have the timetable (first/last, how often) but not live arrivals. Mention the service pattern when useful ("runs daily", "weekdays only"). If transit_nearby returns nothing, say there's no stop mapped nearby in the schedule data.`;
+- KNOWLEDGE, NOT live times. First/last and typical frequency are fine — they're the timetable. But NEVER give an actual "next bus", "in X minutes", or how long until one comes — you have no real-time data and must not imply you do. If asked when the very next one is, say you have the timetable (first/last, how often) but not live arrivals. Mention the service pattern when useful ("runs daily", "weekdays only"). If transit_nearby returns nothing, say there's no stop mapped nearby in the schedule data.
+
+Personal memory — remember / recall / forget (the user's own, kept on THEIR device, private, no expiry):
+- Saving happens ONLY through the \`remember\` TOOL. Telling the user something is "saved" without having CALLED \`remember\` in this turn is a FAILURE — nothing was saved, and they will lose it. Same rule for \`forget\`. When asked to remember, the tool call comes FIRST, then the confirmation.
+- "Remember where I am" (or "remember this spot as X") → \`remember\` kind 'place' with their CURRENT coordinates. If they named it, use their name as the label; if not, label it by the street or place you would describe them at, and offer once that they can name it ("Saved this spot on Hannaford Street — want to call it something?").
+- "Remember that 135 bus" / "keep a list of those schools" → \`remember\` kind 'note', and put the SUBSTANCE of what you just told them in \`text\` — the route number, name, destination, first/last and frequency; the actual school names with distances — so you can read it back later WITHOUT fresh lookups. "Add this one too" = remember again with the same label, text extended.
+- "Where's that spot / the cottage dock / my spot?" → \`recall\`: saved places come back with live distance and direction from where they stand NOW — answer with the clock direction as usual ("about 400 metres away, at 2 o'clock").
+- If they name a place or thing you can't find on the map, try \`recall\` before saying you can't find it — it may be one of theirs.
+- "What do I have remembered?" → \`recall\` and read the labels (offer detail on any one). "Forget the schools" / "forget everything" → \`forget\`, only ever when asked, and confirm what was removed.
+- Be honest about what memory is: it lives on THIS device and browser only, and clearing the browser's site data erases it — say so if they ask where it's kept. Never invent a memory: if recall finds nothing, say so plainly.`;
 
 type Turn = { role: "user" | "assistant"; content: string };
 
@@ -102,7 +112,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  let body: { message?: string; location?: { lat: number; lon: number; heading?: number }; history?: Turn[] };
+  let body: { message?: string; location?: { lat: number; lon: number; heading?: number }; history?: Turn[]; memory?: unknown };
   try {
     body = await req.json();
   } catch {
@@ -138,6 +148,12 @@ export async function POST(req: NextRequest) {
     { role: "user", content: message + locNote },
   ];
 
+  // The user's personal memory, sent by the client from THEIR device and handed back
+  // (updated) for the client to persist. Never stored server-side.
+  const memory = new MemoryStore(body.memory);
+  const withMemory = (payload: Record<string, unknown>) =>
+    NextResponse.json(memory.changed ? { ...payload, memory: memory.items } : payload);
+
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
   // Cache the (large, stable) system prompt + tools so every turn after the first is cheap.
@@ -145,7 +161,7 @@ export async function POST(req: NextRequest) {
     { type: "text", text: SYSTEM, cache_control: { type: "ephemeral" } },
   ];
   // Map tools + the knowledge & transit tools. Cache the last entry so the whole tool block is cached.
-  const allTools = [...TOOL_SCHEMAS, PLACE_KNOWLEDGE_SCHEMA, TRANSIT_NEARBY_SCHEMA];
+  const allTools = [...TOOL_SCHEMAS, PLACE_KNOWLEDGE_SCHEMA, TRANSIT_NEARBY_SCHEMA, ...MEMORY_TOOL_SCHEMAS];
   const tools = allTools.map((t, i) =>
     i === allTools.length - 1 ? { ...t, cache_control: { type: "ephemeral" as const } } : t,
   ) as unknown as Anthropic.Messages.Tool[];
@@ -158,7 +174,7 @@ export async function POST(req: NextRequest) {
       // reply — not an error — so a hands-free conversation stays alive for the retry.
       if (Date.now() - t0 > REQUEST_BUDGET_MS) {
         console.error(`[knowledge-chat] BUDGET ${Date.now() - t0}ms rounds=${round} tools=${toolsUsed.join(",") || "-"}`);
-        return NextResponse.json({ reply: "I'm sorry — that answer is taking too long right now. Please ask me again." });
+        return withMemory({ reply: "I'm sorry — that answer is taking too long right now. Please ask me again." });
       }
       const resp = await client.messages.create(
         { model: MODEL, max_tokens: 1024, system, tools, messages },
@@ -172,23 +188,28 @@ export async function POST(req: NextRequest) {
           toolUses.map(async (tu) => {
             let out: unknown;
             try {
-              out = await withToolTimeout(
-                tu.name === "place_knowledge"
-                  ? runPlaceKnowledge(
-                      tu.input as { lat?: number; lon?: number },
-                      loc ? { lat: loc.lat, lon: loc.lon } : undefined,
-                    )
-                  : tu.name === "transit_nearby"
-                  ? runTransitNearby(
-                      tu.input as { lat?: number; lon?: number; radius_m?: number },
-                      loc ? { lat: loc.lat, lon: loc.lon } : undefined,
-                    )
-                  : runTool(
-                      tu.name, tu.input as Record<string, unknown>, heading,
-                      loc ? { lat: loc.lat, lon: loc.lon } : undefined,
-                    ),
-                tu.name,
-              );
+              out = tu.name === "remember" || tu.name === "recall" || tu.name === "forget"
+                ? runMemoryTool(
+                    memory, tu.name, tu.input as Record<string, unknown>,
+                    loc ? { lat: loc.lat, lon: loc.lon } : undefined, heading,
+                  )
+                : await withToolTimeout(
+                    tu.name === "place_knowledge"
+                      ? runPlaceKnowledge(
+                          tu.input as { lat?: number; lon?: number },
+                          loc ? { lat: loc.lat, lon: loc.lon } : undefined,
+                        )
+                      : tu.name === "transit_nearby"
+                      ? runTransitNearby(
+                          tu.input as { lat?: number; lon?: number; radius_m?: number },
+                          loc ? { lat: loc.lat, lon: loc.lon } : undefined,
+                        )
+                      : runTool(
+                          tu.name, tu.input as Record<string, unknown>, heading,
+                          loc ? { lat: loc.lat, lon: loc.lon } : undefined,
+                        ),
+                    tu.name,
+                  );
             } catch (e) {
               out = { error: `tool ${tu.name} failed: ${(e as Error).message}` };
             }
@@ -206,19 +227,19 @@ export async function POST(req: NextRequest) {
         .join("")
         .trim();
       console.log(`[knowledge-chat] ok ${Date.now() - t0}ms rounds=${round + 1} tools=${toolsUsed.join(",") || "-"}`);
-      if (!reply) return NextResponse.json({ reply: "I'm not sure how to answer that — try rephrasing?" });
+      if (!reply) return withMemory({ reply: "I'm not sure how to answer that — try rephrasing?" });
       // Lead every answer with the user's facing (the ONE compass point) when known — the anchor
       // that makes the clock directions in the reply meaningful, exactly like the Context Map.
-      return NextResponse.json({ reply: facingWord ? `You're facing ${facingWord}. ${reply}` : reply });
+      return withMemory({ reply: facingWord ? `You're facing ${facingWord}. ${reply}` : reply });
     }
     console.error(`[knowledge-chat] ROUNDS-CAP ${Date.now() - t0}ms tools=${toolsUsed.join(",") || "-"}`);
-    return NextResponse.json({ reply: "That question took more steps than I can take in one go — try narrowing it down?" });
+    return withMemory({ reply: "That question took more steps than I can take in one go — try narrowing it down?" });
   } catch (e) {
     console.error(`[knowledge-chat] FAIL ${Date.now() - t0}ms tools=${toolsUsed.join(",") || "-"}: ${(e as Error).message}`);
     // A timed-out call is transient: answer as a normal REPLY so the voice conversation
     // survives and the user just asks again. Other failures stay a real error.
     if (e instanceof Anthropic.APIConnectionTimeoutError) {
-      return NextResponse.json({ reply: "I'm sorry — I couldn't get an answer in time. Please ask me again." });
+      return withMemory({ reply: "I'm sorry — I couldn't get an answer in time. Please ask me again." });
     }
     return NextResponse.json(
       { reply: "", error: `Something went wrong reaching the assistant: ${(e as Error).message}` },

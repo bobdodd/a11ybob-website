@@ -18,6 +18,20 @@ const MAX_HISTORY = 12; // text turns kept client-side and sent for context
 // say so rather than clicking "Thinking…" forever (a real 100-second hang, 2026-07-05).
 const CHAT_TIMEOUT_MS = 75000;
 
+// ── Personal memory — "remember where I am", "remember that bus", recalled any time. ──
+// Lives HERE, on the user's device (localStorage): personal places and notes are kept as
+// close to the user as possible. It rides along with each question (like location) so the
+// model can answer from it, and the server hands back the updated store to persist — but
+// nothing personal is ever stored server-side. Per-device, per-browser, no expiry; cleared
+// only by an explicit "forget" (or clearing the browser's site data).
+const MEM_KEY = "km-memory-v1";
+let memory = [];
+try { const m = JSON.parse(localStorage.getItem(MEM_KEY) || "[]"); if (Array.isArray(m)) memory = m; } catch { /* fresh start */ }
+function saveMemory(items) {
+  memory = items;
+  try { localStorage.setItem(MEM_KEY, JSON.stringify(items)); } catch { /* full/blocked — memory lives for the session */ }
+}
+
 const $ = (id) => document.getElementById(id);
 const heading = new HeadingProvider(); // compass → clock-face directions ("2 o'clock")
 
@@ -220,11 +234,12 @@ async function ask(message) {
     const res = await fetch(CHAT_API, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message, location: loc || undefined, history: history.slice(-MAX_HISTORY - 1, -1) }),
+      body: JSON.stringify({ message, location: loc || undefined, history: history.slice(-MAX_HISTORY - 1, -1), memory }),
       signal: ctrl.signal,
     });
     const data = await res.json().catch(() => ({}));
     if (ctrl.signal.aborted) return;   // shushed while finishing — quietCommand handled it
+    if (Array.isArray(data.memory)) saveMemory(data.memory);   // a remember/forget happened — persist it
     if (!res.ok || data.error) {
       const msg = data.error || `Something went wrong (${res.status}).`;
       setBusy(false, msg);

@@ -369,9 +369,11 @@ export default function Maps() {
                 from published timetables, house numbers real and
                 estimated, a hands-free voice conversation, the
                 Context Map&rsquo;s follow-me narration as you walk,
-                and cited place knowledge from Wikipedia and
+                cited place knowledge from Wikipedia and
                 Wikivoyage &mdash; each such answer naming its
-                source and its age.
+                source and its age &mdash; and a personal memory
+                (&ldquo;remember where I am&rdquo;) kept on your own
+                device.
               </li>
             </ul>
           </section>
