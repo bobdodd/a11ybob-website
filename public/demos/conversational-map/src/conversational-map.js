@@ -11,6 +11,10 @@ import { HeadingProvider } from "./HeadingProvider.js";
 const CHAT_API = "/api/context-chat";
 const STT_API = "/api/context-stt";
 const MAX_HISTORY = 12; // text turns kept client-side and sent for context
+// Backstop timeout on a chat request. The server bounds itself (~60 s worst case, answering
+// with a spoken apology), so if nothing has come back by now the CONNECTION is the problem —
+// say so rather than clicking "Thinking…" forever (a real 100-second hang, 2026-07-05).
+const CHAT_TIMEOUT_MS = 75000;
 
 const $ = (id) => document.getElementById(id);
 const heading = new HeadingProvider(); // compass → clock-face directions ("2 o'clock")
@@ -179,7 +183,14 @@ function speak(text, onDone) {
         waited += 250;
         if (done) { window.clearInterval(poll); return; }
         if (synth.speaking) sawSpeaking = true;
-        if ((sawSpeaking && !synth.speaking) || waited >= 60000) { window.clearInterval(poll); finish(); }
+        // Release conditions. The only NORMAL one is the real end signal: was speaking, now
+        // isn't. The old flat 60s cap fired DURING any answer longer than a minute — the mic
+        // opened mid-speech (the OS ducks audio when the mic opens) and the idle wind-down
+        // then ran over the answer's tail. Long transit answers hit this live (2026-07-06).
+        const finished = sawSpeaking && !synth.speaking;   // real end of speech
+        const engineDead = !sawSpeaking && waited >= 6000; // never started — don't hold the mic shut
+        const runaway = waited >= 180000;                  // stuck speaking=true (rare engine bug)
+        if (finished || engineDead || runaway) { window.clearInterval(poll); finish(); }
       }, 250);
       u.onend = () => { if (sawSpeaking) finish(); };
       u.onerror = finish; // a hard speech error should still release the mic
@@ -199,6 +210,7 @@ async function ask(message) {
   setBusy(true, "Thinking…");
   const ctrl = new AbortController();
   pending = ctrl;   // a mid-flight shush can abort this
+  const chatTimer = window.setTimeout(() => { ctrl.timedOut = true; ctrl.abort(); }, CHAT_TIMEOUT_MS);
   const loc = await freshLocation();
   if (loc) { const h = heading.getHeading(); if (h != null) loc.heading = Math.round(h); } // facing → clock
 
@@ -225,12 +237,15 @@ async function ask(message) {
     speak(reply, onAnswerSpoken);   // in a voice conversation, re-open the mic once this answer finishes
     input.focus();
   } catch (e) {
-    if (e && e.name === "AbortError") return;   // mid-flight shush — quietCommand says "Aborted" + re-opens
-    const msg = "I couldn't reach the assistant. Check your connection and try again.";
+    if (e && e.name === "AbortError" && !ctrl.timedOut) return;   // mid-flight shush — quietCommand says "Aborted" + re-opens
+    const msg = ctrl.timedOut
+      ? "That took too long to answer. Please ask me again."
+      : "I couldn't reach the assistant. Check your connection and try again.";
     setBusy(false, msg);
     if (convo) { convo = false; clearIdle(); setConvoButton(false); }   // stop the hands-free loop on error
     speak(msg); input.focus();
   } finally {
+    window.clearTimeout(chatTimer);
     if (pending === ctrl) pending = null;
   }
 }
@@ -573,6 +588,7 @@ async function followAsk(brief) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message, location: loc, history: [] }),
+      signal: AbortSignal.timeout(30000),   // a stuck update just dies quietly; the next move retries
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok || data.error || !following || followBusy()) return;
