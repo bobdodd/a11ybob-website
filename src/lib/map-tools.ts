@@ -22,7 +22,7 @@ type Geom = { t: string; c: number[][][] };
 type Near = { dist: number; lat: number; lng: number };
 
 // Equirectangular metres — plenty accurate at the metres-to-km scale here.
-function metresBetween(aLat: number, aLng: number, bLat: number, bLng: number): number {
+export function metresBetween(aLat: number, aLng: number, bLat: number, bLng: number): number {
   const R = 6371000, rad = Math.PI / 180;
   const dLat = (bLat - aLat) * rad;
   const dLng = (bLng - aLng) * rad * Math.cos(((aLat + bLat) / 2) * rad);
@@ -84,7 +84,7 @@ function clockFromHeading(bearingDeg: number, headingDeg: number): string {
 }
 
 // Direction fields a result carries: always compass; clock too when a heading is given.
-function direction(
+export function direction(
   fromLat: number, fromLng: number, toLat: number, toLng: number, heading?: number,
 ): { bearing?: string; clock?: string } {
   const b = bearing(fromLat, fromLng, toLat, toLng);
@@ -702,11 +702,30 @@ export async function nearestIntersections(args: { lat: number; lon: number; hea
 
   // Junctions of the user's road (or, off any road, the few nearest roads) with other named
   // roads — deduped by street pair, nearest first. This is the ACTUAL corner, not a guess.
-  const base = userRoad ? [userRoad] : roads.slice(0, 6);
+  // The user's road is ALL of its same-named segment docs, not just the nearest one: a street
+  // is stored split, and the junction at the far end of the block belongs to a DIFFERENT doc
+  // of the same street (seen live: standing on Hannaford, the Gerrard T-junction lived in the
+  // other Hannaford segment, so "between Gerrard and Swanwick" had no Gerrard to say).
+  const base = userRoad ? roads.filter((r) => r.name.toLowerCase() === userRoad.name.toLowerCase()) : roads.slice(0, 6);
+  // T-junctions rarely show a segment CROSSING: a street that ENDS ON another has its end
+  // vertex left a few metres off the other line by rounding + simplification. Treat an
+  // endpoint within TOUCH_M of the other road as the junction it is.
+  const TOUCH_M = 10;
+  const touches = (x: R, y: R): number[][] => {
+    const pts: number[][] = [];
+    for (const ring of x.geom.c) {
+      if (ring.length < 2) continue;
+      for (const ep of [ring[0], ring[ring.length - 1]]) {
+        const n = nearestOnGeom(ep[1], ep[0], y.geom);
+        if (n.dist <= TOUCH_M) pts.push([n.lng, n.lat]);
+      }
+    }
+    return pts;
+  };
   const byPair = new Map<string, { streets: string; lat: number; lng: number; dist: number }>();
   for (const a of base) for (const b of roads) {
     if (b.name.toLowerCase() === a.name.toLowerCase()) continue;
-    for (const p of geomCrossings(a.geom, b.geom)) {
+    for (const p of [...geomCrossings(a.geom, b.geom), ...touches(a, b), ...touches(b, a)]) {
       const d = metresBetween(args.lat, args.lon, p[1], p[0]);
       const names = [a.display, b.display].sort();
       const key = names.join("|"), prev = byPair.get(key);

@@ -626,12 +626,23 @@ export async function GET(req: NextRequest) {
       const xs: Array<{ display: string; lat: number; lng: number; dist: number; proj: number }> = [];
       for (const r of roads) {
         if (!r.geom || r.name.toLowerCase() === userRoad || MINOR.has(r.subtype)) continue;
+        // Junction candidates: segment crossings PLUS ring-endpoint near-touches — a
+        // T-junction is a street ENDING on another, and rounding + simplification leave that
+        // end vertex a few metres off the other line, so it never registers as a CROSSING
+        // (same fix as nearest_intersections in map-tools). Candidates are [lng, lat].
+        const TOUCH_M = 10;
+        const eps = (g: Geom) => g.c.flatMap((ring) => (ring.length >= 2 ? [ring[0], ring[ring.length - 1]] : []));
+        const cands: number[][] = [];
+        for (const ug of userGeoms) {
+          for (const p of geomCrossings(r.geom, ug)) cands.push(p);
+          for (const ep of eps(r.geom)) { const n = nearestOnGeom(ep[1], ep[0], ug); if (n.dist <= TOUCH_M) cands.push([n.lng, n.lat]); }
+          for (const ep of eps(ug)) { const n = nearestOnGeom(ep[1], ep[0], r.geom); if (n.dist <= TOUCH_M) cands.push([n.lng, n.lat]); }
+        }
         let best: { lat: number; lng: number; dist: number } | null = null;
-        for (const ug of userGeoms)
-          for (const p of geomCrossings(r.geom, ug)) {
-            const d = metresBetween(lat, lng, p[1], p[0]);
-            if (!best || d < best.dist) best = { lat: p[1], lng: p[0], dist: d };
-          }
+        for (const p of cands) {
+          const d = metresBetween(lat, lng, p[1], p[0]);
+          if (!best || d < best.dist) best = { lat: p[1], lng: p[0], dist: d };
+        }
         if (best) xs.push({ display: r.display, lat: best.lat, lng: best.lng, dist: best.dist, proj: dir ? projAlong(lat, lng, best.lat, best.lng, dir) : 0 });
       }
       // Nearest junction per cross-street name.
