@@ -26,6 +26,23 @@ export const dynamic = "force-dynamic";
 const MODEL = process.env.CHAT_MODEL ?? "claude-haiku-4-5";
 const MAX_HISTORY = 12; // prior turns kept for context (cost bound)
 const MAX_TOOL_ROUNDS = 6; // safety stop on the tool loop
+// Never leave the user hanging in "Thinking…": the SDK's defaults (10-minute timeout, 2
+// retries) let one stalled API call hang a request for minutes — seen live 2026-07-05, a
+// 100-second hang the user had to abort. Bound each model call, and the whole request.
+const CALL_TIMEOUT_MS = 25_000;   // one model call (healthy calls run 1–5 s)
+const REQUEST_BUDGET_MS = 60_000; // whole request — past this, apologise and ask them to retry
+// A hung TOOL must not hang the answer either (seen live: one pathological find_place query
+// ground for two minutes). Race each tool call against a deadline; on timeout the model gets
+// a tool error back and can apologise or try something narrower.
+const TOOL_TIMEOUT_MS = 20_000;
+function withToolTimeout<T>(p: Promise<T>, label: string): Promise<T> {
+  return Promise.race([
+    p,
+    new Promise<never>((_, rej) =>
+      setTimeout(() => rej(new Error(`${label} took too long and was stopped`)), TOOL_TIMEOUT_MS),
+    ),
+  ]);
+}
 // 8-point compass for stating the user's OWN facing (the one place a compass point is used).
 const COMPASS8 = ["north", "north-east", "east", "south-east", "south", "south-west", "west", "north-west"];
 
@@ -133,30 +150,45 @@ export async function POST(req: NextRequest) {
     i === allTools.length - 1 ? { ...t, cache_control: { type: "ephemeral" as const } } : t,
   ) as unknown as Anthropic.Messages.Tool[];
 
+  const t0 = Date.now();
+  const toolsUsed: string[] = [];
   try {
     for (let round = 0; round < MAX_TOOL_ROUNDS; round++) {
-      const resp = await client.messages.create({ model: MODEL, max_tokens: 1024, system, tools, messages });
+      // Out of budget (a stalled call already ate the time): answer SOMETHING, as a normal
+      // reply — not an error — so a hands-free conversation stays alive for the retry.
+      if (Date.now() - t0 > REQUEST_BUDGET_MS) {
+        console.error(`[knowledge-chat] BUDGET ${Date.now() - t0}ms rounds=${round} tools=${toolsUsed.join(",") || "-"}`);
+        return NextResponse.json({ reply: "I'm sorry — that answer is taking too long right now. Please ask me again." });
+      }
+      const resp = await client.messages.create(
+        { model: MODEL, max_tokens: 1024, system, tools, messages },
+        { timeout: CALL_TIMEOUT_MS, maxRetries: 1 },
+      );
 
       if (resp.stop_reason === "tool_use") {
         const toolUses = resp.content.filter((b): b is Anthropic.Messages.ToolUseBlock => b.type === "tool_use");
+        toolsUsed.push(...toolUses.map((tu) => tu.name));
         const toolResults: Anthropic.Messages.ToolResultBlockParam[] = await Promise.all(
           toolUses.map(async (tu) => {
             let out: unknown;
             try {
-              out = tu.name === "place_knowledge"
-                ? await runPlaceKnowledge(
-                    tu.input as { lat?: number; lon?: number },
-                    loc ? { lat: loc.lat, lon: loc.lon } : undefined,
-                  )
-                : tu.name === "transit_nearby"
-                ? await runTransitNearby(
-                    tu.input as { lat?: number; lon?: number; radius_m?: number },
-                    loc ? { lat: loc.lat, lon: loc.lon } : undefined,
-                  )
-                : await runTool(
-                    tu.name, tu.input as Record<string, unknown>, heading,
-                    loc ? { lat: loc.lat, lon: loc.lon } : undefined,
-                  );
+              out = await withToolTimeout(
+                tu.name === "place_knowledge"
+                  ? runPlaceKnowledge(
+                      tu.input as { lat?: number; lon?: number },
+                      loc ? { lat: loc.lat, lon: loc.lon } : undefined,
+                    )
+                  : tu.name === "transit_nearby"
+                  ? runTransitNearby(
+                      tu.input as { lat?: number; lon?: number; radius_m?: number },
+                      loc ? { lat: loc.lat, lon: loc.lon } : undefined,
+                    )
+                  : runTool(
+                      tu.name, tu.input as Record<string, unknown>, heading,
+                      loc ? { lat: loc.lat, lon: loc.lon } : undefined,
+                    ),
+                tu.name,
+              );
             } catch (e) {
               out = { error: `tool ${tu.name} failed: ${(e as Error).message}` };
             }
@@ -173,13 +205,21 @@ export async function POST(req: NextRequest) {
         .map((b) => b.text)
         .join("")
         .trim();
+      console.log(`[knowledge-chat] ok ${Date.now() - t0}ms rounds=${round + 1} tools=${toolsUsed.join(",") || "-"}`);
       if (!reply) return NextResponse.json({ reply: "I'm not sure how to answer that — try rephrasing?" });
       // Lead every answer with the user's facing (the ONE compass point) when known — the anchor
       // that makes the clock directions in the reply meaningful, exactly like the Context Map.
       return NextResponse.json({ reply: facingWord ? `You're facing ${facingWord}. ${reply}` : reply });
     }
+    console.error(`[knowledge-chat] ROUNDS-CAP ${Date.now() - t0}ms tools=${toolsUsed.join(",") || "-"}`);
     return NextResponse.json({ reply: "That question took more steps than I can take in one go — try narrowing it down?" });
   } catch (e) {
+    console.error(`[knowledge-chat] FAIL ${Date.now() - t0}ms tools=${toolsUsed.join(",") || "-"}: ${(e as Error).message}`);
+    // A timed-out call is transient: answer as a normal REPLY so the voice conversation
+    // survives and the user just asks again. Other failures stay a real error.
+    if (e instanceof Anthropic.APIConnectionTimeoutError) {
+      return NextResponse.json({ reply: "I'm sorry — I couldn't get an answer in time. Please ask me again." });
+    }
     return NextResponse.json(
       { reply: "", error: `Something went wrong reaching the assistant: ${(e as Error).message}` },
       { status: 502 },

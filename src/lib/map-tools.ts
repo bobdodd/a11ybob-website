@@ -222,7 +222,7 @@ export async function findPlace(args: {
     // Road-boost: float the actual road above similarly-spelled POIs.
     shoulds.push({ bool: {
       filter: [{ term: { category: "road" } }],
-      must: [{ multi_match: { query: baseName, type: "best_fields", fields: ["display^3", "name^3"], fuzziness: "AUTO" } }],
+      must: [{ multi_match: { query: baseName, type: "best_fields", fields: ["display^3", "name^3"], fuzziness: "AUTO", max_expansions: 10 } }],
       boost: 8,
     } });
   }
@@ -246,9 +246,21 @@ export async function findPlace(args: {
                 query: q, type: "best_fields",
                 fields: ["display^4", "name^3", "address.street^2", "address.housenumber^2", "types", "text"],
                 fuzziness: "AUTO",
+                // Cap fuzzy expansion (default 50/term/field). A long conversational phrase
+                // ("south end of Hannaford St on Kingston Road") otherwise fans out to
+                // thousands of term queries and minutes of scoring — seen live 2026-07-05.
+                max_expansions: 10,
+                // Require (nearly) all terms. Without this, "Gerrard Street" is an OR: the
+                // low-IDF "street" alone matches MILLIONS of docs, every one then geo-scored —
+                // 10–16 s per query, and past the timeout it returned partial junk (nearby
+                // address nodes instead of the road). With it: ~200 ms, right answer. ≤2 terms
+                // → all required; longer queries may drop one. A sloppy whole-sentence query
+                // now returns empty fast — the model then retries with just the name, which
+                // the find_place schema tells it to do.
+                minimum_should_match: "2<-1",
               },
             },
-            { match_phrase_prefix: { display: { query: q, boost: 2 } } },
+            { match_phrase_prefix: { display: { query: q, boost: 2, max_expansions: 10 } } },
           ],
           tie_breaker: 0.3,
         },
@@ -288,7 +300,12 @@ export async function findPlace(args: {
 
   const res = await opensearch.search({
     index: INDEX,
-    body: { size: Math.min(60, Math.max(40, limit * 6)), query, _source: ["osm_id", "name", "display", "category", "subtype", "lat", "lng", "address", "access", "parent", "info"] },
+    // timeout: stop scoring and return the best partials rather than grinding on — a capped
+    // answer beats a hung one for a user standing on a street corner. 15s, NOT lower: street
+    // queries (any query containing "street"/"road" matches millions of docs through the text
+    // field, each geo-scored) legitimately run 10–12s, and cutting one off mid-scoring returns
+    // partial junk — seen live: "Gerrard Street" answered with nearby address nodes at 10s.
+    body: { size: Math.min(60, Math.max(40, limit * 6)), timeout: "15s", query, _source: ["osm_id", "name", "display", "category", "subtype", "lat", "lng", "address", "access", "parent", "info"] },
   });
 
   // Returned best-first (closeness already folded in above). Drop near-duplicate copies of the
@@ -730,7 +747,7 @@ export const TOOL_SCHEMAS = [
     input_schema: {
       type: "object",
       properties: {
-        query: { type: "string", description: "A name, business, category, or address — e.g. 'CN Tower', 'pharmacy', '123 King Street'." },
+        query: { type: "string", description: "A name, business, category, or address — e.g. 'CN Tower', 'pharmacy', '123 King Street'. Pass JUST the name or term, never the user's whole sentence: for 'transit at the south end of Hannaford St on Kingston Road' query 'Kingston Road' (or 'Hannaford Street'), not the sentence." },
         near: { type: "object", properties: { lat: { type: "number" }, lon: { type: "number" } }, description: "Optional anchor to bias toward and measure distance from (usually the user's location)." },
         accessibility: { type: "string", enum: ["wheelchair", "tactile_paving", "step_free"], description: "Optional: only return features with this accessibility attribute present." },
         limit: { type: "integer", description: "Max results (default 5)." },
