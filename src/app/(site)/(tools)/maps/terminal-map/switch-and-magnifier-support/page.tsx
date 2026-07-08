@@ -142,7 +142,7 @@ export default function SwitchAndMagnifierSupport() {
             <h3>Magnifiers that reliably follow focus</h3>
             <ul>
               <li>
-                <strong>Windows Magnifier</strong> (built-in) tracks
+                <strong>Windows Magnifier</strong>{" "}(built-in) tracks
                 focus well in most cases, following the caret in text
                 fields and keyboard focus on interactive elements. Its
                 &ldquo;Follow the keyboard cursor&rdquo; and
@@ -153,7 +153,7 @@ export default function SwitchAndMagnifierSupport() {
                 gesture.
               </li>
               <li>
-                <strong>ZoomText / Fusion</strong> (Freedom Scientific)
+                <strong>ZoomText / Fusion</strong>{" "}(Freedom Scientific)
                 is probably the most robust of any, with independent
                 settings for tracking focus, caret, and mouse, and
                 better handling of programmatic focus shifts than most.
@@ -162,7 +162,7 @@ export default function SwitchAndMagnifierSupport() {
                 orientation after a jump.
               </li>
               <li>
-                <strong>SuperNova</strong> (Dolphin) also tracks focus
+                <strong>SuperNova</strong>{" "}(Dolphin) also tracks focus
                 reliably, with configurable tracking modes, to a similar
                 standard.
               </li>
@@ -171,7 +171,7 @@ export default function SwitchAndMagnifierSupport() {
             <h3>Weaker or conditional focus tracking</h3>
             <ul>
               <li>
-                <strong>macOS Zoom</strong> (built-in) follows keyboard
+                <strong>macOS Zoom</strong>{" "}(built-in) follows keyboard
                 focus within native AppKit apps reasonably, and Safari
                 web content is generally fine, but it falls down on
                 programmatic focus changes in web apps &mdash; focus
@@ -243,7 +243,7 @@ export default function SwitchAndMagnifierSupport() {
                 &mdash; the demo these notes are about.
               </li>
               <li>
-                <Link href="/maps">Maps</Link> &mdash; the wider
+                <Link href="/maps">Maps</Link>{" "}&mdash; the wider
                 accessible maps work.
               </li>
             </ul>

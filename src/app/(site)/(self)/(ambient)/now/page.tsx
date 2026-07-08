@@ -80,7 +80,7 @@ export default function Now() {
               Two things layered. First, the 2029 framework:
               accessibility as an equilibrium between agents in a
               community of practice &mdash; competition for
-              resources <em>and</em> shared enterprise, not
+              resources <em>and</em>{" "}shared enterprise, not
               competition alone. The agentic-AI substrate now
               exists; the open question is what testable
               predictions the framework makes that practical work

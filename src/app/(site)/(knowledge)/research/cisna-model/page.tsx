@@ -106,7 +106,7 @@ export default function CisnaModel() {
                 <strong>2006</strong> — &ldquo;The Effectiveness of
                 Self-Adapting User Interfaces as Assistive Technology
                 for Handheld Mobile Devices.&rdquo; Argues for{" "}
-                <em>intrinsic accessibility</em> over functional
+                <em>intrinsic accessibility</em>{" "}over functional
                 bolt-on assistive tech, and names the formal next step
                 (game theory + autonomous agents) that the{" "}
                 <Link href="/research/2029-framework">

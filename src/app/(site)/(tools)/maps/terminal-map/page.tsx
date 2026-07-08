@@ -193,8 +193,8 @@ export default function MapsTerminalMap() {
               other content to help a user explore it and understand
               what they find. The terminal map has three conceptual
               blocks of navigable content: the <strong>map</strong>{" "}
-              itself, the <strong>map controls</strong> (pan and
-              zoom), and the <strong>header</strong> (search and
+              itself, the <strong>map controls</strong>{" "}(pan and
+              zoom), and the <strong>header</strong>{" "}(search and
               filters). Both the header and the controls float above
               the map and can be shrunk to expose more of it &mdash;
               because here, unlike on a Google map where the only
@@ -312,7 +312,7 @@ export default function MapsTerminalMap() {
               tooltip is rarely fully inside the magnifier window, so
               the user must move to read it &mdash; and moving
               dismisses it. The sticky tooltip instead persists until
-              the user presses <kbd>Escape</kbd> (all pop-up content
+              the user presses <kbd>Escape</kbd>{" "}(all pop-up content
               on the map closes with <kbd>Escape</kbd>) or hovers
               another element, and it is drawn as close as possible to
               the hover point so at least part of it lands inside the
@@ -589,7 +589,7 @@ export default function MapsTerminalMap() {
                 &mdash; the layered architecture the map is built from.
               </li>
               <li>
-                <Link href="/maps">Maps</Link> &mdash; the wider
+                <Link href="/maps">Maps</Link>{" "}&mdash; the wider
                 accessible maps work this demo belongs to.
               </li>
             </ul>

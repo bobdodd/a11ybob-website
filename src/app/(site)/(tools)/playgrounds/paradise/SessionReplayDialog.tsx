@@ -314,7 +314,7 @@ export function SessionReplayDialog({
               {played.length === 0 ? (
                 <li className="sr-transcript-empty">
                   <small className="muted">
-                    Press <strong>Play</strong> to start replay.
+                    Press <strong>Play</strong>{" "}to start replay.
                   </small>
                 </li>
               ) : (

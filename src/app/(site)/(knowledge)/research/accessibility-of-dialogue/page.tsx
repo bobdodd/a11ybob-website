@@ -82,8 +82,8 @@ export default function AccessibilityOfDialogue() {
             <p>
               This is the cleanest correction of one of the
               field&rsquo;s most stubborn category errors:
-              talking about <em>an accessible iPhone</em> or{" "}
-              <em>an accessible website</em> as if the artefact
+              talking about <em>an accessible iPhone</em>{" "}or{" "}
+              <em>an accessible website</em>{" "}as if the artefact
               carried the property in itself. It does not.
               Accessibility is a property of the relation between
               a specific user (with a specific capacity profile
@@ -106,7 +106,7 @@ export default function AccessibilityOfDialogue() {
               available medium-and-protocol path. The dialogue
               reframing is more general still: it generalises
               from <em>one specific user / one specific
-              interface</em> to <em>a population of users / a
+              interface</em>{" "}to <em>a population of users / a
               catalogue of provider channels</em>.
             </p>
           </section>
@@ -141,9 +141,9 @@ export default function AccessibilityOfDialogue() {
                 the Measure of Accessibility collection
               </Link>
               . Intrinsic accessibility names how many 
-              pseudo-users a <em>single</em> underlying interface
+              pseudo-users a <em>single</em>{" "}underlying interface
               admits; coverage names how many real-population
-              users a <em>provider&rsquo;s collection</em> of
+              users a <em>provider&rsquo;s collection</em>{" "}of
               interfaces admits. The two measures complement
               each other: an intrinsically accessible single
               channel is better than a functionally accessible
@@ -223,7 +223,7 @@ export default function AccessibilityOfDialogue() {
               (visual, sonic, haptic, cognitive, colour-vision,
               language). The bucket model the field defaults to
               &mdash; <em>blind / deaf / motor-impaired /
-              cognitive-impaired</em> &mdash; handles it by
+              cognitive-impaired</em>{" "}&mdash; handles it by
               failing. See{" "}
               <Link href="/research/the-measure-of-accessibility/intrinsic-accessibility">
                 Intrinsic Accessibility
@@ -266,7 +266,7 @@ export default function AccessibilityOfDialogue() {
                 formal definitions honest.
               </li>
               <li>
-                <Link href="/work">/work</Link> &mdash; where the
+                <Link href="/work">/work</Link>{" "}&mdash; where the
                 commercial-and-legal version of the dialogue
                 framing is most directly useful to clients.
               </li>

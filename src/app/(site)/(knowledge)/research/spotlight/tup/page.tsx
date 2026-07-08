@@ -50,7 +50,7 @@ export default function SpotlightTUP() {
               input failures. Bob&rsquo;s mother, who has arthritis,
               also informed the work: she found typing on mobile
               devices painful, and the design target became
-              reducing finger motion <em>and</em> making each
+              reducing finger motion <em>and</em>{" "}making each
               contact tolerant of imprecision.
             </p>
           </section>
@@ -65,13 +65,13 @@ export default function SpotlightTUP() {
             </p>
             <ul>
               <li>
-                <strong>The woodpecker effect</strong> &mdash;
+                <strong>The woodpecker effect</strong>{" "}&mdash;
                 hand tremor producing repeated brief contacts that
                 the touch surface registered as a sequence of
                 rapid presses, when only one was intended.
               </li>
               <li>
-                <strong>Sliding from numbness</strong> &mdash;
+                <strong>Sliding from numbness</strong>{" "}&mdash;
                 reduced cutaneous sensitivity meaning the user
                 pressed without knowing how hard, and the finger
                 could be pushed slightly during the press,
@@ -86,12 +86,12 @@ export default function SpotlightTUP() {
               was published with characters at <em>fixed</em>{" "}
               positions on the touch wheel and a prediction
               algorithm that adjusted which character got{" "}
-              <em>highlighted</em> based on where the finger landed.
+              <em>highlighted</em>{" "}based on where the finger landed.
               Their accessibility nod was a single throwaway
               sentence: <em>&ldquo;the method might also be useful
               for disabled persons. By placing an angle detector on
               a joint, the person will be able to highlight a
-              character.&rdquo;</em> Fast for typical users; nothing
+              character.&rdquo;</em>{" "}Fast for typical users; nothing
               about tremor, sliding, or low-vision constraints.
             </p>
           </section>
@@ -138,7 +138,7 @@ export default function SpotlightTUP() {
             </p>
             <ol>
               <li>
-                A <strong>finite state machine</strong> modelling
+                A <strong>finite state machine</strong>{" "}modelling
                 user input, designed specifically to handle the
                 woodpecker effect (multiple brief contacts treated
                 as one intentional press) and the 
@@ -147,7 +147,7 @@ export default function SpotlightTUP() {
                 drift).
               </li>
               <li>
-                The <strong>adaptive wheel display</strong> with
+                The <strong>adaptive wheel display</strong>{" "}with
                 the large on-screen letter, designed for low-vision
                 users (also relevant to MS, which can affect 
                 optic-nerve function).
@@ -167,10 +167,10 @@ export default function SpotlightTUP() {
             <p>
               The standard predictive-text framing &mdash;{" "}
               <em>we&rsquo;ll guess what you want and you
-              confirm</em> &mdash; assumes confirmation is cheap.
+              confirm</em>{" "}&mdash; assumes confirmation is cheap.
               For users with MS or arthritis, every motion has cost.
               The right design question is therefore not{" "}
-              <em>how can we suggest the right letter?</em> but{" "}
+              <em>how can we suggest the right letter?</em>{" "}but{" "}
               <em>
                 how can we put the right letter where the user
                 already is?
@@ -201,7 +201,7 @@ export default function SpotlightTUP() {
               <code>typicalButtonPressRate</code>,{" "}
               <code>constantTouching</code>,{" "}
               <code>touchAStaticPoint</code>,{" "}
-              <code>touchAMovingPoint</code> &mdash; that are
+              <code>touchAMovingPoint</code>{" "}&mdash; that are
               precisely what TUP&rsquo;s 
               woodpecker-and-sliding-touch FSM was modelling at the engineering level
               years before the framework existed. The ad-hoc

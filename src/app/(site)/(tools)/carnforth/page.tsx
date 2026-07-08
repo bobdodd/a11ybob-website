@@ -43,11 +43,11 @@ export default function Carnforth() {
               algorithm. Results land in the panel as failures,
               warnings, and passes, with detail on each issue.
               Click any issue to highlight the element on the page;
-              click <em>Inspect in Elements panel</em> to jump to
+              click <em>Inspect in Elements panel</em>{" "}to jump to
               it in the standard DevTools tree.
             </p>
             <p>
-              <strong>One WCAG criterion, in depth.</strong> The
+              <strong>One WCAG criterion, in depth.</strong>{" "}The
               extension focuses on WCAG 4.1.2 Name, Role, Value and
               the accessible-name computation algorithm
               specifically. That focus is deliberate: 4.1.2 is the
@@ -77,7 +77,7 @@ export default function Carnforth() {
             </p>
             <ul>
               <li>
-                <strong>CISNA Model</strong> &mdash; theory. The
+                <strong>CISNA Model</strong>{" "}&mdash; theory. The
                 five-layer model of accessible adaptive hypermedia.
                 See{" "}
                 <Link href="/research/cisna-model">
@@ -86,7 +86,7 @@ export default function Carnforth() {
                 .
               </li>
               <li>
-                <strong>Carnforth-Java</strong> &mdash; the doctoral
+                <strong>Carnforth-Java</strong>{" "}&mdash; the doctoral
                 Java implementation of CISNA, with Action Language
                 XML. See{" "}
                 <Link href="/playgrounds/action-language">
@@ -100,19 +100,19 @@ export default function Carnforth() {
                 Bob-owned, GPL-3.0.
               </li>
               <li>
-                <Link href="/automated-testing">automated-testing</Link> &mdash;
+                <Link href="/automated-testing">automated-testing</Link>{" "}&mdash;
                 AI-driven accessibility testing experiments;
                 Bob-owned, GPL-3.0. Five PoCs covering classes of
                 issue commercial tools cannot reach.
               </li>
               <li>
-                <strong>autoA11y</strong> &mdash; the much more
+                <strong>autoA11y</strong>{" "}&mdash; the much more
                 complete CNIB rebrand and production
                 continuation. CNIB-owned; mentioned on{" "}
                 <Link href="/work">/work</Link>.
               </li>
               <li>
-                <Link href="/paradise">Paradise</Link> &mdash;
+                <Link href="/paradise">Paradise</Link>{" "}&mdash;
                 source-level multi-model static analysis in
                 TypeScript; Bob-owned. The complementary branch
                 to the runtime line above.
@@ -137,7 +137,7 @@ export default function Carnforth() {
               distributed as a checkout of the source repo, loaded
               via Chrome&rsquo;s developer mode. The choice is
               deliberate &mdash; see the{" "}
-              <Link href="/colophon">colophon</Link> for the
+              <Link href="/colophon">colophon</Link>{" "}for the
               rationale.
             </p>
             <ol>
@@ -150,16 +150,16 @@ export default function Carnforth() {
                 <code>chrome://extensions/</code>
               </li>
               <li>
-                Enable <em>Developer mode</em> via the toggle in
+                Enable <em>Developer mode</em>{" "}via the toggle in
                 the top-right corner.
               </li>
               <li>
-                Click <em>Load unpacked</em> and select the{" "}
-                <code>chrome_plugin/</code> directory inside the
+                Click <em>Load unpacked</em>{" "}and select the{" "}
+                <code>chrome_plugin/</code>{" "}directory inside the
                 cloned repository.
               </li>
               <li>
-                A new <em>Accessible Names</em> panel will appear
+                A new <em>Accessible Names</em>{" "}panel will appear
                 in Chrome DevTools (F12).
               </li>
             </ol>
@@ -175,16 +175,16 @@ export default function Carnforth() {
                 Open Chrome DevTools (F12) on any page.
               </li>
               <li>
-                Switch to the <em>Accessible Names</em> panel.
+                Switch to the <em>Accessible Names</em>{" "}panel.
               </li>
               <li>
-                Click <em>Run Test</em> to analyse the page.
+                Click <em>Run Test</em>{" "}to analyse the page.
               </li>
               <li>
                 View results organised by failures, warnings, and
                 all elements; click an issue to see detail and
                 highlight the element on the page; use{" "}
-                <em>Inspect in Elements Panel</em> to jump to it.
+                <em>Inspect in Elements Panel</em>{" "}to jump to it.
               </li>
             </ol>
           </section>
@@ -200,20 +200,20 @@ export default function Carnforth() {
             </p>
             <ul>
               <li>
-                <strong>Carnforth (this tool)</strong> &mdash;
+                <strong>Carnforth (this tool)</strong>{" "}&mdash;
                 runtime, DOM-based, one criterion in depth.
                 Browser-side; no network round-trips; written in
                 plain JavaScript so the source is readable
                 end-to-end.
               </li>
               <li>
-                <Link href="/automated-testing">automated-testing</Link> &mdash;
+                <Link href="/automated-testing">automated-testing</Link>{" "}&mdash;
                 AI-driven, applied to specific classes of issue
                 commercial tools cannot reach. Five PoCs with
                 captured prompts, responses, and discussion.
               </li>
               <li>
-                <Link href="/paradise">Paradise</Link> &mdash;
+                <Link href="/paradise">Paradise</Link>{" "}&mdash;
                 source-level multi-model static analysis. The
                 technically deepest of the three; parses HTML,
                 JavaScript, and CSS into separate semantic models
@@ -222,7 +222,7 @@ export default function Carnforth() {
             </ul>
             <p>
               All three connect to the longer research arc in{" "}
-              <Link href="/research">/research</Link> and to the{" "}
+              <Link href="/research">/research</Link>{" "}and to the{" "}
               <Link href="/research/2029-framework">
                 2029 framework
               </Link>{" "}
@@ -259,7 +259,7 @@ export default function Carnforth() {
               . Issues against the accessible-name computation
               specifically are the highest-leverage place for
               external help; the test logic in{" "}
-              <code>chrome_plugin/js/</code> is where most of the
+              <code>chrome_plugin/js/</code>{" "}is where most of the
               substance lives.
             </p>
           </section>

@@ -28,7 +28,7 @@ export default function SpeakingAndFindingYourPlace() {
               Two problems sit underneath an accessible map and are
               still genuinely open: how a feature is{" "}
               <em>announced</em>{" "}when a reader explores by touch, and
-              how a reader <em>stays oriented</em> &mdash; finding
+              how a reader <em>stays oriented</em>{" "}&mdash; finding
               focus when the map is zoomed out, and knowing where they
               are when there is no single anchor to describe everything
               against. This page works through both, and is honest that
@@ -66,7 +66,7 @@ export default function SpeakingAndFindingYourPlace() {
             </p>
             <p>
               The{" "}
-              <Link href="/maps/terminal-map">terminal map</Link> takes
+              <Link href="/maps/terminal-map">terminal map</Link>{" "}takes
               the other path: it handles explore-by-touch in its own
               code and announces through an ARIA{" "}
               <strong>live region</strong>. Because the map is now in
@@ -89,7 +89,7 @@ export default function SpeakingAndFindingYourPlace() {
               interrupting whatever came before&rdquo; behaviour that
               would fix the second problem is{" "}
               <em>intrinsic to the screen reader&rsquo;s own focus and
-              explore-by-touch engine</em> &mdash; it is exactly what
+              explore-by-touch engine</em>{" "}&mdash; it is exactly what
               the first approach gets for free, and exactly what the
               live-region approach structurally loses. It is not a
               feature you can bolt back onto a live region.
@@ -106,7 +106,7 @@ export default function SpeakingAndFindingYourPlace() {
               speech it has already started. Live regions are specified
               for low-frequency status messages, not for high-frequency
               positional tracking. The realistic mitigations are only
-              partial: you can <strong>throttle to dwell</strong> &mdash;
+              partial: you can <strong>throttle to dwell</strong>{" "}&mdash;
               announce only when the finger settles, not on every feature
               passed over, which never generates the backlog but loses
               the continuous &ldquo;drag and hear everything&rdquo; feel;
@@ -126,7 +126,7 @@ export default function SpeakingAndFindingYourPlace() {
             <p>
               The candidate fix &mdash; proposed, not yet built or
               tested &mdash; is to drop the live region and announce
-              through the <strong>Web Speech API</strong> (
+              through the <strong>Web Speech API</strong>{" "}(
               <code>speechSynthesis</code>) instead. A live region
               cannot flush its backlog;{" "}
               <code>speechSynthesis</code>{" "}can. Calling{" "}
@@ -134,14 +134,14 @@ export default function SpeakingAndFindingYourPlace() {
               and queued utterances, and you immediately{" "}
               <code>speak()</code>{" "}the new one. So on explore-by-touch
               you cancel-then-speak on every move, and the reader only
-              ever hears where the finger is <em>now</em> &mdash; the
+              ever hears where the finger is <em>now</em>{" "}&mdash; the
               self-interrupting behaviour the live region lacks,
               recovered in code.
             </p>
             <p>
               It is not a clean win. The page&rsquo;s synthesis voice
               will not be the reader&rsquo;s own screen-reader voice, so
-              they hear a <strong>mix of two voices</strong> &mdash; the
+              they hear a <strong>mix of two voices</strong>{" "}&mdash; the
               map in one, their screen reader in another. And because a
               map that just talks would be constantly chatty to{" "}
               <em>everyone</em>, the behaviour has to sit behind an{" "}
@@ -196,7 +196,7 @@ export default function SpeakingAndFindingYourPlace() {
                 This is the opposite of the current fixed-size approach.
               </li>
               <li>
-                <strong>Contextual zoom</strong> &mdash; zoom by the
+                <strong>Contextual zoom</strong>{" "}&mdash; zoom by the
                 graphical size <em>and</em>{" "}the semantic meaning of the
                 focused feature. A park, a school ground, or hospital
                 grounds would be framed together with some of the
@@ -207,7 +207,7 @@ export default function SpeakingAndFindingYourPlace() {
               </li>
               <li>
                 <strong>Leave the zoom alone and improve the
-                marker</strong> &mdash; keep a static indicator but make
+                marker</strong>{" "}&mdash; keep a static indicator but make
                 it findable at any zoom, the way ZoomText offers a
                 cross-hairs locator alongside its enlarged-pointer
                 variations.
@@ -217,7 +217,7 @@ export default function SpeakingAndFindingYourPlace() {
               Bob&rsquo;s preference is the third &mdash; contextual
               zoom &mdash; but with two honest caveats: it isn&rsquo;t
               built fully (the{" "}
-              <Link href="/maps/terminal-map">terminal map</Link> only
+              <Link href="/maps/terminal-map">terminal map</Link>{" "}only
               gestures at the idea), and there is no user data to decide
               on yet.
             </p>
@@ -246,7 +246,7 @@ export default function SpeakingAndFindingYourPlace() {
               <strong>A relative account.</strong>{" "}Describe each feature
               by its nearest neighbours, by their relative importance,
               and by cardinal direction &mdash; which is what the{" "}
-              <Link href="/maps/terminal-map">terminal map</Link> does,
+              <Link href="/maps/terminal-map">terminal map</Link>{" "}does,
               each point of interest naming its nearest others and their
               compass direction. This map does <em>not</em>{" "}do it yet,
               and the reason is the data: the OpenStreetMap extract is
@@ -305,7 +305,7 @@ export default function SpeakingAndFindingYourPlace() {
                 graph, and how a circuit is read.
               </li>
               <li>
-                <Link href="/maps">Maps</Link> &mdash; the wider
+                <Link href="/maps">Maps</Link>{" "}&mdash; the wider
                 accessible maps work.
               </li>
             </ul>

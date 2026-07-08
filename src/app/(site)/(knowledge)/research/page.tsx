@@ -95,7 +95,7 @@ export default function Research() {
             </h2>
             <p>
               A six-page treatment of the accessibility theory that
-              emerged from the <em>Defining Accessibility</em> thesis
+              emerged from the <em>Defining Accessibility</em>{" "}thesis
               chapter. The deepest single intellectual contribution
               in the corpus: the political framing of what
               accessibility actually is, the formal distinction

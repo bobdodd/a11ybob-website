@@ -83,7 +83,7 @@ export default function AutomatedTesting() {
               <em>InaccessibilityMatters</em>, a 
               deliberately-broken site purpose-built to exercise specific
               accessibility failures. It currently lives at{" "}
-              <code>bobd69.sg-host.com</code> pending migration off
+              <code>bobd69.sg-host.com</code>{" "}pending migration off
               SiteGround to{" "}
               <code>inaccessibility-matters.a11ybob.com</code>. The
               prompts here all use the rendered HTML of that page
@@ -114,7 +114,7 @@ export default function AutomatedTesting() {
             </p>
             <ul>
               <li>
-                <Link href="/carnforth">Carnforth</Link> &mdash;
+                <Link href="/carnforth">Carnforth</Link>{" "}&mdash;
                 a runtime Chrome extension that tests the rendered
                 DOM against the live page. Browser-side, no
                 network round-trips, written in plain JavaScript.
@@ -127,7 +127,7 @@ export default function AutomatedTesting() {
                 of where each is fragile.
               </li>
               <li>
-                <Link href="/paradise">Paradise</Link> &mdash;
+                <Link href="/paradise">Paradise</Link>{" "}&mdash;
                 source-level multi-model analysis. Parses HTML,
                 JavaScript, and CSS into separate semantic models;
                 reasons over the integrated structure. The most
@@ -164,16 +164,16 @@ export default function AutomatedTesting() {
             <p>
               The dominant language of a web page, detected from
               the actual text content rather than from the HTML{" "}
-              <code>lang</code> attribute, compared against the{" "}
-              <code>lang</code> attribute to see if the
+              <code>lang</code>{" "}attribute, compared against the{" "}
+              <code>lang</code>{" "}attribute to see if the
               declaration is correct. Also detects words in
               languages other than the dominant one, and checks
               whether they are correctly wrapped in their own{" "}
-              <code>lang</code> attributes.
+              <code>lang</code>{" "}attributes.
             </p>
             <p>
               Commercial automated tools do not test for this; they
-              check whether <code>lang</code> is present, not
+              check whether <code>lang</code>{" "}is present, not
               whether it is accurate. A page declared as French
               but written entirely in English passes their checks.
               This demo catches that case.
@@ -182,10 +182,10 @@ export default function AutomatedTesting() {
             <h3>WCAG criteria</h3>
             <ul>
               <li>
-                <strong>3.1.1 Language of Page</strong> (Level A)
+                <strong>3.1.1 Language of Page</strong>{" "}(Level A)
               </li>
               <li>
-                <strong>3.1.2 Language of Parts</strong> (Level
+                <strong>3.1.2 Language of Parts</strong>{" "}(Level
                 AA)
               </li>
             </ul>
@@ -233,7 +233,7 @@ export default function AutomatedTesting() {
               language &mdash; the language switcher contains
               French and Spanish &mdash; and to check whether
               those words are wrapped in their own{" "}
-              <code>lang</code> attributes. They are not, and
+              <code>lang</code>{" "}attributes. They are not, and
               Claude reports that as well, with a remediation
               example.
             </p>
@@ -284,12 +284,12 @@ export default function AutomatedTesting() {
                 out of order
               </li>
               <li>
-                <strong>2.4.7 Focus Visible</strong> (Level AA)
+                <strong>2.4.7 Focus Visible</strong>{" "}(Level AA)
                 &mdash; marked-up headings obscured by other
                 content
               </li>
               <li>
-                <strong>4.1.2 Name, Role, Value</strong> (Level A)
+                <strong>4.1.2 Name, Role, Value</strong>{" "}(Level A)
                 &mdash; broken WAI-ARIA heading-level attributes
                 (a follow-on test)
               </li>
@@ -310,8 +310,8 @@ export default function AutomatedTesting() {
               This example mixes image recognition with source-code
               parsing. The goal is to find all of the likely
               headings on the page &mdash; irrespective of whether
-              they have <code>&lt;hx&gt;</code> tags or{" "}
-              <code>aria-level</code> attributes &mdash; check
+              they have <code>&lt;hx&gt;</code>{" "}tags or{" "}
+              <code>aria-level</code>{" "}attributes &mdash; check
               whether the heading order makes sense, and
               indirectly catch content that is obscured.
             </p>
@@ -382,9 +382,9 @@ export default function AutomatedTesting() {
             <p>
               Cookie notices and language switchers are
               accessibility-critical content because of{" "}
-              <em>when</em> they need to be reached, not because
+              <em>when</em>{" "}they need to be reached, not because
               of what they contain. The user must be aware of a
-              cookie notice <em>before</em> they interact with
+              cookie notice <em>before</em>{" "}they interact with
               anything that sets cookies; a user who arrives on a
               page in a language they don&rsquo;t read must be
               able to find the language switcher without
@@ -405,7 +405,7 @@ export default function AutomatedTesting() {
                 so fails conformance
               </li>
               <li>
-                <strong>4.1.2 Name, Role, Value</strong> (Level A)
+                <strong>4.1.2 Name, Role, Value</strong>{" "}(Level A)
                 &mdash; syntax and role issues found in passing
               </li>
             </ul>
@@ -491,8 +491,8 @@ export default function AutomatedTesting() {
               interactive elements as it goes; it requires eight
               tabs to reach the accept button. Claude also
               identifies that the language switcher is{" "}
-              <code>aria-hidden</code> and has a misspelled{" "}
-              <code>rol="presentation"</code> attribute (which
+              <code>aria-hidden</code>{" "}and has a misspelled{" "}
+              <code>rol="presentation"</code>{" "}attribute (which
               should be <code>role="presentation"</code>); correctly
               identifies the language switcher as 
               keyboard-unreachable; and surfaces both conformance issues
@@ -528,10 +528,10 @@ export default function AutomatedTesting() {
                 (Level A)
               </li>
               <li>
-                <strong>2.4.3 Focus Order</strong> (Level A)
+                <strong>2.4.3 Focus Order</strong>{" "}(Level A)
               </li>
               <li>
-                <strong>4.1.2 Name, Role, Value</strong> (Level A)
+                <strong>4.1.2 Name, Role, Value</strong>{" "}(Level A)
               </li>
             </ul>
 
@@ -551,10 +551,10 @@ export default function AutomatedTesting() {
               interactive content. It looks for unreachable
               content by comparing reading order with tab order,
               and explicitly looks for use of{" "}
-              <code>aria-hidden</code> on interactive elements.
+              <code>aria-hidden</code>{" "}on interactive elements.
               It also looks for drop-down menus and disclosure
               widgets to see if they at least use{" "}
-              <code>aria-expanded</code> (the test is not
+              <code>aria-expanded</code>{" "}(the test is not
               currently strong enough to know whether it is used{" "}
               <em>correctly</em>).
             </p>
@@ -571,10 +571,10 @@ export default function AutomatedTesting() {
             <p>
               What Claude does find is that there is unreachable
               content in the reading order.{" "}
-              <code>pointer-events: none</code> is reported as
+              <code>pointer-events: none</code>{" "}is reported as
               the reason &mdash; I&rsquo;m not sold on that
               argument; I expected it to report on the{" "}
-              <code>aria-hidden</code> attribute. So: right
+              <code>aria-hidden</code>{" "}attribute. So: right
               answer but wrong reason, I think. That said, the
               response does also recognise the elements as{" "}
               <code>aria-hidden</code>.
@@ -582,7 +582,7 @@ export default function AutomatedTesting() {
             <p>
               Claude finds one drop-down menu (the hamburger
               menu) and correctly detects that{" "}
-              <code>aria-expanded</code> is missing.
+              <code>aria-expanded</code>{" "}is missing.
             </p>
             <p>
               The same prompt run without the screenshot
@@ -625,11 +625,11 @@ export default function AutomatedTesting() {
               them. For each found, the test asks: does focus
               move to the modal when it opens? Does focus return
               to the opening button when the modal closes? Does
-              the modal start with an <code>&lt;h1&gt;</code> or{" "}
-              <code>&lt;h2&gt;</code> heading? Does it have a{" "}
-              <code>role</code> of <code>dialog</code> or{" "}
+              the modal start with an <code>&lt;h1&gt;</code>{" "}or{" "}
+              <code>&lt;h2&gt;</code>{" "}heading? Does it have a{" "}
+              <code>role</code>{" "}of <code>dialog</code>{" "}or{" "}
               <code>alertdialog</code>, or use the native{" "}
-              <code>&lt;dialog&gt;</code> element? Is there a
+              <code>&lt;dialog&gt;</code>{" "}element? Is there a
               close button? Does Escape close the dialog? Is the
               background actually inert?
             </p>
@@ -641,15 +641,15 @@ export default function AutomatedTesting() {
             <h3>WCAG criteria</h3>
             <ul>
               <li>
-                <strong>2.1.1 Keyboard</strong> (Level A) &mdash;
+                <strong>2.1.1 Keyboard</strong>{" "}(Level A) &mdash;
                 Escape-to-close
               </li>
               <li>
-                <strong>2.4.3 Focus Order</strong> (Level A)
+                <strong>2.4.3 Focus Order</strong>{" "}(Level A)
                 &mdash; focus management on open and close
               </li>
               <li>
-                <strong>4.1.2 Name, Role, Value</strong> (Level A)
+                <strong>4.1.2 Name, Role, Value</strong>{" "}(Level A)
                 &mdash; <code>role="dialog"</code> /{" "}
                 <code>alertdialog</code>
               </li>
@@ -686,7 +686,7 @@ export default function AutomatedTesting() {
             <p>
               Claude finds two potential modals. One is a real
               modal on the page; the other is a JavaScript{" "}
-              <code>alert()</code> call, which is also a modal.
+              <code>alert()</code>{" "}call, which is also a modal.
               The test did not handle the <code>alert()</code>{" "}
               case correctly &mdash; the modal is identified but
               the modal properties are not properly inspected.
@@ -702,8 +702,8 @@ export default function AutomatedTesting() {
             </p>
             <p>
               Claude also detects that the modal has an{" "}
-              <code>&lt;h2&gt;</code> heading and a close button;
-              identifies that the <code>role</code> has not been
+              <code>&lt;h2&gt;</code>{" "}heading and a close button;
+              identifies that the <code>role</code>{" "}has not been
               set to <code>dialog</code>; finds no Escape-based
               close handler; and reports that the background to
               the modal is not inert.

@@ -78,7 +78,7 @@ export default function MapsContextMap() {
               cross-street ahead, the notable places nearby &mdash; each
               with a distance and a clock-face or compass direction.
               There is nothing to look at and nothing to pan. The
-              description <em>is</em> the map.
+              description <em>is</em>{" "}the map.
             </p>
           </section>
 
@@ -127,20 +127,20 @@ export default function MapsContextMap() {
             <h2>The three controls</h2>
             <ul>
               <li>
-                <strong>Quick describe</strong> &mdash; one line, on
+                <strong>Quick describe</strong>{" "}&mdash; one line, on
                 demand: which way you face, the road you are on, the
                 nearest main intersection, and the most worth-mentioning
                 thing near you.
               </li>
               <li>
-                <strong>Describe as I move</strong> &mdash; a running
+                <strong>Describe as I move</strong>{" "}&mdash; a running
                 commentary as you walk; and because being turned around
                 is movement too, it calls out when you turn, names your
                 new direction, and re-casts everything around you to it.
                 That is the part being tested in a crowd.
               </li>
               <li>
-                <strong>Detailed surroundings</strong> &mdash; the full
+                <strong>Detailed surroundings</strong>{" "}&mdash; the full
                 picture, read out and laid out as headings you can move
                 through: ahead, to your right, behind you, to your left.
               </li>
@@ -180,7 +180,7 @@ export default function MapsContextMap() {
           >
             <h2>Presence, never absence</h2>
             <p>
-              The page only ever tells you what <em>is</em> there. It
+              The page only ever tells you what <em>is</em>{" "}there. It
               never tells you something is absent &mdash; never
               &ldquo;no crossing here&rdquo;, never &ldquo;nothing
               nearby&rdquo;. The reason is the data: OpenStreetMap is
@@ -219,7 +219,7 @@ export default function MapsContextMap() {
             </p>
             <p>
               For the current street trials the GPS side is{" "}
-              <strong>switched off</strong> and the page runs on the
+              <strong>switched off</strong>{" "}and the page runs on the
               compass alone, so we can shake out the magnetometer
               behaviour on its own. That is a temporary testing state,
               not the design &mdash; the two-source heading is built and
@@ -263,7 +263,7 @@ export default function MapsContextMap() {
               Speech is the preferred channel, not merely the
               fallback&rsquo;s alternative. ARIA live regions were not
               designed for a stream of frequent messages, and they have
-              no way to <em>stop</em> an announcement part-way through
+              no way to <em>stop</em>{" "}an announcement part-way through
               &mdash; once one starts, you wait it out, even after you
               have already moved on. The Speech API can interrupt itself
               and pace what it says. It also opens the page up: because
@@ -286,7 +286,7 @@ export default function MapsContextMap() {
             </p>
             <p>
               That is as far as a web page can go. Keeping the audio
-              running in the <em>background</em> &mdash; while you are in
+              running in the <em>background</em>{" "}&mdash; while you are in
               another app, or with the phone locked in your pocket
               &mdash; is not something a web page is permitted to do. It
               would need a native app, which is granted permissions the
@@ -353,7 +353,7 @@ export default function MapsContextMap() {
                 what is near this point, in which direction, how far
               </em>{" "}
               &mdash; and reads the answer back. No tiles to draw,
-              nothing to pan or zoom: the search data <em>is</em> the
+              nothing to pan or zoom: the search data <em>is</em>{" "}the
               map.
             </p>
           </section>

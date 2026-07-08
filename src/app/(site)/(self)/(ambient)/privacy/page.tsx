@@ -83,7 +83,7 @@ export default function Privacy() {
             <h2>Email</h2>
             <p>
               Email sent to the address on the{" "}
-              <Link href="/contact">contact page</Link> is read by Bob and
+              <Link href="/contact">contact page</Link>{" "}is read by Bob and
               not shared with anyone else. Replies, if any, come from the
               same address.
             </p>

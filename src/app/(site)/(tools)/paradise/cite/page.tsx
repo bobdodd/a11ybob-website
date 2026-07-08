@@ -50,7 +50,7 @@ export default function ParadiseCite() {
             <p className="muted">
               <small>
                 A DOI via Zenodo is on the release roadmap; the entry
-                above will gain a <code>doi</code> field once the
+                above will gain a <code>doi</code>{" "}field once the
                 first tagged release lands. Until then, cite the
                 repository URL.
               </small>

@@ -94,7 +94,7 @@ export default function ParadiseLineage() {
             <p>
               While the PhD was active, Steve Green, Elaine Pearson, and I
               published <em>The CISNA Model of Accessible Adaptive
-              Hypermedia</em> at W4A 2008 (
+              Hypermedia</em>{" "}at W4A 2008 (
               <a href="https://doi.org/10.1145/1368044.1368052">
                 doi:10.1145/1368044.1368052
               </a>
@@ -103,7 +103,7 @@ export default function ParadiseLineage() {
               distinguishing five abstractions: <em>content</em>,{" "}
               <em>inventory</em>, <em>semantics</em>, <em>navigation</em>,
               and <em>adaptation</em>. The Action Language Model fitted
-              into the <em>adaptation</em> layer — the place where
+              into the <em>adaptation</em>{" "}layer — the place where
               algorithm fragments could be swapped to serve different
               users.
             </p>
@@ -111,7 +111,7 @@ export default function ParadiseLineage() {
               The paper has aged better than I expected. The five-layer
               decomposition still describes the actual structure of a
               modern web page reasonably well; the explicit{" "}
-              <em>adaptation</em> layer turned out to be exactly where
+              <em>adaptation</em>{" "}layer turned out to be exactly where
               accessibility tooling operates when it operates at the right
               level. Paradise sits squarely in that layer.
             </p>
@@ -163,7 +163,7 @@ export default function ParadiseLineage() {
             </p>
             <ul>
               <li>
-                <strong>CISNA Model</strong> &mdash; theory. W4A
+                <strong>CISNA Model</strong>{" "}&mdash; theory. W4A
                 2008, with Steve Green and Elaine Pearson (
                 <a href="https://doi.org/10.1145/1368044.1368052">
                   doi:10.1145/1368044.1368052
@@ -176,7 +176,7 @@ export default function ParadiseLineage() {
                 .
               </li>
               <li>
-                <strong>Carnforth-Java</strong> &mdash; the doctoral
+                <strong>Carnforth-Java</strong>{" "}&mdash; the doctoral
                 Java implementation of CISNA, with the Action
                 Language XML notation and a Forth-style 
                 threaded-interpreter execution engine. See{" "}
@@ -195,7 +195,7 @@ export default function ParadiseLineage() {
                 Bob-owned, GPL-3.0. The first surfacing of the
                 Carnforth name in a shipping runtime tool. (Repo
                 originally <code>CarnforthGPL</code>, renamed to{" "}
-                <code>carnforth</code> in May 2026.)
+                <code>carnforth</code>{" "}in May 2026.)
               </li>
               <li>
                 <strong>
@@ -208,11 +208,11 @@ export default function ParadiseLineage() {
                 covering classes of issue commercial tools cannot
                 reach. (Repo and project originally named{" "}
                 <code>a11yAuto</code>, renamed to{" "}
-                <code>automated-testing</code> in May 2026 to make
+                <code>automated-testing</code>{" "}in May 2026 to make
                 the content more legible.)
               </li>
               <li>
-                <strong>autoA11y</strong> &mdash; CNIB&rsquo;s much
+                <strong>autoA11y</strong>{" "}&mdash; CNIB&rsquo;s much
                 more complete production rebrand and continuation of
                 what was then called <code>a11yAuto</code>.
                 CNIB-owned. The current commercial platform sold by
@@ -222,7 +222,7 @@ export default function ParadiseLineage() {
                 for lived-experience analysis.
               </li>
               <li>
-                <strong>Paradise (this section)</strong> &mdash;
+                <strong>Paradise (this section)</strong>{" "}&mdash;
                 source-level multi-model static analysis in
                 TypeScript. Bob-owned; the modern Forth-loop closure
                 on the same execution model that started in
@@ -258,7 +258,7 @@ export default function ParadiseLineage() {
             </p>
             <p>
               The boundary line: <em>if Bob left CNIB tomorrow,
-              would this artefact go with him?</em> Carnforth,
+              would this artefact go with him?</em>{" "}Carnforth,
               automated-testing, and Paradise all answer yes.
               autoA11y and Dictaphone answer no. The first three are
               mine; the last two are CNIB&rsquo;s. The site treats

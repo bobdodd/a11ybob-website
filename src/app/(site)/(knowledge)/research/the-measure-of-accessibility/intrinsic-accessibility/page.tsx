@@ -162,7 +162,7 @@ export default function IntrinsicAccessibility() {
             </p>
             <p>
               The claim that resolves this is that an{" "}
-              <em>optimal</em> pseudo-user set exists, and is
+              <em>optimal</em>{" "}pseudo-user set exists, and is
               independent of any specific provider, transaction, or
               interface. The optimal set is the one that admits no
               meaningful refinement &mdash; every additional
@@ -213,8 +213,8 @@ export default function IntrinsicAccessibility() {
             </p>
             <ol>
               <li>
-                <strong>Capability Model.</strong> What{" "}
-                <em>properties</em> exist for describing a user,
+                <strong>Capability Model.</strong>{" "}What{" "}
+                <em>properties</em>{" "}exist for describing a user,
                 organised by subject ontology &mdash; Visual,
                 Sonic, Haptic, Cognitive, Language,
                 ColourBlindness, TabularContent. Properties are
@@ -226,8 +226,8 @@ export default function IntrinsicAccessibility() {
                 independent of any specific user.
               </li>
               <li>
-                <strong>Capacity Model.</strong> The{" "}
-                <em>settings</em> for a specific user (or 
+                <strong>Capacity Model.</strong>{" "}The{" "}
+                <em>settings</em>{" "}for a specific user (or 
                 pseudo-user, or group of users) in a specific context,
                 populating the Capability Model. The crucial move
                 here is the support for{" "}
@@ -242,10 +242,10 @@ export default function IntrinsicAccessibility() {
                 static profiles into autonomous agents.
               </li>
               <li>
-                <strong>Preference Model.</strong> The user&rsquo;s
+                <strong>Preference Model.</strong>{" "}The user&rsquo;s
                 arbitrary personal intervention into how their
                 capacities are applied. Capability is what the
-                user <em>can</em> do; preference is what they{" "}
+                user <em>can</em>{" "}do; preference is what they{" "}
                 <em>choose</em>. The two are sharply distinguished
                 and connected only by explicit bridges: where the
                 user is allowed to override capacity, the bridge
@@ -257,7 +257,7 @@ export default function IntrinsicAccessibility() {
                 jurisdictions and different contexts.
               </li>
               <li>
-                <strong>Requirement Model.</strong> The
+                <strong>Requirement Model.</strong>{" "}The
                 counterpoint to Capacity. Modalities have
                 requirements; users have capacities; the runtime
                 selection mechanism is the match between the two.

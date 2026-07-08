@@ -101,12 +101,12 @@ export default function SpotlightTetrisAudio() {
             </p>
             <ol>
               <li>
-                <strong>Aside</strong> &mdash; whispering the type
+                <strong>Aside</strong>{" "}&mdash; whispering the type
                 of the next tile and the contents of the hold box
                 into the player&rsquo;s right ear.
               </li>
               <li>
-                <strong>Musical sonar</strong> &mdash; a single note
+                <strong>Musical sonar</strong>{" "}&mdash; a single note
                 for each column of the falling tile&rsquo;s width,
                 played in sequence around the user; higher notes
                 mean better fit.{" "}
@@ -116,21 +116,21 @@ export default function SpotlightTetrisAudio() {
                 </em>
               </li>
               <li>
-                <strong>Dancing margins</strong> &mdash; sounds left
+                <strong>Dancing margins</strong>{" "}&mdash; sounds left
                 and right of the player, with 3D distance expressing
                 the grid distance to the play-area edges. Iterated
                 several times; the 3D audio engine wasn&rsquo;t
                 great, so the implementation settled on a{" "}
-                <em>dance in music</em> rather than a{" "}
+                <em>dance in music</em>{" "}rather than a{" "}
                 <em>dance in location</em>.
               </li>
               <li>
-                <strong>Talking scrollbar</strong> &mdash; the
+                <strong>Talking scrollbar</strong>{" "}&mdash; the
                 falling-tile sound played left, middle, or right to
                 locate the tile horizontally.
               </li>
               <li>
-                <strong>Direction-as-direction</strong> &mdash;
+                <strong>Direction-as-direction</strong>{" "}&mdash;
                 animated sounds passing the player in N/S/E/W
                 directions to indicate orientation. Eventually
                 replaced with a separate spoken voice in a
@@ -139,14 +139,14 @@ export default function SpotlightTetrisAudio() {
                 directional metaphor.
               </li>
               <li>
-                <strong>Gravity as waterfall</strong> &mdash;
+                <strong>Gravity as waterfall</strong>{" "}&mdash;
                 ambient sound of falling water, manipulating volume
                 and pitch over time so the water{" "}
                 <em>feels nearer</em>. Implemented as a point
                 source after experimentation.
               </li>
               <li>
-                <strong>Braided audio</strong> &mdash; interleaved
+                <strong>Braided audio</strong>{" "}&mdash; interleaved
                 play-out of musical sonar and dancing margins, with
                 prioritisation (two scans of sonar to one of
                 margins) as a way to share the audio resource and
@@ -206,9 +206,9 @@ export default function SpotlightTetrisAudio() {
             </p>
             <p>
               <strong>The sonic design space is naturally
-              immersive.</strong> Bob looked for observational audio
+              immersive.</strong>{" "}Bob looked for observational audio
               metaphors as alternatives to the immersive ones, and{" "}
-              <em>&ldquo;came up empty.&rdquo;</em> When the
+              <em>&ldquo;came up empty.&rdquo;</em>{" "}When the
               modality is audio, the player is at the centre of the
               perceptual field by default; the observational stance
               that the visual version of Tetris encouraged is not
@@ -226,12 +226,12 @@ export default function SpotlightTetrisAudio() {
               translate visual content into a single linear audio
               channel, losing parallelism, losing positional
               information, losing the option for immersion. Audio
-              interfaces <em>can</em> be richly immersive; the
+              interfaces <em>can</em>{" "}be richly immersive; the
               dominant assistive-tech approaches just don&rsquo;t
               take that option. When we build assistive tech, the
               question worth asking is not just <em>can the user
-              access the content?</em> but{" "}
-              <em>what experience are we offering?</em> Two
+              access the content?</em>{" "}but{" "}
+              <em>what experience are we offering?</em>{" "}Two
               different questions, two different success criteria.
             </p>
           </section>

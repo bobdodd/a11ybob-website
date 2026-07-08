@@ -131,7 +131,7 @@ export default function MeasureOfAccessibilityIndex() {
               stands alone — the cross-links inside each page point
               at the others where the dependency matters. The
               shortest legitimate route through the position is{" "}
-              <em>The Question</em> &rarr; <em>Functional</em>{" "}
+              <em>The Question</em>{" "}&rarr; <em>Functional</em>{" "}
               &rarr; <em>Intrinsic</em>; the substantive depth-stop
               is the full six.
             </p>

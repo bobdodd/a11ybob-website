@@ -36,9 +36,9 @@ export default function ParadiseActionLanguage() {
               An abstract syntax tree captures syntactic structure — the
               shape of what was typed. A JavaScript AST for{" "}
               <code>button.addEventListener(&quot;click&quot;, fn)</code>
-              {" "}is an <code>ExpressionStatement</code> wrapping a{" "}
-              <code>CallExpression</code> on a{" "}
-              <code>MemberExpression</code> with two arguments. That
+              {" "}is an <code>ExpressionStatement</code>{" "}wrapping a{" "}
+              <code>CallExpression</code>{" "}on a{" "}
+              <code>MemberExpression</code>{" "}with two arguments. That
               shape is correct, but it&rsquo;s not what the
               accessibility question is about. The question is about
               the behaviour: <em>is there a click handler on this
@@ -46,7 +46,7 @@ export default function ParadiseActionLanguage() {
             </p>
             <p>
               The ActionLanguage tree captures behaviour directly. The
-              same call becomes a <em>register-handler</em> action
+              same call becomes a <em>register-handler</em>{" "}action
               whose attributes name the target selector, the event
               type, and the body of effects the handler performs. That
               representation answers the accessibility question in one
@@ -140,7 +140,7 @@ export default function ParadiseActionLanguage() {
                 <dd>
                   The relationship that holds one action as a child of
                   another in a specific position. Sequencing matters —
-                  <code> a; b</code> is not the same as <code>b; a</code>{" "}
+                  <code> a; b</code>{" "}is not the same as <code>b; a</code>{" "}
                   for many accessibility patterns (focus management
                   ordering, ARIA-state updates).
                 </dd>
@@ -190,16 +190,16 @@ export default function ParadiseActionLanguage() {
             </pre>
             <p>
               Three things have happened in the translation. First, the
-              syntactic noise of <code>addEventListener</code> as a
+              syntactic noise of <code>addEventListener</code>{" "}as a
               method call has collapsed into the action type{" "}
               <code>register-handler</code> — one node that names the
               behaviour directly. Second, the arrow-function body has
-              been broken out into the <em>effects</em> that occur when
+              been broken out into the <em>effects</em>{" "}that occur when
               the handler fires, with each effect typed by what kind of
               side-effect it has — a style mutation here, a function
               call there. Third, the targets have been resolved to
-              selectors — <code>#openBtn</code> for the registration
-              site, <code>#modal</code> for the style mutation — so the
+              selectors — <code>#openBtn</code>{" "}for the registration
+              site, <code>#modal</code>{" "}for the style mutation — so the
               DocumentModel can match them against elements in the
               DOMModel and CSSModel.
             </p>
@@ -212,26 +212,26 @@ export default function ParadiseActionLanguage() {
             <h2>What the IR adds</h2>
             <ul>
               <li>
-                <strong>Behavioural typing.</strong> Every action is one
+                <strong>Behavioural typing.</strong>{" "}Every action is one
                 of a small set of types named by the effect it has —{" "}
-                <em>register-handler</em>, <em>mutate-style</em>,
-                <em> mutate-attribute</em>, <em>set-focus</em>,{" "}
+                <em>register-handler</em>, <em>mutate-style</em>,{" "}
+                <em>mutate-attribute</em>, <em>set-focus</em>,{" "}
                 <em>conditional</em>, <em>iteration</em>. Querying for
                 &ldquo;every place that moves focus&rdquo; is one
                 tree-walk; doing the same on a JavaScript AST means
                 pattern-matching across many syntactic forms.
               </li>
               <li>
-                <strong>Selector resolution.</strong> Targets in the
+                <strong>Selector resolution.</strong>{" "}Targets in the
                 tree are CSS selectors, not opaque strings. The IR
                 doesn&rsquo;t care whether the source code wrote{" "}
-                <code>document.getElementById(&quot;x&quot;)</code> or{" "}
-                <code>document.querySelector(&quot;#x&quot;)</code> or{" "}
+                <code>document.getElementById(&quot;x&quot;)</code>{" "}or{" "}
+                <code>document.querySelector(&quot;#x&quot;)</code>{" "}or{" "}
                 <code>elementsById.x</code> — they all resolve to the
                 same selector, and the same element in the DOMModel.
               </li>
               <li>
-                <strong>Cross-handler reasoning.</strong> Two handlers
+                <strong>Cross-handler reasoning.</strong>{" "}Two handlers
                 registered on the same selector — say a click handler
                 and a keydown handler — produce two register-handler
                 nodes with the same target. An analyser can compare the
@@ -239,7 +239,7 @@ export default function ParadiseActionLanguage() {
                 is equivalent to the pointer path.
               </li>
               <li>
-                <strong>Source provenance.</strong> Every node carries
+                <strong>Source provenance.</strong>{" "}Every node carries
                 the source file and line range it came from, so
                 analyser diagnostics can point back to the exact lines
                 the developer wrote. The IR is abstract about
@@ -256,19 +256,19 @@ export default function ParadiseActionLanguage() {
             <ul>
               <li>
                 <strong>Syntactic spelling.</strong>{" "}
-                <code>function f() {"{"} return 1; {"}"}</code> and{" "}
-                <code>const f = () =&gt; 1;</code> collapse to the same
+                <code>function f() {"{"} return 1; {"}"}</code>{" "}and{" "}
+                <code>const f = () =&gt; 1;</code>{" "}collapse to the same
                 tree. The accessibility analyser doesn&rsquo;t care
                 which form the developer chose.
               </li>
               <li>
-                <strong>Comments and whitespace.</strong> The IR
+                <strong>Comments and whitespace.</strong>{" "}The IR
                 doesn&rsquo;t carry presentation; the source location
                 preserves where the original was, which is what
                 diagnostics need.
               </li>
               <li>
-                <strong>Optimisation-friendly transforms.</strong> The
+                <strong>Optimisation-friendly transforms.</strong>{" "}The
                 IR is the source author&rsquo;s intent, not the engine
                 runner&rsquo;s. Constant folding, dead-code elimination,
                 inlining — none of those happen in the IR. Paradise
@@ -286,7 +286,7 @@ export default function ParadiseActionLanguage() {
               In the PhD-era work the Action Language Model had a twin:
               the <em>Adaptation Model</em>, which described variations
               between algorithm versions as <em>add</em>,{" "}
-              <em>modify</em>, and <em>delete</em> operations on action
+              <em>modify</em>, and <em>delete</em>{" "}operations on action
               nodes. The original use case was substituting algorithm
               fragments at runtime to suit a particular user.
             </p>

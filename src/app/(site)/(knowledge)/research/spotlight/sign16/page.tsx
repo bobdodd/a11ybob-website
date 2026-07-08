@@ -81,10 +81,10 @@ export default function SpotlightSign16() {
           >
             <h2>The insight</h2>
             <p>
-              Bob couldn&rsquo;t sign &mdash; still can&rsquo;t,
-              <em> &ldquo;only slightly encumbered by the fact
-              that I can&rsquo;t sign.&rdquo;</em> The non-fluency
-              turned out to be the key. From Bob&rsquo;s telling:
+              Bob couldn&rsquo;t sign &mdash; still can&rsquo;t,{" "}
+              <em>&ldquo;only slightly encumbered by the fact
+              that I can&rsquo;t sign.&rdquo;</em>{" "}The non-fluency
+              turned out to be the key. From Bob&rsquo;s telling:{" "}
               <em>
                 &ldquo;If you don&rsquo;t know what the signer is
                 saying, the speech becomes performance, it becomes
@@ -93,8 +93,8 @@ export default function SpotlightSign16() {
               </em>
             </p>
             <p>
-              Encoding the <em>form</em> of the sign rather than its{" "}
-              <em>meaning</em> sidestepped the requirement to know
+              Encoding the <em>form</em>{" "}of the sign rather than its{" "}
+              <em>meaning</em>{" "}sidestepped the requirement to know
               any specific sign language. A signer would recognise
               their own actions in form-descriptions; the writer
               didn&rsquo;t need to know what the signs meant. The
@@ -182,7 +182,7 @@ export default function SpotlightSign16() {
               through to the front, the drinks were ready.
               Accessibility research rarely surfaces the moments
               where the disabled approach is the{" "}
-              <em>advantageous</em> one.{" "}
+              <em>advantageous</em>{" "}one.{" "}
               <em>
                 &ldquo;Sign is the greatest gift to a young person
                 who likes to go clubbing.&rdquo;

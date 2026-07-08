@@ -29,7 +29,7 @@ export default function Accessibility() {
           >
             <h2>Conformance target</h2>
             <p>
-              <strong>WCAG 2.2 Level AAA</strong> wherever achievable;
+              <strong>WCAG 2.2 Level AAA</strong>{" "}wherever achievable;
               Level AA as the minimum for any surface where AAA is
               genuinely impractical. Where a specific surface falls short,
               the limitation is noted below.
@@ -43,7 +43,7 @@ export default function Accessibility() {
             <h2>What this site does</h2>
             <ul>
               <li>
-                <strong>AAA colour contrast.</strong> All body text meets
+                <strong>AAA colour contrast.</strong>{" "}All body text meets
                 7:1 against its background; all large text meets 4.5:1;
                 non-text contrast meets 3:1. Verified perceptually via
                 OKLCH lightness pairings; values to be re-verified with a
@@ -75,15 +75,15 @@ export default function Accessibility() {
                 images — and is never confused with a border.
               </li>
               <li>
-                <strong>Type scale capped at 3:1.</strong> The largest and
+                <strong>Type scale capped at 3:1.</strong>{" "}The largest and
                 smallest text on any page differ by no more than 3:1 in
                 size, so screen-magnifier users do not have to adjust zoom
                 level when moving between headings and body text.
               </li>
               <li>
-                <strong>Honours every <code>prefers-*</code> media query.</strong>{" "}
-                <code>prefers-color-scheme</code> (light/dark),{" "}
-                <code>prefers-contrast</code> (more, less),{" "}
+                <strong>Honours every <code>prefers-*</code>{" "}media query.</strong>{" "}
+                <code>prefers-color-scheme</code>{" "}(light/dark),{" "}
+                <code>prefers-contrast</code>{" "}(more, less),{" "}
                 <code>prefers-reduced-motion</code>, and{" "}
                 <code>prefers-reduced-data</code>. No user toggle is
                 provided; the site respects what your browser and operating
@@ -131,22 +131,22 @@ export default function Accessibility() {
                 the image. Where a figure also needs contextual
                 information &mdash; what the image is, when it dates from,
                 what role it played &mdash; that context lives in a
-                visible <code>&lt;figcaption&gt;</code> so it reaches every
+                visible <code>&lt;figcaption&gt;</code>{" "}so it reaches every
                 reader, not only those using assistive technology.
                 Decorative chrome uses <code>alt=&ldquo;&rdquo;</code>.
               </li>
               <li>
                 <strong>
                   Structural diagrams are inline SVG, with descriptive{" "}
-                  <code>&lt;title&gt;</code> and{" "}
+                  <code>&lt;title&gt;</code>{" "}and{" "}
                   <code>&lt;desc&gt;</code>.
                 </strong>{" "}
                 Where a page carries a structural diagram &mdash; a
                 hierarchy, a flow, a relational network &mdash; the
                 diagram is rendered as inline SVG. The root carries{" "}
-                <code>role=&ldquo;img&rdquo;</code> with{" "}
-                <code>&lt;title&gt;</code> and{" "}
-                <code>&lt;desc&gt;</code> children supplying the
+                <code>role=&ldquo;img&rdquo;</code>{" "}with{" "}
+                <code>&lt;title&gt;</code>{" "}and{" "}
+                <code>&lt;desc&gt;</code>{" "}children supplying the
                 accessible name and a descriptive summary of the
                 diagram&rsquo;s structure. Every AT engine announces
                 these. Inline SVG also inherits the page&rsquo;s zone
@@ -156,7 +156,7 @@ export default function Accessibility() {
                 lives inside the SVG markup but is currently
                 overridden by <code>role=&ldquo;img&rdquo;</code>{" "}
                 because AT support for the module remains uneven; see
-                the <Link href="/colophon">colophon</Link> for the
+                the <Link href="/colophon">colophon</Link>{" "}for the
                 rationale.)
               </li>
               <li>
@@ -164,7 +164,7 @@ export default function Accessibility() {
                   Forced-colors mode (Windows High Contrast).
                 </strong>{" "}
                 Components that rely on colour for meaning carry explicit{" "}
-                <code>@media (forced-colors: active)</code> styles that
+                <code>@media (forced-colors: active)</code>{" "}styles that
                 fall back to system colour pairs (<code>Canvas</code> /{" "}
                 <code>CanvasText</code>, <code>ButtonText</code>), so
                 dialog chrome, badges and close buttons stay
@@ -172,27 +172,27 @@ export default function Accessibility() {
                 palette.
               </li>
               <li>
-                <strong>Skip link on every page.</strong> The first focusable
+                <strong>Skip link on every page.</strong>{" "}The first focusable
                 element on every page is &ldquo;Skip to main
                 content&rdquo;.
               </li>
               <li>
                 <strong>Semantic landmarks.</strong>{" "}
                 <code>&lt;header&gt;</code>, <code>&lt;nav&gt;</code>,{" "}
-                <code>&lt;main&gt;</code>, <code>&lt;footer&gt;</code> on
+                <code>&lt;main&gt;</code>, <code>&lt;footer&gt;</code>{" "}on
                 every page; navigation regions labelled with{" "}
                 <code>aria-label</code>.
               </li>
               <li>
                 <strong>Logical properties throughout.</strong>{" "}
-                <code>inline-size</code> and <code>block-size</code>,{" "}
-                <code>margin-block</code> and <code>padding-inline</code>,
+                <code>inline-size</code>{" "}and <code>block-size</code>,{" "}
+                <code>margin-block</code>{" "}and <code>padding-inline</code>,
                 throughout the stylesheet. The site is structurally ready
                 for languages with right-to-left or vertical writing
                 directions.
               </li>
               <li>
-                <strong>Reading-optimised typography.</strong> Body text
+                <strong>Reading-optimised typography.</strong>{" "}Body text
                 set in Atkinson Hyperlegible at 19–20px (responsive to
                 viewport) with line-height 1.5 and a measure capped at 60
                 characters via the universal CSS axiom.
@@ -264,28 +264,28 @@ export default function Accessibility() {
             <h2>Known limitations</h2>
             <ul>
               <li>
-                <strong>Iframe preview content.</strong> The
+                <strong>Iframe preview content.</strong>{" "}The
                 Playground&rsquo;s preview pane and the simulators
                 that walk it render the visitor&rsquo;s own HTML /
                 JavaScript / CSS in a sandboxed iframe. The
                 accessibility of what the visitor writes is the
                 visitor&rsquo;s responsibility &mdash; the
                 Playground&rsquo;s job is to{" "}
-                <em>show</em> the accessibility properties of that
+                <em>show</em>{" "}the accessibility properties of that
                 code, not to fix them. The iframe itself uses
                 appropriate sandbox attributes and the highlight
                 styles injected for the screen-reader and switch
                 simulators honour <code>prefers-reduced-motion</code>.
               </li>
               <li>
-                <strong>Long-form drafts.</strong> A small number
+                <strong>Long-form drafts.</strong>{" "}A small number
                 of long-form drafts in the writing archive
                 contain inconsistencies from being early synthesis
                 attempts on a smaller research corpus. These are
                 being revised in the ordinary writing workflow.
               </li>
               <li>
-                <strong>Speech-synthesis quality.</strong> The
+                <strong>Speech-synthesis quality.</strong>{" "}The
                 virtual screen reader can speak announcements
                 aloud via the browser&rsquo;s Web Speech API. The
                 exact voices, accents, and prosody available are

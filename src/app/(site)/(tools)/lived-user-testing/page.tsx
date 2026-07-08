@@ -34,7 +34,7 @@ export default function LivedUserTesting() {
             <h2>Dictaphone (CNIB-owned)</h2>
             <p>
               At CNIB Access Labs I lead development of{" "}
-              <em>Dictaphone</em> (codenamed{" "}
+              <em>Dictaphone</em>{" "}(codenamed{" "}
               <code>pythonAudioA11y</code>), an audio-and-video
               accessibility analyser that takes MP4 recordings of
               lived-experience and audit sessions and produces
@@ -43,7 +43,7 @@ export default function LivedUserTesting() {
               been in production at CNIB for over two years and
               has been presented at a11yTO. <em>Dictaphone is a
               CNIB product; the underlying intellectual approach
-              is mine.</em> Practice, not portfolio.
+              is mine.</em>{" "}Practice, not portfolio.
             </p>
             <p>
               The tagline from the public deck:{" "}
@@ -63,24 +63,24 @@ export default function LivedUserTesting() {
             <h2>The five-stage pipeline</h2>
             <ol>
               <li>
-                <strong>Video Input</strong> &mdash; MP4
+                <strong>Video Input</strong>{" "}&mdash; MP4
                 recordings from lived-experience or audit
                 sessions.
               </li>
               <li>
-                <strong>Audio Extraction</strong> &mdash; FFmpeg
+                <strong>Audio Extraction</strong>{" "}&mdash; FFmpeg
                 splits the audio at natural silence points (not
                 fixed intervals). Roughly 10-minute segments
                 preserve speaker context; 44.1 kHz quality is
                 maintained throughout.
               </li>
               <li>
-                <strong>Transcription</strong> &mdash; Deepgram
+                <strong>Transcription</strong>{" "}&mdash; Deepgram
                 Nova-2 with speaker diarisation and word-level
                 timestamp precision.
               </li>
               <li>
-                <strong>Speaker Identification</strong> &mdash;
+                <strong>Speaker Identification</strong>{" "}&mdash;
                 pyannote.audio voice embeddings plus ML
                 clustering for consistent speaker identity
                 across long recordings. Cross-segment speaker
@@ -89,7 +89,7 @@ export default function LivedUserTesting() {
                 territory at all.
               </li>
               <li>
-                <strong>AI Analysis</strong> &mdash; Claude with
+                <strong>AI Analysis</strong>{" "}&mdash; Claude with
                 WCAG heuristics and context-aware prompts;
                 extended-context support up to 1M tokens for
                 long sessions; prompt caching for cost
@@ -115,20 +115,20 @@ export default function LivedUserTesting() {
             </p>
             <ul>
               <li>
-                <strong>Audit</strong> &mdash; WCAG compliance
+                <strong>Audit</strong>{" "}&mdash; WCAG compliance
                 focus, structured issue reporting with 
                 success-criteria mapping, designed for professional
                 accessibility auditors.
               </li>
               <li>
-                <strong>Lived Experience</strong> &mdash; user
+                <strong>Lived Experience</strong>{" "}&mdash; user
                 impact and pain points from the disabled-user
                 perspective. Extracts user quotes, assertions,
                 and key takeaways; designed for lived-experience
                 testing programmes.
               </li>
               <li>
-                <strong>NaviLens</strong> &mdash; wayfinding and
+                <strong>NaviLens</strong>{" "}&mdash; wayfinding and
                 QR navigation. Specialised detection of QR-code
                 navigation issues; physical environment and
                 signage accessibility; designed for indoor and
@@ -141,7 +141,7 @@ export default function LivedUserTesting() {
               for QR-code navigation evaluation &mdash; not just
               observed the product from outside. That anchors
               the related Navilens framing on{" "}
-              <Link href="/maps">/maps</Link> in actual
+              <Link href="/maps">/maps</Link>{" "}in actual
               productised evaluation capability.
             </p>
           </section>
@@ -158,21 +158,21 @@ export default function LivedUserTesting() {
             </p>
             <ul>
               <li>
-                <strong>Key Takeaways</strong> &mdash; 
+                <strong>Key Takeaways</strong>{" "}&mdash; 
                 analyst-narrative top-level findings.
               </li>
               <li>
-                <strong>User Pain Points</strong> &mdash;
+                <strong>User Pain Points</strong>{" "}&mdash;
                 discrete moments of friction with severity
                 ratings.
               </li>
               <li>
-                <strong>User Assertions</strong> &mdash; direct
+                <strong>User Assertions</strong>{" "}&mdash; direct
                 statements and observations from testers, with
                 full quotes.
               </li>
               <li>
-                <strong>Accessibility Issues</strong> &mdash;
+                <strong>Accessibility Issues</strong>{" "}&mdash;
                 WCAG-mapped with remediation guidance and
                 timecoded video references.
               </li>
@@ -180,9 +180,9 @@ export default function LivedUserTesting() {
             <p>
               The four-way split is its own design move. Most
               tools collapse <em>what to tell stakeholders</em>{" "}
-              and <em>where the user struggled</em> and{" "}
-              <em>what the user said</em> and{" "}
-              <em>what is structurally wrong</em> into one
+              and <em>where the user struggled</em>{" "}and{" "}
+              <em>what the user said</em>{" "}and{" "}
+              <em>what is structurally wrong</em>{" "}into one
               undifferentiated stream. Keeping them apart makes
               the report usable as four different kinds of
               deliverable for four different audiences.
@@ -290,7 +290,7 @@ export default function LivedUserTesting() {
             <h2>Where this sits relative to the other tools</h2>
             <p>
               Dictaphone is integrated with{" "}
-              <em>autoA11y</em> &mdash; CNIB&rsquo;s commercial
+              <em>autoA11y</em>{" "}&mdash; CNIB&rsquo;s commercial
               accessibility-testing platform. The recordings
               dashboard, the WCAG Issues view filterable by
               level, and the lived-experience results all sit
@@ -317,7 +317,7 @@ export default function LivedUserTesting() {
             <h2>Bob-owned: the vision-AI line</h2>
             <p>
               A Bob-owned proof-of-concept in development that
-              adds <strong>Qwen 3.5</strong> (Alibaba&rsquo;s
+              adds <strong>Qwen 3.5</strong>{" "}(Alibaba&rsquo;s
               vision-language model, accessed via API) to the
               audio-and-video pipeline. Qwen is used exclusively
               for the vision side: analysis of screen recordings
@@ -361,15 +361,15 @@ export default function LivedUserTesting() {
                 companion to the Bob-owned tooling line.
               </li>
               <li>
-                <Link href="/automated-testing">automated-testing</Link> &mdash;
+                <Link href="/automated-testing">automated-testing</Link>{" "}&mdash;
                 AI-driven text-and-HTML testing PoCs.
               </li>
               <li>
-                <Link href="/paradise">Paradise</Link> &mdash;
+                <Link href="/paradise">Paradise</Link>{" "}&mdash;
                 source-level multi-model analysis.
               </li>
               <li>
-                <Link href="/work">/work</Link> &mdash; the CNIB
+                <Link href="/work">/work</Link>{" "}&mdash; the CNIB
                 Access Labs framing for the production tooling.
               </li>
             </ul>

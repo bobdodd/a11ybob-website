@@ -58,10 +58,10 @@ export default function MapsConversationalMap() {
             <h1>Conversational map</h1>
             <p className="lede">
               The{" "}
-              <Link href="/maps/context-map">Context Map</Link> gives you three
+              <Link href="/maps/context-map">Context Map</Link>{" "}gives you three
               fixed descriptions: quick, continuous, and detailed. Useful, but
               one size fits all. The Conversational map removes the buttons and
-              lets you simply <em>ask</em> &mdash; in plain language, by typing
+              lets you simply <em>ask</em>{" "}&mdash; in plain language, by typing
               or speaking aloud &mdash; about where you are now, or anywhere on
               the map at all.
             </p>
@@ -103,7 +103,7 @@ export default function MapsConversationalMap() {
             <p>
               And it is not limited to where you are standing. Because every
               named place, address and feature in the index can be looked up by
-              name, you can ask about <em>anywhere</em> &mdash; what surrounds a
+              name, you can ask about <em>anywhere</em>{" "}&mdash; what surrounds a
               station across the city, whether a park has accessible paths, how a
               neighbourhood you have never been to is laid out.
             </p>
@@ -151,8 +151,8 @@ export default function MapsConversationalMap() {
             <p>
               There is still no map to look at. The answers come from the
               OpenSearch index that powers the{" "}
-              <Link href="/maps/tiled-toronto-map">tiled Toronto map</Link> and
-              the <Link href="/maps/context-map">Context Map</Link> &mdash; every
+              <Link href="/maps/tiled-toronto-map">tiled Toronto map</Link>{" "}and
+              the <Link href="/maps/context-map">Context Map</Link>{" "}&mdash; every
               shop, crossing, bench and water&rsquo;s edge as a record with its
               position, its kind, and its accessibility detail. The index now
               reaches well beyond Toronto: it covers the whole of Canada, so the
@@ -170,7 +170,7 @@ export default function MapsConversationalMap() {
               through: a building nobody has traced is missing, a shop that
               changed hands may carry the old name. The map can only ever be as
               current and complete as the data underneath. As on the Context Map,
-              it only tells you what <em>is</em> mapped &mdash; silence means
+              it only tells you what <em>is</em>{" "}mapped &mdash; silence means
               &ldquo;not mapped&rdquo;, never &ldquo;not there&rdquo;.
             </p>
           </section>
@@ -281,7 +281,7 @@ export default function MapsConversationalMap() {
               Turning speech into text is the one part the page cannot do itself: a
               language model cannot transcribe audio, so that is a separate service
               &mdash; <a href="https://deepgram.com/">Deepgram</a>. So a spoken
-              question leaves the device <em>twice</em> &mdash; once as sound to be
+              question leaves the device <em>twice</em>{" "}&mdash; once as sound to be
               turned into words, once as those words to be answered &mdash; where a
               typed one leaves it only once.
             </p>
@@ -316,7 +316,7 @@ export default function MapsConversationalMap() {
               language-model chatbot the interface at all.
             </p>
             <p>
-              The <Link href="/maps/context-map">Context Map</Link> answers with
+              The <Link href="/maps/context-map">Context Map</Link>{" "}answers with
               three fixed buttons: quick, continuous, detailed. They always work,
               they never surprise you, and &mdash; this is the part that matters
               here &mdash; they need no outside help. The descriptions are
@@ -354,7 +354,7 @@ export default function MapsConversationalMap() {
               built for, sends your words to a model that can. Whether that trade is
               worth it depends on the question you have &mdash; which is exactly why
               the fixed-button{" "}
-              <Link href="/maps/context-map">Context Map</Link> is not being
+              <Link href="/maps/context-map">Context Map</Link>{" "}is not being
               retired, but kept alongside it. Two answers to the same need, each
               giving up something different.
             </p>

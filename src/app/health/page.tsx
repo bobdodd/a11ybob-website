@@ -76,8 +76,8 @@ export default async function HealthPage() {
           <small>
             OpenSearch indexes only the current version of articles whose
             status is <code>published</code>. While every article is a
-            draft, the <code>articles</code> index will be empty by
-            design — flip <code>status</code> to <code>published</code>{" "}
+            draft, the <code>articles</code>{" "}index will be empty by
+            design — flip <code>status</code>{" "}to <code>published</code>{" "}
             and re-run <code>npm run index</code>.
           </small>
         </p>

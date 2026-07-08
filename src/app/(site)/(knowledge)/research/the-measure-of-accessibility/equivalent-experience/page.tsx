@@ -57,7 +57,7 @@ export default function EquivalentExperience() {
               admit many such paths for many user-and-context
               profiles. Both definitions count successful task
               completion. Neither says anything about what the
-              successful completion <em>cost</em> the user who
+              successful completion <em>cost</em>{" "}the user who
               completed it.
             </p>
             <p>
@@ -101,7 +101,7 @@ export default function EquivalentExperience() {
               adds a few seconds. The cumulative effect, measured
               honestly, is a hidden tax on the user whose only
               accessible path is the assistive one. The interface
-              can be functionally accessible <em>and</em> tax its
+              can be functionally accessible <em>and</em>{" "}tax its
               minority users at a rate that no commercial product
               would tolerate if it were a minority of revenue.
             </p>
@@ -109,7 +109,7 @@ export default function EquivalentExperience() {
               Equivalent-experience analysis names that asymmetry
               and asks the explicit question: <em>are users on
               different paths paying comparable amounts of effort
-              for comparable outcomes?</em> The asymmetry is
+              for comparable outcomes?</em>{" "}The asymmetry is
               measurable. The ratio is not subtle. A definition of
               accessibility that cannot ask this question is a
               definition that cannot tell you what is wrong with an
@@ -141,12 +141,12 @@ export default function EquivalentExperience() {
             </p>
             <p>
               The wrong reading treats the claim as a demand for
-              identical experience. <em>Identical</em> is not what
+              identical experience. <em>Identical</em>{" "}is not what
               the claim asks for. A blind user cannot have the same
               perceptual experience as a sighted user; the
               difference is not the accessibility problem.
               Equivalent-experience analysis is about whether the{" "}
-              <em>functional outcome</em> &mdash; the goods, the
+              <em>functional outcome</em>{" "}&mdash; the goods, the
               services, the participation in society &mdash; is
               available to both at comparable cost in effort,
               attention, and time. The shape of the journey can
@@ -243,7 +243,7 @@ export default function EquivalentExperience() {
             </p>
             <ul>
               <li>
-                <strong>Different sequencing.</strong> A 
+                <strong>Different sequencing.</strong>{" "}A 
                 screen-reader user often navigates a page non-linearly via
                 heading or landmark navigation, while a sighted
                 user scans visually. The two routes are different;
@@ -252,7 +252,7 @@ export default function EquivalentExperience() {
                 outcome at comparable cost.
               </li>
               <li>
-                <strong>Different modality.</strong> A
+                <strong>Different modality.</strong>{" "}A
                 deaf user reads transcripts while a hearing user
                 listens. The modalities are different; the content
                 can be equivalent. The analysis does not insist
@@ -260,7 +260,7 @@ export default function EquivalentExperience() {
                 conveyed.
               </li>
               <li>
-                <strong>Different affordances.</strong> A 
+                <strong>Different affordances.</strong>{" "}A 
                 motor-impaired user may invoke an action via a single
                 switch press rather than a click-drag-release; the
                 action sequence is different; the action is the

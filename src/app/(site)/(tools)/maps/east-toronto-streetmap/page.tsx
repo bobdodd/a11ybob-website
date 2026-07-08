@@ -81,7 +81,7 @@ export default function MapsEastTorontoStreetmap() {
               <strong>hero image</strong>: a backdrop on which the pins
               and controls are displayed. It isn&rsquo;t the subject;
               it&rsquo;s the canvas. Its information model is about a{" "}
-              <em>subdivision</em> &mdash; the properties for sale and
+              <em>subdivision</em>{" "}&mdash; the properties for sale and
               the handful of amenities around them &mdash; and the
               relationships it expresses are the relationships{" "}
               <em>of the subdivision itself</em>{" "}and{" "}
@@ -92,7 +92,7 @@ export default function MapsEastTorontoStreetmap() {
             </p>
             <p>
               This map has the opposite job. It is about the{" "}
-              <strong>underlying streetmap itself</strong> &mdash; or at
+              <strong>underlying streetmap itself</strong>{" "}&mdash; or at
               least one small fraction of a city map. Here the map{" "}
               <em>is</em>{" "}the subject. Its information model is the{" "}
               <strong>city fabric</strong>: land areas populated with
@@ -192,7 +192,7 @@ export default function MapsEastTorontoStreetmap() {
               exists specifically to help keyboard and swipe users,
               letting them focus on one category of map content at a
               time. In this demo the rotor is a set of{" "}
-              <strong>radio buttons</strong> &mdash; one category at a
+              <strong>radio buttons</strong>{" "}&mdash; one category at a
               time; the tiled map expands it to{" "}
               <strong>multi-select checkboxes</strong>, so a reader can
               hold several categories in view at once. Filters change the
@@ -208,7 +208,7 @@ export default function MapsEastTorontoStreetmap() {
               paragraphs, words, buttons, headings, links. This rotor
               reuses exactly that mental model, except that instead of
               selecting paragraphs or buttons, the reader is selecting{" "}
-              <em>categories of map information</em> &mdash; transit,
+              <em>categories of map information</em>{" "}&mdash; transit,
               shops, schools, places of worship, parks. Taken together
               with the filters, it is what makes tabbing with a keyboard,
               or swiping on a touchscreen, practicable at all: without
@@ -270,7 +270,7 @@ export default function MapsEastTorontoStreetmap() {
             <p>
               One thing to be clear about: this demo{" "}
               <strong>deliberately uses only a small part of the
-              data</strong> &mdash; a <strong>static fragment of a single
+              data</strong>{" "}&mdash; a <strong>static fragment of a single
               OpenStreetMap tile</strong>, not all of OpenStreetMap, and
               not even a whole tile. That is a scoping choice for an
               experiment, and it has a visible consequence: the map{" "}
@@ -495,7 +495,7 @@ export default function MapsEastTorontoStreetmap() {
               horizontal and, for western languages, left to right. That
               doesn&rsquo;t suit most maps: street names are conventionally
               written <em>within</em>{" "}the rendering of the street, and{" "}
-              <strong>follow and bend along it</strong> &mdash; curving,
+              <strong>follow and bend along it</strong>{" "}&mdash; curving,
               rotating, running at whatever angle the road runs. Building
               and amenity names are often horizontal, but street names
               are not, because it makes little sense to write a

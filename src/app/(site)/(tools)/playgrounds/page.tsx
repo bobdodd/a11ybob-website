@@ -22,7 +22,7 @@ export default function Playgrounds() {
               demo lets you experience the polar-coordinate finding
               first-hand. No screenshots, no &ldquo;watch the
               video&rdquo; placeholders &mdash; the artefact{" "}
-              <em>is</em> the page.
+              <em>is</em>{" "}the page.
             </p>
           </header>
 
@@ -127,7 +127,7 @@ export default function Playgrounds() {
                 Cartesian via touch (the finger gives spatial
                 reference; each location announces what is under
                 it) plus polar on tap (POIs described as{" "}
-                <em>name, distance, compass direction</em> from
+                <em>name, distance, compass direction</em>{" "}from
                 the tapped point). Pin-as-datum at viewport
                 centre; the map orbits the pin.
               </p>
@@ -152,7 +152,7 @@ export default function Playgrounds() {
                   interior wayfinding and the East End Toronto streetmap, where
                   the ARIA Landmarks + filters + rotor model first
                   appeared) live at{" "}
-                  <Link href="/maps/terminal-map">/maps/terminal-map</Link> and{" "}
+                  <Link href="/maps/terminal-map">/maps/terminal-map</Link>{" "}and{" "}
                   <Link href="/maps/east-toronto-streetmap">
                     /maps/east-toronto-streetmap
                   </Link>
@@ -195,20 +195,20 @@ export default function Playgrounds() {
             <h2>Reading on</h2>
             <ul>
               <li>
-                <Link href="/tools">Tools</Link> &mdash; the
+                <Link href="/tools">Tools</Link>{" "}&mdash; the
                 companion accessibility-testing tools (Carnforth,
                 automated-testing, lived user testing).
               </li>
               <li>
-                <Link href="/paradise">Paradise</Link> &mdash;
+                <Link href="/paradise">Paradise</Link>{" "}&mdash;
                 the analyser engine the Paradise playground runs.
               </li>
               <li>
-                <Link href="/maps">Maps</Link> &mdash; the
+                <Link href="/maps">Maps</Link>{" "}&mdash; the
                 seven-year body of work the maps demo belongs to.
               </li>
               <li>
-                <Link href="/colophon">Colophon</Link> &mdash; the
+                <Link href="/colophon">Colophon</Link>{" "}&mdash; the
                 full set of decisions, including the case for
                 running code over screenshots and the choice of
                 CodeMirror 6 across both code-editor surfaces.

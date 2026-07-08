@@ -44,7 +44,7 @@ export default function ShlaerMellorLens() {
               of independent-but-related problem domains, each with
               its own subject matter, joined by formal bridges that
               map counterparts between the bridged domains. The
-              abstract analysis is then <em>translated</em> (not
+              abstract analysis is then <em>translated</em>{" "}(not
               elaborated) into a concrete realisation for a specific
               platform (defined by populated counterpart tables) via
               a model compiler. Same domains, different concrete
@@ -63,7 +63,7 @@ export default function ShlaerMellorLens() {
               user-and-environment context.
             </p>
             <p>
-              <em>Functional accessibility</em> is achieving one
+              <em>Functional accessibility</em>{" "}is achieving one
               successful traversal of the bridges to land on a usable
               concrete realisation. <em>Intrinsic accessibility</em>{" "}
               is the property of an underlying interface that admits
@@ -95,7 +95,7 @@ export default function ShlaerMellorLens() {
                 languages, model compilation.
               </li>
               <li>
-                <strong>Ascom AG (1994&ndash;96).</strong> SM in
+                <strong>Ascom AG (1994&ndash;96).</strong>{" "}SM in
                 production with Tcl simulation. A bridge-extension
                 contribution from this period — describing
                 inter-domain dependencies as sequences of interactions
@@ -109,14 +109,14 @@ export default function ShlaerMellorLens() {
                 capability.
               </li>
               <li>
-                <strong>PhD (2004&ndash;13).</strong> SM applied
+                <strong>PhD (2004&ndash;13).</strong>{" "}SM applied
                 explicitly to accessibility, with the 
                 bridge-composition contribution and the Forth-style
                 threaded-interpreter Action Language execution engine.
               </li>
               <li>
                 <strong>
-                  <Link href="/paradise">Paradise</Link> (current).
+                  <Link href="/paradise">Paradise</Link>{" "}(current).
                 </strong>{" "}
                 The ActionLanguage intermediate representation (IR) for
                 source-level accessibility analysis. The same shape again.
@@ -137,7 +137,7 @@ export default function ShlaerMellorLens() {
             <h2>Specific mappings to accessibility</h2>
             <ul>
               <li>
-                <strong>Domain charts</strong> &rarr; the{" "}
+                <strong>Domain charts</strong>{" "}&rarr; the{" "}
                 <Link href="/research/cisna-model">
                   CISNA five-layer model
                 </Link>{" "}
@@ -147,7 +147,7 @@ export default function ShlaerMellorLens() {
                 hierarchy.
               </li>
               <li>
-                <strong>Bridges between domains</strong> &rarr;
+                <strong>Bridges between domains</strong>{" "}&rarr;
                 Inventory&#x2194;Semantics and
                 Semantics&#x2194;Navigation in CISNA, expressing how
                 meaning composes upward from raw content to adapted
@@ -169,14 +169,14 @@ export default function ShlaerMellorLens() {
                 each state for different modalities.
               </li>
               <li>
-                <strong>State Transition Tables</strong> with
+                <strong>State Transition Tables</strong>{" "}with
                 &ldquo;Can&rsquo;t Happen&rdquo; and
                 &ldquo;Ignore&rdquo; entries &rarr; 
                 user-capability-specific exception handling expressed per user
                 profile.
               </li>
               <li>
-                <strong>Action Specification Language</strong> &rarr;
+                <strong>Action Specification Language</strong>{" "}&rarr;
                 the{" "}
                 <Link href="/playgrounds/action-language">
                   Action Language

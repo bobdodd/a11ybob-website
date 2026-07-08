@@ -53,7 +53,7 @@ export default function CommunitiesOfPractice() {
             <p>
               Page 5 ends with the structure: domains, bridges,
               compilers, the recursive-design frame. This page asks
-              what is <em>happening</em> in that structure. The
+              what is <em>happening</em>{" "}in that structure. The
               actors inside the structure are not passive
               compositional units; they play roles, they
               collaborate, they compete, they learn. Treating them
@@ -104,7 +104,7 @@ export default function CommunitiesOfPractice() {
             </p>
             <p>
               Each of these has what Wenger would call an{" "}
-              <em>identity</em> in the community &mdash; a stable
+              <em>identity</em>{" "}in the community &mdash; a stable
               role and a characteristic pattern of contribution.
               Custom &amp; Practice is the damping factor, pulling
               every interface toward rectangular grids and visual
@@ -157,7 +157,7 @@ export default function CommunitiesOfPractice() {
               settings.
             </p>
             <p>
-              That observation has a falsifiable consequence:
+              That observation has a falsifiable consequence:{" "}
               <em>
                 user interfaces that optimise user profiling to
                 improve the evolutionary process will be more
@@ -176,9 +176,9 @@ export default function CommunitiesOfPractice() {
               The reframe also shifts what &ldquo;accessible&rdquo;
               asks for. The narrow reading is{" "}
               <em>does this interface adapt to a given user
-              profile?</em> The wider reading is{" "}
+              profile?</em>{" "}The wider reading is{" "}
               <em>does this interface support the social processes
-              by which good profiles emerge and spread?</em> An
+              by which good profiles emerge and spread?</em>{" "}An
               interface that nails the first while ignoring the
               second is helping each user in isolation; an
               interface that does both is helping the community
@@ -249,9 +249,9 @@ export default function CommunitiesOfPractice() {
                 feedback channels between them. When the models are
                 missing, the loop is open. When the granularity is
                 wrong &mdash; <em>all blind users can&rsquo;t
-                see</em>, <em>all deaf users can&rsquo;t hear</em>,
-                <em> all motor-impaired users use the same switch
-                interface</em> &mdash; the decisions get made
+                see</em>, <em>all deaf users can&rsquo;t hear</em>,{" "}
+                <em>all motor-impaired users use the same switch
+                interface</em>{" "}&mdash; the decisions get made
                 against a category that does not match the user.
                 The user is the residual; their experience is the
                 accident.

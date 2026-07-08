@@ -216,7 +216,7 @@ export default function MapsHowItsBuilt() {
               user as much access to <em>each</em>{" "}projection as the medium
               allows &mdash; an accessible results list <em>and</em>{" "}an
               accessible map, both, each on its own terms. That phrase
-              &mdash; <em>as much as you can</em> &mdash; is doing real
+              &mdash; <em>as much as you can</em>{" "}&mdash; is doing real
               work: it is maximisation, not a promise of perfect parity.
               Some of the spatial reading will always be richer in one
               modality than another, and pretending otherwise helps no one.
@@ -235,7 +235,7 @@ export default function MapsHowItsBuilt() {
             <p>
               If the relationships are the map, then the model has to be a
               structure that <em>holds</em>{" "}relationships. The one that fits
-              is a <strong>typed directed graph</strong> &mdash; a digraph
+              is a <strong>typed directed graph</strong>{" "}&mdash; a digraph
               &mdash; and it is worth being precise about its parts, because
               two different kinds of structure are tangled together in it
               and they do different jobs.
@@ -246,7 +246,7 @@ export default function MapsHowItsBuilt() {
               A pin is a point in space that carries information unique to
               that location, and every pin has a <strong>type</strong>.
               There are two classes &mdash; <strong>property</strong>{" "}and{" "}
-              <strong>amenity</strong> &mdash; and amenities carry their own
+              <strong>amenity</strong>{" "}&mdash; and amenities carry their own
               subtypes: education, places of worship, retail, recreation,
               and so on. A property is a thing for sale, with an address and
               the attributes a buyer filters on (bedrooms, bathrooms, style,
@@ -276,7 +276,7 @@ export default function MapsHowItsBuilt() {
               that does the most work: what turns the classification tree
               into a <strong>digraph</strong>{" "}is a second kind of edge that
               does <em>not</em>{" "}follow the hierarchy. The obvious one is the{" "}
-              <strong>convenience relation</strong> &mdash; a{" "}
+              <strong>convenience relation</strong>{" "}&mdash; a{" "}
               <em>directed</em>, <em>weighted</em>{" "}link from a property to a
               nearby amenity, carrying the distance and bearing between
               them. It runs property&nbsp;&rarr;&nbsp;amenity because that is
@@ -311,7 +311,7 @@ export default function MapsHowItsBuilt() {
               So the digraph is not an object you persist; it is a{" "}
               <strong>function you evaluate</strong>. And once you see it
               that way, its two arguments fall out naturally: the
-              user&rsquo;s <strong>need</strong> (which edges and weights
+              user&rsquo;s <strong>need</strong>{" "}(which edges and weights
               matter) and the user&rsquo;s current <strong>selection</strong>{" "}
               (where the graph is anchored). Re-anchoring on a different
               property is not a structural change; it is just a different
@@ -359,14 +359,14 @@ export default function MapsHowItsBuilt() {
               everything about how. A sighted reader takes the plane in two
               dimensions at once: the whole map is present, and the eye
               chooses where to go and in what order. A screen-reader user
-              receives the map as a <strong>sequence</strong> &mdash; one
+              receives the map as a <strong>sequence</strong>{" "}&mdash; one
               announcement after another, in time &mdash; and has no
               two-dimensional frame to hold those announcements in. The
               visual map is <strong>Cartesian</strong>. The experience the
               non-sighted user actually inhabits is{" "}
               <strong>polar</strong>: a series of things described relative
               to a chosen origin. That origin is the{" "}
-              <strong>pin-as-datum</strong> &mdash; the selected property
+              <strong>pin-as-datum</strong>{" "}&mdash; the selected property
               &mdash; and everything else is given as a distance and a
               direction from it.
             </p>
@@ -404,9 +404,9 @@ export default function MapsHowItsBuilt() {
             </pre>
             <p>
               It is worth naming why this works, because it is the whole
-              trick. <strong>Radius is the priority axis</strong> &mdash;
+              trick. <strong>Radius is the priority axis</strong>{" "}&mdash;
               which amenities matter most. <strong>Angle is the continuity
-              axis</strong> &mdash; what stops the description teleporting
+              axis</strong>{" "}&mdash; what stops the description teleporting
               across the map between two things of near-equal weight. A pure
               weight-sort has only the first axis, so it hops. The spiral
               has both, in the right order: radius primary, angle secondary.
@@ -486,9 +486,9 @@ export default function MapsHowItsBuilt() {
             <p>
               Within that structure, each pin is exposed as something a
               reader can both <em>find</em>{" "}and <em>act on</em>. In the demo
-              a property is a <strong>heading</strong> (so it appears when a
+              a property is a <strong>heading</strong>{" "}(so it appears when a
               screen-reader user skims by heading) and a{" "}
-              <strong>button</strong> (so it appears when they skim by
+              <strong>button</strong>{" "}(so it appears when they skim by
               control, and so it can be activated) &mdash; two independent
               ways to land on the same pin.
             </p>
@@ -523,7 +523,7 @@ export default function MapsHowItsBuilt() {
             <ul>
               <li>
                 <strong>1.3.1 Info and Relationships</strong>{" "}owns the{" "}
-                <em>structure itself</em> &mdash; the typed nodes <em>and</em>
+                <em>structure itself</em>{" "}&mdash; the typed nodes <em>and</em>
                 {" "}the edges between them, made programmatically
                 determinable rather than left to be inferred from pixels. The
                 &ldquo;relationships&rdquo; clause is exactly the half a
@@ -532,7 +532,7 @@ export default function MapsHowItsBuilt() {
               </li>
               <li>
                 <strong>4.1.2 Name, Role, Value</strong>{" "}governs the{" "}
-                <em>interactive surface</em> &mdash; a pin announcing its name,
+                <em>interactive surface</em>{" "}&mdash; a pin announcing its name,
                 its role (property, or amenity-of-a-subtype), and its state
                 (selected; current; &ldquo;2 of 5 in this ring&rdquo;); the
                 filter controls; the traversal cursor &mdash; and keeping all
@@ -597,7 +597,7 @@ export default function MapsHowItsBuilt() {
               each is its projection&rsquo;s native control for the same
               operation. What that manipulation touches differs by map. On
               this search-and-pins demo it is almost entirely{" "}
-              <em>node-side</em> &mdash; the property search narrows which
+              <em>node-side</em>{" "}&mdash; the property search narrows which
               property-nodes are shown, and the amenity graph beneath barely
               moves. On a wayfinding map it acts heavily on <em>edges</em>,
               because there the routes <em>are</em>{" "}edges. Same control, very
@@ -665,7 +665,7 @@ export default function MapsHowItsBuilt() {
                 East End Toronto streetmap
               </Link>{" "}
               and the{" "}
-              <Link href="/maps/terminal-map">terminal map</Link> are about
+              <Link href="/maps/terminal-map">terminal map</Link>{" "}are about
               their <strong>edges</strong>: in a wayfinding map the routes{" "}
               <em>are</em>{" "}the edges, so filtering and the rotor act on the
               edges directly, the graph is dense, and every feature has to be
@@ -736,7 +736,7 @@ export default function MapsHowItsBuilt() {
                 appeared.
               </li>
               <li>
-                <Link href="/maps/terminal-map">Terminal map</Link> &mdash;
+                <Link href="/maps/terminal-map">Terminal map</Link>{" "}&mdash;
                 the richest feature inventory; the edges doing the work.
               </li>
               <li>

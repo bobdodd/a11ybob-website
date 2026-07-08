@@ -123,7 +123,7 @@ export default function Tools() {
             <h2>Reading on</h2>
             <ul>
               <li>
-                <Link href="/paradise">Paradise</Link> &mdash;
+                <Link href="/paradise">Paradise</Link>{" "}&mdash;
                 source-level multi-model accessibility analysis;
                 intellectually the deepest of the testing work
                 and its own top-level entry.

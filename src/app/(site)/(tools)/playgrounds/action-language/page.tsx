@@ -76,26 +76,26 @@ export default function ActionLanguagePlayground() {
             </p>
             <ol>
               <li>
-                <strong>XML source</strong> &mdash; the program text.
-                Editable; press <strong>Run</strong> to re-execute,{" "}
-                <strong>Reset</strong> to restore the canonical
+                <strong>XML source</strong>{" "}&mdash; the program text.
+                Editable; press <strong>Run</strong>{" "}to re-execute,{" "}
+                <strong>Reset</strong>{" "}to restore the canonical
                 source.
               </li>
               <li>
-                <strong>Action tree</strong> &mdash; the parsed
+                <strong>Action tree</strong>{" "}&mdash; the parsed
                 action hierarchy. Updates as you type, even before
                 you press Run, so structural errors in the XML
                 surface immediately.
               </li>
               <li>
-                <strong>Execution trace</strong> &mdash; every step
+                <strong>Execution trace</strong>{" "}&mdash; every step
                 the engine took, indented by scope. Useful for
                 seeing how recursion unwinds, how variables come
                 into and leave scope, and where each value comes
                 from.
               </li>
               <li>
-                <strong>Output</strong> &mdash; what the program
+                <strong>Output</strong>{" "}&mdash; what the program
                 printed (in order), plus the top-level return value
                 if the program is an expression.
               </li>
@@ -145,7 +145,7 @@ export default function ActionLanguagePlayground() {
               if-then-else itself (mechanically straightforward) but the way{" "}
               <em>the polymorphism lives in the data, not at the
               call site</em>. The same{" "}
-              <code>present(modality)</code> call runs in both
+              <code>present(modality)</code>{" "}call runs in both
               cases; the metaphor selection is internal. That is the
               shape of intrinsic accessibility&rsquo;s polymorphic
               task decomposition in microcosm.
@@ -166,8 +166,8 @@ export default function ActionLanguagePlayground() {
             <p>
               The notification lifecycle from the doctoral
               framework&rsquo;s Methodology chapter:{" "}
-              <em>Announcing</em> &rarr; <em>Dwelling</em> &rarr;{" "}
-              <em>Expiring</em> &rarr; <em>Gone</em>. The
+              <em>Announcing</em>{" "}&rarr; <em>Dwelling</em>{" "}&rarr;{" "}
+              <em>Expiring</em>{" "}&rarr; <em>Gone</em>. The
               notification is the same instance through the
               transitions; what changes is its subtype, and each
               subtype renders differently.
@@ -196,7 +196,7 @@ export default function ActionLanguagePlayground() {
               A button rollover that adapts its 
               inventory-to-semantics mapping for visual vs sonic user profiles.
               The same event &mdash; <em>USER ENTERS PROXIMITY OF
-              NODE</em> &mdash; triggers different concrete
+              NODE</em>{" "}&mdash; triggers different concrete
               realisations through the bridge function{" "}
               <code>on-proximity</code>; the abstract semantic
               outcome (the button is hover-active) is the same in
@@ -209,7 +209,7 @@ export default function ActionLanguagePlayground() {
               user-platform, and a single source of truth produces
               different output. The trace makes the shared
               semantics visible — both branches return{" "}
-              <code>&quot;hover-active&quot;</code> as the abstract
+              <code>&quot;hover-active&quot;</code>{" "}as the abstract
               result, regardless of which inventory items were
               selected to produce it.
             </p>

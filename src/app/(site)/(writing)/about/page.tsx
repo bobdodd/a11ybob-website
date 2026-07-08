@@ -325,7 +325,7 @@ export default function About() {
                 captionText="TUP — text entry by keystroke reduction, built first for Bob's cousin."
                 caption={
                   <>
-                    <Link href="/research/spotlight/tup">TUP</Link> &mdash;
+                    <Link href="/research/spotlight/tup">TUP</Link>{" "}&mdash;
                     text entry by keystroke reduction, built first for
                     Bob&rsquo;s cousin.
                   </>
@@ -339,7 +339,7 @@ export default function About() {
               named user the framework was built for and tested against:{" "}
               <em>the author himself</em>, who has mild deuteranomalia,
               disclosed in the 2009{" "}
-              <em>User Capability in an Adaptive World</em> paper. The
+              <em>User Capability in an Adaptive World</em>{" "}paper. The
               researcher is inside the design space he is modelling.
             </p>
             <div
@@ -357,13 +357,13 @@ export default function About() {
                   W4A 2008
                 </a>{" "}
                 paper{" "}
-                <em>The CISNA Model of Accessible Adaptive Hypermedia</em> (with
+                <em>The CISNA Model of Accessible Adaptive Hypermedia</em>{" "}(with
                 Steve Green and Elaine Pearson). The viva was never taken &mdash;
                 largely because of a family move to Canada, and CNIB and CELA
                 happening. Two pieces of original
                 conceptual work survived from the period and are still
                 load-bearing for current writing: the{" "}
-                <Link href="/research/cisna-model">CISNA Model</Link> itself, and{" "}
+                <Link href="/research/cisna-model">CISNA Model</Link>{" "}itself, and{" "}
                 <Link href="/research/tetris-testbed">
                   Tetris as accessibility testbed
                 </Link>
@@ -377,7 +377,7 @@ export default function About() {
                   Measure of Accessibility
                 </Link>{" "}
                 collection &mdash; six pages from the{" "}
-                <em>Defining Accessibility</em> chapter &mdash; gives the
+                <em>Defining Accessibility</em>{" "}chapter &mdash; gives the
                 formal-and-political theory.
               </p>
               <ImageFigure
@@ -416,11 +416,11 @@ export default function About() {
               A period in Singapore in the mid-2000s, also inside the doctoral
               years, brought connections to the gay Deaf community there. Out
               of a challenge over drinks at the bar Tantric on a Friday night
-              came <Link href="/research/spotlight/sign16">Sign16</Link>
+              came <Link href="/research/spotlight/sign16">Sign16</Link>{" "}
               &mdash; a sign-writing system that fit on the 16-key keypad of a
               feature phone. The price of solving the problem was a beer. That
               story is the first of three on the{" "}
-              <Link href="/research/spotlight">Spotlight projects</Link> page.
+              <Link href="/research/spotlight">Spotlight projects</Link>{" "}page.
             </p>
             <p>
               In 2008, Bob and Taodi moved from the UK to Canada when Taodi
@@ -476,16 +476,16 @@ export default function About() {
             </p>
             <p>
               In parallel, and on personal time, Bob develops three open-source
-              tools of his own. <Link href="/paradise">Paradise</Link> is a
+              tools of his own. <Link href="/paradise">Paradise</Link>{" "}is a
               multi-model accessibility analyser whose technical contribution
               is the ActionLanguage intermediate representation (IR) &mdash; a
               JavaScript-to-semantic-tree transcoder that lets analysis reason
               about runtime behaviour at the source level.{" "}
-              <Link href="/carnforth">Carnforth</Link> is a Chrome DevTools
+              <Link href="/carnforth">Carnforth</Link>{" "}is a Chrome DevTools
               extension testing the accessible-name computation algorithm in
               depth, the runtime counterpart to Paradise&rsquo;s source-level
               work.{" "}
-              <Link href="/automated-testing">automated-testing</Link> is a
+              <Link href="/automated-testing">automated-testing</Link>{" "}is a
               set of five AI-driven proofs-of-concept targeting classes of
               issue commercial scanners cannot reach. A fourth open-source line is in
               development: vision-AI analysis of screen recordings of user
@@ -499,7 +499,7 @@ export default function About() {
               working demos across building, subdivision, and city-neighbourhood
               scales, sharing one SVG-tile architecture, with a paper-shaped
               theoretical contribution &mdash;{" "}
-              <em>spatial cognition under modality conversion</em> &mdash; that
+              <em>spatial cognition under modality conversion</em>{" "}&mdash; that
               names the polar-coordinate finding the maps work produced.
             </p>
             <p>

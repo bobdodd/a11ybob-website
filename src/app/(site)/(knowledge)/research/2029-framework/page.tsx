@@ -35,7 +35,7 @@ export default function FrameworkPage2029() {
             <p>
               Accessibility is not a binary pass/fail and not a
               static property of either system or user. It is an{" "}
-              <strong>emergent dynamic equilibrium</strong> in a
+              <strong>emergent dynamic equilibrium</strong>{" "}in a
               contextual space of competition between five factors:
             </p>
             <ul>
@@ -49,7 +49,7 @@ export default function FrameworkPage2029() {
               </li>
             </ul>
             <p>
-              The framework requires <strong>agency</strong> for each
+              The framework requires <strong>agency</strong>{" "}for each
               factor — each must be able to advocate, negotiate, and
               respond.
             </p>

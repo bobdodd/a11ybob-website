@@ -28,10 +28,10 @@ export default function ParadiseVSCodeExtension() {
             <p className="muted">
               <small>
                 The plugin is in active development. It is
-                distributed as a signed <code>.vsix</code> from the
+                distributed as a signed <code>.vsix</code>{" "}from the
                 source repo, installed by hand &mdash; not via a
                 marketplace listing. The choice is deliberate: see
-                the <Link href="/colophon">colophon</Link> for the
+                the <Link href="/colophon">colophon</Link>{" "}for the
                 rationale.
               </small>
             </p>
@@ -44,15 +44,15 @@ export default function ParadiseVSCodeExtension() {
             <h2>Install (.vsix)</h2>
             <p>
               The plugin is installed by hand from the packaged{" "}
-              <code>.vsix</code> file in the repo. From a checkout of
+              <code>.vsix</code>{" "}file in the repo. From a checkout of
               the source:
             </p>
             <pre>
               <code>{INSTALL_VSIX}</code>
             </pre>
             <p>
-              Or via the VS Code UI: <em>Extensions</em> panel →{" "}
-              <em>…</em> menu → <em>Install from VSIX…</em>.
+              Or via the VS Code UI: <em>Extensions</em>{" "}panel →{" "}
+              <em>…</em>{" "}menu → <em>Install from VSIX…</em>.
             </p>
           </section>
 
@@ -63,13 +63,13 @@ export default function ParadiseVSCodeExtension() {
             <h2>What you see</h2>
             <ul>
               <li>
-                <strong>Squigglies</strong> in the editor on lines
+                <strong>Squigglies</strong>{" "}in the editor on lines
                 where Paradise has reported an issue. Severity colour
                 follows VS Code&rsquo;s standard
                 error/warning/information conventions.
               </li>
               <li>
-                <strong>Hover popups</strong> with the analyser&rsquo;s
+                <strong>Hover popups</strong>{" "}with the analyser&rsquo;s
                 reasoning, the WCAG criterion it&rsquo;s engaged, the
                 engine&rsquo;s confidence level and percentage for
                 this finding, and a link into the matching{" "}
@@ -81,7 +81,7 @@ export default function ParadiseVSCodeExtension() {
                 signal is visible at the point of reading the issue.
               </li>
               <li>
-                <strong>Quick Fixes</strong> (the standard VS Code
+                <strong>Quick Fixes</strong>{" "}(the standard VS Code
                 Code Actions / lightbulb affordance) for any issue
                 that carries a fix payload. Activate the lightbulb,
                 preview the suggested change, accept or dismiss.
@@ -93,7 +93,7 @@ export default function ParadiseVSCodeExtension() {
                 for the framing.
               </li>
               <li>
-                <strong>Problems panel</strong> entries for every
+                <strong>Problems panel</strong>{" "}entries for every
                 issue, with file and line jump-targets — works the
                 same way the TypeScript and ESLint extensions do.
                 The panel is sortable by confidence as well as
@@ -101,7 +101,7 @@ export default function ParadiseVSCodeExtension() {
                 findings only is one click away.
               </li>
               <li>
-                <strong>Status bar indicator</strong> showing the
+                <strong>Status bar indicator</strong>{" "}showing the
                 current document&rsquo;s issue count and a quick toggle
                 to enable / disable analysis.
               </li>
@@ -114,7 +114,7 @@ export default function ParadiseVSCodeExtension() {
           >
             <h2>Configuration</h2>
             <p>
-              Settings live under <code>paradise.*</code> in VS Code
+              Settings live under <code>paradise.*</code>{" "}in VS Code
               settings:
             </p>
             <pre>
@@ -124,7 +124,7 @@ export default function ParadiseVSCodeExtension() {
               <li>
                 <code>paradise.scope</code> — <code>file</code>{" "}
                 analyses each file independently;{" "}
-                <code>project</code> resolves cross-file references
+                <code>project</code>{" "}resolves cross-file references
                 across the workspace (the multi-model mode that
                 catches handler/element/style splits).
               </li>
@@ -189,7 +189,7 @@ export default function ParadiseVSCodeExtension() {
             <ul>
               <li>
                 <strong>Cross-file analysis can be slow on very
-                large workspaces.</strong> The DocumentModel build is
+                large workspaces.</strong>{" "}The DocumentModel build is
                 proportional to the size of the integrated source
                 set. The plugin works incrementally, but the first
                 full-project pass on a 500K-line codebase takes a
@@ -205,7 +205,7 @@ export default function ParadiseVSCodeExtension() {
                 <strong>Distributed as a signed .vsix from the source
                 repo</strong>, not via a marketplace. The choice is
                 deliberate &mdash; see the{" "}
-                <Link href="/colophon">colophon</Link> for the
+                <Link href="/colophon">colophon</Link>{" "}for the
                 rationale.
               </li>
             </ul>

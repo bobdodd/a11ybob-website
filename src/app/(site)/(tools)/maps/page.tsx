@@ -104,7 +104,7 @@ export default function Maps() {
               Before naming where the field has stalled, an
               integrity note about the evidence: Bob&rsquo;s
               positions on Audiom, GoodMaps, and Blind Square are{" "}
-              <em>observer-grade</em> &mdash; based on the academic
+              <em>observer-grade</em>{" "}&mdash; based on the academic
               literature, published material, and direct field
               interaction. CNIB Access Labs has not formally
               evaluated any of them. The only competitor Bob has
@@ -136,7 +136,7 @@ export default function Maps() {
             </p>
             <ul>
               <li>
-                <strong>Audiom (XR Navigation)</strong> &mdash;
+                <strong>Audiom (XR Navigation)</strong>{" "}&mdash;
                 the closest existing work and the most accomplished
                 commercial team in the space. Pin-as-datum,
                 arrow-key movement, configurable step size,
@@ -149,7 +149,7 @@ export default function Maps() {
                 that the work here does not yet have.
               </li>
               <li>
-                <strong>Navilens</strong> &mdash; a real-world
+                <strong>Navilens</strong>{" "}&mdash; a real-world
                 signage augmentation via proprietary visual codes,
                 not a digital map at all. Massive deployment scale
                 (MTA, Barcelona Metro, Heathrow, Coca-Cola packaging,
@@ -163,7 +163,7 @@ export default function Maps() {
                 walking it.
               </li>
               <li>
-                <strong>GoodMaps</strong> &mdash; indoor wayfinding
+                <strong>GoodMaps</strong>{" "}&mdash; indoor wayfinding
                 for venues mapped with their LiDAR-based 3D
                 point-cloud technology, deployed at airports
                 (MidAmerica St. Louis), university campuses
@@ -180,7 +180,7 @@ export default function Maps() {
                 unmapped places.
               </li>
               <li>
-                <strong>BlindSquare</strong> &mdash; positional
+                <strong>BlindSquare</strong>{" "}&mdash; positional
                 awareness in real time. As the user moves, the app
                 announces nearby points of interest, intersections,
                 and venue features, letting them build a mental
@@ -260,7 +260,7 @@ export default function Maps() {
             <p>
               The difference is fit-for-purpose. In the{" "}
               <strong>search and map pin demo</strong>, what matters
-              are the <em>pinned points of interest</em> &mdash; where
+              are the <em>pinned points of interest</em>{" "}&mdash; where
               the properties are &mdash; not the detail of the streets
               around them; so it renders a raster base with
               an interactive pin overlay drawn on top, and only the
@@ -389,7 +389,7 @@ export default function Maps() {
             <p>
               The theoretical contribution. When spatial information
               is rendered through a modality that is{" "}
-              <em>sequential rather than parallel</em> (audio,
+              <em>sequential rather than parallel</em>{" "}(audio,
               screen reader, haptic) and that the user{" "}
               <em>occupies rather than observes</em>, the spatial
               reference frame collapses from Cartesian to 
@@ -421,16 +421,16 @@ export default function Maps() {
             </p>
             <ul>
               <li>
-                <em>Visual + Cartesian</em> &mdash; trivially the
+                <em>Visual + Cartesian</em>{" "}&mdash; trivially the
                 sighted user&rsquo;s case.
               </li>
               <li>
                 <em>Audio + sequential traversal (keyboard /
-                screen-reader-only)</em> &mdash; polar, centred on a
+                screen-reader-only)</em>{" "}&mdash; polar, centred on a
                 chosen reference. The original finding.
               </li>
               <li>
-                <em>Audio + touch exploration</em> &mdash; Cartesian
+                <em>Audio + touch exploration</em>{" "}&mdash; Cartesian
                 via touch (the finger is the spatial reference;
                 each location announces what is under it) plus
                 polar on tap (when the user interrogates a specific
@@ -597,7 +597,7 @@ export default function Maps() {
             </p>
             <ul>
               <li>
-                <strong>Rotor</strong> (iOS VoiceOver style) for
+                <strong>Rotor</strong>{" "}(iOS VoiceOver style) for
                 narrowing tab order to a chosen POI class.
                 Borrowed directly from the idiom users already
                 know.

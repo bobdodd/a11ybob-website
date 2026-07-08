@@ -48,7 +48,7 @@ export default function FunctionalAccessibility() {
               the interaction the interface is for. The definition
               is deliberately weak: it does not require the user to
               have the same experience as anyone else, only that{" "}
-              <em>some path through</em> exists.
+              <em>some path through</em>{" "}exists.
             </p>
             <p>
               Three things in that sentence carry weight.
@@ -119,7 +119,7 @@ export default function FunctionalAccessibility() {
             </p>
             <p>
               The weak direction is that the definition is
-              indifferent to <em>which</em> path succeeded. A user
+              indifferent to <em>which</em>{" "}path succeeded. A user
               who can complete the task only via an assistive
               technology that costs them more time, more attention,
               and a more degraded experience than other users still
@@ -141,11 +141,11 @@ export default function FunctionalAccessibility() {
             <p>
               The formal core of the definition is a match between
               two structures. The user, in their context, has a{" "}
-              <strong>capacity</strong> &mdash; what they can
+              <strong>capacity</strong>{" "}&mdash; what they can
               actually do in this body, on this device, at this
               moment, with these inputs and outputs. The interface,
               for each medium-and-protocol path it offers, has a{" "}
-              <strong>requirement</strong> &mdash; what the user
+              <strong>requirement</strong>{" "}&mdash; what the user
               would need to bring to the interaction for that path
               to succeed. A path is available to the user when the
               user&rsquo;s capacity meets or exceeds the path&rsquo;s
@@ -241,7 +241,7 @@ export default function FunctionalAccessibility() {
               jurisdictions, name accessibility as a property a
               service owes to a class of disabled users, and
               evaluate compliance against the question{" "}
-              <em>can the user complete the task?</em> If yes,
+              <em>can the user complete the task?</em>{" "}If yes,
               compliant. If no, not compliant. That is the
               functional condition.
             </p>

@@ -23,7 +23,7 @@ export default function Paradise() {
               projection of an executable model of behaviour, and accessibility
               is a property you verify against that model — not a checklist you
               apply to the code. Most tooling asks{" "}
-              <em>is this attribute present?</em> Paradise is built to ask{" "}
+              <em>is this attribute present?</em>{" "}Paradise is built to ask{" "}
               <em>what can a user do here, and where does that break down?</em>
             </p>
             <p>
@@ -36,13 +36,13 @@ export default function Paradise() {
               on the test corpus.
             </p>
             <p>
-              In this application <strong>ActionLanguage</strong> acts as a
+              In this application <strong>ActionLanguage</strong>{" "}acts as a
               kind of intermediate representation — a structured form of the
               program that is easier to reason about than raw source, the
               familiar role an IR plays. But it is not an IR Paradise builds on
               the fly. Its action semantics, relationships, and state models
               are explicit and complete: it is a model in its own right — an{" "}
-              <em>architecture domain</em> in the Shlaer-Mellor sense — that
+              <em>architecture domain</em>{" "}in the Shlaer-Mellor sense — that
               Paradise <em>populates</em>.
             </p>
             <p>
@@ -58,7 +58,7 @@ export default function Paradise() {
               analysis.
             </p>
             <p className="muted">
-              Paradise is a <em>platform</em> I continue to develop, not a
+              Paradise is a <em>platform</em>{" "}I continue to develop, not a
               finished commercial tool. Fourteen working analysers,
               twenty-one ARIA widget patterns validated, ninety-five
               passing tests, over ninety percent coverage. Available
@@ -83,8 +83,8 @@ export default function Paradise() {
             <h2>What Paradise is</h2>
             <p>
               Most accessibility tooling sees one slice of a web page.
-              Linters like <em>eslint-plugin-jsx-a11y</em> read a JavaScript
-              file in isolation and flag patterns that <em>might</em> be
+              Linters like <em>eslint-plugin-jsx-a11y</em>{" "}read a JavaScript
+              file in isolation and flag patterns that <em>might</em>{" "}be
               problems — they never see the HTML the handler actually
               attaches to. Browser-based scanners like axe, WAVE, and
               Lighthouse read the rendered DOM after JavaScript has run —
@@ -130,10 +130,10 @@ export default function Paradise() {
 
             <p>
               The cost of seeing only one slice is <em>false positives</em>.
-              An AST linter flags a <code>&lt;div onclick&gt;</code> even
+              An AST linter flags a <code>&lt;div onclick&gt;</code>{" "}even
               when the handler in another file is keyboard-accessible. A
               rendered-DOM scanner flags a missing{" "}
-              <code>aria-labelledby</code> target because the JavaScript
+              <code>aria-labelledby</code>{" "}target because the JavaScript
               that injects it runs on a code path the scanner didn&rsquo;t
               trigger. Both tools are noisy enough that practitioners
               learn to ignore their output — which means real issues hide
@@ -203,7 +203,7 @@ export default function Paradise() {
               a state where focus is trapped, an announcement never fires, or a
               control becomes unreachable. That is behavioural verification —
               the posture safety-critical engineering takes — and it is how the
-              older idea of <em>intrinsic</em> accessibility becomes something
+              older idea of <em>intrinsic</em>{" "}accessibility becomes something
               you can actually check.
             </p>
             <p>
@@ -235,11 +235,11 @@ export default function Paradise() {
             <h2>Status, scope, and what it does not do</h2>
             <ul>
               <li>
-                <strong>Working analysers</strong> for the families
+                <strong>Working analysers</strong>{" "}for the families
                 listed above. Detail page in progress.
               </li>
               <li>
-                <strong>Confidence-weighted findings.</strong> Every
+                <strong>Confidence-weighted findings.</strong>{" "}Every
                 issue carries a HIGH / MEDIUM / LOW level and a short
                 reason, exposed as a percentage in the surfaces.
                 Confidence is engine certainty given the source it
@@ -248,7 +248,7 @@ export default function Paradise() {
                 for how the level resolves and why.
               </li>
               <li>
-                <strong>Suggested fixes.</strong> For many findings
+                <strong>Suggested fixes.</strong>{" "}For many findings
                 the engine emits a corrective code suggestion
                 alongside the diagnostic. Surfaces apply
                 best-effort: the Playground&rsquo;s Fix dialog, the
@@ -257,29 +257,29 @@ export default function Paradise() {
                 programmatically.
               </li>
               <li>
-                <strong>VS Code plugin</strong> in active development.
-                Distributed as a <code>.vsix</code> from the source
+                <strong>VS Code plugin</strong>{" "}in active development.
+                Distributed as a <code>.vsix</code>{" "}from the source
                 repo.
               </li>
               <li>
-                <strong>Browser plugin</strong> planned, not yet built.
+                <strong>Browser plugin</strong>{" "}planned, not yet built.
               </li>
               <li>
-                <strong>CI use</strong> via the analyser engine consumed
+                <strong>CI use</strong>{" "}via the analyser engine consumed
                 as a Node library.
               </li>
               <li>
-                <strong>Honest limitations.</strong> Paradise does not see
+                <strong>Honest limitations.</strong>{" "}Paradise does not see
                 things that only exist at runtime — third-party widgets
                 injected into iframes, dynamically loaded modules whose
                 source isn&rsquo;t present, content fetched at interaction
                 time. For those, runtime tools win.{" "}
-                <em>autoA11y</em> is the runtime complement; its history
+                <em>autoA11y</em>{" "}is the runtime complement; its history
                 (academic origins, multiple lineages including a
                 commercial CNIB version) belongs on the research page.
               </li>
               <li>
-                <strong>Not a replacement for human review.</strong> Like
+                <strong>Not a replacement for human review.</strong>{" "}Like
                 every other tool in this space, Paradise reports what it
                 can detect, not everything that matters.
               </li>
@@ -297,8 +297,8 @@ export default function Paradise() {
                 bobdodd/paradise
               </a>
               . History extracted with{" "}
-              <code>git filter-repo</code> from its original home as
-              the <code>Action Language/</code> subdirectory of the
+              <code>git filter-repo</code>{" "}from its original home as
+              the <code>Action Language/</code>{" "}subdirectory of the
               doctoral repo, so every commit that ever touched the
               code is preserved in the new repo.
             </p>
@@ -306,7 +306,7 @@ export default function Paradise() {
               Licence: GPL-3.0-or-later for the analyser engine and
               the VS Code plugin, matching the rest of the Bob-owned
               tooling. The companion documentation pages (this page
-              and the <code>/paradise/*</code> sub-pages) are
+              and the <code>/paradise/*</code>{" "}sub-pages) are
               CC&nbsp;BY-SA 4.0 alongside the rest of{" "}
               <em>a11ybob.com</em>.
             </p>

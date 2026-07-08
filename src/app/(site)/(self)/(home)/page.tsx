@@ -20,7 +20,7 @@ export default function Home() {
             <p>
               Bob Dodd. Currently Head of Accessibility at CNIB Access Labs in
               Toronto. Author of long-form{" "}
-              <Link href="/writing/research-essays">research essays</Link> drawing
+              <Link href="/writing/research-essays">research essays</Link>{" "}drawing
               on{" "}
               <Link href="/writing/reviews">
                 2,662 reviewed accessibility papers

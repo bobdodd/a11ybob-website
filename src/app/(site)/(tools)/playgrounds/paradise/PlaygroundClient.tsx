@@ -336,7 +336,7 @@ export function PlaygroundClient() {
             <h1>Paradise playground</h1>
             <p className="lede">
               In-browser{" "}
-              <Link href="/paradise">Paradise</Link> analysers running
+              <Link href="/paradise">Paradise</Link>{" "}analysers running
               over the HTML, JavaScript, and CSS you edit. Source-level
               cross-file analysis as you type — no server roundtrip,
               no rendered DOM. The starting sample carries two
@@ -776,7 +776,7 @@ function EditorPanel({
         <p className="muted">
           <small>
             No {tabs.find((t) => t.lang === activeLang)?.label} files in
-            this example. Press <strong>+ Add file</strong> above to
+            this example. Press <strong>+ Add file</strong>{" "}above to
             create one.
           </small>
         </p>
@@ -1139,8 +1139,8 @@ function DocumentContextBanner({
       <p className="flush">
         <strong>{issueCount}</strong>{" "}
         {issueCount === 1 ? "issue" : "issues"} detected from{" "}
-        <strong>{TOTAL_CHECKS}</strong> checks. Paradise ran{" "}
-        <strong>{ranAnalysers}</strong> analysers.
+        <strong>{TOTAL_CHECKS}</strong>{" "}checks. Paradise ran{" "}
+        <strong>{ranAnalysers}</strong>{" "}analysers.
       </p>
 
       {bySeverity.length > 0 && (
@@ -1176,19 +1176,19 @@ function DocumentContextBanner({
             {context === "fragment" && (
               <>
                 <li>
-                  Wrap the markup in <code>&lt;body&gt;</code> tags for
+                  Wrap the markup in <code>&lt;body&gt;</code>{" "}tags for
                   ~85% confidence on all checks.
                 </li>
                 <li>
                   Use a full HTML document with{" "}
                   <code>&lt;html&gt;</code>, <code>&lt;head&gt;</code>,
-                  and <code>&lt;body&gt;</code> for 100% confidence.
+                  and <code>&lt;body&gt;</code>{" "}for 100% confidence.
                 </li>
               </>
             )}
             {context === "body" && (
               <li>
-                Add a <code>&lt;head&gt;</code> section for full
+                Add a <code>&lt;head&gt;</code>{" "}section for full
                 confidence on CSS-and-meta checks.
               </li>
             )}

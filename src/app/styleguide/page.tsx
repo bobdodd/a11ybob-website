@@ -40,7 +40,7 @@ function ZonePreview({ zone, label }: { zone: string; label: string }) {
           Muted secondary text on this zone&rsquo;s surface.
         </p>
         <p className="flush">
-          A <a href="#">link in this zone</a> sits on the same surface.
+          A <a href="#">link in this zone</a>{" "}sits on the same surface.
         </p>
         <p className="flush">
           <span className="styleguide-reversed-badge">Reversed pair</span>
@@ -67,7 +67,7 @@ export default function StyleguidePage() {
         <section className="stack">
           <h2>Type scale (ratio 1.2)</h2>
           <p>
-            Six sizes used for type (<code>--s-1</code> through{" "}
+            Six sizes used for type (<code>--s-1</code>{" "}through{" "}
             <code>--s4</code>). Largest-to-smallest ratio: 2.49, comfortably
             under the 3:1 cap chosen for screen-magnifier accessibility.
           </p>
@@ -126,14 +126,14 @@ export default function StyleguidePage() {
             The line length is capped at the measure (60ch) by the universal
             axiom in <code>axioms.css</code>, so paragraphs never exceed a
             comfortable scanning distance regardless of the container they sit
-            in. <em>Italic emphasis</em> and <strong>bold emphasis</strong>{" "}
+            in. <em>Italic emphasis</em>{" "}and <strong>bold emphasis</strong>{" "}
             are typographic, not chromatic.
           </p>
           <p>
             A second paragraph follows with normal{" "}
-            <a href="#">link affordance</a> &mdash; underlined, distinct
+            <a href="#">link affordance</a>{" "}&mdash; underlined, distinct
             colour, thickening on hover and focus &mdash; so colour is never
-            the only signal. <code>Inline code</code> uses the system
+            the only signal. <code>Inline code</code>{" "}uses the system
             monospace stack.
           </p>
           <blockquote>
@@ -193,7 +193,7 @@ export default function StyleguidePage() {
           <h2>Layout primitives (Every Layout)</h2>
           <p>
             Class-based implementations of the twelve primitives from{" "}
-            <a href="https://every-layout.dev">Every Layout</a> by Heydon
+            <a href="https://every-layout.dev">Every Layout</a>{" "}by Heydon
             Pickering and Andy Bell. Compose, do not invent.
           </p>
 
@@ -296,7 +296,7 @@ export default function StyleguidePage() {
         <section className="stack">
           <h2>Links that open a new window</h2>
           <p>
-            The <code>NewTabLink</code> component is used for any link
+            The <code>NewTabLink</code>{" "}component is used for any link
             that opens in a new browser window or tab &mdash; the
             interactive demo launchers, and any link that should open
             away from the current page. The &ldquo;(opens in a new
@@ -305,9 +305,9 @@ export default function StyleguidePage() {
             name: a screen-reader user tabbing through focusable
             content hears the warning when the link takes focus,
             before they activate it (WCAG 3.2.5, technique G201). It
-            sets <code>rel=&ldquo;noopener&rdquo;</code> on the way out.
+            sets <code>rel=&ldquo;noopener&rdquo;</code>{" "}on the way out.
           </p>
-          <p>As a button-style launcher (with the <code>pill</code> class):</p>
+          <p>As a button-style launcher (with the <code>pill</code>{" "}class):</p>
           <p>
             <NewTabLink className="pill" href="/demos/terminal-map/viewer.html">
               Open the interactive terminal map
@@ -325,7 +325,7 @@ export default function StyleguidePage() {
             <small>
               The label and the notice are each kept as one
               non-breaking phrase, but the link may wrap{" "}
-              <em>between</em> them, so the appended notice never
+              <em>between</em>{" "}them, so the appended notice never
               forces horizontal overflow on a narrow column &mdash;
               even when the link is also a pill.
             </small>

@@ -99,7 +99,7 @@ export default function MapsSearchAndMapPins() {
               user explore the detailed space itself. This demo does not
               work that way, and that is a deliberate, fit-for-purpose
               choice rather than a shortcoming. Here what matters are the{" "}
-              <strong>pinned points of interest</strong> &mdash; where
+              <strong>pinned points of interest</strong>{" "}&mdash; where
               the properties are in the subdivision &mdash; not the
               detail of the streets around them. The map renders a raster
               base for sighted context, and the accessible, interactive
@@ -117,7 +117,7 @@ export default function MapsSearchAndMapPins() {
                 East End Toronto streetmap
               </Link>{" "}
               and the{" "}
-              <Link href="/maps/terminal-map">terminal map</Link> answer
+              <Link href="/maps/terminal-map">terminal map</Link>{" "}answer
               &ldquo;help me explore this whole space,&rdquo; and pay the
               cost of making every feature addressable to do it. Why one
               model renders so differently across the family is taken up

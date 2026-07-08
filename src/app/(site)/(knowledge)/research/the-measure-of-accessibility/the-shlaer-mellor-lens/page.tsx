@@ -47,7 +47,7 @@ export default function ShlaerMellorLensInDepth() {
               functional, intrinsic, and equivalent-experience
               accessibility are. They give definitions and a
               measurement vocabulary. They do not give a method for{" "}
-              <em>building</em> interfaces that satisfy those
+              <em>building</em>{" "}interfaces that satisfy those
               definitions. The gap between definition and
               construction is the gap this page is for.
             </p>
@@ -85,22 +85,22 @@ export default function ShlaerMellorLensInDepth() {
               each with its own subject matter (its own
               vocabulary, its own information model, its own
               assumptions), joined by formal{" "}
-              <em>bridges</em> that map counterparts between the
+              <em>bridges</em>{" "}that map counterparts between the
               bridged domains. The abstract analysis is then{" "}
-              <em>translated</em> &mdash; not elaborated &mdash; into
+              <em>translated</em>{" "}&mdash; not elaborated &mdash; into
               a concrete realisation for a specific platform
               (defined by populated counterpart tables) via a{" "}
               <em>model compiler</em>. The same domain analysis
               produces different concrete realisations for
               different targets. That last property is what{" "}
-              <em>recursive design</em> names: design abstractions
+              <em>recursive design</em>{" "}names: design abstractions
               that are reused across multiple targets, not
               re-elaborated for each.
             </p>
             <p>
               The Shlaer-Mellor frame distinguishes itself from
               other object-oriented methods by being{" "}
-              <em>information-modelling-focused</em> rather than
+              <em>information-modelling-focused</em>{" "}rather than
               program-structure-focused. The information model
               describes the entities of the domain and their
               relationships; the state model describes how the
@@ -155,11 +155,11 @@ export default function ShlaerMellorLensInDepth() {
               </Link>{" "}
               maps directly onto the recursive-design frame.
               Functional accessibility is the property that{" "}
-              <em>at least one</em> traversal of the bridges yields
+              <em>at least one</em>{" "}traversal of the bridges yields
               a usable concrete realisation for the 
               user-and-environment platform. Intrinsic accessibility is the
               property of the underlying domain analysis that it
-              admits <em>many</em> such traversals across many
+              admits <em>many</em>{" "}such traversals across many
               user-platforms. The compiler does the actual work;
               the analysis is what the compiler operates on.
             </p>
@@ -183,7 +183,7 @@ export default function ShlaerMellorLensInDepth() {
             >
               <div>
                 <dt>
-                  <strong>Domain charts</strong> &rarr; the{" "}
+                  <strong>Domain charts</strong>{" "}&rarr; the{" "}
                   <Link href="/research/cisna-model">
                     CISNA five-layer model
                   </Link>
@@ -194,7 +194,7 @@ export default function ShlaerMellorLensInDepth() {
                   are a domain chart for the accessible-hypermedia
                   problem. They differ from canonical 
                   Shlaer-Mellor domain charts in that the relationships
-                  between layers are <em>peer</em> rather than
+                  between layers are <em>peer</em>{" "}rather than
                   client-server: each layer admits queries from
                   any other layer above it, rather than being
                   consulted only through a fixed hierarchy. That
@@ -223,7 +223,7 @@ export default function ShlaerMellorLensInDepth() {
               </div>
               <div>
                 <dt>
-                  <strong>Assigner state models</strong> for
+                  <strong>Assigner state models</strong>{" "}for
                   resource competition
                 </dt>
                 <dd>
@@ -253,7 +253,7 @@ export default function ShlaerMellorLensInDepth() {
                   An accessibility notification migrates through a
                   lifecycle: Announcing &rarr; Dwelling &rarr;
                   Expiring &rarr; (gone). It remains the{" "}
-                  <em>same</em> notification through the
+                  <em>same</em>{" "}notification through the
                   transitions; what changes is the role it plays
                   in the rendering. Shlaer-Mellor supports this
                   via disjoint-complete subtyping with role
@@ -270,7 +270,7 @@ export default function ShlaerMellorLensInDepth() {
               </div>
               <div>
                 <dt>
-                  <strong>State Transition Tables</strong> with
+                  <strong>State Transition Tables</strong>{" "}with
                   &ldquo;Can&rsquo;t Happen&rdquo; and{" "}
                   &ldquo;Ignore&rdquo; cells
                 </dt>
@@ -373,7 +373,7 @@ export default function ShlaerMellorLensInDepth() {
               </li>
               <li>
                 <strong>
-                  <Link href="/paradise">Paradise</Link> (current).
+                  <Link href="/paradise">Paradise</Link>{" "}(current).
                 </strong>{" "}
                 The ActionLanguage intermediate representation (IR) for
                 source-level accessibility analysis. The same shape again,

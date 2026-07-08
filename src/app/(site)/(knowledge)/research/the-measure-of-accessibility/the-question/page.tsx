@@ -72,7 +72,7 @@ export default function TheQuestion() {
           >
             <h2>The political spectrum</h2>
             <p>
-              The answer to <em>what is accessibility</em> sits
+              The answer to <em>what is accessibility</em>{" "}sits
               somewhere on a spectrum. The two ends are starkly
               different positions, and most of the contested ground
               in the field is the territory between them.
@@ -176,11 +176,11 @@ export default function TheQuestion() {
             <h2>Why current vocabularies underdetermine the question</h2>
             <p>
               Three vocabularies are usually offered when the
-              question of <em>what is accessibility</em> is
+              question of <em>what is accessibility</em>{" "}is
               raised. None of them resolve it.
             </p>
             <p>
-              The <strong>legal</strong> vocabulary names
+              The <strong>legal</strong>{" "}vocabulary names
               accessibility as a matter of rights and
               obligations. Different jurisdictions name those
               rights differently &mdash; the ADA in the United
@@ -198,7 +198,7 @@ export default function TheQuestion() {
               tell you what success looks like.
             </p>
             <p>
-              The <strong>ergonomic</strong> vocabulary names
+              The <strong>ergonomic</strong>{" "}vocabulary names
               accessibility as a property of a fit between user
               and tool &mdash; the right size of grip for the
               hand, the right contrast for the eye, the right
@@ -213,24 +213,24 @@ export default function TheQuestion() {
               tell you whether the knob should exist.
             </p>
             <p>
-              The <strong>usability</strong> vocabulary names
+              The <strong>usability</strong>{" "}vocabulary names
               accessibility as a special case of usability for
               users with disabilities. This is a friendly framing
               and often a productive one &mdash; ergonomic and
               cognitive accommodations that make an interface
               usable by a disabled user often make it more usable
               for everyone &mdash; but it conceals a category
-              error. Usability is a commercial property:
+              error. Usability is a commercial property:{" "}
               <em>does this product satisfy its target users
-              well enough to compete?</em> Accessibility is a
+              well enough to compete?</em>{" "}Accessibility is a
               political property: <em>does this society make its
               goods and services available to its members
-              regardless of physical capability?</em> They are not
+              regardless of physical capability?</em>{" "}They are not
               the same question, and the answers do not coincide.
               <em>It is possible to have a wonderfully elegant and
               usable interface that will score low in terms of
               intrinsic accessibility, and an accessible interface
-              that is almost unusable.</em> The usability
+              that is almost unusable.</em>{" "}The usability
               vocabulary cannot capture that distinction.
             </p>
           </section>
@@ -246,7 +246,7 @@ export default function TheQuestion() {
               into each other.
             </p>
             <p>
-              <strong>Usability</strong> measures how well an
+              <strong>Usability</strong>{" "}measures how well an
               interface serves a defined target population. The
               target population is decided by the
               business &mdash; who is buying, who is being marketed
@@ -258,7 +258,7 @@ export default function TheQuestion() {
               the target.
             </p>
             <p>
-              <strong>Accessibility</strong> measures how well an
+              <strong>Accessibility</strong>{" "}measures how well an
               interface serves the population that exists
               independent of the business&rsquo;s targeting
               decisions. The relevant population is not who the
@@ -300,7 +300,7 @@ export default function TheQuestion() {
             <h2>Where this collection goes</h2>
             <p>
               The remaining five pages of <em>The Measure of
-              Accessibility</em> develop a position that takes the
+              Accessibility</em>{" "}develop a position that takes the
               political character of the question seriously and
               answers it formally rather than rhetorically. Briefly:
             </p>

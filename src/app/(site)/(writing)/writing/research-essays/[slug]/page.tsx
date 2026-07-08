@@ -88,11 +88,11 @@ export default async function Article({
               <small>
                 {!highlights || highlights.matchCount === 0 ? (
                   <>
-                    The term <code>{q}</code> wasn’t found in this article.
+                    The term <code>{q}</code>{" "}wasn’t found in this article.
                   </>
                 ) : highlights.matchCount === 1 ? (
                   <>
-                    1 match for <code>{q}</code> highlighted in this article.
+                    1 match for <code>{q}</code>{" "}highlighted in this article.
                   </>
                 ) : (
                   <>

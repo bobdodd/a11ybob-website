@@ -24,7 +24,7 @@ export default function ParadiseArchitecture() {
               cross-file accessibility analysis tractable: a handler in{" "}
               <code>handlers.js</code>, an element in{" "}
               <code>index.html</code>, and a class in{" "}
-              <code>styles.css</code> become one element with one set of
+              <code>styles.css</code>{" "}become one element with one set of
               behaviours that the analysers can reason about together.
             </p>
           </header>
@@ -98,10 +98,10 @@ export default function ParadiseArchitecture() {
             <h2>ActionLanguage</h2>
             <p>
               The ActionLanguage tree captures the{" "}
-              <em>semantic behaviour</em> of the JavaScript — what each
+              <em>semantic behaviour</em>{" "}of the JavaScript — what each
               statement does, not just how it&rsquo;s spelled. A loop
               becomes an iteration node. A closure becomes a binding
-              node. A call to <code>addEventListener</code> becomes a
+              node. A call to <code>addEventListener</code>{" "}becomes a
               registration node tied to the selector it targets. Two
               JavaScript fragments that have the same effect collapse
               to the same ActionLanguage tree, even when their syntax
@@ -132,7 +132,7 @@ export default function ParadiseArchitecture() {
               element Y?&rdquo; without rendering the page. That
               matters for accessibility because behaviours like{" "}
               <code>display: none</code>, <code>visibility: hidden</code>
-              , and <code>pointer-events: none</code> change whether an
+              , and <code>pointer-events: none</code>{" "}change whether an
               element is reachable to keyboard and screen-reader users
               — and those declarations can sit in a different file from
               the element they affect.
@@ -157,7 +157,7 @@ export default function ParadiseArchitecture() {
               </li>
               <li>
                 The handlers attached to it — directly via{" "}
-                <code>on*</code> attributes, via JavaScript in the
+                <code>on*</code>{" "}attributes, via JavaScript in the
                 ActionLanguage tree, or indirectly via event delegation
                 on an ancestor — from selector resolution.
               </li>
@@ -165,7 +165,7 @@ export default function ParadiseArchitecture() {
                 The ARIA relationships into and out of it: which
                 elements name it via <code>aria-labelledby</code>, which
                 it controls via <code>aria-controls</code>, which its{" "}
-                <code>aria-describedby</code> targets, all matched
+                <code>aria-describedby</code>{" "}targets, all matched
                 against the actual elements in the DOMModel.
               </li>
               <li>
@@ -177,10 +177,10 @@ export default function ParadiseArchitecture() {
             <p>
               Once an element carries all of that information, the
               analysers can ask cross-cutting questions in plain terms.
-              <em> Is this <code>onclick</code> handler also reachable
+              <em> Is this <code>onclick</code>{" "}handler also reachable
               by keyboard?</em> — yes if the same selector also has a{" "}
-              <code>keydown</code> handler in the ActionLanguage tree.{" "}
-              <em>Does this <code>aria-labelledby</code> point at an
+              <code>keydown</code>{" "}handler in the ActionLanguage tree.{" "}
+              <em>Does this <code>aria-labelledby</code>{" "}point at an
               element that exists?</em> — yes if the target id resolves
               against the DOMModel.
             </p>
@@ -206,7 +206,7 @@ export default function ParadiseArchitecture() {
             </pre>
             <p>
               An AST-pattern linter sees three files independently. The
-              HTML linter flags the <code>&lt;div onclick&gt;</code> as a
+              HTML linter flags the <code>&lt;div onclick&gt;</code>{" "}as a
               non-button click target. The JavaScript linter sees a
               file of event-handler code with no associated HTML. The
               CSS linter sees a class definition with no consumer. Each
@@ -217,9 +217,9 @@ export default function ParadiseArchitecture() {
             <p>
               A rendered-DOM scanner does better — it sees the click
               handler attached, the keydown handler attached, the{" "}
-              <code>role=&quot;button&quot;</code> applied. But it
+              <code>role=&quot;button&quot;</code>{" "}applied. But it
               cannot tell whether the keydown handler ran <em>because
-              the source had it</em> or because some test harness
+              the source had it</em>{" "}or because some test harness
               attached it; it cannot tell that the focus state breaks
               under <code>{".save:focus { display: none; }"}</code>{" "}
               because that state is one user-action away from the
@@ -227,13 +227,13 @@ export default function ParadiseArchitecture() {
             </p>
             <p>
               Paradise sees all three files at once. The DOMModel
-              records the <code>&lt;div&gt;</code> with{" "}
-              <code>id=&quot;save&quot;</code> and{" "}
+              records the <code>&lt;div&gt;</code>{" "}with{" "}
+              <code>id=&quot;save&quot;</code>{" "}and{" "}
               <code>role=&quot;button&quot;</code>. The ActionLanguage
               tree records two registrations on{" "}
               <code>#save</code>: a click handler and a keydown handler
               that fires on Enter or Space. The CSSModel records that{" "}
-              <code>.save:focus</code> sets <code>display: none</code>.
+              <code>.save:focus</code>{" "}sets <code>display: none</code>.
               The DocumentModel composes these and the analysers report
               one issue, in plain terms: the keyboard-equivalent
               handler is in place, but the element disappears the
@@ -261,30 +261,30 @@ export default function ParadiseArchitecture() {
               <li>
                 <strong>ARIA relationship validation.</strong>{" "}
                 <code>aria-labelledby</code>,{" "}
-                <code>aria-describedby</code>, <code>aria-controls</code>,
-                <code> aria-owns</code> all checked against the actual
+                <code>aria-describedby</code>, <code>aria-controls</code>,{" "}
+                <code>aria-owns</code>{" "}all checked against the actual
                 elements that should exist.
               </li>
               <li>
-                <strong>Visibility-focus conflicts.</strong> Elements
+                <strong>Visibility-focus conflicts.</strong>{" "}Elements
                 that take focus but are hidden by CSS — by{" "}
                 <code>display: none</code>, by <code>visibility: hidden</code>
                 , by zero-size dimensions, or by being clipped off-screen.
               </li>
               <li>
                 <strong>Focus-order reasoning.</strong>{" "}
-                <code>tabindex</code> values across the page, evaluated
+                <code>tabindex</code>{" "}values across the page, evaluated
                 as a global ordering rather than per-element local
                 values.
               </li>
               <li>
-                <strong>Framework-aware patterns.</strong> React hooks
+                <strong>Framework-aware patterns.</strong>{" "}React hooks
                 and portals, Vue reactivity, Svelte directives, Angular
                 bindings — patterns where the same accessibility rule
                 needs different evidence to verify.
               </li>
               <li>
-                <strong>WAI-ARIA widget patterns.</strong> All
+                <strong>WAI-ARIA widget patterns.</strong>{" "}All
                 twenty-one canonical patterns — combobox, dialog, tree,
                 grid, etc. — checked end-to-end including the
                 JavaScript that actually wires them up.
@@ -299,7 +299,7 @@ export default function ParadiseArchitecture() {
             <h2>Confidence is a first-class concept</h2>
             <p>
               Every issue Paradise reports carries a{" "}
-              <strong>confidence level</strong> alongside its severity:
+              <strong>confidence level</strong>{" "}alongside its severity:
               one of <code>HIGH</code>, <code>MEDIUM</code>, or{" "}
               <code>LOW</code>, plus a short human-readable reason
               (&ldquo;all three sources present&rdquo;,
@@ -309,7 +309,7 @@ export default function ParadiseArchitecture() {
               Confidence reflects the engine&rsquo;s certainty given
               the source it actually has — not the severity of the
               underlying issue. A HIGH-confidence{" "}
-              <em>info</em> finding is often more actionable than a
+              <em>info</em>{" "}finding is often more actionable than a
               LOW-confidence <em>error</em>, because the engine is
               telling you it&rsquo;s sure about the smaller thing and
               guessing about the larger one.
@@ -320,7 +320,7 @@ export default function ParadiseArchitecture() {
               <Link href="/playgrounds/paradise">Playground</Link>, every issue
               card shows a confidence percentage; in the VS Code
               plugin, the hover popup carries the same number. The
-              percentage is derived from the level <em>and</em> the
+              percentage is derived from the level <em>and</em>{" "}the
               document context the analyser had available — a finding
               that runs over a complete HTML document gets a higher
               percentage than the same finding over a body-only
@@ -355,11 +355,11 @@ export default function ParadiseArchitecture() {
             <h2>Suggested fixes alongside diagnostics</h2>
             <p>
               For many issues, the engine emits a{" "}
-              <strong>suggested fix</strong> alongside the diagnostic
+              <strong>suggested fix</strong>{" "}alongside the diagnostic
               — a short description of the change, a code suggestion,
               and (when known) the file the suggestion belongs in.
               Fixes are engine-emitted, surface-applied: the{" "}
-              <Link href="/playgrounds/paradise">Playground</Link> renders them
+              <Link href="/playgrounds/paradise">Playground</Link>{" "}renders them
               in a Fix dialog with Apply-to-editor and Copy buttons;
               the VS Code plugin exposes them as Quick Fixes via the
               standard Code Actions / lightbulb affordance; a CI
@@ -369,7 +369,7 @@ export default function ParadiseArchitecture() {
             <p>
               The fix payload is a starting point, not a guaranteed
               correction. Paradise reports what to write but
-              doesn&rsquo;t always know <em>where</em> to write it:
+              doesn&rsquo;t always know <em>where</em>{" "}to write it:
               the engine emits the corrective code and the file it
               probably belongs in, but it doesn&rsquo;t indicate
               whether to insert, replace, or append at a specific
@@ -378,8 +378,8 @@ export default function ParadiseArchitecture() {
               limitation in the UI prose so users review before
               committing. Fixes are most reliable for self-contained
               changes — an{" "}
-              <code>aria-label</code> to add to a button, a{" "}
-              <code>keydown</code> handler to mirror an existing{" "}
+              <code>aria-label</code>{" "}to add to a button, a{" "}
+              <code>keydown</code>{" "}handler to mirror an existing{" "}
               <code>click</code>, a CSS rule to delete. They are less
               reliable when the correction depends on surrounding
               context the engine can&rsquo;t resolve from source
@@ -408,15 +408,15 @@ export default function ParadiseArchitecture() {
               iframes, dynamic modules whose source isn&rsquo;t present
               at scan time, content streamed in from a server in
               response to user interaction. For those, runtime tools
-              like <em>autoA11y</em> are the right answer, not Paradise.
+              like <em>autoA11y</em>{" "}are the right answer, not Paradise.
             </p>
             <p>
               Within the source-level scope, the harder problems
               Paradise still works on are: dynamic CSS class assignment
-              (a handler that adds <code>.is-open</code> to an element
+              (a handler that adds <code>.is-open</code>{" "}to an element
               changes its visibility, but only conditionally); event
               delegation through complex parent chains (a handler on{" "}
-              <code>document.body</code> that switches on{" "}
+              <code>document.body</code>{" "}that switches on{" "}
               <code>e.target</code>); template-driven HTML (React JSX,
               Vue templates) where the rendered structure is itself a
               function of state. Each of these has partial coverage in

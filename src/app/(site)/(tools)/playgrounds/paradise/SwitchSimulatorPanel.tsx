@@ -358,7 +358,7 @@ export function SwitchSimulatorPanel({
 
               <div className="stack" style={{ "--space": "var(--s-2)" } as CSSProperties}>
                 <label htmlFor={speedId}>
-                  Scan speed: <strong>{scanSpeed} ms</strong> per step
+                  Scan speed: <strong>{scanSpeed} ms</strong>{" "}per step
                 </label>
                 <input
                   id={speedId}
@@ -424,7 +424,7 @@ export function SwitchSimulatorPanel({
 
             <p className="muted flush">
               <small>
-                Press <kbd>Space</kbd> to activate{" "}
+                Press <kbd>Space</kbd>{" "}to activate{" "}
                 {mode === "dual"
                   ? "the highlighted element (switch 2: Enter to activate after stepping with Space)"
                   : "the highlighted element (single switch)"}
@@ -440,7 +440,7 @@ export function SwitchSimulatorPanel({
               {log.length === 0 ? (
                 <li className="sr-transcript-empty">
                   <small className="muted">
-                    Press <strong>Start scanning</strong> to begin.
+                    Press <strong>Start scanning</strong>{" "}to begin.
                   </small>
                 </li>
               ) : (

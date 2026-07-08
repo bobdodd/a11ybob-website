@@ -85,36 +85,36 @@ export default function Colophon() {
             <ul>
               <li>
                 <strong>Framework:</strong>{" "}
-                <a href="https://nextjs.org">Next.js 16</a> (App Router) on
+                <a href="https://nextjs.org">Next.js 16</a>{" "}(App Router) on
                 Node 20.
               </li>
               <li>
-                <strong>Language:</strong> TypeScript.
+                <strong>Language:</strong>{" "}TypeScript.
               </li>
               <li>
-                <strong>Database:</strong> MongoDB. Locally via Homebrew;
+                <strong>Database:</strong>{" "}MongoDB. Locally via Homebrew;
                 production on{" "}
                 <a href="https://www.ovhcloud.com">OVHcloud&rsquo;s</a>{" "}
                 managed MongoDB at Gravelines.
               </li>
               <li>
                 <strong>Search:</strong>{" "}
-                <a href="https://opensearch.org">OpenSearch</a> (Apache
+                <a href="https://opensearch.org">OpenSearch</a>{" "}(Apache
                 Lucene 9.x). Self-hosted, no SaaS dependency.
               </li>
               <li>
-                <strong>Styling:</strong> Vanilla CSS organised in{" "}
-                <code>@layer</code> groups (tokens, axioms, base, layouts,
+                <strong>Styling:</strong>{" "}Vanilla CSS organised in{" "}
+                <code>@layer</code>{" "}groups (tokens, axioms, base, layouts,
                 components, utilities). No preprocessor, no Tailwind, no
                 CSS Modules. Design tokens as CSS custom properties.
               </li>
               <li>
-                <strong>Hosting:</strong> OVHcloud VPS at the Gravelines
+                <strong>Hosting:</strong>{" "}OVHcloud VPS at the Gravelines
                 data centre. All data resident in EU jurisdiction. See
-                the <em>Hosting and deployment</em> section below.
+                the <em>Hosting and deployment</em>{" "}section below.
               </li>
               <li>
-                <strong>Local services:</strong> Homebrew (
+                <strong>Local services:</strong>{" "}Homebrew (
                 <code>brew services</code>). No Docker.
               </li>
             </ul>
@@ -143,21 +143,21 @@ export default function Colophon() {
               themselves accessibility-hostile in the small sense:
               hard to inspect, hard to reason about, hard to fix when
               something fails. A single box keeps everything legible.{" "}
-              <code>journalctl -u opensearch</code> and{" "}
-              <code>pm2 logs a11ybob</code> are one SSH session apart.
+              <code>journalctl -u opensearch</code>{" "}and{" "}
+              <code>pm2 logs a11ybob</code>{" "}are one SSH session apart.
               Data residency is incidental but welcome: Gravelines
               sits under EU jurisdiction, which fits the broader
               &ldquo;minimise US exposure where the choice is
               free&rdquo; position.
             </p>
             <p>
-              <a href="https://caddyserver.com">Caddy</a> handles HTTPS
+              <a href="https://caddyserver.com">Caddy</a>{" "}handles HTTPS
               termination and reverse-proxies to{" "}
               <code>localhost:3000</code>. When the site moves from
               IP-only access to its real hostname, Caddy will provision
               the Let&rsquo;s Encrypt certificate automatically; the
               Caddyfile gains a domain name and nothing else changes.{" "}
-              <a href="https://pm2.keymetrics.io">pm2</a> keeps the
+              <a href="https://pm2.keymetrics.io">pm2</a>{" "}keeps the
               Next.js server running and brings it back across reboots
               through a generated systemd unit. Neither tool was
               chosen for novelty; both were chosen because the
@@ -167,14 +167,14 @@ export default function Colophon() {
             <p>
               Deployment is <code>git pull</code>,{" "}
               <code>npm run build</code>,{" "}
-              <code>pm2 restart a11ybob</code> &mdash; done over SSH.
+              <code>pm2 restart a11ybob</code>{" "}&mdash; done over SSH.
               No preview environment, no platform-as-a-service
               automation. A pre-push hook on the developer machine
               plus a GitHub Actions build job together gate{" "}
-              <code>main</code> against broken builds: TypeScript
+              <code>main</code>{" "}against broken builds: TypeScript
               errors that don&rsquo;t surface in <code>next dev</code>
               {" "}can still block <code>next build</code>, and that
-              gap had let a broken build sit on <code>main</code> once
+              gap had let a broken build sit on <code>main</code>{" "}once
               before the gate landed. The benefit of the deploy
               mechanism itself is that it&rsquo;s the same three
               commands anyone reading the repository could run on
@@ -197,13 +197,13 @@ export default function Colophon() {
               doesn&rsquo;t watch you: a script that runs in your browser,
               sets cookies, and reports your behaviour to someone
               else&rsquo;s servers would contradict the{" "}
-              <Link href="/privacy">privacy</Link> page in the very act of
+              <Link href="/privacy">privacy</Link>{" "}page in the very act of
               measuring whether anyone reads it.
             </p>
             <p>
               So the measurement comes from the one record the server
               already keeps: its own access log.{" "}
-              <a href="https://goaccess.io">GoAccess</a> reads
+              <a href="https://goaccess.io">GoAccess</a>{" "}reads
               Caddy&rsquo;s log on the same box and produces aggregate
               figures &mdash; popular pages, referrers, browsers. There is
               no client-side script, no cookie, no third party, and
@@ -217,14 +217,14 @@ export default function Colophon() {
               out, so the numbers reflect people, not bots.
             </p>
             <p>
-              What this deliberately <em>cannot</em> do is tell me{" "}
-              <em>who</em> visited. Naming the company or person behind a
+              What this deliberately <em>cannot</em>{" "}do is tell me{" "}
+              <em>who</em>{" "}visited. Naming the company or person behind a
               visit means reverse-IP matching against data brokers
               &mdash; the exact surveillance move the rest of the site
               rejects &mdash; so it isn&rsquo;t done. The numbers say what
               resonates and where it travelled; the people who want to be
               found identify themselves, through{" "}
-              <Link href="/work">Work</Link> and{" "}
+              <Link href="/work">Work</Link>{" "}and{" "}
               <Link href="/contact">Contact</Link>. An accessibility
               practitioner who audits other people&rsquo;s tracking can
               hardly run the surveillance kind on their own front page;
@@ -240,7 +240,7 @@ export default function Colophon() {
             <h2>Layout</h2>
             <p>
               The layout system is{" "}
-              <a href="https://every-layout.dev">Every Layout</a> by Heydon
+              <a href="https://every-layout.dev">Every Layout</a>{" "}by Heydon
               Pickering and Andy Bell. Twelve composable primitives —
               Stack, Box, Center, Cluster, Sidebar, Switcher, Cover, Grid,
               Frame, Reel, Imposter, Icon, Container — implemented as
@@ -293,7 +293,7 @@ export default function Colophon() {
                 body.&rdquo;
               </li>
               <li>
-                <strong>Code:</strong> system monospace stack (
+                <strong>Code:</strong>{" "}system monospace stack (
                 <code>ui-monospace</code>, <code>SFMono-Regular</code>,{" "}
                 <code>Menlo</code>, <code>Consolas</code>). Zero payload;
                 every operating system already has a good monospace face.
@@ -313,16 +313,16 @@ export default function Colophon() {
           >
             <h2>Multi-word link text doesn&rsquo;t wrap across lines</h2>
             <p>
-              Every <code>&lt;a&gt;</code> on the site carries{" "}
+              Every <code>&lt;a&gt;</code>{" "}on the site carries{" "}
               <code>white-space: nowrap</code>. A multi-word link like{" "}
-              <em>See the Spotlight index</em> or{" "}
-              <em>Polymorphic Task Decomposition</em> is a single phrase
+              <em>See the Spotlight index</em>{" "}or{" "}
+              <em>Polymorphic Task Decomposition</em>{" "}is a single phrase
               that should be scannable as one unit; splitting it across
               two lines on a column-margin break makes it read as two
               disconnected fragments and obscures where the link starts
               and ends. The white-space rule treats internal spaces as
               non-breaking, so the wrap point moves to{" "}
-              <em>before</em> the link rather than into it.
+              <em>before</em>{" "}the link rather than into it.
             </p>
             <p>
               The trade-off is that a link longer than the article
@@ -345,7 +345,7 @@ export default function Colophon() {
               Body paragraphs set <code>hyphens: none</code>, which
               disables automatic word-breaking and ignores authored
               soft hyphens too. A word like{" "}
-              <em>polymorphic</em> or <em>capability</em> stays as a
+              <em>polymorphic</em>{" "}or <em>capability</em>{" "}stays as a
               single token on one line; the line wraps before the
               word rather than through it.
             </p>
@@ -411,7 +411,7 @@ export default function Colophon() {
               link: it sets <code>rel=&ldquo;noopener&rdquo;</code>,
               appends the notice, and keeps the label and the notice
               each as one non-breaking phrase while letting the link
-              wrap <em>between</em> them &mdash; so the added words
+              wrap <em>between</em>{" "}them &mdash; so the added words
               never force horizontal overflow, honouring the{" "}
               same no-mid-phrase-break rule the link and hyphenation
               decisions above follow.
@@ -432,8 +432,8 @@ export default function Colophon() {
               100%, and the default ink at 20%, not pure black, so the
               starting point is gentler than the conventional defaults
               before any tint is applied. Visitor preferences via{" "}
-              <code>prefers-color-scheme</code> and{" "}
-              <code>prefers-contrast</code> override whatever the site
+              <code>prefers-color-scheme</code>{" "}and{" "}
+              <code>prefers-contrast</code>{" "}override whatever the site
               says.
             </p>
             <p>
@@ -448,7 +448,7 @@ export default function Colophon() {
               colour is a way-finding cue layered on top of structure
               that already works without it. Colour-vision deficiencies,
               high-contrast user stylesheets and{" "}
-              <code>prefers-contrast: more</code> all flatten the
+              <code>prefers-contrast: more</code>{" "}all flatten the
               palette without losing information.
             </p>
             <p>
@@ -460,7 +460,7 @@ export default function Colophon() {
               96% in dark. Body-text contrast is identical on every
               page; only the hue of the underlying surface shifts. All
               colour values are expressed in{" "}
-              <a href="https://oklch.com">OKLCH</a> &mdash; a
+              <a href="https://oklch.com">OKLCH</a>{" "}&mdash; a
               perceptually uniform colour space &mdash; for that reason:
               the constant-lightness constraint is enforceable across
               ten different hues in a way HSL and sRGB do not provide.
@@ -517,7 +517,7 @@ export default function Colophon() {
               low-vision user using a screen magnifier may only see one
               or two words at a time and never catch sight of the
               highlights at all. Without something more, those users have
-              no way to tell <em>why</em> a particular result was returned
+              no way to tell <em>why</em>{" "}a particular result was returned
               — whether the engine matched the exact phrase they typed,
               or just one word of it.
             </p>
@@ -545,8 +545,8 @@ export default function Colophon() {
               You won&rsquo;t see grey placeholder text inside any
               input on this site. Where a field needs guidance, the
               hint is rendered as a visible{" "}
-              <code>&lt;small&gt;</code> beneath the input and
-              associated via <code>aria-describedby</code> so screen
+              <code>&lt;small&gt;</code>{" "}beneath the input and
+              associated via <code>aria-describedby</code>{" "}so screen
               readers announce it together with the field.
             </p>
             <p>
@@ -578,7 +578,7 @@ export default function Colophon() {
               The search box offers type-ahead suggestions after two
               characters, drawn from article and review titles and
               from glossary terms (including aliases — typing{" "}
-              <em>Music Braille</em> finds the entry whose canonical
+              <em>Music Braille</em>{" "}finds the entry whose canonical
               term is <em>Braille Music</em>). Suggestions are
               grouped by corpus and selecting one quick-jumps to the
               resource. Pressing Enter without picking a suggestion
@@ -633,7 +633,7 @@ export default function Colophon() {
             <p>
               The default for HTML inputs is{" "}
               <code>autocomplete=&ldquo;on&rdquo;</code>. We were
-              setting <code>autocomplete=&ldquo;off&rdquo;</code> on
+              setting <code>autocomplete=&ldquo;off&rdquo;</code>{" "}on
               the search box without thinking. That&rsquo;s the
               kind of well-meaning default that quietly punishes the
               users a site like this is built for.
@@ -688,7 +688,7 @@ export default function Colophon() {
             <p>
               <strong>Alpha-sorted within the top-N by count.</strong>{" "}
               The default order returned by OpenSearch&rsquo;s{" "}
-              <code>terms</code> aggregation is count-desc. That keeps
+              <code>terms</code>{" "}aggregation is count-desc. That keeps
               the biggest buckets first but makes the list hard to scan
               for a specific value: the reader has to read every label
               before giving up. The page now takes the top-N facets by
@@ -709,11 +709,11 @@ export default function Colophon() {
               that&rsquo;s how the papers were tagged &mdash; so the
               fix isn&rsquo;t to rewrite it. Instead the OpenSearch
               keyword fields for{" "}
-              <code>category</code> (glossary), <code>tags</code>{" "}
-              (reviews, articles), and <code>domains</code> (articles)
-              now have a <code>lowercase</code> normaliser. The
-              normaliser applies to indexed values <em>and</em> to the
-              query input of <code>term</code> filters, so case
+              <code>category</code>{" "}(glossary), <code>tags</code>{" "}
+              (reviews, articles), and <code>domains</code>{" "}(articles)
+              now have a <code>lowercase</code>{" "}normaliser. The
+              normaliser applies to indexed values <em>and</em>{" "}to the
+              query input of <code>term</code>{" "}filters, so case
               variants collapse into one bucket for aggregation and
               continue to filter correctly. URL parameters are
               defensively lowercased in the lib too, so old
@@ -723,7 +723,7 @@ export default function Colophon() {
               <small>
                 Diacritics are not yet folded. &ldquo;Caf&eacute;&rdquo;
                 and &ldquo;cafe&rdquo; would still be two buckets if
-                they appeared. The <code>asciifolding</code> token
+                they appeared. The <code>asciifolding</code>{" "}token
                 filter that would merge them is applied to the
                 full-text analyser but not to the taxonomy keywords,
                 because the change is behavioural (it strips
@@ -745,7 +745,7 @@ export default function Colophon() {
               Result lists carry pagination controls both above and
               below the list, not only below. The two instances are
               identical in function and labelled distinctly
-              (<em>Pagination, top of results</em> and{" "}
+              (<em>Pagination, top of results</em>{" "}and{" "}
               <em>Pagination, bottom of results</em>) so a screen
               reader&rsquo;s landmark navigation can target either.
             </p>
@@ -783,9 +783,9 @@ export default function Colophon() {
               fine for a reader who can see the whole row at once and
               compare cells. It fails at high zoom: a screen-magnifier
               user looking at one cell with the surrounding cells off
-              screen has no way to know whether <em>this</em> cell is
+              screen has no way to know whether <em>this</em>{" "}cell is
               the current one, because bold-versus-not-bold is a{" "}
-              <em>relative</em> cue. So the current page on this site
+              <em>relative</em>{" "}cue. So the current page on this site
               gets an outlined box (a 2px border in the ink colour),
               plus the bold weight as a secondary signal. The border
               padding matches the unstyled cells&rsquo; padding so
@@ -795,14 +795,14 @@ export default function Colophon() {
             </p>
             <p>
               The current page is rendered as a real{" "}
-              <code>&lt;a&gt;</code> linking to itself, carrying{" "}
-              <code>aria-current=&ldquo;page&rdquo;</code> and a
+              <code>&lt;a&gt;</code>{" "}linking to itself, carrying{" "}
+              <code>aria-current=&ldquo;page&rdquo;</code>{" "}and a
               prefixed accessible name of &ldquo;Current page, page
               N&rdquo;. The W3C Design System recommends this
               pattern: keeping the current page as an actual link
               means AT users navigating the document by links never
               lose track of where they are. The earlier draft used an
-              inert <code>&lt;span&gt;</code> which dropped out of the
+              inert <code>&lt;span&gt;</code>{" "}which dropped out of the
               link list entirely.
             </p>
             <p>
@@ -834,14 +834,14 @@ export default function Colophon() {
               Every modal on this site — the Playground&rsquo;s Help,
               Fix, and Reset confirmations, and the image-zoom modal
               on the About page — is a native HTML{" "}
-              <code>&lt;dialog&gt;</code> opened with{" "}
+              <code>&lt;dialog&gt;</code>{" "}opened with{" "}
               <code>showModal()</code>. The browser handles focus
               trapping, Escape-to-close, backdrop rendering, and the
               correct AT role; nothing is reimplemented in JavaScript.
             </p>
             <p>
-              The custom-modal route — a <code>div</code> overlay with
-              a <code>role=&ldquo;dialog&rdquo;</code> and a manual
+              The custom-modal route — a <code>div</code>{" "}overlay with
+              a <code>role=&ldquo;dialog&rdquo;</code>{" "}and a manual
               focus-trap loop — is the more common choice in modern
               frameworks. It also goes wrong constantly. Focus traps
               miss edge cases (iframes, shadow DOM, dynamically-added
@@ -851,14 +851,14 @@ export default function Colophon() {
               underneath. Each of those failures is a real
               accessibility regression for keyboard and screen-reader
               users, and each is solved for free by the browser&rsquo;s{" "}
-              <code>&lt;dialog&gt;</code> element.
+              <code>&lt;dialog&gt;</code>{" "}element.
             </p>
             <p>
               The cost was small and bounded: the universal
               max-inline-size axiom needed{" "}
-              <code>dialog</code> on its exception list, and the
+              <code>dialog</code>{" "}on its exception list, and the
               dialog&rsquo;s sizing rule had to use{" "}
-              <code>fit-content</code> capped at 80ch rather than an
+              <code>fit-content</code>{" "}capped at 80ch rather than an
               explicit width so short confirm dialogs render compact
               instead of stretching. Two CSS lines, against an entire
               category of accessibility bugs the platform now handles.
@@ -887,7 +887,7 @@ export default function Colophon() {
             <p>
               The interesting choice is the trigger. Image-only buttons
               routinely fail SC 2.5.3 <em>Label in Name</em>: the
-              button carries an <code>aria-label</code> describing the
+              button carries an <code>aria-label</code>{" "}describing the
               action, but voice-control users cannot speak that label
               because there is no visible text matching it. A
               persistent &ldquo;View larger&rdquo; badge sits in the
@@ -904,12 +904,12 @@ export default function Colophon() {
               meets AAA 7:1 contrast against any underlying image.
             </p>
             <p>
-              The dialog uses <code>aria-label</code> for the same
+              The dialog uses <code>aria-label</code>{" "}for the same
               short trigger label and{" "}
-              <code>aria-describedby</code> pointing at the in-dialog
+              <code>aria-describedby</code>{" "}pointing at the in-dialog
               caption for the longer description, so SR users hear
               the figure&rsquo;s caption as the dialog&rsquo;s{" "}
-              <em>description</em> rather than its <em>name</em>. An
+              <em>description</em>{" "}rather than its <em>name</em>. An
               earlier draft put the full caption directly into the
               dialog&rsquo;s accessible name (and into the
               trigger&rsquo;s <code>aria-label</code>), which meant a
@@ -920,19 +920,19 @@ export default function Colophon() {
             <p>
               The figure is a composition of the Every Layout
               primitives already documented:{" "}
-              <code>Stack</code> for the figure&rsquo;s internal
-              spacing, <code>Frame</code> (cover for photographs,
+              <code>Stack</code>{" "}for the figure&rsquo;s internal
+              spacing, <code>Frame</code>{" "}(cover for photographs,
               contain for diagrams) holding the image, and{" "}
-              <code>Sidebar</code> or <code>Grid</code> placing the
+              <code>Sidebar</code>{" "}or <code>Grid</code>{" "}placing the
               figure against the surrounding prose. For raster images
-              the trigger button <em>is</em> the Frame &mdash;
+              the trigger button <em>is</em>{" "}the Frame &mdash;
               click-anywhere on the image opens the dialog. For inline
               SVG content the Frame is a plain container and the
               trigger is an overlay button positioned absolutely in
               the Frame&rsquo;s bottom-right corner; visually
               identical, structurally a sibling. See the next section
               for why that distinction matters. The dialog is the
-              standard native <code>&lt;dialog&gt;</code> &mdash;
+              standard native <code>&lt;dialog&gt;</code>{" "}&mdash;
               nothing custom, no JavaScript focus-trap, no portal.
             </p>
           </section>
@@ -956,13 +956,13 @@ export default function Colophon() {
               text: (a) inline SVG inherits the page&rsquo;s CSS custom
               properties &mdash; strokes and text use{" "}
               <code>currentColor</code>; the wrapping CSS sets{" "}
-              <code>color</code> on the root SVG element to{" "}
+              <code>color</code>{" "}on the root SVG element to{" "}
               <code>var(--ink)</code>, so the diagram automatically
               picks up the research zone&rsquo;s ink tint and adapts
               to Windows High Contrast / forced-colors mode through
               CSS system colour resolution; node-box fills use{" "}
-              <code>var(--surface-1)</code> with a{" "}
-              <code>@media (forced-colors: active)</code> override.
+              <code>var(--surface-1)</code>{" "}with a{" "}
+              <code>@media (forced-colors: active)</code>{" "}override.
               (b) The diagram scales vector-perfect at any zoom level,
               including the dialog&rsquo;s near-viewport size.
               (c) Text labels are real text &mdash; selectable,
@@ -975,12 +975,12 @@ export default function Colophon() {
             </p>
             <p>
               The SVG also carries a complete example of the{" "}
-              <strong>WAI-ARIA Graphics module</strong> structure
+              <strong>WAI-ARIA Graphics module</strong>{" "}structure
               inside it:{" "}
-              <code>role=&ldquo;graphics-object&rdquo;</code> on every
+              <code>role=&ldquo;graphics-object&rdquo;</code>{" "}on every
               grouped node (root task, polymorphs, sub-tasks, modality
               enclosures) and{" "}
-              <code>role=&ldquo;graphics-symbol&rdquo;</code> on every
+              <code>role=&ldquo;graphics-symbol&rdquo;</code>{" "}on every
               leaf modality icon, each labelled with{" "}
               <code>aria-label</code>. The intention of those roles is
               to let AT users navigate the tree structure node by node
@@ -1001,8 +1001,8 @@ export default function Colophon() {
               doesn&rsquo;t implement it; <strong>TalkBack on
               Android walks SVG elements individually regardless of
               roles</strong>, announcing pixel-coordinate geometry of
-              the inner <code>&lt;rect&gt;</code> and{" "}
-              <code>&lt;text&gt;</code> elements rather than the
+              the inner <code>&lt;rect&gt;</code>{" "}and{" "}
+              <code>&lt;text&gt;</code>{" "}elements rather than the
               parent group&rsquo;s <code>aria-label</code>. Tested
               directly on this site. Two of the most-used AT engines
               (JAWS and TalkBack) don&rsquo;t honour the module at
@@ -1012,18 +1012,18 @@ export default function Colophon() {
             </p>
             <p>
               So the SVG&rsquo;s root currently carries{" "}
-              <code>role=&ldquo;img&rdquo;</code> &mdash; atomic-image
+              <code>role=&ldquo;img&rdquo;</code>{" "}&mdash; atomic-image
               semantics &mdash; with descriptive{" "}
-              <code>&lt;title&gt;</code> and <code>&lt;desc&gt;</code>{" "}
+              <code>&lt;title&gt;</code>{" "}and <code>&lt;desc&gt;</code>{" "}
               children carrying the accessible name and description.
               Every AT engine announces those.{" "}
               <em>
                 The structural Graphics-module roles remain in the
                 markup as a worked example of the spec
               </em>{" "}
-              &mdash; the diagram <em>would</em> become navigable in a
+              &mdash; the diagram <em>would</em>{" "}become navigable in a
               more mature ARIA-support landscape by simply removing
-              the <code>role=&ldquo;img&rdquo;</code> override; the
+              the <code>role=&ldquo;img&rdquo;</code>{" "}override; the
               one-line change is left explicit in the source so the
               upgrade path is obvious. The site is honest about
               shipping what AT support can reliably deliver today
@@ -1033,12 +1033,12 @@ export default function Colophon() {
             <p>
               Three earlier drafts of this figure overstated the AT
               delivery. The first hid the SVG inside an interactive{" "}
-              <code>&lt;button&gt;</code> (the &ldquo;View
+              <code>&lt;button&gt;</code>{" "}(the &ldquo;View
               larger&rdquo; trigger), which makes every inner role
               unreachable regardless of engine support &mdash; the
               button is an AT leaf, and SR users stop at its name.
               The second declared{" "}
-              <code>role=&ldquo;graphics-document&rdquo;</code> on the
+              <code>role=&ldquo;graphics-document&rdquo;</code>{" "}on the
               root with the implication that VoiceOver and NVDA users
               would get rich navigation &mdash; true for some
               configurations, untrue for most. Both got fixed as they
@@ -1053,8 +1053,8 @@ export default function Colophon() {
               do its job correctly.
             </p>
             <p>
-              The <code>ImageFigure</code> component was extended with
-              an optional <code>content</code> prop that accepts a
+              The <code>ImageFigure</code>{" "}component was extended with
+              an optional <code>content</code>{" "}prop that accepts a
               ReactNode in place of the <code>&lt;img&gt;</code>{" "}
               element. The trigger and the dialog render the content
               as separate React subtrees, so any <code>useId()</code>{" "}
@@ -1104,7 +1104,7 @@ export default function Colophon() {
               the initial keyboard focus lands on Cancel — not on the
               Reset button that would discard the user&rsquo;s edits.
               This is the opposite of what{" "}
-              <code>window.confirm()</code> does and the opposite of
+              <code>window.confirm()</code>{" "}does and the opposite of
               the default for &ldquo;OK / Cancel&rdquo; dialogs in
               most operating systems.
             </p>
@@ -1115,7 +1115,7 @@ export default function Colophon() {
               on a key longer than intentional typing does; a
               destructive action one-keystroke-away from focus on
               dialog open is a real risk of lost work. The user has
-              already pressed the Reset button to <em>open</em> the
+              already pressed the Reset button to <em>open</em>{" "}the
               dialog; requiring a second deliberate motion to confirm
               isn&rsquo;t friction, it&rsquo;s the safety margin.
               Non-destructive confirms still focus the affirmative
@@ -1124,13 +1124,13 @@ export default function Colophon() {
             </p>
             <p>
               The same reasoning underpins the choice to add{" "}
-              <code>tabindex=&ldquo;-1&rdquo;</code> targets and skip
+              <code>tabindex=&ldquo;-1&rdquo;</code>{" "}targets and skip
               links inside long tool surfaces: anywhere a keyboard
               user&rsquo;s next intentional action is many tab stops
               away from their current position, that&rsquo;s a
               measurable cost we can erase by giving them a
               shortcut, and dialogs are the case where the cost of{" "}
-              <em>not</em> doing it is highest.
+              <em>not</em>{" "}doing it is highest.
             </p>
           </section>
 
@@ -1188,7 +1188,7 @@ export default function Colophon() {
             <p>
               The site ships several substantial pieces of working
               code: the{" "}
-              <a href="/paradise">Paradise</a> multi-model
+              <a href="/paradise">Paradise</a>{" "}multi-model
               accessibility analyser engine that powers the{" "}
               <a href="/playgrounds/paradise">Playground</a>; a virtual screen
               reader, switch-access simulator, and session
@@ -1200,7 +1200,7 @@ export default function Colophon() {
               </a>
               . All of that is in the repository as readable
               TypeScript source, not as compiled <code>.js</code>{" "}
-              and <code>.d.ts</code> snapshots.
+              and <code>.d.ts</code>{" "}snapshots.
             </p>
             <p>
               The lib-snapshot pattern is convenient. It keeps the
@@ -1285,7 +1285,7 @@ export default function Colophon() {
               can edit the XML and re-run, watch the action tree
               re-parse live, and step through the structured
               execution trace.{" "}
-              <a href="/playgrounds/paradise">/playgrounds/paradise</a> runs the
+              <a href="/playgrounds/paradise">/playgrounds/paradise</a>{" "}runs the
               Paradise analyser engine in-browser and re-analyses
               the visitor&rsquo;s code on every keystroke. The
               simulators referenced above operate against a
@@ -1335,7 +1335,7 @@ export default function Colophon() {
               tokenisation, language-server protocol support &mdash;
               and on most accessibility metrics it is fine. On
               several criteria the site targets, it is not. Monaco
-              binds <kbd>Tab</kbd> to indent by default, which
+              binds <kbd>Tab</kbd>{" "}to indent by default, which
               traps keyboard-only users inside the editor; the
               escape is <kbd>Ctrl</kbd>+<kbd>M</kbd>, which the
               user must know in advance. WCAG 2.1.2 (No Keyboard
@@ -1351,7 +1351,7 @@ export default function Colophon() {
             <p>
               CodeMirror 6 is smaller, more modular, and
               accessibility-friendly by default.{" "}
-              <kbd>Tab</kbd> moves focus out of the editor without
+              <kbd>Tab</kbd>{" "}moves focus out of the editor without
               special configuration; the surface is themeable via
               ordinary CSS rather than internal class systems;
               the bundle is small enough to ship without 
@@ -1359,7 +1359,7 @@ export default function Colophon() {
               richer language-aware features &mdash; no IntelliSense
               suggestions, no multi-cursor, simpler tokenisation.
               For a Playground whose purpose is to{" "}
-              <em>demonstrate</em> accessibility analysis rather
+              <em>demonstrate</em>{" "}accessibility analysis rather
               than to be a production editor, that trade is
               clean.
             </p>
@@ -1401,14 +1401,14 @@ export default function Colophon() {
               fidelity as anyone else; a user reading on a 
               high-contrast user stylesheet does not lose the structural
               cue when the conventional palette is overridden;
-              every token resolves to <code>var(--ink)</code> or{" "}
-              <code>var(--ink-muted)</code> over the editor
+              every token resolves to <code>var(--ink)</code>{" "}or{" "}
+              <code>var(--ink-muted)</code>{" "}over the editor
               surface, both of which sit at AAA contrast.
             </p>
             <p>
               The cost is one specific loss compared to a
               conventional rainbow theme: the eye-catching{" "}
-              <em>distinct hue per token category</em> that
+              <em>distinct hue per token category</em>{" "}that
               experienced developers learn to scan against. The
               gain is that the highlighting is universal &mdash;
               works for everyone, in every theme override, on every
@@ -1525,7 +1525,7 @@ export default function Colophon() {
               from an original chapter or a published paper carries
               the prose better than a paraphrase would, it is
               quoted as a quote &mdash; without the&nbsp;
-              <em>&ldquo;from the chapter:&rdquo;</em> setup line
+              <em>&ldquo;from the chapter:&rdquo;</em>{" "}setup line
               that pretends the reader needs to be told it is a
               quotation. The italics and the blockquote markup do
               that work; the prose carries the substance.
@@ -1539,7 +1539,7 @@ export default function Colophon() {
             <h2>Decision log</h2>
             <p>
               Each load-bearing decision has its own document under{" "}
-              <code>docs/decisions/</code> in the repository. Summaries
+              <code>docs/decisions/</code>{" "}in the repository. Summaries
               follow; click through for the full rationale.
             </p>
             <ul

@@ -48,7 +48,7 @@ export default function ParadiseEvidence() {
               accessibility issues by experienced practitioners.
             </p>
             <p>
-              False positives are the issues that <em>none</em> of the
+              False positives are the issues that <em>none</em>{" "}of the
               practitioners flagged but at least one tool reported.
               Those are the warnings that train developers to ignore
               accessibility tooling — every false positive is a
@@ -58,13 +58,13 @@ export default function ParadiseEvidence() {
             </p>
             <p>
               The number is honest about scope. It is computed against{" "}
-              <em>source-detectable</em> issues — things that can be
+              <em>source-detectable</em>{" "}issues — things that can be
               identified without running the application. Runtime-only
               concerns (focus order during dynamic content load,
               ARIA-live announcements, third-party widgets injected at
               interaction time) are not in the corpus. For those,
               runtime tools are the right answer; see{" "}
-              <Link href="/paradise/lineage">Lineage</Link> for the
+              <Link href="/paradise/lineage">Lineage</Link>{" "}for the
               autoA11y / Paradise complementarity.
             </p>
           </section>
@@ -79,28 +79,28 @@ export default function ParadiseEvidence() {
             </p>
             <ul>
               <li>
-                <strong>Corpus.</strong> A curated set of HTML / JS /
+                <strong>Corpus.</strong>{" "}A curated set of HTML / JS /
                 CSS triples, each between 200 and 5,000 lines total,
                 drawn from real production codebases with permission.
                 Diverse in framework choice (vanilla, React, Vue,
                 Svelte, Angular).
               </li>
               <li>
-                <strong>Ground truth.</strong> Each triple is annotated
+                <strong>Ground truth.</strong>{" "}Each triple is annotated
                 by two independent accessibility practitioners; their
                 annotations are reconciled into a single ground-truth
                 set of issues. Inter-rater agreement is reported in
                 the audit document.
               </li>
               <li>
-                <strong>Tools under test.</strong> axe (rendered-DOM),
+                <strong>Tools under test.</strong>{" "}axe (rendered-DOM),
                 eslint-plugin-jsx-a11y (AST-pattern), and Paradise.
                 Each tool is run against each triple in its native
                 idiom (axe via Puppeteer; eslint via ESLint; Paradise
                 via its Node API).
               </li>
               <li>
-                <strong>Counting.</strong> True positives are
+                <strong>Counting.</strong>{" "}True positives are
                 ground-truth issues each tool reported. False
                 positives are issues a tool reported that
                 weren&rsquo;t in ground truth. False negatives are
@@ -109,7 +109,7 @@ export default function ParadiseEvidence() {
             </ul>
             <p>
               The 88% headline is the <em>aggregate false-positive
-              rate</em> across the corpus. Per-corpus breakdowns and
+              rate</em>{" "}across the corpus. Per-corpus breakdowns and
               per-issue-type breakdowns live in the audit report.
             </p>
           </section>
@@ -145,7 +145,7 @@ export default function ParadiseEvidence() {
             </p>
             <ul>
               <li>
-                <strong>Runtime-only content.</strong> Third-party
+                <strong>Runtime-only content.</strong>{" "}Third-party
                 widgets injected into iframes, dynamic modules whose
                 source isn&rsquo;t present at scan time, content
                 streamed from a server in response to user
@@ -158,13 +158,13 @@ export default function ParadiseEvidence() {
                 ways that only a runtime tool can observe.
               </li>
               <li>
-                <strong>Live-region announcements.</strong> Paradise
+                <strong>Live-region announcements.</strong>{" "}Paradise
                 can detect that a live region exists; it can&rsquo;t
                 evaluate whether the announcement timing and content
                 are appropriate for the user.
               </li>
               <li>
-                <strong>Visual-design regressions.</strong> Contrast
+                <strong>Visual-design regressions.</strong>{" "}Contrast
                 ratios in dynamically-themed UIs, focus-indicator
                 visibility against arbitrary backgrounds — Paradise
                 checks the rules; rendering tools check the result.

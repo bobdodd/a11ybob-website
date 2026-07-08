@@ -39,7 +39,7 @@ export default function PTD() {
             caption={
               <>
                 The canonical PTD example. The same underlying intention
-                &mdash; <em>Delete File</em> &mdash; realised as two
+                &mdash; <em>Delete File</em>{" "}&mdash; realised as two
                 polymorphs: Direct Manipulation and Modal Dialogue, each
                 with its own task ordering and its own leaf-level
                 modality affordances. The capability model selects
@@ -55,9 +55,9 @@ export default function PTD() {
           >
             <h2>What it is</h2>
             <p>
-              Conventional task analysis names <em>the</em> task and
+              Conventional task analysis names <em>the</em>{" "}task and
               its decomposition into steps. PTD names a task as the
-              equivalence class of multiple <em>realisations</em> of
+              equivalence class of multiple <em>realisations</em>{" "}of
               the same underlying intention: direct manipulation
               versus modal dialogue, voice versus gesture,
               full-screen versus assistive overlay, keyboard versus
