@@ -51,6 +51,7 @@ export const REGION_BOXES: RegionBox[] = [
   { id: "philadelphia", n: 40, s: 39.9, e: -75.1, w: -75.26 },
   { id: "providence", n: 41.86, s: 41.79, e: -71.38, w: -71.45 },
   { id: "hanover", n: 43.73, s: 43.68, e: -72.26, w: -72.32 },
+  { id: "washington-dc", n: 38.995, s: 38.79, e: -76.91, w: -77.12 },
 ];
 
 // The region a point falls in, or null when it is outside ALL coverage (the "add a region
