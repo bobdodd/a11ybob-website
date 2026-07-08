@@ -27,6 +27,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { opensearch } from "@/lib/opensearch";
 import { nearestAddress, interpolatedAddress } from "@/lib/mapAddress";
+import { recordQueryLocation } from "@/lib/geostats";
 
 export const dynamic = "force-dynamic";
 
@@ -328,6 +329,9 @@ export async function GET(req: NextRequest) {
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
     return NextResponse.json({ results: [] satisfies Result[] });
   }
+  // Aggregate "where is queried" stat — recorded ONLY when the Context Map's Follow Me is
+  // active (client sends follow=1). Fire-and-forget.
+  recordQueryLocation(lat, lng, { follow: sp.get("follow") === "1" });
 
   // Filter-aware significance: opting IN to an overlay makes it significant; hiding a
   // base layer demotes it below the "worth mentioning unprompted" line (but not to

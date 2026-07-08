@@ -68,6 +68,27 @@ export default function Privacy() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
+            <h2>Map usage</h2>
+            <p>
+              The accessible-map demos have a &ldquo;Follow me&rdquo; mode that
+              describes your surroundings as you walk. While &mdash; and only
+              while &mdash; that mode is running, the server keeps an aggregate
+              tally of the general area being asked about: the location is
+              rounded to a coarse cell about five kilometres across and a
+              per-area counter is increased by one. No identity, no session, no
+              route, and no individual record is stored &mdash; just a running
+              count per area, so there is nothing that could be tied back to a
+              person. Ordinary map questions record nothing at all. I use these
+              aggregate counts to see which areas are used and, most usefully,
+              where a person&rsquo;s location falls outside the mapped regions
+              &mdash; the signal for which places to map next.
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
             <h2>Hosting</h2>
             <p>
               The site is hosted on OVHcloud at their Gravelines data

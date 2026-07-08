@@ -21,6 +21,7 @@ import { TOOL_SCHEMAS, runTool } from "@/lib/map-tools";
 import { PLACE_KNOWLEDGE_SCHEMA, runPlaceKnowledge } from "@/lib/knowledgeTool";
 import { TRANSIT_NEARBY_SCHEMA, runTransitNearby } from "@/lib/transitTool";
 import { MEMORY_TOOL_SCHEMAS, MemoryStore, runMemoryTool } from "@/lib/memoryTool";
+import { recordQueryLocation } from "@/lib/geostats";
 
 export const dynamic = "force-dynamic";
 
@@ -115,7 +116,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  let body: { message?: string; location?: { lat: number; lon: number; heading?: number }; history?: Turn[]; memory?: unknown };
+  let body: { message?: string; location?: { lat: number; lon: number; heading?: number }; history?: Turn[]; memory?: unknown; follow?: boolean };
   try {
     body = await req.json();
   } catch {
@@ -127,6 +128,8 @@ export async function POST(req: NextRequest) {
 
   const loc = body.location;
   const heading = typeof loc?.heading === "number" ? loc.heading : undefined;
+  // Aggregate "where is queried" stat — recorded ONLY when Follow Me is active (fire-and-forget).
+  if (loc) recordQueryLocation(loc.lat, loc.lon, { follow: body.follow === true });
 
   // Prior text turns (capped), then the new user turn with the location appended as context.
   const history = (body.history ?? [])
