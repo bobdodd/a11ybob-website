@@ -5,9 +5,10 @@
  * regions. Explicitly NOT interested in who made a request, only where was asked about.
  *
  * Privacy by construction, matching the site's aggregate-only analytics ethic:
- *   • Recorded ONLY while Follow Me is actively running (the client sets `follow`). An
- *     ordinary "where am I?", a search, a one-off question — none of it is recorded; that
- *     would be too tracking-like. Follow Me is a deliberate, announced mode.
+ *   • Recorded on EVERY location the maps look up — whichever demo, whichever question, every
+ *     time the app sends the user's position to the server. What keeps this from being
+ *     tracking-like is the aggregation below, not withholding data: a coarse cell with no
+ *     identity attached cannot follow anyone.
  *   • Binned to a COARSE ~5 km cell (0.05°). No IP, no session, no per-request row, no
  *     fine timestamp — just a running per-cell tally. Nothing per-request is stored, so
  *     there is nothing to tie back to a person.
@@ -53,13 +54,8 @@ function cell(lat: number, lon: number) {
   };
 }
 
-/** Record one queried location — but ONLY when Follow Me is active. Fire-and-forget. */
-export function recordQueryLocation(
-  lat: number,
-  lon: number,
-  opts: { follow?: boolean },
-): void {
-  if (opts.follow !== true) return; // the gate: nothing recorded outside Follow Me
+/** Record one queried location — every location the maps look up. Fire-and-forget. */
+export function recordQueryLocation(lat: number, lon: number): void {
   if (!Number.isFinite(lat) || !Number.isFinite(lon)) return;
   if (lat < -90 || lat > 90 || lon < -180 || lon > 180) return;
 

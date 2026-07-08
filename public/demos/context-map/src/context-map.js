@@ -168,7 +168,7 @@ class ContextMap {
                 this.lastProximityPos.lat, this.lastProximityPos.lng, position.lat, position.lng);
             if (moved < 12) return;
         }
-        const { results: near, intersections, address, addressApprox } = await this._fetchQuick(position.lat, position.lng, 5, true);   // follow=true: describe-as-I-move is the ONE place the Context Map records a location (aggregate, coarse)
+        const { results: near, intersections, address, addressApprox } = await this._fetchQuick(position.lat, position.lng, 5);
         if (!near.length) return;
         this._lastNearby = near;
         this._lastNearbyPos = { lat: position.lat, lng: position.lng };
@@ -652,12 +652,9 @@ class ContextMap {
     }
 
     // Like fetchNearby but also asks for the on-road block-end intersections (Quick describe).
-    // follow=true (only from describe-as-I-move) tags the request so the server records the
-    // coarse area — one-off Quick Describe never does.
-    async _fetchQuick(lat, lng, limit, follow = false) {
+    async _fetchQuick(lat, lng, limit) {
         try {
             const qs = new URLSearchParams({ lat: String(lat), lng: String(lng), limit: String(limit), xings: '1' });
-            if (follow) qs.set('follow', '1');
             if (this.heading.isMoving()) qs.set('moving', '1');
             const res = await fetch(`/api/map-nearby?${qs.toString()}`);
             if (!res.ok) return { results: [], intersections: [], address: null };

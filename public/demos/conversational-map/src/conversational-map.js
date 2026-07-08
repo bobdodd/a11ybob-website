@@ -587,7 +587,7 @@ async function followAsk(brief) {
     const res = await fetch(CHAT_API, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message, location: loc, history: [], follow: true }),   // follow=true: the ONE place a location is recorded (aggregate, coarse)
+      body: JSON.stringify({ message, location: loc, history: [] }),
       signal: AbortSignal.timeout(30000),   // a stuck update just dies quietly; the next move retries
     });
     const data = await res.json().catch(() => ({}));

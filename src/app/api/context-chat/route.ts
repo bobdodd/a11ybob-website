@@ -86,7 +86,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  let body: { message?: string; location?: { lat: number; lon: number; heading?: number }; history?: Turn[]; follow?: boolean };
+  let body: { message?: string; location?: { lat: number; lon: number; heading?: number }; history?: Turn[] };
   try {
     body = await req.json();
   } catch {
@@ -98,8 +98,8 @@ export async function POST(req: NextRequest) {
 
   const loc = body.location;
   const heading = typeof loc?.heading === "number" ? loc.heading : undefined;
-  // Aggregate "where is queried" stat — recorded ONLY when Follow Me is active (fire-and-forget).
-  if (loc) recordQueryLocation(loc.lat, loc.lon, { follow: body.follow === true });
+  // Aggregate "where is queried" stat — every location the map looks up (fire-and-forget).
+  if (loc) recordQueryLocation(loc.lat, loc.lon);
 
   // Prior text turns (capped), then the new user turn with the location appended as context.
   const history = (body.history ?? [])

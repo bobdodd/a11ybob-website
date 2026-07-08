@@ -329,9 +329,8 @@ export async function GET(req: NextRequest) {
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
     return NextResponse.json({ results: [] satisfies Result[] });
   }
-  // Aggregate "where is queried" stat — recorded ONLY when the Context Map's Follow Me is
-  // active (client sends follow=1). Fire-and-forget.
-  recordQueryLocation(lat, lng, { follow: sp.get("follow") === "1" });
+  // Aggregate "where is queried" stat — every location the map looks up (fire-and-forget).
+  recordQueryLocation(lat, lng);
 
   // Filter-aware significance: opting IN to an overlay makes it significant; hiding a
   // base layer demotes it below the "worth mentioning unprompted" line (but not to

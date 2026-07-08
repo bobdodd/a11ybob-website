@@ -70,18 +70,18 @@ export default function Privacy() {
           >
             <h2>Map usage</h2>
             <p>
-              The accessible-map demos have a &ldquo;Follow me&rdquo; mode that
-              describes your surroundings as you walk. While &mdash; and only
-              while &mdash; that mode is running, the server keeps an aggregate
+              The accessible-map demos look up your surroundings from the server
+              as you use them. Each time they do, the server keeps an aggregate
               tally of the general area being asked about: the location is
               rounded to a coarse cell about five kilometres across and a
               per-area counter is increased by one. No identity, no session, no
               route, and no individual record is stored &mdash; just a running
               count per area, so there is nothing that could be tied back to a
-              person. Ordinary map questions record nothing at all. I use these
-              aggregate counts to see which areas are used and, most usefully,
-              where a person&rsquo;s location falls outside the mapped regions
-              &mdash; the signal for which places to map next.
+              person, and nothing that could reconstruct where any one person
+              went. I use these aggregate counts to see which areas are used
+              and, most usefully, where a person&rsquo;s location falls outside
+              the mapped regions &mdash; the signal for which places to map
+              next.
             </p>
           </section>
 
