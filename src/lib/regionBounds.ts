@@ -54,14 +54,23 @@ export const REGION_BOXES: RegionBox[] = [
   { id: "washington-dc", n: 38.995, s: 38.79, e: -76.91, w: -77.12 },
   { id: "maryland", n: 39.73, s: 37.88, e: -75.0, w: -79.49 },
   { id: "virginia", n: 39.47, s: 36.54, e: -75.24, w: -83.68 },
+  { id: "delaware", n: 39.84, s: 38.45, e: -75.04, w: -75.79 },
 ];
 
 // The region a point falls in, or null when it is outside ALL coverage (the "add a region
-// here?" signal). First match wins; the boxes overlap slightly (province + city) but any
-// match means "covered", which is all this needs.
+// here?" signal). The boxes are rectangles over irregular shapes, so they OVERLAP — a city
+// inside its province, and here Delaware sitting inside Maryland's Delmarva-spanning box, or
+// close-in Arlington inside DC's box. Return the SMALLEST (most specific) box that contains
+// the point, so the label is the tightest-fitting region rather than whichever came first.
+// This is only a label for the stats; coverage itself is decided by actual data proximity.
 export function regionAt(lat: number, lon: number): string | null {
+  let best: RegionBox | null = null;
+  let bestArea = Infinity;
   for (const b of REGION_BOXES) {
-    if (lat <= b.n && lat >= b.s && lon >= b.w && lon <= b.e) return b.id;
+    if (lat <= b.n && lat >= b.s && lon >= b.w && lon <= b.e) {
+      const area = (b.n - b.s) * (b.e - b.w);
+      if (area < bestArea) { bestArea = area; best = b; }
+    }
   }
-  return null;
+  return best ? best.id : null;
 }
