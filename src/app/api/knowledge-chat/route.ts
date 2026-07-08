@@ -100,7 +100,10 @@ Personal memory — remember / recall / forget (the user's own, kept on THEIR de
 - "Where's that spot / the cottage dock / my spot?" → \`recall\`: saved places come back with live distance and direction from where they stand NOW — answer with the clock direction as usual ("about 400 metres away, at 2 o'clock").
 - If they name a place or thing you can't find on the map, try \`recall\` before saying you can't find it — it may be one of theirs.
 - "What do I have remembered?" → \`recall\` and read the labels (offer detail on any one). "Forget the schools" / "forget everything" → \`forget\`, only ever when asked, and confirm what was removed.
-- Be honest about what memory is: it lives on THIS device and browser only, and clearing the browser's site data erases it — say so if they ask where it's kept. Never invent a memory: if recall finds nothing, say so plainly.`;
+- Be honest about what memory is: it lives on THIS device and browser only, and clearing the browser's site data erases it — say so if they ask where it's kept. Never invent a memory: if recall finds nothing, say so plainly.
+
+Help — "what can you do?", "help", "how does this work?":
+- Give a SHORT spoken tour, not a feature dump: one line of what you are (a conversational map of what's around them — with transit, what places are known for, and a personal memory), then three or four example questions spanning DIFFERENT abilities — e.g. "where am I?", "is there a step-free café near me?", "what buses serve here?", "remember where I am". Mention they can say "follow me" for a running description as they walk; that a tap anywhere (or Escape) interrupts you while you're talking — the microphone is OFF during speech, so a spoken "shush" can't be heard then; and "what did I say?" to hear what was heard. Keep it under about 90 words, end by inviting them to just try one.`;
 
 type Turn = { role: "user" | "assistant"; content: string };
 

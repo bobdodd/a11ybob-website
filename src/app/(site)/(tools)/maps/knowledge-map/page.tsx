@@ -69,6 +69,123 @@ export default function MapsKnowledgeMap() {
             </p>
           </section>
 
+          <section className="stack" style={{ "--space": "var(--s1)" } as CSSProperties}>
+            <h2>A short guide</h2>
+            <p>
+              Open the map, accept the notice, allow location &mdash; then just
+              ask, by typing or by voice. Everything below is a spoken phrase
+              that works; every one can equally be typed.
+            </p>
+
+            <h3>Talking to it</h3>
+            <ul>
+              <li>
+                Tap <strong>Speak</strong>{" "}once &mdash; the conversation is
+                hands-free from there. Ask your question; a short pause sends
+                it; the answer is read aloud; the microphone re-opens by itself
+                for your next question. A rising tone means it is listening, a
+                falling tone means the microphone has closed. After about ten
+                seconds of silence it winds down &mdash; tap Speak to start
+                again.
+              </li>
+              <li>
+                Interrupt it any time: while it is talking, tap anywhere on
+                the page, or press Escape &mdash; it stops and listens. (You
+                cannot <em>say</em>{" "}&ldquo;shush&rdquo; over it: the
+                microphone is off while it speaks, because an open microphone
+                would mute the voice. Typing &ldquo;shush&rdquo;,
+                &ldquo;quiet&rdquo;, or &ldquo;stop&rdquo; works at any time
+                &mdash; and saying it works whenever it is listening.)
+              </li>
+              <li>
+                If an answer seems off, say &ldquo;what did I say?&rdquo; to
+                hear exactly what it heard.
+              </li>
+              <li>
+                Ask &ldquo;what can you do?&rdquo; whenever you are unsure
+                &mdash; it gives a short tour of itself.
+              </li>
+            </ul>
+
+            <h3>Things to ask</h3>
+            <ul>
+              <li>
+                <strong>Where you are:</strong>{" "}&ldquo;Where am I?&rdquo; &middot;
+                &ldquo;What&rsquo;s around me?&rdquo; &middot; &ldquo;What&rsquo;s
+                the nearest intersection?&rdquo;
+              </li>
+              <li>
+                <strong>Finding places:</strong>{" "}&ldquo;Where&rsquo;s the nearest
+                pharmacy?&rdquo; &middot; &ldquo;How far is the library, and
+                which way?&rdquo; &mdash; directions come as clock positions
+                relative to the way you are facing (&ldquo;at
+                2&nbsp;o&rsquo;clock&rdquo;).
+              </li>
+              <li>
+                <strong>Accessibility:</strong>{" "}&ldquo;Is there a step-free
+                caf&eacute; near me?&rdquo; &middot; &ldquo;Does that crossing
+                have audible signals?&rdquo;
+              </li>
+              <li>
+                <strong>Transit:</strong>{" "}&ldquo;What buses serve here?&rdquo;
+                &middot; &ldquo;How late does the 501 run?&rdquo; &mdash; from
+                the published timetable, never live arrival times.
+              </li>
+              <li>
+                <strong>The story of a place:</strong>{" "}&ldquo;What is this area
+                known for?&rdquo; &middot; &ldquo;Tell me about the Canadian
+                Canoe Museum.&rdquo;
+              </li>
+              <li>
+                <strong>Anywhere, not just here:</strong>{" "}&ldquo;What&rsquo;s
+                around Union Station?&rdquo; &middot; &ldquo;What&rsquo;s
+                Peterborough like?&rdquo;
+              </li>
+            </ul>
+
+            <h3>Remembering things</h3>
+            <ul>
+              <li>
+                &ldquo;Remember where I am&rdquo; &mdash; or &ldquo;remember
+                this as my front door&rdquo;. Later, &ldquo;where&rsquo;s my
+                front door?&rdquo; answers from wherever you are standing:
+                distance and clock direction.
+              </li>
+              <li>
+                &ldquo;Remember that 135 bus for me&rdquo; &middot; &ldquo;Keep
+                a list of those schools.&rdquo;
+              </li>
+              <li>
+                Hear what you have saved: &ldquo;What do I have
+                remembered?&rdquo;
+              </li>
+              <li>
+                Forget something when you no longer need it, by naming it the
+                way you saved it: &ldquo;Forget my front door&rdquo; &middot;
+                &ldquo;Forget the schools&rdquo;. &ldquo;Forget
+                everything&rdquo; clears the lot. Nothing is ever removed
+                unless you ask &mdash; there is no expiry.
+              </li>
+            </ul>
+
+            <h3>Follow me</h3>
+            <p>
+              Say &ldquo;follow me&rdquo; (or tap the button): a full
+              description of where you are to start, then brief updates as you
+              walk and a call-out when you turn. &ldquo;Stop following&rdquo;
+              ends it.
+            </p>
+
+            <h3>Worth knowing</h3>
+            <p>
+              It only knows what is mapped and published: silence means
+              &ldquo;not mapped&rdquo;, never &ldquo;not there&rdquo;. And it is
+              not for navigation or any safety decision &mdash; the notice at
+              the start means it. The sections below explain what is behind
+              each of these abilities, and their limits, in full.
+            </p>
+          </section>
+
           <section className="stack" style={{ "--space": "var(--s0)" } as CSSProperties}>
             <h2>What it is</h2>
             <p>
@@ -117,7 +234,7 @@ export default function MapsKnowledgeMap() {
               nothing to type to find them. They are stored description-only, so
               they never appear in a name search, but they give the area
               descriptions more context than the{" "}
-              <Link href="/maps/context-map">Context Map</Link> had: an unnamed
+              <Link href="/maps/context-map">Context Map</Link>{" "}had: an unnamed
               footpath nearby is reported with its kind and its accessibility
               tags, and the density of anonymous buildings around you feeds the
               description of how built-up a place is. Unnamed paths keep their
@@ -173,8 +290,9 @@ export default function MapsKnowledgeMap() {
               aloud, and then re-opens the microphone for your next question, so
               there is no button to find between turns. A rising tone marks the
               microphone opening and a falling tone marks it closing, so the
-              state is audible; what was heard is read back before it is acted
-              on, so a mishear can be caught by ear. Replies usually end with a
+              state is audible; if an answer seems off, asking &ldquo;what did I
+              say?&rdquo; reads back exactly what was heard, so a mishear can be
+              caught by ear. Replies usually end with a
               short suggestion of a natural next question. After about ten
               seconds of silence the conversation winds down, and Speak starts it
               again.
@@ -244,8 +362,8 @@ export default function MapsKnowledgeMap() {
             <p>
               The layer that gives this map its name. Ask what a place is, what
               it is known for, or what a district is like, and it fetches entries
-              from <a href="https://www.wikipedia.org/">Wikipedia</a> and{" "}
-              <a href="https://www.wikivoyage.org/">Wikivoyage</a> for that
+              from <a href="https://www.wikipedia.org/">Wikipedia</a>{" "}and{" "}
+              <a href="https://www.wikivoyage.org/">Wikivoyage</a>{" "}for that
               place, with a few structured facts &mdash; when a building was
               built, who designed it, a heritage listing &mdash; from{" "}
               <a href="https://www.wikidata.org/">Wikidata</a>. The language
@@ -325,7 +443,7 @@ export default function MapsKnowledgeMap() {
               transit data comes from agencies&rsquo; published GTFS schedules;
               the knowledge is{" "}
               <a href="https://www.wikipedia.org/">Wikipedia</a>,{" "}
-              <a href="https://www.wikivoyage.org/">Wikivoyage</a> and{" "}
+              <a href="https://www.wikivoyage.org/">Wikivoyage</a>{" "}and{" "}
               <a href="https://www.wikidata.org/">Wikidata</a>. All of it is only
               as complete and as current as the people who maintain it have made
               it: a place nobody has traced is missing, a shop that changed hands
@@ -394,7 +512,7 @@ export default function MapsKnowledgeMap() {
               &mdash; keeping only your words and dropping the conversation
               behind you. And it decides you have finished not from silence,
               which never comes in a crowd, but from the gaps between{" "}
-              <em>your</em> words. It is a heuristic, not a guarantee &mdash; a
+              <em>your</em>{" "}words. It is a heuristic, not a guarantee &mdash; a
               bystander who gets a sentence in first could take the lock &mdash;
               but for a phone you are holding and talking into it holds up well,
               and it is what lets the microphone re-open after each answer
@@ -434,11 +552,11 @@ export default function MapsKnowledgeMap() {
             <h3>Two memories, two homes</h3>
             <p>
               This map now holds two kinds of remembered thing, and they
-              deliberately live in opposite places. The knowledge cache is
-              <em> everyone&rsquo;s</em> &mdash; what Wikipedia says about a
+              deliberately live in opposite places. The knowledge cache is{" "}
+              <em>everyone&rsquo;s</em>{" "}&mdash; what Wikipedia says about a
               square is the same for every visitor &mdash; so it lives on the
               server, where one person&rsquo;s visit warms it for all. Your
-              personal memory is <em>yours alone</em> &mdash; where you parked,
+              personal memory is <em>yours alone</em>{" "}&mdash; where you parked,
               the bus you need, the schools you were comparing &mdash; so it
               lives on your device, and the server keeps no copy. The rule
               underneath both: shared knowledge belongs where sharing helps;
@@ -448,7 +566,7 @@ export default function MapsKnowledgeMap() {
             </p>
             <p>
               Two design choices follow from who this is for. Nothing expires:
-              for someone leaning on the map <em>because</em> memory is
+              for someone leaning on the map <em>because</em>{" "}memory is
               unreliable, a note that quietly evaporates is worse than no note
               at all &mdash; so the only way anything leaves is an explicit
               &ldquo;forget&rdquo;. And a remembered note keeps the{" "}
