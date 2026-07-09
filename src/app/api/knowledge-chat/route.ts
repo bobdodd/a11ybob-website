@@ -48,6 +48,28 @@ function withToolTimeout<T>(p: Promise<T>, label: string): Promise<T> {
 // 8-point compass for stating the user's OWN facing (the one place a compass point is used).
 const COMPASS8 = ["north", "north-east", "east", "south-east", "south", "south-west", "west", "north-west"];
 
+/* Tool-call tracing — for debugging what the model actually ASKED the tools, which is the only
+ * way to explain an answer anchored on the wrong point (e.g. the nearest 504 stop reported as
+ * 502 m when the index says 77 m). A trace necessarily carries the user's question AND their
+ * coordinates, so it is never on for everyone: set TRACE_TOOLS to a secret on the server, and
+ * send that same secret as the `x-trace-token` request header. Only requests carrying it are
+ * traced, so no ordinary visitor's location is ever written to the log and this can stay
+ * enabled between sessions. Unset TRACE_TOOLS and tracing is impossible for anyone. */
+const TRACE_TOKEN = process.env.TRACE_TOOLS ?? "";
+const TRACE_RESULT_CHARS = 900; // a whole tool result can be tens of kB; keep the head
+
+type TraceEntry = {
+  round: number; tool: string; input: unknown; ms: number; error?: string; result?: unknown;
+};
+
+// Keep the shape the model saw. Truncate rather than drop: the head carries the coordinates and
+// the first results, which is what any anchoring question turns on.
+function traceResult(out: unknown): unknown {
+  const s = JSON.stringify(out) ?? "";
+  if (s.length <= TRACE_RESULT_CHARS) return out;
+  return { truncated: true, bytes: s.length, head: s.slice(0, TRACE_RESULT_CHARS) };
+}
+
 const SYSTEM = `You are a spatial guide for blind and low-vision people. You help them understand and explore the world through a map database — where they are now, and anywhere they ask about. You are their eyes on the map: capable, direct, never patronising. The person is in charge; you inform, you do not shepherd.
 
 Answer ONLY using the tools. They query a real map database (OpenStreetMap data for all of Canada plus a few other cities).
@@ -156,11 +178,21 @@ export async function POST(req: NextRequest) {
     { role: "user", content: message + locNote },
   ];
 
+  // Trace only when this request proves it knows the server's secret. Any other request — every
+  // real visitor — is neither traced nor logged.
+  const tracing = TRACE_TOKEN.length > 0 && req.headers.get("x-trace-token") === TRACE_TOKEN;
+  const trace: TraceEntry[] = [];
+  if (tracing) console.log(`[knowledge-chat trace] request ${JSON.stringify({ message, loc, heading })}`);
+
   // The user's personal memory, sent by the client from THEIR device and handed back
   // (updated) for the client to persist. Never stored server-side.
   const memory = new MemoryStore(body.memory);
   const withMemory = (payload: Record<string, unknown>) =>
-    NextResponse.json(memory.changed ? { ...payload, memory: memory.items } : payload);
+    NextResponse.json({
+      ...payload,
+      ...(memory.changed ? { memory: memory.items } : {}),
+      ...(tracing ? { trace } : {}),
+    });
 
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -195,6 +227,8 @@ export async function POST(req: NextRequest) {
         const toolResults: Anthropic.Messages.ToolResultBlockParam[] = await Promise.all(
           toolUses.map(async (tu) => {
             let out: unknown;
+            let toolError: string | undefined;
+            const tCall = Date.now();
             try {
               out = tu.name === "remember" || tu.name === "recall" || tu.name === "forget"
                 ? runMemoryTool(
@@ -219,7 +253,19 @@ export async function POST(req: NextRequest) {
                     tu.name,
                   );
             } catch (e) {
-              out = { error: `tool ${tu.name} failed: ${(e as Error).message}` };
+              toolError = (e as Error).message;
+              out = { error: `tool ${tu.name} failed: ${toolError}` };
+            }
+            if (tracing) {
+              // `input` is exactly what the MODEL asked for — the coordinates it chose, before the
+              // route substitutes the user's location for a missing lat/lon. That is the question.
+              const entry: TraceEntry = {
+                round, tool: tu.name, input: tu.input, ms: Date.now() - tCall,
+                ...(toolError ? { error: toolError } : {}),
+                result: traceResult(out),
+              };
+              trace.push(entry);
+              console.log(`[knowledge-chat trace] ${JSON.stringify(entry)}`);
             }
             return { type: "tool_result", tool_use_id: tu.id, content: JSON.stringify(out) };
           }),
