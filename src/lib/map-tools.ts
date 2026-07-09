@@ -187,6 +187,168 @@ async function nearestAnon(
   };
 }
 
+// Closeness folded into relevance: final = textScore × (1 + GEO_BOOST × proximity), where
+// proximity is a gauss 1→0 with distance. Two things matter about the floor (the constant 1):
+//   • A far-off match keeps its FULL text score (×1), so a distinctive distant place still
+//     surfaces — "where is the CN Tower" works from another city. (The old code multiplied
+//     by the bare gauss, which ZEROED anything past ~15 km — that was the real bug.)
+//   • A nearby match is multiplied UP, so among many same-name matches across the country
+//     (every "Tim Hortons", every "Hannaford"/"Handford" street) the closest one rises to the
+//     top — and into the candidate pool in the first place. It's a relative multiplier, so it
+//     doesn't depend on the absolute scale of BM25 scores.
+// GEO_BOOST is kept below ~2 so a clearly-better distant match (much higher text score) still
+// beats a weak nearby one.
+const GEO_BOOST = 1.5;
+function withGeoBoost(
+  query: Record<string, unknown>,
+  near?: { lat: number; lon: number },
+): Record<string, unknown> {
+  if (!near) return query;
+  return {
+    function_score: {
+      query,
+      functions: [
+        { weight: 1 }, // floor: every match keeps its full text score even when far away
+        { gauss: { location: { origin: { lat: near.lat, lon: near.lon }, scale: "3km", offset: "100m", decay: 0.5 } }, weight: GEO_BOOST },
+      ],
+      score_mode: "sum", // 1 + GEO_BOOST·proximity
+      boost_mode: "multiply", // × textScore
+    },
+  };
+}
+
+// ── Address lookup ("121 King West", "121 King Street West") ─────────────────
+//
+// addr:housenumber and addr:street are KEYWORD fields — they match only a query string equal to
+// the WHOLE field value, so a multi-word query never touches them. That leaves the number to the
+// unboosted `text` field while the street type trips the road-boost below, and the ROAD outranks
+// the address every time: "121 King Street West" returned nothing but King Street West segments,
+// and whatever was asked next got measured from an arbitrary point on a 5 km road.
+//
+// So resolve an address STRUCTURALLY. Take the leading number off, put the rest through the
+// ordinary road search — which already handles abbreviations, typos and phonetic spellings
+// ("King West" and "Kings Street West" both reach "King Street West") — and use the road's
+// canonical name as the exact addr:street key. Returns null when the query isn't an address or
+// the number isn't mapped, so find_place falls through to its normal behaviour.
+//
+// Known gap: a street the user abbreviates to a name that IS a distinct road ("King St W"
+// resolves to a road actually named "King Street W") keys an addr:street nobody wrote, finds
+// nothing, and falls through to the road. Rephrasing works; an alias table would be the fix.
+const ADDRESS_RE = /^\s*(\d+[a-zA-Z]?)\s+(.{2,})$/;
+
+// The canonical name(s) of the road(s) the caller means — the spelling OSM's addr:street uses.
+async function resolveStreetNames(street: string, near?: { lat: number; lon: number }): Promise<string[]> {
+  const roadQuery = {
+    bool: {
+      filter: [{ term: { category: "road" } }],
+      must: [{
+        multi_match: {
+          query: street, type: "best_fields", fields: ["display^3", "name^3"],
+          fuzziness: "AUTO", max_expansions: 10, minimum_should_match: "2<-1",
+        },
+      }],
+    },
+  };
+  const res = await opensearch.search({
+    index: INDEX,
+    body: { size: 8, timeout: "5s", query: withGeoBoost(roadQuery, near), _source: ["name", "display"] },
+  });
+  const names: string[] = [];
+  for (const h of hitsOf(res)) {
+    const n = String((h._source.name ?? h._source.display ?? "") as string).trim();
+    if (n && !names.includes(n)) names.push(n);
+    if (names.length >= 3) break;
+  }
+  return names;
+}
+
+async function addressLookup(
+  q: string, filter: unknown[], limit: number,
+  near?: { lat: number; lon: number }, heading?: number,
+) {
+  const m = ADDRESS_RE.exec(q);
+  if (!m) return null;
+  const [, rawNumber, rawStreet] = m;
+
+  const streets = await resolveStreetNames(rawStreet, near);
+  if (!streets.length) return null;
+
+  const numbers = [...new Set([rawNumber, rawNumber.toUpperCase()])];
+  const addrQuery = {
+    bool: {
+      must: [
+        { terms: { "address.housenumber": numbers } },
+        { terms: { "address.street": streets } },
+      ],
+      filter,
+    },
+  };
+  const res = await opensearch.search({
+    index: INDEX,
+    // 40, not `limit`: every tenant of an office tower carries the same address, and they're
+    // folded into ONE result below — fetching only `limit` would truncate the occupant list.
+    body: {
+      size: 40, timeout: "10s", query: withGeoBoost(addrQuery, near),
+      _source: ["name", "display", "category", "subtype", "types", "parent", "address", "access", "info", "lat", "lng"],
+    },
+  });
+  const hits = hitsOf(res);
+  if (!hits.length) return null;
+
+  // One result per distinct address — the same number+street exists in more than one city, and
+  // the geo boost has already put the caller's city first.
+  const groups = new Map<string, Hit[]>();
+  for (const h of hits) {
+    const a = (h._source.address ?? {}) as Record<string, string>;
+    const where = a.city ?? `${(h._source.lat as number).toFixed(3)},${(h._source.lng as number).toFixed(3)}`;
+    const key = `${where}|${a.street ?? ""}|${a.housenumber ?? ""}`;
+    const bucket = groups.get(key);
+    if (bucket) bucket.push(h);
+    else groups.set(key, [h]);
+  }
+
+  const results = [];
+  for (const group of groups.values()) {
+    if (results.length >= limit) break;
+    const src = group.map((h) => h._source);
+    const a0 = (src.find((s) => s.address)?.address ?? {}) as { housenumber?: string; street?: string; city?: string };
+
+    // The building is the name every occupant points at (`parent`); failing that, a named feature
+    // typed as a building. People give the street number precisely because they don't recall the
+    // name — "121 King West" should come back saying Roserock Place.
+    const tally = new Map<string, number>();
+    for (const s of src) {
+      const p = (s.parent as string) ?? "";
+      if (p) tally.set(p, (tally.get(p) ?? 0) + 1);
+    }
+    const building =
+      [...tally.entries()].sort((x, y) => y[1] - x[1])[0]?.[0] ??
+      (src.find((s) => s.name && ((s.types as string[]) ?? []).some((t) => /building/i.test(t)))?.name as string | undefined) ??
+      "";
+
+    const at = [...new Set(src.map((s) => (s.name as string) ?? "").filter((n) => n && n !== building))];
+
+    // The bare address node sits exactly on the number; a tenant's node is metres off it.
+    const anchor = src.find((s) => !s.name && s.subtype === "address") ?? src[0];
+    const lat = anchor.lat as number, lng = anchor.lng as number;
+
+    results.push({
+      display: `${a0.housenumber} ${a0.street}`.trim() + (building ? ` — ${building}` : ""),
+      category: anchor.category as string | undefined,
+      subtype: (anchor.subtype as string) || undefined,
+      lat, lng,
+      ...(near ? { distance_m: Math.round(metresBetween(near.lat, near.lon, lat, lng)), ...direction(near.lat, near.lon, lat, lng, heading) } : {}),
+      // The same number+street repeats in other cities; name the settlement so they can be told apart.
+      ...(a0.city ? { in: a0.city } : {}),
+      ...(building ? { building } : {}),
+      ...(at.length ? { at_address: at } : {}),
+      ...(anchor.access ? { access: anchor.access } : {}),
+      ...(anchor.info ? { info: anchor.info } : {}),
+    });
+  }
+  return { results };
+}
+
 // ── Tool 1: find_place (geocode + finder) ────────────────────────────────────
 export async function findPlace(args: {
   query: string;
@@ -202,6 +364,11 @@ export async function findPlace(args: {
   const filter: unknown[] = [EXCLUDE_ANON];
   const accTag = args.accessibility ? ACCESS_KEYS[args.accessibility] : undefined;
   if (accTag) filter.push(accessFilter(accTag));
+
+  // A house number can't be matched by the text search below (keyword fields), so try the
+  // structural address path first. Null → not an address, or the number isn't mapped: fall through.
+  const addr = await addressLookup(q, filter, limit, args.near, args.heading);
+  if (addr) return addr;
 
   // Fuzzy text relevance so speech-to-text misspellings still match: a dropped or added letter
   // ("Hanaford" for "Hannaford") is one edit, well inside AUTO's tolerance.
@@ -271,32 +438,8 @@ export async function findPlace(args: {
   };
 
   // When we have an anchor (the user's location — the route injects it even if the model
-  // forgets), fold CLOSENESS into the relevance score so the LOCAL match wins. A FLOORED
-  // multiply: final = textScore × (1 + GEO_BOOST × proximity), where proximity is a gauss
-  // 1→0 with distance. Two things matter about the floor (the constant 1):
-  //   • A far-off match keeps its FULL text score (×1), so a distinctive distant place still
-  //     surfaces — "where is the CN Tower" works from another city. (The old code multiplied
-  //     by the bare gauss, which ZEROED anything past ~15 km — that was the real bug.)
-  //   • A nearby match is multiplied UP, so among many same-name matches across the country
-  //     (every "Tim Hortons", every "Hannaford"/"Handford" street) the closest one rises to the
-  //     top — and into the candidate pool in the first place. It's a relative multiplier, so it
-  //     doesn't depend on the absolute scale of BM25 scores.
-  // GEO_BOOST is kept below ~2 so a clearly-better distant match (much higher text score) still
-  // beats a weak nearby one.
-  const GEO_BOOST = 1.5;
-  const query: Record<string, unknown> = args.near
-    ? {
-        function_score: {
-          query: textQuery,
-          functions: [
-            { weight: 1 }, // floor: every match keeps its full text score even when far away
-            { gauss: { location: { origin: { lat: args.near.lat, lon: args.near.lon }, scale: "3km", offset: "100m", decay: 0.5 } }, weight: GEO_BOOST },
-          ],
-          score_mode: "sum", // 1 + GEO_BOOST·proximity
-          boost_mode: "multiply", // × textScore
-        },
-      }
-    : textQuery;
+  // forgets), fold CLOSENESS into the relevance score so the LOCAL match wins.
+  const query = withGeoBoost(textQuery, args.near);
 
   const res = await opensearch.search({
     index: INDEX,
@@ -762,7 +905,7 @@ export const TOOL_SCHEMAS = [
   {
     name: "find_place",
     description:
-      "Find a named place, business, address, or category anywhere in the indexed map (all of Canada plus a few cities). Use it to answer 'where is X / find me X', AND to get coordinates for any place the user names so you can then describe around it. If 'near' is given, each result also includes distance in metres and a compass bearing (and a clock direction when a heading is provided). A result may carry an `info` block — a heritage listing, opening_hours, phone, website, operator, or wikipedia/wikidata link — offer the relevant detail rather than reciting it all; a wikipedia/wikidata identifier means you can go deeper on that place if asked.",
+      "Find a named place, business, address, or category anywhere in the indexed map (all of Canada plus a few cities). Use it to answer 'where is X / find me X', AND to get coordinates for any place the user names so you can then describe around it. If 'near' is given, each result also includes distance in metres and a compass bearing (and a clock direction when a heading is provided). A result may carry an `info` block — a heritage listing, opening_hours, phone, website, operator, or wikipedia/wikidata link — offer the relevant detail rather than reciting it all; a wikipedia/wikidata identifier means you can go deeper on that place if asked. A STREET-NUMBER query ('121 King West', '121 King Street West') is resolved as an address, and its single result is the building at that number, not the street: `display` is the full address plus the building name when there is one ('121 King Street West — Roserock Place'), with `building` and `at_address` (the businesses and occupants at that number) alongside. Lead with the building name — someone who gives a street number usually cannot recall it, and that is what they are asking for. Anything you are then asked about that address (transit, what's nearby) must be measured from THIS result's coordinates, never from a road of the same name.",
     input_schema: {
       type: "object",
       properties: {
