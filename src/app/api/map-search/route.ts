@@ -1,10 +1,10 @@
 /* GET /api/map-search?q=<text>&access=<tag,tag>&lat=<n>&lng=<n>&limit=<n>
  *
- * Searches the `map-features` index built from the tiled-Toronto OSM extract —
- * named places, POIs (washrooms, post boxes, benches, …), and addresses. This
- * is a thin server-side proxy so the browser never talks to OpenSearch directly
- * (the demo viewer is a static page hosted inside this site; OpenSearch stays on
- * the VPS, unexposed).
+ * Searches the `map-features` index, built region by region from OSM extracts
+ * (see regions.json in the tiled-map repo) — named places, POIs (washrooms,
+ * post boxes, benches, …), and addresses. This is a thin server-side proxy so
+ * the browser never talks to OpenSearch directly (the demo viewer is a static
+ * page hosted inside this site; OpenSearch stays on the VPS, unexposed).
  *
  * Query:
  *   q       free text — matched across name / display / type words / address.
@@ -12,9 +12,10 @@
  *           `wheelchair` or `tactile_paving,toilets:wheelchair`. Accessibility
  *           is a first-class filter here, not an afterthought — the whole point
  *           of the demo is finding the accessible thing, not just the thing.
- *   lat,lng optional viewer centre; when given, nearer results rank higher
- *           (a soft geo boost, not a hard radius — distant exact matches still
- *           surface).
+ *   lat,lng optional viewer centre; when given, nearer results rank higher.
+ *           Candidates are bounded to GEO_PREFILTER_KM around the centre; when
+ *           that yields fewer than `limit`, the search repeats unbounded and
+ *           unboosted, so distant exact matches still surface.
  *   limit   max results (default 20, capped 50).
  *
  * Returns { results: [{ id, display, category, subtype, lat, lng, address?,
@@ -32,6 +33,15 @@ export const dynamic = "force-dynamic";
 const INDEX = "map-features";
 const DEFAULT_LIMIT = 20;
 const MAX_LIMIT = 50;
+
+// Radius of the candidate pre-filter that runs alongside the distance boost.
+// The boost's gauss (scale 2km, offset 200m, decay 0.5) has sigma ~1.7km, so a
+// feature 25km out is multiplied by ~1e-46 and its Lucene float score underflows
+// to exactly 0.0 — beyond this radius a match cannot be ranked, only tie-broken
+// arbitrarily. Bounding the candidate set therefore reorders nothing, while
+// keeping the decay off the ~22M documents a common token ("Street") matches
+// across the corpus. Keep in step with the decay: widening `scale` widens this.
+const GEO_PREFILTER_KM = 25;
 
 // access tags we let through as filters — guards against arbitrary field
 // injection while covering the tags the generator actually emits.
@@ -105,7 +115,7 @@ export async function GET(req: NextRequest) {
 
   // The text side. With a query we match it across the searchable fields;
   // without one (access-only browse) we take everything that passes the filter.
-  let query: Record<string, unknown>;
+  let must: Record<string, unknown>;
   if (q.length >= 2) {
     const should = {
       multi_match: {
@@ -127,26 +137,32 @@ export async function GET(req: NextRequest) {
     const prefix = {
       match_phrase_prefix: { display: { query: q, boost: 2 } },
     };
-    query = {
-      bool: {
-        must: { dis_max: { queries: [should, prefix], tie_breaker: 0.3 } },
-        filter,
-      },
-    };
+    must = { dis_max: { queries: [should, prefix], tie_breaker: 0.3 } };
   } else {
-    query = { bool: { must: { match_all: {} }, filter } };
+    must = { match_all: {} };
   }
 
-  // Soft distance boost toward the viewer centre, when we have one.
-  if (lat !== null && lng !== null) {
-    query = {
+  const centre = lat !== null && lng !== null ? { lat, lng } : null;
+
+  // Soft distance boost toward the viewer centre, when we have one. `boost` is
+  // dropped on the unbounded pass below: outside GEO_PREFILTER_KM every
+  // multiplier has already underflowed to zero, so the decay would score the
+  // whole corpus and still leave those results in arbitrary order. Ranking them
+  // on text alone is both cheaper and better ordered.
+  const compose = (
+    extraFilter: unknown[],
+    boost: boolean,
+  ): Record<string, unknown> => {
+    const bounded = { bool: { must, filter: [...filter, ...extraFilter] } };
+    if (!boost || !centre) return bounded;
+    return {
       function_score: {
-        query,
+        query: bounded,
         functions: [
           {
             gauss: {
               location: {
-                origin: { lat, lon: lng },
+                origin: { lat: centre.lat, lon: centre.lng },
                 scale: "2km",
                 offset: "200m",
                 decay: 0.5,
@@ -158,38 +174,38 @@ export async function GET(req: NextRequest) {
         score_mode: "sum",
       },
     };
-  }
+  };
 
   // Oversample so we can drop OSM's node+way duplicates (one real place mapped
   // as two elements, identical name and position) and still fill `limit`.
   const fetchSize = Math.min(100, limit * 3);
 
-  const res = await opensearch.search({
-    index: INDEX,
-    body: {
-      size: fetchSize,
-      query,
-      _source: [
-        "osm_id",
-        "name",
-        "display",
-        "category",
-        "subtype",
-        "lat",
-        "lng",
-        "address",
-        "access",
-        "parent",
-      ],
-    },
-  });
+  type Hit = { _id: string; _source: Record<string, unknown> };
 
-  // OpenSearch SDK v3 mistypes hits.hits (_id/_source); cast through unknown.
-  const hits =
-    (res.body.hits?.hits as unknown as Array<{
-      _id: string;
-      _source: Record<string, unknown>;
-    }>) ?? [];
+  const search = async (query: Record<string, unknown>): Promise<Hit[]> => {
+    const res = await opensearch.search({
+      index: INDEX,
+      body: {
+        size: fetchSize,
+        query,
+        _source: [
+          "osm_id",
+          "name",
+          "display",
+          "category",
+          "subtype",
+          "lat",
+          "lng",
+          "address",
+          "access",
+          "parent",
+        ],
+      },
+    });
+
+    // OpenSearch SDK v3 mistypes hits.hits (_id/_source); cast through unknown.
+    return (res.body.hits?.hits as unknown as Hit[]) ?? [];
+  };
 
   // Collapse OSM node/way duplicates: one real place mapped as both a point and
   // a building outline reaches the index twice, with distinct ids and slightly
@@ -198,35 +214,63 @@ export async function GET(req: NextRequest) {
   // name within ~60 m. Only named features are collapsed — generic-labelled
   // features ("Tactile paving", "Bench") are legitimately many, each its own
   // real point, so they're always kept. Hits arrive in score order, so the
-  // best-ranked instance is the one retained.
+  // best-ranked instance is the one retained. `seen` carries the collapse across
+  // both passes, so the fallback can only ever add features the bounded pass
+  // didn't already return.
   const kept: { name: string; lat: number; lng: number }[] = [];
   const results: Result[] = [];
-  for (const h of hits) {
-    const s = h._source;
-    const lat = s.lat as number;
-    const lng = s.lng as number;
-    const name = ((s.name as string) ?? "").trim().toLowerCase();
+  const seen = new Set<string>();
 
-    if (name) {
-      const dupe = kept.some(
-        (k) => k.name === name && metresBetween(k.lat, k.lng, lat, lng) < 60,
-      );
-      if (dupe) continue;
-      kept.push({ name, lat, lng });
+  const collect = (hits: Hit[]) => {
+    for (const h of hits) {
+      if (results.length >= limit) return;
+      if (seen.has(h._id)) continue;
+
+      const s = h._source;
+      const lat = s.lat as number;
+      const lng = s.lng as number;
+      const name = ((s.name as string) ?? "").trim().toLowerCase();
+
+      if (name) {
+        const dupe = kept.some(
+          (k) => k.name === name && metresBetween(k.lat, k.lng, lat, lng) < 60,
+        );
+        if (dupe) continue;
+        kept.push({ name, lat, lng });
+      }
+
+      seen.add(h._id);
+      results.push({
+        id: h._id,
+        display: (s.display as string) ?? "",
+        category: s.category as string | undefined,
+        subtype: s.subtype as string | undefined,
+        lat,
+        lng,
+        address: s.address as Record<string, string> | undefined,
+        access: s.access as Record<string, string> | undefined,
+        parent: s.parent as string | undefined,
+      });
     }
+  };
 
-    results.push({
-      id: h._id,
-      display: (s.display as string) ?? "",
-      category: s.category as string | undefined,
-      subtype: s.subtype as string | undefined,
-      lat,
-      lng,
-      address: s.address as Record<string, string> | undefined,
-      access: s.access as Record<string, string> | undefined,
-      parent: s.parent as string | undefined,
-    });
-    if (results.length >= limit) break;
+  const geoFilter = centre
+    ? [
+        {
+          geo_distance: {
+            distance: `${GEO_PREFILTER_KM}km`,
+            location: { lat: centre.lat, lon: centre.lng },
+          },
+        },
+      ]
+    : [];
+
+  collect(await search(compose(geoFilter, true)));
+
+  // Too few features within the radius — search the whole corpus so a distant
+  // exact match still surfaces, ranked behind anything the bounded pass found.
+  if (centre && results.length < limit) {
+    collect(await search(compose([], false)));
   }
 
   return NextResponse.json({ results });
