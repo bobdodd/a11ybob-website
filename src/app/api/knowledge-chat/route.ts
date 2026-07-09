@@ -22,6 +22,7 @@ import { PLACE_KNOWLEDGE_SCHEMA, runPlaceKnowledge } from "@/lib/knowledgeTool";
 import { TRANSIT_NEARBY_SCHEMA, runTransitNearby } from "@/lib/transitTool";
 import { MEMORY_TOOL_SCHEMAS, MemoryStore, runMemoryTool } from "@/lib/memoryTool";
 import { recordQueryLocation } from "@/lib/geostats";
+import { CoordGuard } from "@/lib/coordGuard";
 
 export const dynamic = "force-dynamic";
 
@@ -59,7 +60,8 @@ const TRACE_TOKEN = process.env.TRACE_TOOLS ?? "";
 const TRACE_RESULT_CHARS = 900; // a whole tool result can be tens of kB; keep the head
 
 type TraceEntry = {
-  round: number; tool: string; input: unknown; ms: number; error?: string; result?: unknown;
+  round: number; tool: string; input: unknown; ms: number;
+  refused?: boolean; error?: string; result?: unknown;
 };
 
 // Keep the shape the model saw. Truncate rather than drop: the head carries the coordinates and
@@ -77,6 +79,7 @@ Answer ONLY using the tools. They query a real map database (OpenStreetMap data 
 Hard rules:
 - Never invent a feature, name, distance, direction, or detail. If nothing is mapped there, say so plainly: "I don't find anything mapped there."
 - The tools are yours, not the user's. NEVER name one — place_knowledge, find_place, whats_nearby, area_summary, nearest_intersections, path_between, transit_nearby. And never make the lookup the SUBJECT of a sentence: not "the search returned…", "the search found…", "the results show…", "the data shows…", "the knowledge base…", "my sources didn't surface…", nor ANY paraphrase of those. Do not mention searching, looking up, querying, results, or a database, in any wording. The subject of every sentence is the place, or you — "Nothing is recorded about the building itself. It stands in the Financial District, which…". Crediting a SOURCE is the opposite of this, and required: Wikipedia, Wikivoyage, Wikidata and their freshness are the one thing a blind user cannot glance-check, and "Wikipedia describes it as…" is always welcome.
+- NEVER invent coordinates. A latitude/longitude you pass to a tool must be one a tool GAVE you this turn, or the user's own location — never one you recall or estimate. For a place the user names, call find_place ALONE and WAIT for it, then call the other tool with the lat/lng from its result. Guessing a point and querying transit or knowledge there produces real distances measured from the wrong place, which is far worse than a slower answer. Calls at coordinates you were not given are refused.
 - Never estimate distances or directions yourself — always take them from the tools (find_place, whats_nearby and path_between return them computed). Your job is choosing what to ask and how to say it, not doing geometry.
 - Give distance in METRES, straight-line. NEVER convert it to a walking time or say how long something takes — people move at very different speeds and the app cannot know theirs — and never give route or turn-by-turn directions. Just the distance and the direction. Directions: when a tool gives a clock direction (the user's heading is known) PREFER it and lead with it — "about 30 metres, at 2 o'clock" — because it is relative to the way they are facing, which is what a walker needs. Use the compass bearing (north, south-east…) ONLY when no clock is given. This is ORIENTATION, not a route — never imply it is safe to cross or proceed.
 - The user's location is given with EACH message, and they may have MOVED since their last question. Treat EVERY "where am I" / location / intersection question as brand new from the CURRENT coordinates: re-query the tools with them, and do NOT restate or carry over any place, street, or intersection from an earlier answer — the user has moved and the old one is probably wrong now. Name where they are now entirely from the fresh results. "Here", "around me", "nearby" mean the current point. For any place they name, call find_place first to get its coordinates, then describe around those. If it's in a DIFFERENT area than you (e.g. a street "in Toronto" when you're elsewhere), find_place that AREA first and search the thing near THOSE coordinates — find_place ranks by nearness to the point you pass, so anchoring on your current location would surface the wrong same-named or same-SOUNDING place. Street/name search is phonetic and fuzzy, so a spoken name may come back spelled differently (an accent, Deaf speech); take the nearest sensible match in the right area, and if two are plausible, say which you mean. When several named results come back, weight the DISTINCTIVE word: if they said "canoe museum" and the results include "Canadian Canoe Museum" beside a "Peterborough Museum and Archives", the canoe one is almost certainly meant even though "peterborough" matched the other — offer it ("Did you mean the Canadian Canoe Museum?"). People mis-remember the qualifier (Peterborough vs Canadian), rarely the distinctive word.
@@ -206,6 +209,9 @@ export async function POST(req: NextRequest) {
     i === allTools.length - 1 ? { ...t, cache_control: { type: "ephemeral" as const } } : t,
   ) as unknown as Anthropic.Messages.Tool[];
 
+  // A tool may only be given a coordinate the map handed back, or the user's own. See coordGuard.
+  const guard = new CoordGuard(loc ? { lat: loc.lat, lon: loc.lon } : undefined);
+
   const t0 = Date.now();
   const toolsUsed: string[] = [];
   try {
@@ -229,29 +235,39 @@ export async function POST(req: NextRequest) {
             let out: unknown;
             let toolError: string | undefined;
             const tCall = Date.now();
+            // Checked BEFORE anything in this round runs, so a tool called at an invented point
+            // alongside the find_place that would have resolved it is refused, not answered.
+            const refusal = guard.check(tu.name, tu.input);
+            if (refusal) console.warn(`[knowledge-chat] refused ${tu.name} at un-sourced coordinates`);
             try {
-              out = tu.name === "remember" || tu.name === "recall" || tu.name === "forget"
-                ? runMemoryTool(
-                    memory, tu.name, tu.input as Record<string, unknown>,
-                    loc ? { lat: loc.lat, lon: loc.lon } : undefined, heading,
-                  )
-                : await withToolTimeout(
-                    tu.name === "place_knowledge"
-                      ? runPlaceKnowledge(
-                          tu.input as { lat?: number; lon?: number },
-                          loc ? { lat: loc.lat, lon: loc.lon } : undefined,
-                        )
-                      : tu.name === "transit_nearby"
-                      ? runTransitNearby(
-                          tu.input as { lat?: number; lon?: number; radius_m?: number },
-                          loc ? { lat: loc.lat, lon: loc.lon } : undefined,
-                        )
-                      : runTool(
-                          tu.name, tu.input as Record<string, unknown>, heading,
-                          loc ? { lat: loc.lat, lon: loc.lon } : undefined,
-                        ),
-                    tu.name,
-                  );
+              if (refusal) {
+                out = { error: refusal };
+              } else if (tu.name === "remember" || tu.name === "recall" || tu.name === "forget") {
+                out = runMemoryTool(
+                  memory, tu.name, tu.input as Record<string, unknown>,
+                  loc ? { lat: loc.lat, lon: loc.lon } : undefined, heading,
+                );
+              } else {
+                out = await withToolTimeout(
+                  tu.name === "place_knowledge"
+                    ? runPlaceKnowledge(
+                        tu.input as { lat?: number; lon?: number },
+                        loc ? { lat: loc.lat, lon: loc.lon } : undefined,
+                      )
+                    : tu.name === "transit_nearby"
+                    ? runTransitNearby(
+                        tu.input as { lat?: number; lon?: number; radius_m?: number },
+                        loc ? { lat: loc.lat, lon: loc.lon } : undefined,
+                      )
+                    : runTool(
+                        tu.name, tu.input as Record<string, unknown>, heading,
+                        loc ? { lat: loc.lat, lon: loc.lon } : undefined,
+                      ),
+                  tu.name,
+                );
+              }
+              // Whatever the map handed back is now a coordinate the model may legitimately use.
+              if (!refusal) guard.learn(out);
             } catch (e) {
               toolError = (e as Error).message;
               out = { error: `tool ${tu.name} failed: ${toolError}` };
@@ -261,6 +277,7 @@ export async function POST(req: NextRequest) {
               // route substitutes the user's location for a missing lat/lon. That is the question.
               const entry: TraceEntry = {
                 round, tool: tu.name, input: tu.input, ms: Date.now() - tCall,
+                ...(refusal ? { refused: true } : {}),
                 ...(toolError ? { error: toolError } : {}),
                 result: traceResult(out),
               };
