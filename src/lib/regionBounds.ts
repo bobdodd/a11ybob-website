@@ -46,7 +46,7 @@ export const REGION_BOXES: RegionBox[] = [
   { id: "buffalo", n: 43.02, s: 42.82, e: -78.75, w: -78.95 },
   { id: "rochester", n: 43.22, s: 43.05, e: -77.55, w: -77.72 },
   { id: "new-haven", n: 41.34, s: 41.28, e: -72.88, w: -72.97 },
-  { id: "princeton", n: 40.38, s: 40.32, e: -74.62, w: -74.7 },
+  { id: "new-jersey", n: 41.36, s: 38.79, e: -73.88, w: -75.57 },
   { id: "redmond", n: 47.73, s: 47.58, e: -122.05, w: -122.22 },
   { id: "philadelphia", n: 40, s: 39.9, e: -75.1, w: -75.26 },
   { id: "providence", n: 41.86, s: 41.79, e: -71.38, w: -71.45 },
