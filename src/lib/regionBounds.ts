@@ -39,12 +39,17 @@ export const REGION_BOXES: RegionBox[] = [
   { id: "zurich", n: 47.45, s: 47.31, e: 8.62, w: 8.45 },
   { id: "south-shields", n: 55.02, s: 54.95, e: -1.4, w: -1.49 },
   { id: "london", n: 51.7, s: 51.28, e: 0.34, w: -0.52 },
-  { id: "new-york", n: 40.92, s: 40.48, e: -73.68, w: -74.28 },
+  // Statewide, superseding the Ithaca / Buffalo / Rochester trial boxes. It overlaps New Haven,
+  // New Jersey and Philadelphia, which is fine: regionAt takes the SMALLEST box containing the
+  // point, so those keep their own label and only the rest of the state falls to this one.
+  { id: "new-york", n: 45.08, s: 40.43, e: -71.65, w: -79.83 },
+  // The city is NOT a build region any more — the state extract covers it — but it stays here as
+  // a LABEL. Without it, New Jersey's box (which reaches east to -73.88, past Manhattan at
+  // -73.98) is the smallest one containing Manhattan, and the busiest place on the map gets
+  // counted as New Jersey.
+  { id: "new-york-city", n: 40.92, s: 40.48, e: -73.68, w: -74.28 },
   { id: "boston", n: 42.45, s: 42.22, e: -70.95, w: -71.25 },
   { id: "ireland", n: 55.45, s: 51.35, e: -5.3, w: -10.7 },
-  { id: "ithaca", n: 42.49, s: 42.4, e: -76.44, w: -76.56 },
-  { id: "buffalo", n: 43.02, s: 42.82, e: -78.75, w: -78.95 },
-  { id: "rochester", n: 43.22, s: 43.05, e: -77.55, w: -77.72 },
   { id: "new-haven", n: 41.34, s: 41.28, e: -72.88, w: -72.97 },
   { id: "new-jersey", n: 41.36, s: 38.79, e: -73.88, w: -75.57 },
   { id: "redmond", n: 47.73, s: 47.58, e: -122.05, w: -122.22 },
