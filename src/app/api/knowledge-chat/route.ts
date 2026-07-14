@@ -387,7 +387,15 @@ export async function POST(req: NextRequest) {
         continue;
       }
       console.log(`[knowledge-chat] ok ${Date.now() - t0}ms rounds=${round + 1} tools=${toolsUsed.join(",") || "-"}${mapAction.current ? " map=" + (mapAction.current.name ?? "point") : ""}`);
-      if (!reply) return withMap({ reply: "I'm not sure how to answer that — try rephrasing?" });
+      if (!reply) {
+        // The model sometimes calls show_on_map and then says nothing (seen
+        // live on a spoken "yes"): the map moved, and "I'm not sure how to
+        // answer that" would contradict a completed action. Narrate the move.
+        if (mapAction.current) {
+          return withMap({ reply: `Taking you to ${mapAction.current.name ?? "that place"} — it's on the map now.` });
+        }
+        return withMap({ reply: "I'm not sure how to answer that — try rephrasing?" });
+      }
       // Lead every answer with the user's facing (the ONE compass point) when known — the anchor
       // that makes the clock directions in the reply meaningful, exactly like the Context Map.
       return withMap({ reply: facingWord ? `You're facing ${facingWord}. ${reply}` : reply });
