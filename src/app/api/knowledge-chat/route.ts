@@ -7,10 +7,18 @@
  * only, so the Conversational Map stays untouched. The model orchestrates and phrases; the
  * tools do the geometry; the API key stays server-side, OpenSearch stays on localhost.
  *
- * Body: { message: string, location?: {lat,lon,heading?}, history?: [{role,content}] }
+ * Body: { message: string, location?: {lat,lon,heading?}, history?: [{role,content}],
+ *         canShowMap?: boolean, modality?: "voice"|"typed" }
  *   history is prior TEXT turns only (user/assistant). Tool calls happen inside a turn and
  *   are not replayed — the model only needs past ANSWERS for context, not past tool traffic.
- * Returns: { reply: string }  (or { reply, error } on a soft failure).
+ *   canShowMap: the client HAS a visual map this chat can drive (the tiled map viewer sends
+ *   it; the audio-only Knowledge/Context maps don't) — gates the show_on_map tool + its
+ *   prompt addendum, so the other demos are untouched. modality: how THIS message arrived —
+ *   voice confirms before moving the map on a single match; typed goes direct (a typed send
+ *   is already deliberate).
+ * Returns: { reply: string }  (or { reply, error } on a soft failure). When the model chose
+ *   to move the map, also { mapAction: { lat, lon, name?, osm_id? } } — the client recentres
+ *   and (via osm_id) lands focus on the actual tile feature.
  *
  * Privacy: the message + the user's coordinates are sent to the Anthropic API to answer.
  * The viewer gates on a consent notice that discloses this. */
@@ -133,6 +141,35 @@ Personal memory — remember / recall / forget (the user's own, kept on THEIR de
 Help — "what can you do?", "help", "how does this work?":
 - Give a SHORT spoken tour, not a feature dump: one line of what you are (a conversational map of what's around them — with transit, what places are known for, and a personal memory), then three or four example questions spanning DIFFERENT abilities — e.g. "where am I?", "is there a step-free café near me?", "what buses serve here?", "remember where I am". Mention they can say "follow me" for a running description as they walk; that a tap anywhere (or Escape) interrupts you while you're talking — the microphone is OFF during speech, so a spoken "shush" can't be heard then; and "what did I say?" to hear what was heard. Keep it under about 90 words, end by inviting them to just try one.`;
 
+/* The visual-map addendum — appended to SYSTEM only when the client declared
+ * canShowMap. A separate cached block would fragment the prompt cache for no
+ * gain: the two variants (with/without) each cache fine on their own. */
+const SHOW_ON_MAP_PROMPT = `
+
+The visual map (this user is LOOKING at a map of this conversation):
+- You have show_on_map: it moves the user's visual map to a feature and highlights it. The map moving is a big event for the user — call it ONLY when they asked to GO somewhere or SEE it on the map ("take me to", "show me", "go to", "find X" clearly meaning go) — NEVER merely because an answer mentions places. Informational answers leave the map alone.
+- Moving happens ONLY through the show_on_map TOOL. Telling the user the map is showing something, or that you're "taking" them somewhere, without having CALLED show_on_map in this turn is a FAILURE — the map did NOT move, and they are now looking at the wrong place believing it's the right one. The tool call comes FIRST, then the words.
+- Coordinates follow the same hard rule as every tool: from find_place THIS turn (or the user's own location), never invented. Pass the result's osm_id when it has one — that is what lets the map highlight the exact feature rather than just the spot.
+- Several plausible matches: name at most THREE, each with what tells it apart (street, containing place) plus distance and direction, then ask which — and show the chosen one when they answer. Offer more only if none fits.
+- The message context says whether it was SPOKEN or TYPED. SPOKEN + one confident match: confirm before moving — "<name>, <distance> <direction> — go?" — and call show_on_map only after they agree (their "yes" refers to your offer). TYPED: show it directly with the answer; typing a request is already deliberate.
+- When you move the map, SAY so as part of the answer ("Taking you there — it's on the map now"), because a blind user cannot see the viewport change.`;
+
+const SHOW_ON_MAP_SCHEMA = {
+  name: "show_on_map",
+  description:
+    "Move the user's VISUAL map to a place and highlight it. Only for explicit go/show requests — see the system prompt. lat/lon must come from a find_place result this turn (or be the user's own location); pass the result's osm_id when present so the exact feature is highlighted.",
+  input_schema: {
+    type: "object",
+    properties: {
+      lat: { type: "number" },
+      lon: { type: "number" },
+      name: { type: "string", description: "The place's display name, for the map's records." },
+      osm_id: { type: "string", description: "The osm_id from the find_place result, when it has one." },
+    },
+    required: ["lat", "lon", "name"],
+  },
+};
+
 type Turn = { role: "user" | "assistant"; content: string };
 
 export async function POST(req: NextRequest) {
@@ -143,7 +180,10 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  let body: { message?: string; location?: { lat: number; lon: number; heading?: number }; history?: Turn[]; memory?: unknown };
+  let body: {
+    message?: string; location?: { lat: number; lon: number; heading?: number };
+    history?: Turn[]; memory?: unknown; canShowMap?: boolean; modality?: string;
+  };
   try {
     body = await req.json();
   } catch {
@@ -172,9 +212,18 @@ export async function POST(req: NextRequest) {
   const facingNote = facingWord
     ? `, facing ${facingWord}. Their facing is KNOWN, and the app states it for them at the very start of the reply — so do NOT state their compass facing yourself. Give EVERY direction to a place or feature as the EXACT clock number the tool returns — always say the o'clock value, e.g. "at 3 o'clock", "at 9 o'clock", "at 12 o'clock". Do NOT soften or replace it with "to your left", "to your right", "ahead", "behind" or similar vague words, and NEVER use a compass point — not even for a distant place you happen to know. The clock value is precise; the vague words throw that precision away`
     : "";
-  const locNote = loc
+  const canShowMap = body.canShowMap === true;
+  const modality = body.modality === "voice" ? "SPOKEN" : body.modality === "typed" ? "TYPED" : null;
+  // The confirm-before-moving rule lives HERE, at the point of decision, not
+  // only in the system prompt — buried there, the model moved the map on a
+  // fresh spoken request without confirming (seen live on first deploy).
+  const modalityNote = !canShowMap || !modality ? ""
+    : modality === "SPOKEN"
+    ? ` [This message was SPOKEN. Rule for show_on_map: if this message is itself the agreement to a move you offered (a "yes"), or explicitly says to go NOW, call it. Otherwise, for a fresh spoken request to go somewhere, do NOT call it yet — name the match with distance and direction and ask "— go?", and move only on their next yes.]`
+    : ` [This message was TYPED. If they asked to go somewhere and you have the match, CALL the show_on_map tool now — no confirmation step — and only then say it's on the map. Words without the tool call leave the map unmoved.]`;
+  const locNote = (loc
     ? `\n\n[The user is at latitude ${loc.lat}, longitude ${loc.lon}${facingNote}. Use this for "here"/"nearby"; for anywhere else, find_place first.]`
-    : `\n\n[The user's current location is not available — ask them to name a place, or to enable location.]`;
+    : `\n\n[The user's current location is not available — ask them to name a place, or to enable location.]`) + modalityNote;
 
   const messages: Anthropic.Messages.MessageParam[] = [
     ...history.map((t) => ({ role: t.role, content: t.content })),
@@ -200,17 +249,36 @@ export async function POST(req: NextRequest) {
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
   // Cache the (large, stable) system prompt + tools so every turn after the first is cheap.
+  // The canShowMap variant appends the visual-map addendum — each variant caches on its own.
   const system: Anthropic.Messages.TextBlockParam[] = [
-    { type: "text", text: SYSTEM, cache_control: { type: "ephemeral" } },
+    { type: "text", text: canShowMap ? SYSTEM + SHOW_ON_MAP_PROMPT : SYSTEM, cache_control: { type: "ephemeral" } },
   ];
   // Map tools + the knowledge & transit tools. Cache the last entry so the whole tool block is cached.
-  const allTools = [...TOOL_SCHEMAS, PLACE_KNOWLEDGE_SCHEMA, TRANSIT_NEARBY_SCHEMA, ...MEMORY_TOOL_SCHEMAS];
+  const allTools = [
+    ...TOOL_SCHEMAS, PLACE_KNOWLEDGE_SCHEMA, TRANSIT_NEARBY_SCHEMA, ...MEMORY_TOOL_SCHEMAS,
+    ...(canShowMap ? [SHOW_ON_MAP_SCHEMA] : []),
+  ];
   const tools = allTools.map((t, i) =>
     i === allTools.length - 1 ? { ...t, cache_control: { type: "ephemeral" as const } } : t,
   ) as unknown as Anthropic.Messages.Tool[];
 
   // A tool may only be given a coordinate the map handed back, or the user's own. See coordGuard.
   const guard = new CoordGuard(loc ? { lat: loc.lat, lon: loc.lon } : undefined);
+
+  // The model's decision to move the visual map, carried out CLIENT-side: the
+  // last show_on_map call of the turn wins (they should never stack anyway).
+  // A ref holder, not a bare let: the assignment happens inside the tool-loop
+  // callback and TS's flow analysis would narrow a let to never at use sites.
+  const mapAction: { current: { lat: number; lon: number; name?: string; osm_id?: string } | null } = { current: null };
+  const withMap = (payload: Record<string, unknown>) =>
+    withMemory({ ...payload, ...(mapAction.current ? { mapAction: mapAction.current } : {}) });
+
+  // Detects a reply CLAIMING the map moved when show_on_map was never called
+  // (seen live: "Taking you there — it's on the map now" with no tool call,
+  // roughly one turn in three on Haiku despite the prompt). One repair round
+  // sends the model back to make the call; the claim must never outrun the map.
+  const CLAIMS_MOVE = /\b(?:on the map now|taking you (?:there|to)|now showing|map (?:is )?(?:now )?(?:showing|cent(?:re|er)ed|cent(?:re|er)ing)|moved the map)\b/i;
+  let repairedOnce = false;
 
   const t0 = Date.now();
   const toolsUsed: string[] = [];
@@ -242,6 +310,16 @@ export async function POST(req: NextRequest) {
             try {
               if (refusal) {
                 out = { error: refusal };
+              } else if (tu.name === "show_on_map") {
+                // No server work: record the action for the response; the
+                // client moves the viewport and lands focus on the feature.
+                const inp = tu.input as { lat: number; lon: number; name?: string; osm_id?: string };
+                mapAction.current = {
+                  lat: inp.lat, lon: inp.lon,
+                  ...(inp.name ? { name: inp.name } : {}),
+                  ...(inp.osm_id ? { osm_id: String(inp.osm_id) } : {}),
+                };
+                out = { ok: true, note: `The map is now showing ${inp.name ?? "that place"}.` };
               } else if (tu.name === "remember" || tu.name === "recall" || tu.name === "forget") {
                 out = runMemoryTool(
                   memory, tu.name, tu.input as Record<string, unknown>,
@@ -297,11 +375,22 @@ export async function POST(req: NextRequest) {
         .map((b) => b.text)
         .join("")
         .trim();
-      console.log(`[knowledge-chat] ok ${Date.now() - t0}ms rounds=${round + 1} tools=${toolsUsed.join(",") || "-"}`);
-      if (!reply) return withMemory({ reply: "I'm not sure how to answer that — try rephrasing?" });
+      if (canShowMap && !mapAction.current && !repairedOnce && CLAIMS_MOVE.test(reply)) {
+        repairedOnce = true;
+        console.warn(`[knowledge-chat] repair: reply claims a map move but show_on_map was never called`);
+        messages.push({ role: "assistant", content: resp.content });
+        messages.push({
+          role: "user",
+          content:
+            "[SYSTEM CHECK — not the user speaking: you told the user the map moved, but you did NOT call show_on_map, so it has not. Call show_on_map NOW with the lat/lon (and osm_id) from this turn's find_place result, then give the same answer. Do not apologise or mention this check.]",
+        });
+        continue;
+      }
+      console.log(`[knowledge-chat] ok ${Date.now() - t0}ms rounds=${round + 1} tools=${toolsUsed.join(",") || "-"}${mapAction.current ? " map=" + (mapAction.current.name ?? "point") : ""}`);
+      if (!reply) return withMap({ reply: "I'm not sure how to answer that — try rephrasing?" });
       // Lead every answer with the user's facing (the ONE compass point) when known — the anchor
       // that makes the clock directions in the reply meaningful, exactly like the Context Map.
-      return withMemory({ reply: facingWord ? `You're facing ${facingWord}. ${reply}` : reply });
+      return withMap({ reply: facingWord ? `You're facing ${facingWord}. ${reply}` : reply });
     }
     console.error(`[knowledge-chat] ROUNDS-CAP ${Date.now() - t0}ms tools=${toolsUsed.join(",") || "-"}`);
     return withMemory({ reply: "That question took more steps than I can take in one go — try narrowing it down?" });

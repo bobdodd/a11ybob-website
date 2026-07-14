@@ -9,7 +9,8 @@ import { buildFilterUI } from './FilterUI.js';
 import { setupTooltip } from './Tooltip.js';
 import { Announcer } from './Announcer.js';
 import { setupChat } from './Chat.js';
-import { SearchManager } from './SearchManager.js';
+import { setupChatPanel } from './ChatPanel.js';
+import { setupChatSuggest } from './ChatSuggest.js';
 import { LevelSwitch } from './LevelSwitch.js';
 import { HeadingProvider } from './HeadingProvider.js';
 
@@ -93,9 +94,11 @@ class MapApplication {
         }
 
         // Build the filter + rotor controls from the taxonomy (replaces the old hand-coded HTML)
-        // Tabindex bands keep header < map controls < map (positive throughout):
-        // filter controls start at 101, rotor controls at 4002, map features at
-        // 9000+ (assigned by the rotor in AccessibilityManager.updateTabOrder).
+        // Tabindex bands keep header < chat < rose < map (positive throughout):
+        // filter controls start at 101, rotor controls at 4002, the chat panel
+        // sits at 6000-6004 (between the header and the rose, with its own
+        // skip link), the rose at 8000s, map features at 9000+ (assigned by
+        // the rotor in AccessibilityManager.updateTabOrder).
         buildFilterUI(this.taxonomy, document.getElementById('filter-groups'), 'filter', 101);
         buildFilterUI(this.taxonomy, document.getElementById('rotor-groups'), 'rotor', 4002);
 
@@ -103,10 +106,14 @@ class MapApplication {
         this.filterManager = new FilterManager(this.taxonomy);
         this.accessibilityManager = new AccessibilityManager(this.taxonomy, this.announcer);
 
-        // After a filter change, refresh the rotor's tab order too.
-        const originalUpdateVisibility = this.filterManager.updateVisibility.bind(this.filterManager);
-        this.filterManager.updateVisibility = (id, enabled) => {
-            originalUpdateVisibility(id, enabled);
+        // After a USER filter toggle, refresh the rotor's tab order too.
+        // Wrapped at toggleFilter, NOT updateVisibility: the programmatic
+        // re-application that runs when tiles load calls updateVisibility for
+        // EVERY filter, and a full tab-order pass per filter (N × 13k
+        // getBoundingClientRect) froze the map for seconds after each pan.
+        const originalToggleFilter = this.filterManager.toggleFilter.bind(this.filterManager);
+        this.filterManager.toggleFilter = (id, enabled) => {
+            originalToggleFilter(id, enabled);
             this.accessibilityManager.updateTabOrder();
         };
 
@@ -133,6 +140,15 @@ class MapApplication {
         // Delegates on #map-svg, so it covers tiles loaded later too.
         setupTooltip();
 
+        // The chat panel's housing: floating (moveable/resizable/closeable)
+        // on desktop, split-screen with a draggable divider on mobile. The
+        // divider changes the map's height without a window resize, so it
+        // drives handleResize itself.
+        this.chatPanel = setupChatPanel({
+            announce: (msg) => this.announceStatus(msg),
+            onLayoutChange: () => { if (this.mapRenderer) this.mapRenderer.handleResize(); },
+        });
+
         // The Chat — the Knowledge Map's conversation on the visual map. It
         // shares the app's Announcer (one speech channel, latest wins) and
         // HeadingProvider (facing → clock directions), and its spoken
@@ -142,6 +158,14 @@ class MapApplication {
         setupChat({
             announcer: this.announcer,
             heading: this.heading,
+            // The Track Location toggle decides what "where am I" means to
+            // the chat: tracking ON = the device's GPS; OFF = the AVATAR (the
+            // virtual you on the map, falling back to the map centre).
+            isTracking: () => this.isTracking,
+            getVirtualLocation: () => {
+                const p = (this.avatar && this.avatar.position) || (this.mapRenderer && this.mapRenderer.center);
+                return p ? { lat: +p.lat.toFixed(6), lon: +p.lng.toFixed(6) } : null;
+            },
             onFollow: () => {
                 const b = document.getElementById('describe-auto');
                 if (b && b.getAttribute('aria-pressed') !== 'true') b.click();
@@ -149,6 +173,46 @@ class MapApplication {
             onUnfollow: () => {
                 const b = document.getElementById('describe-auto');
                 if (b && b.getAttribute('aria-pressed') === 'true') b.click();
+            },
+            // Voice pan/zoom/centre CLICK the rose's own buttons — one
+            // behaviour, one state, one set of limits (and it works with the
+            // rose switched off in Settings: the buttons exist, just hidden —
+            // voice IS the alternative to the rose). The button's own
+            // announcement is CAPTURED and handed back rather than spoken
+            // here: the chat re-speaks it with its hands-free continuation,
+            // so a spoken command never strands the conversation loop.
+            onMapCommand: (action) => {
+                const ids = {
+                    'pan-north': 'nav-n', 'pan-northeast': 'nav-ne',
+                    'pan-east': 'nav-e', 'pan-southeast': 'nav-se',
+                    'pan-south': 'nav-s', 'pan-southwest': 'nav-sw',
+                    'pan-west': 'nav-w', 'pan-northwest': 'nav-nw',
+                    'zoom-in': 'nav-zoom-in', 'zoom-out': 'nav-zoom-out',
+                    'centre': 'nav-center',
+                };
+                const btn = document.getElementById(ids[action] || '');
+                if (!btn) return null;
+                if (btn.disabled) return { disabled: true };
+                let captured = null;
+                this.announceStatus = (m) => { captured = m; };
+                try { btn.click(); } finally { delete this.announceStatus; }
+                return { ok: true, say: captured };
+            },
+            // The LLM chose to move the map (its show_on_map tool → the
+            // response's mapAction). Recentre immediately — SILENT, the
+            // reply's own words carry the announcement — and hand back a
+            // lander the chat calls after the reply finishes speaking, so
+            // focus arrives on the feature without talking over the answer.
+            onMapTarget: (t) => {
+                if (!t || !Number.isFinite(t.lat) || !Number.isFinite(t.lon)) return null;
+                if (this.mapRenderer.zoom < 18) this.mapRenderer.setZoom(18);
+                this.mapRenderer.setCenter(t.lat, t.lon);
+                if (!t.osm_id) return null;   // recentre only — nothing to focus
+                return () => {
+                    this.waitForFeature(String(t.osm_id), 3000).then((el) => {
+                        if (el) this.focusFeatureElement(el);
+                    });
+                };
             },
         });
 
@@ -163,13 +227,15 @@ class MapApplication {
             else this.focusFeatureElement(feature);
         });
 
-        // Map search (places / POIs / addresses, with accessibility filters),
-        // backed by the OpenSearch map-features index via a same-origin proxy.
-        // Selecting a result recentres and moves focus onto the actual feature.
-        this.searchManager = new SearchManager({
+        // Map search lives in the CHAT: the chat input is an APG combobox
+        // offering place suggestions from the OpenSearch map-features index
+        // (same-origin proxy); picking one recentres and moves focus onto the
+        // actual tile feature — the retired Search accordion's behaviour.
+        // Free-text queries ("find the accessible washrooms nearby") go to
+        // the knowledge chat instead, which searches the same index by tool.
+        setupChatSuggest({
             getCenter: () => this.mapRenderer.center,
             onSelect: (result) => this.goToSearchResult(result),
-            announce: (msg) => this.announceStatus(msg),
         });
 
         // Set up keyboard navigation
@@ -204,8 +270,14 @@ class MapApplication {
             const center = this.mapRenderer.center;
             this.avatar.setPosition(center.lat, center.lng, false);
             
-            // Load initial map tiles (clear any existing)
-            this.loadMapTiles(true);
+            // Warm the tile CACHE for the real viewport (handleResize above
+            // falls back to the window size while <main> is hidden) — network
+            // only, NO rendering. The disclaimer gate is still up: parsing and
+            // inserting several MB of SVG here is main-thread work that made
+            // the gate's checkbox and Start button feel stuck. The Start
+            // handler runs the real loadMapTiles, which renders from this
+            // cache — whole map at once, no partial paint.
+            this.warmMapTiles();
         }, 100);
         
         // Listen for map view changes
@@ -579,16 +651,23 @@ class MapApplication {
         mapContainer.addEventListener('mousedown', (e) => {
             // Only respond to left mouse button (button 0)
             if (e.button !== 0) return;
-            
+
             isDragging = true;
             startX = e.clientX;
             startY = e.clientY;
             startLat = this.mapRenderer.center.lat;
             startLng = this.mapRenderer.center.lng;
-            
+
+            // While a MOUSE drag is live, the map slides under the pointer and
+            // every feature crossing it fires mouseover — without this signal
+            // each one would announce (speech cancel/speak churn) and drag the
+            // tooltip around, per feature, all drag long. Touch is untouched:
+            // explore-by-touch announcing under a sweeping finger is a feature.
+            document.body.classList.add('map-dragging');
+
             // Prevent text selection during drag
             e.preventDefault();
-            
+
             // Change cursor to grabbing
             mapContainer.style.cursor = 'grabbing';
         });
@@ -613,6 +692,7 @@ class MapApplication {
         window.addEventListener('mouseup', (e) => {
             if (isDragging && e.button === 0) {
                 isDragging = false;
+                document.body.classList.remove('map-dragging');
                 mapContainer.style.cursor = 'default';
             }
         });
@@ -1387,7 +1467,7 @@ class MapApplication {
         accept.addEventListener('change', () => { start.disabled = !accept.checked; });
         start.addEventListener('click', () => {
             gate.hidden = true;
-            ['skip-to-compass', 'skip-to-map', 'control-sidebar'].forEach((id) => {
+            ['skip-to-compass', 'skip-to-map', 'skip-to-chat', 'control-sidebar'].forEach((id) => {
                 const el = document.getElementById(id);
                 if (el) el.hidden = false;
             });
@@ -1398,18 +1478,41 @@ class MapApplication {
             const compassOn = localStorage.getItem('map-compass-on') !== 'off';
             const skipCompass = document.getElementById('skip-to-compass');
             if (skipCompass) skipCompass.hidden = !compassOn;
-            // The map initialised while <main> was display:none, where every
-            // measurement is 0×0 — the viewBox and the initial tile load were
-            // computed against a zero-size viewport. Now that the map is
-            // visible and measurable, size and load it for real.
-            if (this.mapRenderer) {
-                this.mapRenderer.handleResize();
-                this.mapRenderer.render();
-                this.loadMapTiles(true);
-            }
+            // Same for the chat skip link: it tracks the panel (hidden when
+            // the desktop panel is switched off in Settings).
+            const chatPanel = document.getElementById('chat-panel');
+            const skipChat = document.getElementById('skip-to-chat');
+            if (skipChat && chatPanel) skipChat.hidden = chatPanel.hidden;
+
+            // The dialog GOES on the click, unconditionally; a busy state
+            // holds its place until the first full render.
+            const busy = document.getElementById('map-busy');
+            if (busy) busy.hidden = false;
             this.announcer.prime();
             const title = document.getElementById('app-title');
             if (title) title.focus();
+            this.announceStatus('Loading the map…');
+
+            // Let that state PAINT before the heavy work: the warmed tiles
+            // resolve from cache in a microtask, so without a real frame here
+            // the multi-hundred-millisecond SVG insert runs before any
+            // repaint — the dead dialog stays frozen on screen and Start
+            // appears to ignore clicks.
+            requestAnimationFrame(() => setTimeout(() => {
+                if (!this.mapRenderer) { if (busy) busy.hidden = true; return; }
+                // Size against the now-visible container and load for real.
+                this.mapRenderer.handleResize();
+                this.mapRenderer.render();
+                Promise.resolve(this.loadMapTiles(true)).finally(() => {
+                    if (busy) busy.hidden = true;
+                    // Only claim readiness if tiles actually landed — on a
+                    // failure loadMapTiles has already announced the error,
+                    // and "Map ready" must not talk over it.
+                    if (document.querySelector('#map-tiles [data-tile-id]')) {
+                        this.announceStatus('Map ready.');
+                    }
+                });
+            }, 0));
         });
     }
 
@@ -1443,9 +1546,12 @@ class MapApplication {
         modal.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') { e.preventDefault(); shut(); return; }
             if (e.key !== 'Tab') return;
-            // Cycle focus through the dialog's buttons — the page's positive
-            // tabindex bands must not pull focus out of an open modal.
-            const items = Array.from(modal.querySelectorAll('button'));
+            // Cycle focus through the dialog's VISIBLE buttons — the page's
+            // positive tabindex bands must not pull focus out of an open modal,
+            // and a display:none button (the Chat panel toggle hides in mobile
+            // split mode) must not wedge the cycle.
+            const items = Array.from(modal.querySelectorAll('button'))
+                .filter((b) => b.getClientRects().length);
             if (!items.length) return;
             const i = items.indexOf(document.activeElement);
             e.preventDefault();
@@ -1552,7 +1658,25 @@ class MapApplication {
         }
     }
     
+    // Pre-gate warm-up: pull the viewport's tiles (and the index) into the
+    // SVGTileManager cache and stop there. Failures stay silent — this is
+    // opportunistic; the real load at gate-start surfaces any error.
+    async warmMapTiles() {
+        try {
+            const bounds = this.getBoundsFromView();
+            await this.svgTileManager.loadTilesForArea(bounds, this.mapRenderer.zoom);
+        } catch { /* warm-up only */ }
+    }
+
     async loadMapTiles(clearExisting = false) {
+        // While the disclaimer gate is up, nothing may RENDER — parsing and
+        // inserting megabytes of SVG janks the gate's checkbox and Start
+        // button. Every entry point (init, resize, the debounced map-change
+        // listener) funnels through here, so divert them ALL to the
+        // network-only warm-up; the Start handler re-enters once the map is
+        // visible and renders from the warmed cache.
+        const gate = document.getElementById('map-gate');
+        if (gate && !gate.hidden) return this.warmMapTiles();
         // Load generation: if a newer load starts while this one awaits (fast
         // panning), the stale one bows out instead of rendering/announcing.
         const gen = (this._loadGen = (this._loadGen || 0) + 1);
@@ -1601,18 +1725,29 @@ class MapApplication {
             const newTiles = tiles.filter(tile => !loadedTileIds.has(tile.id));
             
             if (newTiles.length > 0) {
-                // Render only new tiles
-                this.renderSVGTiles(newTiles);
-                
-                // Apply current filters to the newly loaded tiles
-                this.applyFiltersToTiles();
-                
-                // Update accessibility for keyboard navigation
-                if (this.accessibilityManager) {
-                    this.accessibilityManager.updateTabOrder();
-                }
+                // Mid-pan loads insert ONE TILE PER FRAME: a vertical drag
+                // exposes a whole tile row (2–3 tiles), and parsing+inserting
+                // them in a single task froze the map at every settle. Each
+                // tile still appears WHOLE. Initial and band-switch loads
+                // (clearExisting) stay atomic — the view arrives all at once,
+                // never a partially assembled page.
+                await this.renderSVGTiles(newTiles, {
+                    chunked: !clearExisting,
+                    isCurrent: () => gen === this._loadGen,
+                });
+                if (gen !== this._loadGen) return; // superseded mid-insert
+                // (Filter states are applied per tile INSIDE the insert, so
+                // hidden-by-filter features never flash before hiding.)
             }
-            
+
+            // ONE viewport-focus pass per settled load, whether or not new
+            // tiles landed — a pan within already-loaded tiles still changes
+            // which features are on screen. (Previously this ran here AND in
+            // the map-change settle: two full 13k-feature passes back to back.)
+            if (this.accessibilityManager) {
+                this.accessibilityManager.updateTabOrder();
+            }
+
             // Clean up tiles that are far outside the current view
             this.cleanupDistantTiles();
 
@@ -1725,16 +1860,16 @@ class MapApplication {
         }, 450);
     }
 
-    renderSVGTiles(tiles) {
+    async renderSVGTiles(tiles, { chunked = false, isCurrent = () => true } = {}) {
         const tilesGroup = document.querySelector('#map-tiles') ||
                          this.mapRenderer.svg.querySelector('#map-tiles');
-        
+
         if (!tilesGroup) {
             console.error('No tiles group found in SVG');
             return;
         }
 
-        tiles.forEach(tile => {
+        const insertTile = (tile) => {
             if (!tile.content) return;
 
             const existingTile = tilesGroup.querySelector(`[data-tile-id="${tile.id}"]`);
@@ -1763,11 +1898,38 @@ class MapApplication {
                 }
                 tileGroup.appendChild(frag);
 
+                // Filter states land BEFORE the tile joins the document (and
+                // before its first paint): scoped to this one tile, skipping
+                // default-state filters — see FilterManager.applyVisibilityWithin.
+                if (this.filterManager) this.filterManager.applyVisibilityWithin(tileGroup);
+
                 tilesGroup.appendChild(tileGroup);
             } catch (error) {
                 console.error(`Failed to render tile ${tile.id}:`, error);
             }
-        });
+        };
+
+        if (chunked) {
+            // One tile per FRAME: each tile appears whole, and the main thread
+            // breathes between inserts so a live drag never wades through a
+            // multi-tile parse (a vertical pan settles with a whole tile row).
+            for (const tile of tiles) {
+                if (!isCurrent()) return;   // superseded mid-insert
+                insertTile(tile);
+                await new Promise((resolve) => requestAnimationFrame(resolve));
+            }
+        } else {
+            // Atomic: initial load and band switches present the whole view
+            // at once — never a partially assembled map.
+            tiles.forEach(insertTile);
+        }
+
+        // In heading-up mode, labels in the tiles just inserted haven't had
+        // the flip pass (applyRotation only re-runs it when the ANGLE changes
+        // — see MapRenderer) — bring them the right way up now.
+        if (this.mapRenderer && this.mapRenderer.rotation) {
+            this.mapRenderer.applyLabelFlips();
+        }
     }
 
     latLngToPixel(lat, lng) {
@@ -1838,12 +2000,15 @@ class MapApplication {
         // Create a debounced version of loadMapTiles
         const debouncedLoad = () => {
             clearTimeout(loadTimeout);
-            
-            // Cancel any pending requests
-            if (this.svgTileManager) {
-                this.svgTileManager.cancelAllRequests();
-            }
-            
+
+            // Deliberately NO cancelAllRequests here: this fires on EVERY
+            // pointermove of a drag, so cancelling meant no tile fetch could
+            // ever complete while the user was still moving — mid-drag the
+            // map went grey and stayed grey until the hand paused. In-flight
+            // requests only ever start on a settle (below), so letting them
+            // finish wastes at most one viewport's worth of tiles, which the
+            // cache keeps anyway.
+
             loadTimeout = setTimeout(() => {
                 // Keep the renderer's VIEWPORT (container pixel size) current — it
                 // can change on resize — then DERIVE the viewBox from the current
@@ -1872,21 +2037,28 @@ class MapApplication {
                 // Check if bounds have changed significantly
                 if (this.boundsHaveChanged(bounds, lastRequestBounds)) {
                     lastRequestBounds = bounds;
+                    // loadMapTiles ends with its own viewport-focus pass.
                     this.loadMapTiles();
+                } else if (this.accessibilityManager) {
+                    // Sub-threshold pan: nothing to load, but the on-screen
+                    // set still shifted — refresh the rotor's focus set ONCE.
+                    // (Per-pointermove refreshes — 13k forced layouts per
+                    // twitch of the hand — are what made dragging wade; a
+                    // keyboard user interacts with a SETTLED view, so 300ms
+                    // staleness is imperceptible.)
+                    this.accessibilityManager.updateTabOrder();
                 }
             }, 300); // Wait 300ms after movement stops
         };
-        
+
         // Override MapRenderer methods to add tile loading
         const originalSetCenter = this.mapRenderer.setCenter.bind(this.mapRenderer);
         this.mapRenderer.setCenter = (lat, lng) => {
             originalSetCenter(lat, lng);
-            // Only load tiles when panning, not zooming
+            // Only load tiles when panning, not zooming. Per-move work is kept
+            // to the minimum a drag needs (viewBox + avatar); the tab-order
+            // refresh rides the debounced settle above.
             debouncedLoad();
-            // Update accessibility when view changes
-            if (this.accessibilityManager) {
-                this.accessibilityManager.updateTabOrder();
-            }
             // Update avatar position
             if (this.avatar) {
                 this.avatar.refresh();
@@ -1953,13 +2125,6 @@ class MapApplication {
                bounds.east > maxLng || bounds.west < minLng;
     }
     
-    applyFiltersToTiles() {
-        // Re-apply every current filter to the (re)loaded tiles. FilterManager
-        // now owns tile filtering (base hide/show, overlay highlight) via the
-        // taxonomy; this just refreshes it after new tiles appear.
-        if (this.filterManager) this.filterManager.applyInitialVisibility();
-    }
-
     isFeatureInViewport(feature, containerRect) {
         const featureRect = feature.getBoundingClientRect();
         

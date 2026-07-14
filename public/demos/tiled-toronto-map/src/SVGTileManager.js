@@ -28,6 +28,17 @@ const TILE_BASE = (() => {
 // zoom >= its minZoom (so the list is tried high-to-low). The coarse sets drop
 // features below the readable-"m" floor for that zoom (see RENDERING_AT_SCALE.md),
 // so zooming out fetches fewer AND lighter tiles.
+// The index's `tiles` list is a bare array of FILENAME STRINGS (slimmed — every
+// other per-entry field was derivable or unread, and the whole-city list is
+// 21,760 entries per band). Object entries ({file}/{id}) are still accepted:
+// older indexes and local dev tile sets use them.
+function tileIdSet(tiles) {
+    return new Set((tiles || [])
+        .map((t) => String(typeof t === 'string' ? t : (t.file || t.id || ''))
+            .replace(/\.svg(\.gz)?$/, ''))
+        .filter(Boolean));
+}
+
 const LOD_BANDS = [
     { name: 'lod22', minZoom: 22 },  // zoom in: ~individuals, full inspection
     { name: 'lod21', minZoom: 21 },
@@ -119,19 +130,22 @@ export class SVGTileManager {
         if (this.tileIndex) return this.tileIndex;
         
         try {
-            // Add timestamp to bypass cache
-            const indexUrl = `${this.indexUrl}?t=${Date.now()}`;
-            const response = await fetch(indexUrl);
+            // NO cache-buster (the old ?t=Date.now() forced a full re-download
+            // of the multi-megabyte whole-city index on EVERY visit and band
+            // switch): the server now compresses the index in transit and
+            // caches it for only 5 minutes, so a tile republish still
+            // propagates quickly. Tile URLs carry ?v=<version> for their own
+            // cache busting, as before.
+            const response = await fetch(this.indexUrl);
             this.tileIndex = await response.json();
-            // Content version (from the index, fetched fresh above) appended to
-            // tile URLs so a tile republish busts the browser cache for everyone
-            // — without it, the 24h max-age on stable tile URLs hides updates.
+            // Content version (from the index, at most 5 minutes stale)
+            // appended to tile URLs so a tile republish busts the browser
+            // cache for everyone — without it, the 24h max-age on stable
+            // tile URLs hides updates.
             this.tileVersion = this.tileIndex.version || null;
             // The set of tile ids that actually exist, so empty cells in a sparse
             // map aren't mistaken for load failures.
-            this.existingTileIds = new Set((this.tileIndex.tiles || [])
-                .map(t => String(t.file || t.id || '').replace(/\.svg(\.gz)?$/, ''))
-                .filter(Boolean));
+            this.existingTileIds = tileIdSet(this.tileIndex.tiles);
             // Per-region coverage rectangles, for the "outside the mapped area" test.
             this.regions = this.tileIndex.regions || null;
             // Remember this band's index so a later switch back doesn't re-fetch it.
@@ -364,12 +378,11 @@ export class SVGTileManager {
         let bi = this.bandIndex[band];
         if (!bi) {
             try {
-                const r = await fetch(this.bandBase(band) + 'tile-index.json?t=' + Date.now());
+                const r = await fetch(this.bandBase(band) + 'tile-index.json');
                 const idx = await r.json();
                 bi = this.bandIndex[band] = {
                     tileIndex: idx,
-                    existingTileIds: new Set((idx.tiles || [])
-                        .map(t => String(t.file || t.id || '').replace(/\.svg(\.gz)?$/, '')).filter(Boolean)),
+                    existingTileIds: tileIdSet(idx.tiles),
                     tileVersion: idx.version || null,
                     regions: idx.regions || null,
                 };

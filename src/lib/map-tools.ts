@@ -467,6 +467,9 @@ export async function findPlace(args: {
       category: s.category as string | undefined,
       subtype: (s.subtype as string) || undefined,
       lat, lng,
+      // The feature's stable id — pass-through for show_on_map, so the visual
+      // map can land focus on the exact tile feature, not just the point.
+      ...(s.osm_id ? { osm_id: String(s.osm_id) } : {}),
       ...(args.near ? { distance_m: Math.round(metresBetween(args.near.lat, args.near.lon, lat, lng)), ...dir } : {}),
       ...(s.parent ? { in: s.parent as string } : {}),
       ...(s.access ? { access: s.access } : {}),

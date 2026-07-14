@@ -202,11 +202,18 @@ export class MapRenderer {
         // Constant-screen sizes: counter the viewBox scale (user units = screen px
         // × 2^(18−zoom)). POI dots stay SMALL and visible; a transparent stroke
         // ring carries the 24px touch target (WCAG 2.5.8) without burying the map.
+        // Written only when the SCALE changes: this runs per pointermove during a
+        // drag, and re-setting custom properties on the SVG root invalidates
+        // style for every descendant that reads them — pure waste during a pan,
+        // where the scale is constant.
         const f = Math.pow(2, 18 - this.zoom);
-        this.svg.style.setProperty('--dot-r', (5 * f) + 'px');      // 10px visible dot
-        this.svg.style.setProperty('--cluster-r', (7 * f) + 'px');  // 14px cluster dot
-        this.svg.style.setProperty('--hit-ring', (14 * f) + 'px');  // → 24px transparent touch
-        this.svg.style.setProperty('--label-size', (13 * f) + 'px');
+        if (this._lastVarScale !== f) {
+            this._lastVarScale = f;
+            this.svg.style.setProperty('--dot-r', (5 * f) + 'px');      // 10px visible dot
+            this.svg.style.setProperty('--cluster-r', (7 * f) + 'px');  // 14px cluster dot
+            this.svg.style.setProperty('--hit-ring', (14 * f) + 'px');  // → 24px transparent touch
+            this.svg.style.setProperty('--label-size', (13 * f) + 'px');
+        }
     }
 
     // Heading-up rotation: rotate the map CONTENT so the user's heading points up,
@@ -221,15 +228,27 @@ export class MapRenderer {
 
     applyRotation() {
         if (!this.rotateGroup) return;
+        // Which labels flip depends on the rotation ANGLE alone — a pan moves
+        // the pivot but never changes the answer. This runs per pointermove
+        // during a drag, and the flip pass is a full-DOM label query + a
+        // classList write per label, so it fires only when the angle actually
+        // changes. (Labels in newly loaded tiles are flipped by the tile
+        // renderer — see renderSVGTiles.)
         if (!this.rotation) {
             this.rotateGroup.removeAttribute('transform');
-            this.applyLabelFlips();   // clears flips at north-up
+            if (this._lastFlipRotation !== 0) {
+                this._lastFlipRotation = 0;
+                this.applyLabelFlips();   // clears flips on RETURN to north-up
+            }
             return;
         }
         const cx = this.viewBox.x + this.viewBox.width / 2;
         const cy = this.viewBox.y + this.viewBox.height / 2;
         this.rotateGroup.setAttribute('transform', `rotate(${-this.rotation} ${cx} ${cy})`);
-        this.applyLabelFlips();
+        if (this._lastFlipRotation !== this.rotation) {
+            this._lastFlipRotation = this.rotation;
+            this.applyLabelFlips();
+        }
     }
 
     // Labels ride the rotating map (road names stay in their casing). When the
@@ -398,6 +417,15 @@ export class MapRenderer {
         const container = this.svg.parentElement;
         const rect = container.getBoundingClientRect();
 
+        // Behind the disclaimer gate the app <main> is display:none and every
+        // measurement is 0×0. Fall back to the WINDOW size (the map container
+        // is the window, less the mobile split panel — a slight overfetch
+        // there, nothing worse) so the warm-up that runs while the disclaimer
+        // is being read sizes the REAL viewport and fetches the right tiles,
+        // not the 800×600 SVG default's two.
+        const width = rect.width || window.innerWidth;
+        const height = rect.height || window.innerHeight;
+
         // Grow/shrink the viewBox AROUND ITS CENTRE (the same convention as
         // setZoom), never from the top-left corner. The stored centre and
         // getBoundsFromView() are centre-derived: an anchored corner leaves
@@ -408,8 +436,8 @@ export class MapRenderer {
         const centerY = this.viewBox.y + this.viewBox.height / 2;
 
         // Update viewport size
-        this.viewport.width = rect.width;
-        this.viewport.height = rect.height;
+        this.viewport.width = width;
+        this.viewport.height = height;
 
         // Recalculate viewBox to maintain zoom level
         const scale = Math.pow(2, this.zoom - 18);
