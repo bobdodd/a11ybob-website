@@ -448,7 +448,7 @@ export async function findPlace(args: {
     // queries (any query containing "street"/"road" matches millions of docs through the text
     // field, each geo-scored) legitimately run 10–12s, and cutting one off mid-scoring returns
     // partial junk — seen live: "Gerrard Street" answered with nearby address nodes at 10s.
-    body: { size: Math.min(60, Math.max(40, limit * 6)), timeout: "15s", query, _source: ["osm_id", "name", "display", "category", "subtype", "lat", "lng", "address", "access", "parent", "info"] },
+    body: { size: Math.min(60, Math.max(40, limit * 6)), timeout: "15s", query, _source: ["osm_id", "name", "display", "category", "subtype", "lat", "lng", "address", "access", "parent", "on_street", "info"] },
   });
 
   // Returned best-first (closeness already folded in above). Drop near-duplicate copies of the
@@ -472,6 +472,7 @@ export async function findPlace(args: {
       ...(s.osm_id ? { osm_id: String(s.osm_id) } : {}),
       ...(args.near ? { distance_m: Math.round(metresBetween(args.near.lat, args.near.lon, lat, lng)), ...dir } : {}),
       ...(s.parent ? { in: s.parent as string } : {}),
+      ...(s.on_street ? { on_street: s.on_street as string } : {}),
       ...(s.access ? { access: s.access } : {}),
       ...(s.info ? { info: s.info } : {}),   // heritage / hours / phone / website / wikipedia link
     });

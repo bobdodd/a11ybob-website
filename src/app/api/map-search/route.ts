@@ -78,6 +78,7 @@ type Result = {
   address?: Record<string, string>;
   access?: Record<string, string>;
   parent?: string;
+  on_street?: string;
 };
 
 export async function GET(req: NextRequest) {
@@ -199,6 +200,7 @@ export async function GET(req: NextRequest) {
           "address",
           "access",
           "parent",
+          "on_street",
         ],
       },
     });
@@ -250,6 +252,7 @@ export async function GET(req: NextRequest) {
         address: s.address as Record<string, string> | undefined,
         access: s.access as Record<string, string> | undefined,
         parent: s.parent as string | undefined,
+        on_street: s.on_street as string | undefined,
       });
     }
   };
