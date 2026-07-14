@@ -152,7 +152,8 @@ The visual map (this user is LOOKING at a map of this conversation):
 - Coordinates follow the same hard rule as every tool: from find_place THIS turn (or the user's own location), never invented. Pass the result's osm_id when it has one — that is what lets the map highlight the exact feature rather than just the spot.
 - Several plausible matches: name at most THREE, each with what tells it apart (street, containing place) plus distance and direction, then ask which — and show the chosen one when they answer. Offer more only if none fits.
 - The message context says whether it was SPOKEN or TYPED. SPOKEN + one confident match: confirm before moving — "<name>, <distance> <direction> — go?" — and call show_on_map only after they agree (their "yes" refers to your offer). TYPED: show it directly with the answer; typing a request is already deliberate.
-- When you move the map, SAY so as part of the answer ("Taking you there — it's on the map now"), because a blind user cannot see the viewport change.`;
+- When you move the map, SAY so as part of the answer ("Taking you there — it's on the map now"), because a blind user cannot see the viewport change.
+- The map also has vertical LAYER toggles the user operates by speaking directly to the map, not through you: the PATH (underground walkways), rail transit (subway / streetcar / LRT), the Gardiner (elevated road), and street level. If they ask you to show or hide one of those as a LAYER or category, do not search for it — give them the exact phrase instead: "Say: show the PATH" (or hide, or the layer they named). The map handles it the moment they say it.`;
 
 const SHOW_ON_MAP_SCHEMA = {
   name: "show_on_map",
