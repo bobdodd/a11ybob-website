@@ -25,7 +25,9 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
-import { TOOL_SCHEMAS, runTool } from "@/lib/map-tools";
+import { readFileSync } from "fs";
+import path from "path";
+import { TOOL_SCHEMAS, runTool, highlightPlaces } from "@/lib/map-tools";
 import { PLACE_KNOWLEDGE_SCHEMA, runPlaceKnowledge } from "@/lib/knowledgeTool";
 import { TRANSIT_NEARBY_SCHEMA, runTransitNearby } from "@/lib/transitTool";
 import { MEMORY_TOOL_SCHEMAS, MemoryStore, runMemoryTool } from "@/lib/memoryTool";
@@ -153,7 +155,65 @@ The visual map (this user is LOOKING at a map of this conversation):
 - Several plausible matches: name at most THREE, each with what tells it apart (street, containing place) plus distance and direction, then ask which — and show the chosen one when they answer. Offer more only if none fits.
 - The message context says whether it was SPOKEN or TYPED. SPOKEN + one confident match: confirm before moving — "<name>, <distance> <direction> — go?" — and call show_on_map only after they agree (their "yes" refers to your offer). TYPED: show it directly with the answer; typing a request is already deliberate.
 - When you move the map, SAY so as part of the answer ("Taking you there — it's on the map now"), because a blind user cannot see the viewport change.
-- The map also has vertical LAYER toggles the user operates by speaking directly to the map, not through you: the PATH (underground walkways), rail transit (subway / streetcar / LRT), the Gardiner (elevated road), and street level. If they ask you to show or hide one of those as a LAYER or category, do not search for it — give them the exact phrase instead: "Say: show the PATH" (or hide, or the layer they named). The map handles it the moment they say it.`;
+- The map also has vertical LAYER toggles the user operates by speaking directly to the map, not through you: the PATH (underground walkways), rail transit (subway / streetcar / LRT), the Gardiner (elevated road), and street level. If they ask you to show or hide one of those as a LAYER or category, do not search for it — give them the exact phrase instead: "Say: show the PATH" (or hide, or the layer they named). The map handles it the moment they say it.
+
+Sets and filters (the map's filter checkboxes, spoken):
+- set_filters: for a PLAIN category ask with NO condition — "show (all) the benches", "hide the buildings", "turn on crossings". It switches the map's own filter checkboxes, visibly. Use feature ids from its description; say what you switched ("Benches are on — they're marked across the map now").
+- highlight_places: for a CONDITIONAL or proximity SET — "accessible restaurants near me", "which crossings have kerb cuts", "cafés with step-free entry". It searches, HIGHLIGHTS every match on the map (up to 25, nearest first) and fits the view. NO confirmation step, spoken or typed — highlighting doesn't relocate the user, and Escape clears it. Answer with the COUNT, then the nearest one or two with distance and direction, and that they can Tab through the results. If count hit capped_at, say you're showing the nearest 25.
+- Be honest about relationships the data doesn't hold: "which intersections have kerb cuts" is answered by highlighting the kerb cuts and crossings themselves — say that is what's shown.
+- Highlighting happens ONLY through these tools — the same hard rule as show_on_map: saying results are on the map without the call is a failure.
+- To clear, the user presses Escape or says "clear results" directly to the map; tell them so if they ask.`;
+
+/* The filter/rotor vocabulary — read once from the tiled demo's taxonomy.json
+ * (the single source of truth the client builds its checkboxes from), so
+ * set_filters speaks exactly the feature ids the client understands. If the
+ * file is missing (misdeploy), the tool validates nothing and the vocabulary
+ * note is absent — degraded, not broken. */
+const TAXONOMY: Map<string, string> = (() => {
+  try {
+    const p = path.join(process.cwd(), "public", "demos", "tiled-toronto-map", "taxonomy.json");
+    const t = JSON.parse(readFileSync(p, "utf8")) as { features?: { id: string; label?: string }[] };
+    return new Map((t.features ?? []).map((f) => [f.id, f.label ?? f.id]));
+  } catch {
+    return new Map();
+  }
+})();
+const TAXONOMY_VOCAB = [...TAXONOMY.entries()].map(([id, label]) => `${id} = ${label}`).join("; ");
+
+const HIGHLIGHT_PLACES_SCHEMA = {
+  name: "highlight_places",
+  description:
+    "Search the map and HIGHLIGHT a result SET on the user's visual map (up to 25, nearest first) — for conditional or proximity set requests: 'accessible restaurants near me', 'which crossings have kerb cuts', 'cafés with step-free entry'. The map highlights every match, fits the view, and the user can Tab through them; Escape clears. Give types (kinds of place) and/or accessibility conditions, or a free-text query. lat/lon defaults to the user's location; for a set near a NAMED place, find_place it first and pass its lat/lon.",
+  input_schema: {
+    type: "object",
+    properties: {
+      types: { type: "array", items: { type: "string" }, description: "Kinds of place/feature (restaurant, cafe, crossing, bench, toilets...). OSM subtype/category values work directly." },
+      query: { type: "string", description: "Free-text search instead of types (used only when types is empty)." },
+      accessibility: {
+        type: "array", items: { type: "string" },
+        description: "Access conditions, ALL required: wheelchair, tactile_paving, step_free, kerb_cut (lowered/flush kerbs) — or a raw access tag (toilets:wheelchair, automatic_door...).",
+      },
+      lat: { type: "number" }, lon: { type: "number" },
+      radius_m: { type: "number", description: "Search radius in metres (default 2000, max 20000)." },
+      limit: { type: "number", description: "Max results (default and cap 25)." },
+    },
+  },
+};
+
+const SET_FILTERS_SCHEMA = {
+  name: "set_filters",
+  description:
+    "Switch the visual map's own FILTER CHECKBOXES — for a PLAIN category ask with no condition: 'show (all) the benches', 'hide the buildings'. The checkboxes visibly change and the map shows/marks that category everywhere. features must be ids from this list: " +
+    (TAXONOMY_VOCAB || "(vocabulary unavailable)"),
+  input_schema: {
+    type: "object",
+    properties: {
+      features: { type: "array", items: { type: "string" }, description: "Taxonomy feature ids to switch." },
+      on: { type: "boolean", description: "true = show/tick (default), false = hide/untick." },
+    },
+    required: ["features"],
+  },
+};
 
 const SHOW_ON_MAP_SCHEMA = {
   name: "show_on_map",
@@ -257,7 +317,7 @@ export async function POST(req: NextRequest) {
   // Map tools + the knowledge & transit tools. Cache the last entry so the whole tool block is cached.
   const allTools = [
     ...TOOL_SCHEMAS, PLACE_KNOWLEDGE_SCHEMA, TRANSIT_NEARBY_SCHEMA, ...MEMORY_TOOL_SCHEMAS,
-    ...(canShowMap ? [SHOW_ON_MAP_SCHEMA] : []),
+    ...(canShowMap ? [SHOW_ON_MAP_SCHEMA, HIGHLIGHT_PLACES_SCHEMA, SET_FILTERS_SCHEMA] : []),
   ];
   const tools = allTools.map((t, i) =>
     i === allTools.length - 1 ? { ...t, cache_control: { type: "ephemeral" as const } } : t,
@@ -266,11 +326,17 @@ export async function POST(req: NextRequest) {
   // A tool may only be given a coordinate the map handed back, or the user's own. See coordGuard.
   const guard = new CoordGuard(loc ? { lat: loc.lat, lon: loc.lon } : undefined);
 
-  // The model's decision to move the visual map, carried out CLIENT-side: the
-  // last show_on_map call of the turn wins (they should never stack anyway).
+  // The model's decision to drive the visual map, carried out CLIENT-side: the
+  // last map-driving call of the turn wins (they should never stack anyway).
+  // Three kinds: a go-to (show_on_map, kind omitted for client back-compat),
+  // a result SET (highlight_places), a filter switch (set_filters).
   // A ref holder, not a bare let: the assignment happens inside the tool-loop
   // callback and TS's flow analysis would narrow a let to never at use sites.
-  const mapAction: { current: { lat: number; lon: number; name?: string; osm_id?: string } | null } = { current: null };
+  type MapAction =
+    | { lat: number; lon: number; name?: string; osm_id?: string }
+    | { kind: "results"; label: string; items: Record<string, unknown>[] }
+    | { kind: "filters"; features: string[]; labels: string[]; on: boolean };
+  const mapAction: { current: MapAction | null } = { current: null };
   const withMap = (payload: Record<string, unknown>) =>
     withMemory({ ...payload, ...(mapAction.current ? { mapAction: mapAction.current } : {}) });
 
@@ -321,6 +387,54 @@ export async function POST(req: NextRequest) {
                   ...(inp.osm_id ? { osm_id: String(inp.osm_id) } : {}),
                 };
                 out = { ok: true, note: `The map is now showing ${inp.name ?? "that place"}.` };
+              } else if (tu.name === "highlight_places") {
+                const inp = tu.input as {
+                  types?: string[]; query?: string; accessibility?: string[];
+                  lat?: number; lon?: number; radius_m?: number; limit?: number;
+                };
+                const near =
+                  typeof inp.lat === "number" && typeof inp.lon === "number"
+                    ? { lat: inp.lat, lon: inp.lon }
+                    : loc ? { lat: loc.lat, lon: loc.lon } : undefined;
+                const found = (await withToolTimeout(
+                  highlightPlaces({
+                    types: inp.types, query: inp.query, accessibility: inp.accessibility,
+                    near, radius_m: inp.radius_m, heading, limit: inp.limit,
+                  }),
+                  tu.name,
+                )) as { count: number; radius_m?: number; capped_at?: number; items: Record<string, unknown>[] };
+                if (found.count > 0) {
+                  // A short human label for the set — the client announces it
+                  // ("7 wheelchair accessible restaurant results on the map").
+                  const label = [
+                    ...(inp.accessibility ?? []).map((a) => a.replace(/[_:]/g, " ")),
+                    ...(inp.types ?? []),
+                  ].filter(Boolean).join(" ") || (inp.query ?? "").trim() || "matching";
+                  mapAction.current = { kind: "results", label, items: found.items };
+                  // The model narrates: count + the nearest few. The client
+                  // already has the full set via mapAction.
+                  out = {
+                    count: found.count,
+                    ...(found.radius_m ? { radius_m: found.radius_m } : {}),
+                    capped_at: found.capped_at,
+                    showing_on_map: true,
+                    nearest: found.items.slice(0, 5),
+                  };
+                } else {
+                  out = found;
+                }
+              } else if (tu.name === "set_filters") {
+                const inp = tu.input as { features?: string[]; on?: boolean };
+                const on = inp.on !== false;
+                const valid = (inp.features ?? []).filter((f) => TAXONOMY.has(f));
+                const unknown = (inp.features ?? []).filter((f) => !TAXONOMY.has(f));
+                if (valid.length === 0) {
+                  out = { error: `No valid feature ids${unknown.length ? ` (unknown: ${unknown.join(", ")})` : ""}. Use ids from the set_filters description.` };
+                } else {
+                  const labels = valid.map((f) => TAXONOMY.get(f)!);
+                  mapAction.current = { kind: "filters", features: valid, labels, on };
+                  out = { ok: true, switched: labels, on, ...(unknown.length ? { unknown } : {}) };
+                }
               } else if (tu.name === "remember" || tu.name === "recall" || tu.name === "forget") {
                 out = runMemoryTool(
                   memory, tu.name, tu.input as Record<string, unknown>,
@@ -387,13 +501,23 @@ export async function POST(req: NextRequest) {
         });
         continue;
       }
-      console.log(`[knowledge-chat] ok ${Date.now() - t0}ms rounds=${round + 1} tools=${toolsUsed.join(",") || "-"}${mapAction.current ? " map=" + (mapAction.current.name ?? "point") : ""}`);
+      const act = mapAction.current;
+      const actDesc = !act ? "" : "kind" in act && act.kind === "results" ? `results:${act.items.length}`
+        : "kind" in act && act.kind === "filters" ? `filters:${act.features.join("+")}:${act.on ? "on" : "off"}`
+        : (act as { name?: string }).name ?? "point";
+      console.log(`[knowledge-chat] ok ${Date.now() - t0}ms rounds=${round + 1} tools=${toolsUsed.join(",") || "-"}${act ? " map=" + actDesc : ""}`);
       if (!reply) {
-        // The model sometimes calls show_on_map and then says nothing (seen
-        // live on a spoken "yes"): the map moved, and "I'm not sure how to
-        // answer that" would contradict a completed action. Narrate the move.
-        if (mapAction.current) {
-          return withMap({ reply: `Taking you to ${mapAction.current.name ?? "that place"} — it's on the map now.` });
+        // The model sometimes drives the map and then says nothing (seen
+        // live on a spoken "yes"): the action happened, and "I'm not sure how
+        // to answer that" would contradict it. Narrate the action instead.
+        if (act) {
+          if ("kind" in act && act.kind === "results") {
+            return withMap({ reply: `${act.items.length} ${act.label} results are on the map — Tab moves through them, Escape clears.` });
+          }
+          if ("kind" in act && act.kind === "filters") {
+            return withMap({ reply: `${act.labels.join(", ")} ${act.on ? "now showing on" : "now hidden from"} the map.` });
+          }
+          return withMap({ reply: `Taking you to ${(act as { name?: string }).name ?? "that place"} — it's on the map now.` });
         }
         return withMap({ reply: "I'm not sure how to answer that — try rephrasing?" });
       }

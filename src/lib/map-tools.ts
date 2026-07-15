@@ -140,7 +140,12 @@ function expandTypes(types: string[]): string[] {
   for (const t of types) {
     const k = (t ?? "").toLowerCase().trim();
     if (!k) continue;
-    for (const v of TYPE_FACETS[k] ?? [k]) out.add(v);
+    // The model passes the user's own word, often PLURAL ("restaurants",
+    // "benches") — OSM values are singular, so try the singular too.
+    const singular = k.replace(/ies$/, "y").replace(/es$/, "").replace(/s$/, "");
+    const mapped = TYPE_FACETS[k] ?? TYPE_FACETS[singular];
+    if (mapped) for (const v of mapped) out.add(v);
+    else { out.add(k); if (singular && singular !== k) out.add(singular); }
   }
   return [...out];
 }
@@ -618,6 +623,131 @@ export async function whatsNearby(args: {
     if (o) extra.nearest_obstacle = o;
   }
   return { radius_m: searchRadius, ...(filtered ? { nearby_m: nearbyM } : {}), results, ...extra };
+}
+
+// ── highlight_places: a result SET for the visual map ────────────────────────
+// "Show me accessible restaurants near me" / "show me which crossings have kerb
+// cuts" — a faceted, access-filtered search that returns up to `limit` matches
+// WITH osm_ids, so the client can highlight them as a set (the conversational
+// counterpart of the filter/rotor checkboxes). Same faceting as whats_nearby's
+// typed path, but: multiple accessibility conditions AND-ed, osm_id carried,
+// and a larger cap (a set, not a shortlist).
+export async function highlightPlaces(args: {
+  types?: string[];
+  query?: string;
+  accessibility?: string[];
+  near?: { lat: number; lon: number };
+  radius_m?: number;
+  heading?: number;
+  limit?: number;
+}) {
+  const limit = Math.min(25, Math.max(1, args.limit ?? 25));
+
+  // The model phrases inputs the way the USER did — normalize rather than
+  // miss: a condition word baked into a type ("accessible restaurants")
+  // moves to the accessibility list; loose access phrases ("wheelchair
+  // accessible") collapse to the index tag.
+  const accessTerms = [...(args.accessibility ?? [])];
+  const types = (args.types ?? []).map((t) => {
+    let s = (t ?? "").toLowerCase().trim();
+    if (/\bstep[- ]?free\b/.test(s)) accessTerms.push("step_free");
+    else if (/\bwheelchair\b|\baccessible\b/.test(s)) accessTerms.push("wheelchair");
+    s = s.replace(/\b(wheelchair|accessible|accessibility|step[- ]?free)\b/g, " ").replace(/\s+/g, " ").trim();
+    return s;
+  }).filter(Boolean);
+  const normAccess = (a: string): string => {
+    const s = (a ?? "").toLowerCase().trim();
+    if (ACCESS_KEYS[s]) return ACCESS_KEYS[s];
+    if (/kerb|curb/.test(s)) return "kerb_cut";
+    if (/step[- ]?free|ramp/.test(s)) return "ramp";
+    if (/wheelchair/.test(s)) return "wheelchair";
+    if (/tactile/.test(s)) return "tactile_paving";
+    return s.replace(/\s+/g, "_");
+  };
+
+  const typeFacets = expandTypes(types);
+  const filter: unknown[] = [EXCLUDE_ANON];
+  for (const tag of new Set(accessTerms.map(normAccess))) {
+    if (!tag) continue;
+    // kerb is VALUE-carrying (lowered/flush/raised): a kerb-cut condition
+    // means the accessible values, never a bare "kerb tag exists" (raised
+    // kerbs are the opposite of what was asked).
+    if (tag === "kerb_cut") filter.push({ terms: { "access.kerb": ["lowered", "flush"] } });
+    else filter.push(accessFilter(tag));
+  }
+  const radius = Math.min(20000, Math.max(100, args.radius_m ?? 2000));
+  if (args.near) {
+    filter.push({ geo_distance: { distance: `${radius}m`, location: { lat: args.near.lat, lon: args.near.lon } } });
+  }
+
+  let query: Record<string, unknown>;
+  if (typeFacets.length) {
+    filter.push({ bool: { should: [{ terms: { subtype: typeFacets } }, { terms: { category: typeFacets } }], minimum_should_match: 1 } });
+    query = { bool: { filter } };
+  } else if ((args.query ?? "").trim().length >= 2) {
+    query = {
+      bool: {
+        must: {
+          multi_match: {
+            query: args.query!.trim(), type: "best_fields",
+            fields: ["display^3", "name^3", "types^2", "text"],
+            fuzziness: "AUTO", max_expansions: 10, minimum_should_match: "2<-1",
+          },
+        },
+        filter,
+      },
+    };
+  } else if (filter.length > 1) {
+    // Accessibility-only ask ("everything with tactile paving near me").
+    query = { bool: { filter } };
+  } else {
+    return { count: 0, items: [], note: "give types, a query, or accessibility conditions" };
+  }
+
+  const res = await opensearch.search({
+    index: INDEX,
+    body: {
+      size: limit * 4,
+      timeout: "15s",
+      query,
+      ...(args.near
+        ? { sort: [{ _geo_distance: { location: { lat: args.near.lat, lon: args.near.lon }, order: "asc", unit: "m", distance_type: "plane", mode: "min" } }] }
+        : {}),
+      _source: ["osm_id", "name", "display", "category", "subtype", "lat", "lng", "access", "on_street", "parent"],
+    },
+  });
+
+  // Dedupe: by osm_id always; ALSO by name+proximity for named things (OSM
+  // splits long features into segments). Nameless furniture (kerb cuts,
+  // benches) dedupes on osm_id alone — every one is a distinct real thing.
+  const seenIds = new Set<string>();
+  const kept: { name: string; lat: number; lng: number }[] = [];
+  const items: Record<string, unknown>[] = [];
+  for (const h of hitsOf(res)) {
+    const s = h._source;
+    const id = s.osm_id ? String(s.osm_id) : h._id;
+    if (seenIds.has(id)) continue;
+    seenIds.add(id);
+    const lat = s.lat as number, lng = s.lng as number;
+    const name = ((s.name as string) ?? "").trim().toLowerCase();
+    if (name && kept.some((k) => k.name === name && metresBetween(k.lat, k.lng, lat, lng) < 60)) continue;
+    if (name) kept.push({ name, lat, lng });
+    items.push({
+      display: (s.display as string) ?? "",
+      category: (s.category as string) || undefined,
+      subtype: (s.subtype as string) || undefined,
+      lat, lng,
+      ...(s.osm_id ? { osm_id: String(s.osm_id) } : {}),
+      ...(args.near
+        ? { distance_m: Math.round(metresBetween(args.near.lat, args.near.lon, lat, lng)), ...direction(args.near.lat, args.near.lon, lat, lng, args.heading) }
+        : {}),
+      ...(s.access ? { access: s.access } : {}),
+      ...(s.on_street ? { on_street: s.on_street as string } : {}),
+      ...(s.parent ? { in: s.parent as string } : {}),
+    });
+    if (items.length >= limit) break;
+  }
+  return { count: items.length, ...(args.near ? { radius_m: radius } : {}), capped_at: limit, items };
 }
 
 // ── Tool 3: area_summary (character, not a feature list) ──────────────────────

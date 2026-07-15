@@ -34,6 +34,7 @@ export const COORD_CONSUMING = new Set([
   "path_between",
   "transit_nearby",
   "place_knowledge",
+  "highlight_places",
   // Moving the user's visual map to an invented point would be worse than a
   // wrong answer — it silently relocates their whole context.
   "show_on_map",
