@@ -94,6 +94,14 @@ const mapping = {
     // Street positioning (set only where nothing else positions the feature —
     // no address, no named container): "on <street>" context, searchable.
     on_street: { ...text, fields: { raw: { type: "keyword" } } },
+    // OWNERSHIP relations (street furniture, Bob's model 2026-07-16): the
+    // road this feature is ON (topology-exact where the node belongs to the
+    // way) and the intersection it is AT (name pair + junction node id).
+    // "Which intersections have kerb cuts" = filter on these + group by
+    // intersection_id — a query, not a join.
+    on_road: { ...text, fields: { raw: { type: "keyword" } } },
+    at_intersection: { ...text, fields: { raw: { type: "keyword" } } },
+    intersection_id: { type: "long" },
     // Raw geometry vertices, stored in _source for EXACT nearest-point distance in
     // /api/map-nearby. Not indexed (enabled:false) — we never query it, only read it.
     geom: { type: "object", enabled: false },

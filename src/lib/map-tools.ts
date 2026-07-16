@@ -134,11 +134,23 @@ const TYPE_FACETS: Record<string, string[]> = {
   petrol: ["fuel"],
   doctor: ["doctors", "clinic"],
   hospital: ["hospital"],
+  // Accessibility street furniture — the index's subtype vocabulary, reached
+  // from every spelling the model relays ("kerb cuts", "curb-cuts"...).
+  curb_cut: ["curb_cut", "kerb"],
+  kerb_cut: ["curb_cut", "kerb"],
+  dropped_kerb: ["curb_cut", "kerb"],
+  lowered_kerb: ["curb_cut", "kerb"],
+  crossing: ["crossing", "uncontrolled_crossing", "signalized_crossing"],
+  pedestrian_crossing: ["crossing", "uncontrolled_crossing", "signalized_crossing"],
+  crosswalk: ["crossing", "uncontrolled_crossing", "signalized_crossing"],
+  traffic_signal: ["signalized_crossing", "traffic_signals"],
 };
 function expandTypes(types: string[]): string[] {
   const out = new Set<string>();
   for (const t of types) {
-    const k = (t ?? "").toLowerCase().trim();
+    // Normalize to the index's snake_case ("curb-cuts" / "curb cuts" ->
+    // curb_cuts) before the facet lookup and the singular fallback.
+    const k = (t ?? "").toLowerCase().trim().replace(/[\s-]+/g, "_");
     if (!k) continue;
     // The model passes the user's own word, often PLURAL ("restaurants",
     // "benches") — OSM values are singular, so try the singular too.
@@ -453,7 +465,7 @@ export async function findPlace(args: {
     // queries (any query containing "street"/"road" matches millions of docs through the text
     // field, each geo-scored) legitimately run 10–12s, and cutting one off mid-scoring returns
     // partial junk — seen live: "Gerrard Street" answered with nearby address nodes at 10s.
-    body: { size: Math.min(60, Math.max(40, limit * 6)), timeout: "15s", query, _source: ["osm_id", "name", "display", "category", "subtype", "lat", "lng", "address", "access", "parent", "on_street", "info"] },
+    body: { size: Math.min(60, Math.max(40, limit * 6)), timeout: "15s", query, _source: ["osm_id", "name", "display", "category", "subtype", "lat", "lng", "address", "access", "parent", "on_street", "on_road", "at_intersection", "info"] },
   });
 
   // Returned best-first (closeness already folded in above). Drop near-duplicate copies of the
@@ -478,6 +490,8 @@ export async function findPlace(args: {
       ...(args.near ? { distance_m: Math.round(metresBetween(args.near.lat, args.near.lon, lat, lng)), ...dir } : {}),
       ...(s.parent ? { in: s.parent as string } : {}),
       ...(s.on_street ? { on_street: s.on_street as string } : {}),
+      ...(s.on_road ? { on_road: s.on_road as string } : {}),
+      ...(s.at_intersection ? { at_intersection: s.at_intersection } : {}),
       ...(s.access ? { access: s.access } : {}),
       ...(s.info ? { info: s.info } : {}),   // heritage / hours / phone / website / wikipedia link
     });
@@ -555,11 +569,11 @@ export async function whatsNearby(args: {
       size: 120,
       query,
       sort: [{ _geo_distance: { location: { lat: args.lat, lon: args.lon }, order: "asc", unit: "m", distance_type: "plane", mode: "min" } }],
-      _source: ["name", "display", "category", "subtype", "lat", "lng", "geom", "access", "types", "info"],
+      _source: ["name", "display", "category", "subtype", "lat", "lng", "geom", "access", "types", "on_road", "at_intersection", "info"],
     },
   });
 
-  type Row = { display: string; category: string; subtype: string; near: Near; access?: unknown; types?: unknown; info?: unknown; lat: number; lng: number };
+  type Row = { display: string; category: string; subtype: string; near: Near; access?: unknown; types?: unknown; info?: unknown; on_road?: unknown; at_intersection?: unknown; lat: number; lng: number };
   const byKey = new Map<string, Row>();
   for (const h of hitsOf(res)) {
     const s = h._source;
@@ -569,7 +583,7 @@ export async function whatsNearby(args: {
     const key = (((s.name as string) ?? "").trim().toLowerCase()) || h._id;
     const prev = byKey.get(key);
     if (!prev || near.dist < prev.near.dist) {
-      byKey.set(key, { display: (s.display as string) ?? "", category: String(s.category ?? ""), subtype: String(s.subtype ?? ""), near, access: s.access, types: s.types, info: s.info, lat: s.lat as number, lng: s.lng as number });
+      byKey.set(key, { display: (s.display as string) ?? "", category: String(s.category ?? ""), subtype: String(s.subtype ?? ""), near, access: s.access, types: s.types, info: s.info, on_road: s.on_road, at_intersection: s.at_intersection, lat: s.lat as number, lng: s.lng as number });
     }
   }
 
@@ -589,6 +603,8 @@ export async function whatsNearby(args: {
       lat: r.lat, lng: r.lng,
       ...(r.access ? { access: r.access } : {}),
       ...(r.types ? { types: r.types } : {}),   // descriptive labels: audible signals, surface quality, etc.
+      ...(r.on_road ? { on_road: r.on_road } : {}),               // ownership: the road it is ON
+      ...(r.at_intersection ? { at_intersection: r.at_intersection } : {}),   // ...and the junction it is AT
       ...(r.info ? { info: r.info } : {}),       // heritage designation, hours/phone/website, wikipedia/wikidata
     });
     if (results.length >= 15) break;
@@ -768,7 +784,7 @@ export async function highlightPlaces(args: {
       ...(anchor
         ? { sort: [{ _geo_distance: { location: { lat: anchor.lat, lon: anchor.lon }, order: "asc", unit: "m", distance_type: "plane", mode: "min" } }] }
         : {}),
-      _source: ["osm_id", "name", "display", "category", "subtype", "lat", "lng", "access", "on_street", "parent"],
+      _source: ["osm_id", "name", "display", "category", "subtype", "lat", "lng", "access", "on_street", "on_road", "at_intersection", "parent"],
     },
   });
 
@@ -798,6 +814,8 @@ export async function highlightPlaces(args: {
         : {}),
       ...(s.access ? { access: s.access } : {}),
       ...(s.on_street ? { on_street: s.on_street as string } : {}),
+      ...(s.on_road ? { on_road: s.on_road as string } : {}),
+      ...(s.at_intersection ? { at_intersection: s.at_intersection } : {}),
       ...(s.parent ? { in: s.parent as string } : {}),
     });
     if (items.length >= limit) break;
