@@ -626,18 +626,28 @@ export async function whatsNearby(args: {
 }
 
 // ── highlight_places: a result SET for the visual map ────────────────────────
-// "Show me accessible restaurants near me" / "show me which crossings have kerb
-// cuts" — a faceted, access-filtered search that returns up to `limit` matches
-// WITH osm_ids, so the client can highlight them as a set (the conversational
-// counterpart of the filter/rotor checkboxes). Same faceting as whats_nearby's
-// typed path, but: multiple accessibility conditions AND-ed, osm_id carried,
-// and a larger cap (a set, not a shortlist).
+// "Show me all the benches" / "accessible restaurants near me" / "benches in
+// Allan Gardens" — a faceted, access-filtered search that returns up to
+// `limit` matches WITH osm_ids, so the client can highlight them as a set.
+//
+// SCOPE (Bob's model, 2026-07-16): "show me" answers about a FRAME —
+//   - default: the user's CURRENT MAP VIEW (the viewport bbox). The answer
+//     also says whether more exist beyond the view (a nearby count).
+//   - near_me: the radius rules, INTERSECTED with the view. A user whose
+//     avatar is outside the view gets user_outside_view instead of an empty
+//     lie — the model offers to bring the map back to them.
+//   - area: a NAMED scope ("in the park", "in the city") overrides the view;
+//     membership is geo (radius around the area's centre) OR containment
+//     (parent name), and the client fits the view to the results.
 export async function highlightPlaces(args: {
   types?: string[];
   query?: string;
   accessibility?: string[];
-  near?: { lat: number; lon: number };
+  near?: { lat: number; lon: number };          // the user — sorting anchor
+  nearMe?: boolean;
   radius_m?: number;
+  viewport?: { north: number; south: number; east: number; west: number };
+  area?: { name?: string; lat?: number; lon?: number; radius_m?: number };
   heading?: number;
   limit?: number;
 }) {
@@ -675,9 +685,48 @@ export async function highlightPlaces(args: {
     if (tag === "kerb_cut") filter.push({ terms: { "access.kerb": ["lowered", "flush"] } });
     else filter.push(accessFilter(tag));
   }
-  const radius = Math.min(20000, Math.max(100, args.radius_m ?? 2000));
-  if (args.near) {
-    filter.push({ geo_distance: { distance: `${radius}m`, location: { lat: args.near.lat, lon: args.near.lon } } });
+  // ── Scope ──
+  const vp = args.viewport;
+  const bboxFilter = vp
+    ? { geo_bounding_box: { location: { top_left: { lat: vp.north, lon: vp.west }, bottom_right: { lat: vp.south, lon: vp.east } } } }
+    : null;
+  const inViewport = (p?: { lat: number; lon: number }) =>
+    !!(p && vp && p.lat <= vp.north && p.lat >= vp.south && p.lon >= vp.west && p.lon <= vp.east);
+
+  let scope: "view" | "near_me" | "area" = "view";
+  if (args.area && (args.area.lat != null || args.area.name)) scope = "area";
+  else if (args.nearMe) scope = "near_me";
+
+  if (scope === "near_me") {
+    // "Near me" while the map shows somewhere ELSE: an empty set would be a
+    // lie of omission — tell the model, so it offers to bring the map home.
+    if (args.near && vp && !inViewport(args.near)) {
+      return { count: 0, items: [], user_outside_view: true, scope };
+    }
+    const radius = Math.min(20000, Math.max(100, args.radius_m ?? 2000));
+    if (args.near) filter.push({ geo_distance: { distance: `${radius}m`, location: { lat: args.near.lat, lon: args.near.lon } } });
+    if (bboxFilter) filter.push(bboxFilter); // clipped to the view
+  } else if (scope === "area") {
+    // Named scope overrides the view: geo around the area's centre OR
+    // containment by name — a bench whose `parent` IS the park counts even
+    // past the radius guess.
+    const a = args.area!;
+    const shoulds: unknown[] = [];
+    if (a.lat != null && a.lon != null) {
+      const r = Math.min(30000, Math.max(200, a.radius_m ?? 1000));
+      shoulds.push({ geo_distance: { distance: `${r}m`, location: { lat: a.lat, lon: a.lon } } });
+    }
+    // operator:and — "Allan Gardens" must match BOTH words, or every
+    // "X Gardens" parent in the region joins the scope (seen live: 3186
+    // "benches in Allan Gardens").
+    if (a.name) shoulds.push({ match: { parent: { query: a.name, operator: "and", fuzziness: "AUTO" } } });
+    if (shoulds.length) filter.push({ bool: { should: shoulds, minimum_should_match: 1 } });
+  } else if (bboxFilter) {
+    filter.push(bboxFilter); // the default frame: what the user is looking at
+  } else if (args.near) {
+    // No viewport sent (shouldn't happen from the tiled client) — fall back
+    // to the old radius behaviour rather than an unbounded sweep.
+    filter.push({ geo_distance: { distance: "2000m", location: { lat: args.near.lat, lon: args.near.lon } } });
   }
 
   let query: Record<string, unknown>;
@@ -704,14 +753,20 @@ export async function highlightPlaces(args: {
     return { count: 0, items: [], note: "give types, a query, or accessibility conditions" };
   }
 
+  // Sort anchor: the USER when known (the numbering means "nearest first"
+  // from them, even for a far-away named scope), else the view's centre.
+  const anchor = args.near
+    ?? (vp ? { lat: (vp.north + vp.south) / 2, lon: (vp.east + vp.west) / 2 } : undefined);
+
   const res = await opensearch.search({
     index: INDEX,
     body: {
       size: limit * 4,
       timeout: "15s",
+      track_total_hits: true,
       query,
-      ...(args.near
-        ? { sort: [{ _geo_distance: { location: { lat: args.near.lat, lon: args.near.lon }, order: "asc", unit: "m", distance_type: "plane", mode: "min" } }] }
+      ...(anchor
+        ? { sort: [{ _geo_distance: { location: { lat: anchor.lat, lon: anchor.lon }, order: "asc", unit: "m", distance_type: "plane", mode: "min" } }] }
         : {}),
       _source: ["osm_id", "name", "display", "category", "subtype", "lat", "lng", "access", "on_street", "parent"],
     },
@@ -747,7 +802,37 @@ export async function highlightPlaces(args: {
     });
     if (items.length >= limit) break;
   }
-  return { count: items.length, ...(args.near ? { radius_m: radius } : {}), capped_at: limit, items };
+
+  const total = (res.body.hits?.total as unknown as { value?: number })?.value ?? items.length;
+
+  // View scope: does the answer stop at the frame's edge? A cheap count in a
+  // wider ring around the view tells the model to say "there are more beyond
+  // the current view" — never a silent truncation.
+  let moreBeyondView = false;
+  if (scope === "view" && vp) {
+    const centre = { lat: (vp.north + vp.south) / 2, lon: (vp.east + vp.west) / 2 };
+    const wideFilter = filter.filter((f) => f !== bboxFilter);
+    wideFilter.push({ geo_distance: { distance: "10000m", location: { lat: centre.lat, lon: centre.lon } } });
+    try {
+      // SDK v3 typing regression (see build-hygiene notes): the query is
+      // dynamically built, so the strict QueryContainer overload rejects it.
+      const wide = await opensearch.count({
+        index: INDEX,
+        body: { query: { bool: { filter: wideFilter } } },
+      } as unknown as Parameters<typeof opensearch.count>[0]);
+      const wideTotal = (wide.body as unknown as { count?: number })?.count ?? 0;
+      moreBeyondView = wideTotal > total;
+    } catch { /* the flag is best-effort */ }
+  }
+
+  return {
+    scope,
+    count: items.length,
+    total_in_scope: total,
+    capped_at: limit,
+    ...(scope === "view" ? { more_beyond_view: moreBeyondView } : {}),
+    items,
+  };
 }
 
 // ── Tool 3: area_summary (character, not a feature list) ──────────────────────

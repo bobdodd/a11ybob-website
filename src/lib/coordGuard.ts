@@ -72,14 +72,15 @@ export function harvestPoints(value: unknown, out: LatLon[] = [], depth = 0): La
   return out;
 }
 
-/** The points a tool call is asking to act AT — the top level, and path_between's from/to. */
+/** The points a tool call is asking to act AT — the top level, and the
+ *  nested points of path_between (from/to) and highlight_places (area). */
 export function pointsRequested(input: unknown): LatLon[] {
   if (input === null || typeof input !== "object") return [];
   const o = input as Record<string, unknown>;
   const out: LatLon[] = [];
   const top = pointOf(o);
   if (top) out.push(top);
-  for (const key of ["from", "to"]) {
+  for (const key of ["from", "to", "area"]) {
     const sub = o[key];
     if (sub && typeof sub === "object") {
       const p = pointOf(sub as Record<string, unknown>);

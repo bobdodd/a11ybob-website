@@ -157,9 +157,13 @@ The visual map (this user is LOOKING at a map of this conversation):
 - When you move the map, SAY so as part of the answer ("Taking you there — it's on the map now"), because a blind user cannot see the viewport change.
 - The map also has vertical LAYER toggles the user operates by speaking directly to the map, not through you: the PATH (underground walkways), rail transit (subway / streetcar / LRT), the Gardiner (elevated road), and street level. If they ask you to show or hide one of those as a LAYER or category, do not search for it — give them the exact phrase instead: "Say: show the PATH" (or hide, or the layer they named). The map handles it the moment they say it.
 
-Sets and filters (the map's filter checkboxes, spoken):
-- set_filters: for a PLAIN category ask with NO condition — "show (all) the benches", "hide the buildings", "turn on crossings". It switches the map's own filter checkboxes, visibly. Use feature ids from its description; say what you switched ("Benches are on — they're marked across the map now").
-- highlight_places: for a CONDITIONAL or proximity SET — "accessible restaurants near me", "which crossings have kerb cuts", "cafés with step-free entry". It searches, HIGHLIGHTS every match on the map (up to 25, nearest first) and fits the view. NO confirmation step, spoken or typed — highlighting doesn't relocate the user, and Escape clears it. Answer with the COUNT, then the nearest one or two with distance and direction, and that they can Tab through the results. If count hit capped_at, say you're showing the nearest 25.
+Sets ("show me ...") and filters — two DIFFERENT things:
+- EVERY "show me ..." request means highlight_places: a bounded, counted answer highlighted on the map. Scope rules:
+  - No qualifier ("show me all the benches"): the set is what's inside the user's CURRENT MAP VIEW. Answer with the in-view count and the nearest one with its distance and direction ("Six benches in view — the nearest is 40 metres at 2 o'clock"); when more_beyond_view is true, add that there are more beyond the current view.
+  - "near me": around the user, clipped to the view. If the tool returns user_outside_view, the map is currently showing somewhere else — say so and OFFER to bring the map back to them; if they agree, call show_on_map at THEIR OWN location.
+  - A named place ("in Allan Gardens", "in Toronto"): find_place it first, then pass area {name, lat, lon, radius_m}. The map moves to fit these results. State the scope honestly, especially at the cap ("the nearest 25 of 340 in Toronto").
+  - After showing: focus lands on the nearest result and Tab walks the set; Escape clears and restores the map. NO confirmation step, spoken or typed — highlighting doesn't relocate the user.
+- set_filters is ONLY for explicit FILTER/LAYER wording — "turn on the benches filter", "hide the buildings layer", "switch crossings off". It changes the map's persistent filter checkboxes: a viewing MODE that follows them as they browse — no count, no focus move, not cleared by Escape. If they said "show me", it is NOT a filter ask.
 - Be honest about relationships the data doesn't hold: "which intersections have kerb cuts" is answered by highlighting the kerb cuts and crossings themselves — say that is what's shown.
 - Highlighting happens ONLY through these tools — the same hard rule as show_on_map: saying results are on the map without the call is a failure.
 - To clear, the user presses Escape or says "clear results" directly to the map; tell them so if they ask.`;
@@ -183,7 +187,7 @@ const TAXONOMY_VOCAB = [...TAXONOMY.entries()].map(([id, label]) => `${id} = ${l
 const HIGHLIGHT_PLACES_SCHEMA = {
   name: "highlight_places",
   description:
-    "Search the map and HIGHLIGHT a result SET on the user's visual map (up to 25, nearest first) — for conditional or proximity set requests: 'accessible restaurants near me', 'which crossings have kerb cuts', 'cafés with step-free entry'. The map highlights every match, fits the view, and the user can Tab through them; Escape clears. Give types (kinds of place) and/or accessibility conditions, or a free-text query. lat/lon defaults to the user's location; for a set near a NAMED place, find_place it first and pass its lat/lon.",
+    "Search the map and HIGHLIGHT a result SET on the user's visual map (up to 25, nearest first). EVERY 'show me ...' request uses this. Scope: by DEFAULT the set is what's inside the user's CURRENT MAP VIEW (the answer says if more exist beyond it). near_me=true scopes to around the user, clipped to the view — user_outside_view in the result means the map is showing somewhere else. For a NAMED scope ('in Allan Gardens', 'in Toronto'), find_place it first and pass area {name, lat, lon, radius_m} — that overrides the view and the map moves to fit. The user gets focus on the nearest result and can Tab through them; Escape clears.",
   input_schema: {
     type: "object",
     properties: {
@@ -193,8 +197,16 @@ const HIGHLIGHT_PLACES_SCHEMA = {
         type: "array", items: { type: "string" },
         description: "Access conditions, ALL required: wheelchair, tactile_paving, step_free, kerb_cut (lowered/flush kerbs) — or a raw access tag (toilets:wheelchair, automatic_door...).",
       },
-      lat: { type: "number" }, lon: { type: "number" },
-      radius_m: { type: "number", description: "Search radius in metres (default 2000, max 20000)." },
+      near_me: { type: "boolean", description: "ONLY when they said 'near me'/'around me': scopes to the user (radius rules, clipped to the current view). NEVER for 'all the X' or an unqualified ask — those are the default view scope, which also reports whether more exist beyond the view." },
+      radius_m: { type: "number", description: "near_me radius in metres (default 2000, max 20000)." },
+      area: {
+        type: "object",
+        description: "A NAMED scope, from a find_place result THIS turn: {name, lat, lon, radius_m}. radius_m ~500-1500 for a park or square, 5000-15000 for a district or city.",
+        properties: {
+          name: { type: "string" }, lat: { type: "number" }, lon: { type: "number" },
+          radius_m: { type: "number" },
+        },
+      },
       limit: { type: "number", description: "Max results (default and cap 25)." },
     },
   },
@@ -244,6 +256,7 @@ export async function POST(req: NextRequest) {
   let body: {
     message?: string; location?: { lat: number; lon: number; heading?: number };
     history?: Turn[]; memory?: unknown; canShowMap?: boolean; modality?: string;
+    viewport?: { north: number; south: number; east: number; west: number };
   };
   try {
     body = await req.json();
@@ -256,6 +269,11 @@ export async function POST(req: NextRequest) {
 
   const loc = body.location;
   const heading = typeof loc?.heading === "number" ? loc.heading : undefined;
+  // The visual client's current view — the default frame for "show me" sets.
+  const vpRaw = body.viewport;
+  const viewport =
+    vpRaw && [vpRaw.north, vpRaw.south, vpRaw.east, vpRaw.west].every((v) => typeof v === "number" && Number.isFinite(v))
+      ? vpRaw : undefined;
   // Aggregate "where is queried" stat — every location the map looks up (fire-and-forget).
   if (loc) recordQueryLocation(loc.lat, loc.lon);
 
@@ -334,7 +352,7 @@ export async function POST(req: NextRequest) {
   // callback and TS's flow analysis would narrow a let to never at use sites.
   type MapAction =
     | { lat: number; lon: number; name?: string; osm_id?: string }
-    | { kind: "results"; label: string; items: Record<string, unknown>[] }
+    | { kind: "results"; label: string; items: Record<string, unknown>[]; fit?: boolean }
     | { kind: "filters"; features: string[]; labels: string[]; on: boolean };
   const mapAction: { current: MapAction | null } = { current: null };
   const withMap = (payload: Record<string, unknown>) =>
@@ -390,19 +408,25 @@ export async function POST(req: NextRequest) {
               } else if (tu.name === "highlight_places") {
                 const inp = tu.input as {
                   types?: string[]; query?: string; accessibility?: string[];
-                  lat?: number; lon?: number; radius_m?: number; limit?: number;
+                  near_me?: boolean; radius_m?: number; limit?: number;
+                  area?: { name?: string; lat?: number; lon?: number; radius_m?: number };
                 };
-                const near =
-                  typeof inp.lat === "number" && typeof inp.lon === "number"
-                    ? { lat: inp.lat, lon: inp.lon }
-                    : loc ? { lat: loc.lat, lon: loc.lon } : undefined;
                 const found = (await withToolTimeout(
                   highlightPlaces({
                     types: inp.types, query: inp.query, accessibility: inp.accessibility,
-                    near, radius_m: inp.radius_m, heading, limit: inp.limit,
+                    near: loc ? { lat: loc.lat, lon: loc.lon } : undefined,
+                    nearMe: inp.near_me === true,
+                    radius_m: inp.radius_m,
+                    viewport,
+                    area: inp.area,
+                    heading, limit: inp.limit,
                   }),
                   tu.name,
-                )) as { count: number; radius_m?: number; capped_at?: number; items: Record<string, unknown>[] };
+                )) as {
+                  scope?: string; count: number; total_in_scope?: number; capped_at?: number;
+                  more_beyond_view?: boolean; user_outside_view?: boolean;
+                  items: Record<string, unknown>[];
+                };
                 if (found.count > 0) {
                   // A short human label for the set — the client announces it
                   // ("7 wheelchair accessible restaurant results on the map").
@@ -410,13 +434,17 @@ export async function POST(req: NextRequest) {
                     ...(inp.accessibility ?? []).map((a) => a.replace(/[_:]/g, " ")),
                     ...(inp.types ?? []),
                   ].filter(Boolean).join(" ") || (inp.query ?? "").trim() || "matching";
-                  mapAction.current = { kind: "results", label, items: found.items };
+                  // fit: only a NAMED scope moves the view — view/near_me sets
+                  // are inside the frame the user is already looking at.
+                  mapAction.current = { kind: "results", label, items: found.items, fit: found.scope === "area" };
                   // The model narrates: count + the nearest few. The client
                   // already has the full set via mapAction.
                   out = {
+                    scope: found.scope,
                     count: found.count,
-                    ...(found.radius_m ? { radius_m: found.radius_m } : {}),
+                    total_in_scope: found.total_in_scope,
                     capped_at: found.capped_at,
+                    ...(found.more_beyond_view != null ? { more_beyond_view: found.more_beyond_view } : {}),
                     showing_on_map: true,
                     nearest: found.items.slice(0, 5),
                   };
