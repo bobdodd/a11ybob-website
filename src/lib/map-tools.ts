@@ -145,6 +145,30 @@ const TYPE_FACETS: Record<string, string[]> = {
   crosswalk: ["crossing", "uncontrolled_crossing", "signalized_crossing"],
   traffic_signal: ["signalized_crossing", "traffic_signals"],
 };
+
+// Incline asks can't facet on subtype — a graded way's subtype is its own
+// kind (path/track); the grade lives as a TERRAIN OVERLAY label in `types`
+// ("Steep inclines (over 8%)") + access.incline. Split incline-flavoured
+// words out of a types request and turn them into types-label match filters
+// ("steep paths" -> the steep-incline label; the way's own kind is not
+// narrowed — a steep track answers a steep-path ask honestly).
+function inclineFilters(terms: string[]): { rest: string[]; filters: unknown[] } {
+  const rest: string[] = [];
+  const filters: unknown[] = [];
+  let steep = false, moderate = false, any = false;
+  for (const t of terms) {
+    const k = (t ?? "").toLowerCase();
+    if (/steep/.test(k)) steep = true;
+    else if (/moderate/.test(k) && /incline|hill|slope|grade/.test(k)) moderate = true;
+    else if (/^(incline|hill|slope|gradient)s?$/.test(k.trim())) any = true;
+    else rest.push(t);
+  }
+  if (steep) filters.push({ match: { types: { query: "steep inclines", operator: "and" } } });
+  if (moderate) filters.push({ match: { types: { query: "moderate inclines", operator: "and" } } });
+  if (any && !steep && !moderate) filters.push({ match: { types: { query: "inclines", operator: "and" } } });
+  return { rest, filters };
+}
+
 function expandTypes(types: string[]): string[] {
   const out = new Set<string>();
   for (const t of types) {
@@ -541,8 +565,10 @@ export async function whatsNearby(args: {
   // sparse target (a supermarket 900 m off) is drowned out by closer roads/shops and never seen.
   // A type-filtered search also hunts a sparser thing, so it searches much WIDER and isn't capped
   // per category. A plain "what's around me" (no type) keeps the local, diversified behaviour.
-  const typeFacets = expandTypes([...(args.types ?? []), ...(args.categories ?? [])]);
-  const filtered = typeFacets.length > 0;
+  const askTerms = [...(args.types ?? []), ...(args.categories ?? [])];
+  const { rest: plainTerms, filters: gradeFilters } = inclineFilters(askTerms);
+  const typeFacets = expandTypes(plainTerms);
+  const filtered = typeFacets.length > 0 || gradeFilters.length > 0;
   // A type search hunts a specific, often sparse thing, so it searches VERY WIDE (up to 100 km) and
   // reports the nearest even when it is far — it never gives up at a short radius. `nearbyM` is only
   // the threshold for WORDING ("nothing within 4 km; the nearest is 13 km away"). A plain "what's
@@ -556,8 +582,12 @@ export async function whatsNearby(args: {
   // Typed loosely (Record<string, unknown>) so the SDK's search overload accepts the dynamic query.
   let query: Record<string, unknown>;
   if (filtered) {
-    // Hard facet: the feature's subtype OR category is one of the requested values.
-    filter.push({ bool: { should: [{ terms: { subtype: typeFacets } }, { terms: { category: typeFacets } }], minimum_should_match: 1 } });
+    // Hard facet: the feature's subtype OR category is one of the requested
+    // values; incline-flavoured terms became types-label filters instead.
+    for (const f of gradeFilters) filter.push(f);
+    if (typeFacets.length) {
+      filter.push({ bool: { should: [{ terms: { subtype: typeFacets } }, { terms: { category: typeFacets } }], minimum_should_match: 1 } });
+    }
     query = { bool: { filter } };
   } else {
     query = { bool: { should: [{ exists: { field: "name" } }], minimum_should_match: 1, filter } };
@@ -691,8 +721,9 @@ export async function highlightPlaces(args: {
     return s.replace(/\s+/g, "_");
   };
 
-  const typeFacets = expandTypes(types);
-  const filter: unknown[] = [EXCLUDE_ANON];
+  const { rest: plainTypes, filters: gradeFilters } = inclineFilters(types);
+  const typeFacets = expandTypes(plainTypes);
+  const filter: unknown[] = [EXCLUDE_ANON, ...gradeFilters];
   for (const tag of new Set(accessTerms.map(normAccess))) {
     if (!tag) continue;
     // kerb is VALUE-carrying (lowered/flush/raised): a kerb-cut condition
@@ -731,6 +762,11 @@ export async function highlightPlaces(args: {
     if (a.lat != null && a.lon != null) {
       const r = Math.min(30000, Math.max(200, a.radius_m ?? 1000));
       shoulds.push({ geo_distance: { distance: `${r}m`, location: { lat: a.lat, lon: a.lon } } });
+      // The parent match alone is NOT scope enough: "Victoria Park" also
+      // matches "Victoria Park Avenue" parents in other cities across the
+      // whole index (seen live — one far outlier exploded the client's fit
+      // to minimum zoom). A WIDE hard geo cap (4× radius) bounds everything.
+      filter.push({ geo_distance: { distance: `${Math.min(60000, r * 4)}m`, location: { lat: a.lat, lon: a.lon } } });
     }
     // operator:and — "Allan Gardens" must match BOTH words, or every
     // "X Gardens" parent in the region joins the scope (seen live: 3186
@@ -746,8 +782,10 @@ export async function highlightPlaces(args: {
   }
 
   let query: Record<string, unknown>;
-  if (typeFacets.length) {
-    filter.push({ bool: { should: [{ terms: { subtype: typeFacets } }, { terms: { category: typeFacets } }], minimum_should_match: 1 } });
+  if (typeFacets.length || gradeFilters.length) {
+    if (typeFacets.length) {
+      filter.push({ bool: { should: [{ terms: { subtype: typeFacets } }, { terms: { category: typeFacets } }], minimum_should_match: 1 } });
+    }
     query = { bool: { filter } };
   } else if ((args.query ?? "").trim().length >= 2) {
     query = {

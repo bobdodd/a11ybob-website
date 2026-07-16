@@ -354,7 +354,7 @@ export async function POST(req: NextRequest) {
   // callback and TS's flow analysis would narrow a let to never at use sites.
   type MapAction =
     | { lat: number; lon: number; name?: string; osm_id?: string }
-    | { kind: "results"; label: string; items: Record<string, unknown>[]; fit?: boolean }
+    | { kind: "results"; label: string; items: Record<string, unknown>[]; fit?: boolean | { lat: number; lon: number; radius_m: number } }
     | { kind: "filters"; features: string[]; labels: string[]; on: boolean };
   const mapAction: { current: MapAction | null } = { current: null };
   const withMap = (payload: Record<string, unknown>) =>
@@ -437,8 +437,15 @@ export async function POST(req: NextRequest) {
                     ...(inp.types ?? []),
                   ].filter(Boolean).join(" ") || (inp.query ?? "").trim() || "matching";
                   // fit: only a NAMED scope moves the view — view/near_me sets
-                  // are inside the frame the user is already looking at.
-                  mapAction.current = { kind: "results", label, items: found.items, fit: found.scope === "area" };
+                  // are inside the frame the user is already looking at. The
+                  // fit target is the ASKED-FOR AREA (centre + radius), never
+                  // the items' extremes: one legitimate far member must not
+                  // zoom the whole map out to fit it (seen live).
+                  const fit = found.scope !== "area" ? false
+                    : (inp.area && typeof inp.area.lat === "number" && typeof inp.area.lon === "number"
+                        ? { lat: inp.area.lat, lon: inp.area.lon, radius_m: inp.area.radius_m ?? 1000 }
+                        : true);
+                  mapAction.current = { kind: "results", label, items: found.items, fit };
                   // The model narrates: count + the nearest few. The client
                   // already has the full set via mapAction.
                   out = {
