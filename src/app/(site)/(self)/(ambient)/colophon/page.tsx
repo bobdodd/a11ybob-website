@@ -1,5 +1,10 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import type { CSSProperties } from "react";
+
+export const metadata: Metadata = {
+  title: "Colophon",
+};
 
 const decisions = [
   {

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { CSSProperties } from "react";
@@ -11,6 +12,16 @@ import {
 
 export function generateStaticParams() {
   return ANALYSERS.map((a) => ({ slug: a.slug }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const analyser = findAnalyser(slug);
+  return { title: analyser ? analyser.name : "Analysers" };
 }
 
 export default async function AnalyserPage({

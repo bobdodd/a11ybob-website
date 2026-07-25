@@ -1,7 +1,12 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { ParadiseSubNav } from "@/components/ParadiseSubNav";
 import { ANALYSERS, FAMILY_LABEL, analysersByFamily } from "@/lib/analysers";
+
+export const metadata: Metadata = {
+  title: "Analysers",
+};
 
 export default function ParadiseAnalysers() {
   const families = analysersByFamily();

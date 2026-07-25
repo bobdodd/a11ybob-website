@@ -1,7 +1,12 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { MapsSubNav } from "@/components/MapsSubNav";
 import { NewTabLink } from "@/components/NewTabLink";
+
+export const metadata: Metadata = {
+  title: "Search and map pin demo",
+};
 
 export default function MapsSearchAndMapPins() {
   return (

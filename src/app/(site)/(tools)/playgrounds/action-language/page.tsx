@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import {
@@ -7,6 +8,10 @@ import {
   STATE_MIGRATION_XML,
 } from "./examples";
 import { ALPlaygroundLoader } from "./ALPlaygroundLoader";
+
+export const metadata: Metadata = {
+  title: "Action Language playground",
+};
 
 export default function ActionLanguagePlayground() {
   return (

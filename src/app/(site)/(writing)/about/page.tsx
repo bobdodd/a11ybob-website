@@ -1,6 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { ImageFigure } from "@/components/ImageFigure";
+
+export const metadata: Metadata = {
+  title: "About",
+};
 
 export default function About() {
   return (

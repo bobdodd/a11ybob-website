@@ -1,6 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { MapsSubNav } from "@/components/MapsSubNav";
+
+export const metadata: Metadata = {
+  title: "Switch access and magnifier support",
+};
 
 export default function SwitchAndMagnifierSupport() {
   return (

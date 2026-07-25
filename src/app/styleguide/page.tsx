@@ -1,5 +1,10 @@
+import type { Metadata } from "next";
 import type { CSSProperties } from "react";
 import { NewTabLink } from "@/components/NewTabLink";
+
+export const metadata: Metadata = {
+  title: "Styleguide",
+};
 
 const scale = [
   ["--s-2", "0.694rem", "small UI / meta"],

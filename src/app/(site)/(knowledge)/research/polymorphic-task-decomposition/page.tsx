@@ -1,8 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { ResearchSubNav } from "@/components/ResearchSubNav";
 import { ImageFigure } from "@/components/ImageFigure";
 import { PTDTaskTree } from "@/components/PTDTaskTree";
+
+export const metadata: Metadata = {
+  title: "Polymorphic Task Decomposition",
+};
 
 export default function PTD() {
   return (

@@ -1,6 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { ResearchSubNav } from "@/components/ResearchSubNav";
+
+export const metadata: Metadata = {
+  title: "The 2029 framework",
+};
 
 export default function FrameworkPage2029() {
   return (

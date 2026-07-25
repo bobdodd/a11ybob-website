@@ -1,7 +1,12 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { ResearchSubNav } from "@/components/ResearchSubNav";
 import { MeasureSubNav } from "@/components/MeasureSubNav";
+
+export const metadata: Metadata = {
+  title: "6. Communities of Practice",
+};
 
 export default function CommunitiesOfPractice() {
   return (

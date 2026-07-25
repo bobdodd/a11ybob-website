@@ -1,6 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { ResearchSubNav } from "@/components/ResearchSubNav";
+
+export const metadata: Metadata = {
+  title: "Accessibility as a property of the dialogue, not the device",
+};
 
 export default function AccessibilityOfDialogue() {
   return (

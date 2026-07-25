@@ -1,7 +1,12 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { ResearchSubNav } from "@/components/ResearchSubNav";
 import { MeasureSubNav } from "@/components/MeasureSubNav";
+
+export const metadata: Metadata = {
+  title: "1. The Question",
+};
 
 export default function TheQuestion() {
   return (

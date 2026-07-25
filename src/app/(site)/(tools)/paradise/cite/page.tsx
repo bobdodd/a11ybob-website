@@ -1,6 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { ParadiseSubNav } from "@/components/ParadiseSubNav";
+
+export const metadata: Metadata = {
+  title: "Citation",
+};
 
 export default function ParadiseCite() {
   return (

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { CSSProperties } from "react";
@@ -5,6 +6,16 @@ import { getReviewById } from "@/lib/reviews";
 import { WritingSubNav } from "@/components/WritingSubNav";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const review = await getReviewById(id);
+  return { title: review ? review.title : "Reviews" };
+}
 
 export default async function ReviewPage({
   params,

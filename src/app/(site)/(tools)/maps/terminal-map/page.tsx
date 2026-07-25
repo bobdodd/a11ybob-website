@@ -1,8 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { MapsSubNav } from "@/components/MapsSubNav";
 import { NewTabLink } from "@/components/NewTabLink";
 import { ImageFigure } from "@/components/ImageFigure";
+
+export const metadata: Metadata = {
+  title: "Terminal map",
+};
 
 export default function MapsTerminalMap() {
   return (

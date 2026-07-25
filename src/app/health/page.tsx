@@ -1,5 +1,10 @@
+import type { Metadata } from "next";
 import { getDb } from "@/lib/mongo";
 import { opensearch } from "@/lib/opensearch";
+
+export const metadata: Metadata = {
+  title: "Backend health",
+};
 
 export const dynamic = "force-dynamic";
 

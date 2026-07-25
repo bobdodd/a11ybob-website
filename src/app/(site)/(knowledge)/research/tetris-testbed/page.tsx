@@ -1,6 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { ResearchSubNav } from "@/components/ResearchSubNav";
+
+export const metadata: Metadata = {
+  title: "Tetris as accessibility testbed",
+};
 
 export default function TetrisTestbed() {
   return (

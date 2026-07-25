@@ -1,5 +1,10 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import type { CSSProperties } from "react";
+
+export const metadata: Metadata = {
+  title: "Automated accessibility testing",
+};
 
 /* /automated-testing — five proof-of-concept accessibility-AI
  * demonstrations. The prompts, responses, and discussion text

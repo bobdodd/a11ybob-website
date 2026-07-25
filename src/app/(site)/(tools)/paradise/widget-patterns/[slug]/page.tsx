@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { CSSProperties } from "react";
@@ -10,6 +11,16 @@ import {
 
 export function generateStaticParams() {
   return WIDGET_PATTERNS.map((p) => ({ slug: p.slug }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const pattern = findPattern(slug);
+  return { title: pattern ? pattern.name : "Widget patterns" };
 }
 
 export default async function PatternPage({

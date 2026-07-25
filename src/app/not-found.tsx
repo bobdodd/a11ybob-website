@@ -1,6 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { SiteShell } from "@/components/SiteShell";
+
+export const metadata: Metadata = {
+  title: "Not found",
+};
 
 export default function NotFound() {
   return (

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { searchGlossary } from "@/lib/glossary";
@@ -16,6 +17,10 @@ import {
   GlossaryResultCard,
 } from "@/components/ResultCards";
 import { WritingSubNav } from "@/components/WritingSubNav";
+
+export const metadata: Metadata = {
+  title: "Glossary",
+};
 
 export const dynamic = "force-dynamic";
 

@@ -1,6 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { MapsSubNav } from "@/components/MapsSubNav";
+
+export const metadata: Metadata = {
+  title: "Accessible maps",
+};
 
 export default function Maps() {
   return (

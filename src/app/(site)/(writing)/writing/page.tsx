@@ -1,6 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { WritingSubNav } from "@/components/WritingSubNav";
+
+export const metadata: Metadata = {
+  title: "Writing",
+};
 
 export default function Writing() {
   return (

@@ -1,7 +1,12 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { MapsSubNav } from "@/components/MapsSubNav";
 import { NewTabLink } from "@/components/NewTabLink";
+
+export const metadata: Metadata = {
+  title: "Conversational map",
+};
 
 const PHONETIC_CODES = `Matching by sound means giving every name a sound-code. The common
 encoder, double metaphone, is too coarse — the codes collide:

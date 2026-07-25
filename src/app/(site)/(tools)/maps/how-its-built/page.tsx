@@ -1,6 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { MapsSubNav } from "@/components/MapsSubNav";
+
+export const metadata: Metadata = {
+  title: "How an accessible map is built",
+};
 
 const SUBSTRATE = `// What is actually stored: points in space, with grouped properties.
 // No edges. No circuits. No "convenience". Just coordinates + attributes.

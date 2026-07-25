@@ -1,6 +1,12 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { ParadiseSubNav } from "@/components/ParadiseSubNav";
+
+export const metadata: Metadata = {
+  title: "Widget patterns",
+};
+
 import {
   WIDGET_PATTERNS,
   CATEGORY_LABEL,

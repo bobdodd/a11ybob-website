@@ -1,4 +1,9 @@
+import type { Metadata } from "next";
 import type { CSSProperties } from "react";
+
+export const metadata: Metadata = {
+  title: "Contact",
+};
 
 export default function Contact() {
   return (

@@ -1,5 +1,10 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import type { CSSProperties } from "react";
+
+export const metadata: Metadata = {
+  title: "Lived User Testing",
+};
 
 export default function LivedUserTesting() {
   return (

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { CSSProperties } from "react";
@@ -5,6 +6,16 @@ import { getGlossaryById } from "@/lib/glossary";
 import { WritingSubNav } from "@/components/WritingSubNav";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const entry = await getGlossaryById(id);
+  return { title: entry ? entry.term : "Glossary" };
+}
 
 export default async function GlossaryEntry({
   params,
