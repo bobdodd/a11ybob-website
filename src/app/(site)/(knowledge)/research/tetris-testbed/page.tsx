@@ -119,6 +119,14 @@ export default function TetrisTestbed() {
             <h2>Reading on</h2>
             <ul>
               <li>
+                <Link href="/adaptation/accessible-tetris">
+                  Accessible Tetris: a case study
+                </Link>{" "}
+                — the full case study, from the game&rsquo;s demands
+                through the sonic metaphors and architecture to the
+                web demonstrator now planned.
+              </li>
+              <li>
                 <Link href="/research/spotlight/tetris-audio">
                   Spotlight: Audio Tetris
                 </Link>{" "}

@@ -387,11 +387,12 @@ export default function About() {
               </p>
               <ImageFigure
                 sidebar
-                src="/about/tetris.jpg"
-                alt="Tetris screenshot with multicoloured falling blocks partly filling a play field on a backdrop of aurora-lit forest. Side panels show score 1400, lines 17, level 2, game type 'Fantasy.'"
-                frameN={4}
-                frameD={3}
-                triggerLabel="the Tetris screenshot"
+                contain
+                src="/images/adaptation/fig-board.png"
+                alt="Annotated diagram of a Tetris playing area, ten columns wide by twenty visible rows. A purple T-shaped tile is falling mid-field, and a dashed T outline near the bottom marks its ghost landing position. The stack of locked tiles across the bottom forms the silhouette, with an arrow marking a one-column gap in it. Side panels show a Hold box containing a J piece, a Next box containing an S piece, and a score panel reading score 1400, lines 17, level 2. A dashed strip above the field marks the two hidden spawn rows."
+                frameN={3}
+                frameD={2}
+                triggerLabel="the Tetris anatomy diagram"
                 captionText="Tetris as accessibility testbed — mode, timing, modality and decision-making in a single artefact."
                 caption={
                   <>

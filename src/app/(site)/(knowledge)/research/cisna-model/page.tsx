@@ -199,6 +199,13 @@ export default function CisnaModel() {
                 <Link href="/paradise">Paradise</Link> — the working
                 analyser whose IR descends from this lineage.
               </li>
+              <li>
+                <Link href="/adaptation/accessible-tetris">
+                  Accessible Tetris: a case study
+                </Link>{" "}
+                — CISNA applied to a real-time game: the thesis&rsquo;s
+                rendering case study, revisited for the web.
+              </li>
             </ul>
           </section>
         </div>

@@ -147,6 +147,14 @@
   --rule:      oklch(75% 0.045 250);
 }
 
+[data-zone="adaptation"] {
+  --surface-1: oklch(95% 0.045 65);
+  --surface-2: oklch(90% 0.045 65);
+  --ink:       oklch(20% 0.02 65);
+  --ink-muted: oklch(35% 0.02 65);
+  --rule:      oklch(75% 0.045 65);
+}
+
 [data-zone="ambient"] {
   --surface-1: oklch(95% 0.012 270);
   --surface-2: oklch(90% 0.012 270);
@@ -237,6 +245,14 @@
     --ink:       oklch(96% 0.02 250);
     --ink-muted: oklch(75% 0.02 250);
     --rule:      oklch(40% 0.045 250);
+  }
+
+  [data-zone="adaptation"] {
+    --surface-1: oklch(20% 0.045 65);
+    --surface-2: oklch(26% 0.045 65);
+    --ink:       oklch(96% 0.02 65);
+    --ink-muted: oklch(75% 0.02 65);
+    --rule:      oklch(40% 0.045 65);
   }
 
   [data-zone="ambient"] {

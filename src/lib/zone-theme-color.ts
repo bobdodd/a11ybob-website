@@ -24,6 +24,7 @@ export type ZoneName =
   | "about"
   | "writing"
   | "research"
+  | "adaptation"
   | "paradise"
   | "tools"
   | "playgrounds"
@@ -38,6 +39,7 @@ export const ZONE_THEME_COLORS: Record<ZoneName, { light: string; dark: string }
   tools:       { light: "oklch(95% 0.04 190)",  dark: "oklch(20% 0.04 190)"  },
   paradise:    { light: "oklch(95% 0.04 215)",  dark: "oklch(20% 0.04 215)"  },
   research:    { light: "oklch(95% 0.045 250)", dark: "oklch(20% 0.045 250)" },
+  adaptation:  { light: "oklch(95% 0.045 65)",  dark: "oklch(20% 0.045 65)"  },
   ambient:     { light: "oklch(95% 0.012 270)", dark: "oklch(20% 0.012 270)" },
   playgrounds: { light: "oklch(95% 0.045 305)", dark: "oklch(20% 0.045 305)" },
 };
