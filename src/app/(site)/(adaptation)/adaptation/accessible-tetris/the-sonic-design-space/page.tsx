@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import type { CSSProperties } from "react";
 import { TetrisSubNav } from "@/components/TetrisSubNav";
 
@@ -260,6 +261,25 @@ export default function TheSonicDesignSpace() {
               basic as whether the news is good or bad, so that
               whatever design space renders it can find an expression
               with equivalent force.
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
+            <h2>Sorting the seven</h2>
+            <p>
+              Seven devices, invented separately and judged separately,
+              are a ledger rather than an argument. Sorting them by the
+              kind of figure each one uses, metaphor, metonym, allegory
+              or no figure at all, turns the ledger into a finding, and
+              the finding is not the one I expected:{" "}
+              <Link href="/adaptation/accessible-tetris/the-rhetoric-of-sound">
+                the literal mappings failed and the figurative ones
+                survived
+              </Link>
+              .
             </p>
           </section>
         </div>

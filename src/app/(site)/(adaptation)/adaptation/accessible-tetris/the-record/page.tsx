@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import type { CSSProperties } from "react";
 import { TetrisSubNav } from "@/components/TetrisSubNav";
 import { NewTabLink } from "@/components/NewTabLink";
@@ -304,9 +305,24 @@ export default function TheRecord() {
               retiring pitch-fit in favour of the terrain scan&rsquo;s
               consonance-as-quality encoding, or retiring the old
               sonar entirely. This is the kind of defect a design
-              review against the literature is for. I did not see it
-              until the survey forced the two metaphors into one
-              table.
+              review against the literature is for. Because I was
+              evaluating each metaphor independently, the clash was
+              invisible: it only surfaced when I set out to build a
+              newer and more complete version and put the old and new
+              palettes into a single table.
+            </p>
+            <p>
+              What may yet save both encodings is the concept of
+              adaptation itself. Adapting for a person means holding a
+              large catalogue of interaction techniques and selecting
+              among them to meet capability in a context of use, so
+              one player might receive the pitch-fit sonar and another
+              the consonance encoding, without either being{" "}
+              <em>the</em>{" "}answer. Two metaphors that collide when
+              stacked in one rendering may sit perfectly well as
+              alternatives the{" "}
+              <Link href="/research/cisna-model">Adaptation layer</Link>{" "}
+              chooses between. That is what the CISNA model was for.
             </p>
             <p>
               <strong>
@@ -357,18 +373,39 @@ export default function TheRecord() {
           >
             <h2>What I simply hadn&rsquo;t considered</h2>
             <p>
-              <strong>Co-design, not just evaluation.</strong>{" "}The
+              <strong>Co-design, and its limits here.</strong>{" "}The
               pattern behind the recent successes is hard to miss.
               Forza&rsquo;s blind-driving assists were built through
               years of collaboration with blind consultants; The Vale
               was developed with CNIB consultation. My plans, 2009 and
               2026 alike, treated blind players as <em>evaluators</em>{" "}
-              at the end of the pipeline, not designers at the start
-              of it. Given that I work at CNIB, surrounded by the very
-              expertise those studios sought out, this is the most
-              embarrassing gap in the plan and the easiest to fix. The
-              metaphor prototypes of the build&rsquo;s first phase
-              should be co-design sessions, not demos.
+              at the end of the pipeline, not designers at the start of
+              it. I work as a consultant in digital accessibility,
+              surrounded by the expertise those studios went looking
+              for, so the gap would be an easy one to close.
+            </p>
+            <p>
+              Maybe. Having sat with that criticism, I think it
+              misidentifies what this work is. Research is not product
+              design. It proposes a thesis, hypotheses and research
+              questions, and then finds appropriate ways of exploring
+              them; it is not goal-based, and it does not map neatly
+              onto interviews, surveys and co-design sessions run to
+              meet specific inclusion targets. If my goal were to
+              measure the effectiveness of any of these metaphors,
+              metonyms or allegories, there would be a clear goal and
+              co-design would be the clear and correct approach. Here,
+              a basic smoke test of a metaphor is enough to inform the
+              research, and very small sets of testers, as test
+              subjects rather than collaborators, were in my view
+              enough. Testing ideas is not testing, or designing,
+              products.
+            </p>
+            <p>
+              The distinction matters most at the point where the two
+              meet. A demonstrator built to be played, rather than a
+              metaphor built to be probed, is a product claim, and it
+              earns the obligation the studios accepted.
             </p>
             <p>
               <strong>Motor and cognitive access.</strong> My analysis

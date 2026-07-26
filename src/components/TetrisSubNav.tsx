@@ -16,6 +16,7 @@ const SUB_PAGES = [
   { href: `${BASE}/the-game`, label: "The game and the player" },
   { href: `${BASE}/why-assistive-technology-fails`, label: "Why assistive technology fails" },
   { href: `${BASE}/the-sonic-design-space`, label: "The sonic design space" },
+  { href: `${BASE}/the-rhetoric-of-sound`, label: "The rhetoric of sound" },
   { href: `${BASE}/an-architecture-for-adaptation`, label: "An architecture for adaptation" },
   { href: `${BASE}/what-the-browser-makes-possible`, label: "What the browser makes possible" },
   { href: `${BASE}/the-record`, label: "The record" },

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import type { CSSProperties } from "react";
 import { TetrisSubNav } from "@/components/TetrisSubNav";
 
@@ -153,6 +154,24 @@ export default function WhatTheBrowserMakesPossible() {
               architecture. The game&rsquo;s information space
               decomposes into three switchable first-person listening
               perspectives.
+            </p>
+            <p>
+              These are the point at which the design stops offering
+              single figures and starts offering{" "}
+              <Link href="/adaptation/accessible-tetris/the-rhetoric-of-sound">
+                allegory
+              </Link>
+              : each view is a sustained frame with its own internal
+              logic, inside which many separate mappings cohere rather
+              than merely coexisting. That is what answers the
+              complaint the case study opens with, that interfaces
+              yield up a large number of figures with no guarantee of
+              consistency between them. A frame buys the consistency
+              wholesale. The Well is the proof: inside it the sonar
+              stops being a borrowed figure and becomes native, because
+              depth-sounding a surface below you is the literal
+              activity the frame describes rather than an analogy the
+              listener has to accept.
             </p>
             <figure>
               <img

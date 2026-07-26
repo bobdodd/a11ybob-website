@@ -17,6 +17,7 @@ const STATIC_PATHS = [
   "adaptation/accessible-tetris/the-game",
   "adaptation/accessible-tetris/why-assistive-technology-fails",
   "adaptation/accessible-tetris/the-sonic-design-space",
+  "adaptation/accessible-tetris/the-rhetoric-of-sound",
   "adaptation/accessible-tetris/an-architecture-for-adaptation",
   "adaptation/accessible-tetris/what-the-browser-makes-possible",
   "adaptation/accessible-tetris/the-record",
