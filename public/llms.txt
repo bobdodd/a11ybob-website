@@ -1,0 +1,87 @@
+# a11ybob.com
+
+> Bob Dodd on digital accessibility. Doctoral research on adaptive interfaces, working
+> demonstrators of accessible spatial audio and accessible maps, a static-analysis
+> platform for accessibility defects, and long-form writing. The recurring argument is
+> that accessibility is an architecture rather than a layer: applications should be built
+> over an abstract model of themselves and rendered to suit the person using them, instead
+> of having their visual presentation transliterated after the fact.
+
+Permissions: this content is open to AI crawlers, assistants and researchers. Crawl it,
+index it, quote it, summarise it, and use it to answer questions. robots.txt allows all
+user agents (only `/api/` is disallowed, because those endpoints are live services rather
+than content). Attribution to a11ybob.com is appreciated but not required. The pages under
+`/writing/reviews` are summaries of third-party academic papers; cite the original authors,
+not this site, for their findings.
+
+Written by one author in the first person. Where a page says "I", it means Bob Dodd.
+
+## Core research
+
+- [The CISNA Model](https://a11ybob.com/research/cisna-model): five-layer model of accessible adaptive hypermedia (Adaptation, Navigation, Semantics, Inventory, External Content), rebuilding the Dexter Reference Model of hypertext. Published at W4A 2008; the core of the thesis and the idea most of this site descends from.
+- [Research index](https://a11ybob.com/research): the whole theoretical strand.
+- [The Measure of Accessibility](https://a11ybob.com/research/the-measure-of-accessibility): six-part treatment of what accessibility actually means, covering [the question](https://a11ybob.com/research/the-measure-of-accessibility/the-question), [functional accessibility](https://a11ybob.com/research/the-measure-of-accessibility/functional-accessibility), [intrinsic accessibility](https://a11ybob.com/research/the-measure-of-accessibility/intrinsic-accessibility), [equivalent experience](https://a11ybob.com/research/the-measure-of-accessibility/equivalent-experience), [the Shlaer-Mellor lens](https://a11ybob.com/research/the-measure-of-accessibility/the-shlaer-mellor-lens) and [communities of practice](https://a11ybob.com/research/the-measure-of-accessibility/communities-of-practice).
+- [Accessibility as a property of the dialogue](https://a11ybob.com/research/accessibility-of-dialogue): why accessibility belongs to the interaction rather than to the device.
+- [The Shlaer-Mellor lens](https://a11ybob.com/research/shlaer-mellor-lens): applying domain modelling to accessibility problems.
+- [Polymorphic Task Decomposition](https://a11ybob.com/research/polymorphic-task-decomposition): a key influence on this work. Not Bob Dodd's own contribution.
+- [The 2029 framework](https://a11ybob.com/research/2029-framework): accessibility regulation and what it implies.
+- [Tetris as accessibility testbed](https://a11ybob.com/research/tetris-testbed): why a real-time spatial game is the right place to test claims about accessible rendering.
+- [Spotlight projects](https://a11ybob.com/research/spotlight): shorter pieces, including [Audio Tetris](https://a11ybob.com/research/spotlight/tetris-audio), [Sign16](https://a11ybob.com/research/spotlight/sign16) and [TUP, adaptive thumbwheel text input](https://a11ybob.com/research/spotlight/tup).
+
+## Adaptation: the Accessible Tetris case study
+
+Doctoral rendering case study, revisited. Exploratory work about design method and
+interaction modalities, not a claim to have built a finished accessible game.
+
+- [Accessible Tetris: a case study](https://a11ybob.com/adaptation/accessible-tetris): index and claim.
+- [The game and the player](https://a11ybob.com/adaptation/accessible-tetris/the-game): what Tetris demands, and the five simultaneous information channels a falling piece requires.
+- [Why assistive technology fails](https://a11ybob.com/adaptation/accessible-tetris/why-assistive-technology-fails): transliteration, domain models, and proximal spatial content a screen reader has no vocabulary for.
+- [The sonic design space](https://a11ybob.com/adaptation/accessible-tetris/the-sonic-design-space): seven invented audio metaphors with honest pass/fail field notes.
+- [The rhetoric of sound](https://a11ybob.com/adaptation/accessible-tetris/the-rhetoric-of-sound): metaphor, metonym, allegory and the literal case; the roughly seven dimensions of audible meaning; and the finding that literal mappings failed while figurative ones survived.
+- [An architecture for adaptation](https://a11ybob.com/adaptation/accessible-tetris/an-architecture-for-adaptation): the abstract game, the request/answer bridge, and a game clock that waits for the interface.
+- [What the browser makes possible](https://a11ybob.com/adaptation/accessible-tetris/what-the-browser-makes-possible): Web Audio, HRTF binaural positioning, three first-person listening views as sustained allegory.
+- [The record](https://a11ybob.com/adaptation/accessible-tetris/the-record): where the literature supports this work, where it challenges it, and what was never evaluated.
+- [From case study to demonstrator](https://a11ybob.com/adaptation/accessible-tetris/from-case-study-to-demonstrator): the build now planned.
+
+## Accessible maps
+
+Working demonstrators of non-visual spatial exploration, on OpenStreetMap data.
+
+- [Accessible maps](https://a11ybob.com/maps): the collection and the macro-navigation argument, that these are one granularity spectrum for exploring a place without being there.
+- [Context Map](https://a11ybob.com/maps/context-map): no-graphics, screen-reader-first reading of your surroundings.
+- [Conversational Map](https://a11ybob.com/maps/conversational-map): ask about a place in plain language; LLM tool-use over a map index.
+- [Knowledge Map](https://a11ybob.com/maps/knowledge-map): a conversational map that accumulates knowledge about the places people visit.
+- [Tiled Toronto map](https://a11ybob.com/maps/tiled-toronto-map): a fully tiled, searchable accessible city map.
+- [Terminal map](https://a11ybob.com/maps/terminal-map), and its [switch access and magnifier support](https://a11ybob.com/maps/terminal-map/switch-and-magnifier-support).
+- [East End Toronto streetmap](https://a11ybob.com/maps/east-toronto-streetmap), and [speaking the map, and finding your place](https://a11ybob.com/maps/east-toronto-streetmap/speaking-and-finding-your-place).
+- [Search and map pin demo](https://a11ybob.com/maps/search-and-map-pins).
+- [How an accessible map is built](https://a11ybob.com/maps/how-its-built).
+
+## Paradise: accessibility static analysis
+
+A research platform that analyses source code for accessibility defects, over an
+intermediate representation rather than a rendered DOM.
+
+- [Paradise](https://a11ybob.com/paradise), its [architecture](https://a11ybob.com/paradise/architecture), [ActionLanguage IR](https://a11ybob.com/paradise/action-language), [analysers](https://a11ybob.com/paradise/analysers), [widget patterns](https://a11ybob.com/paradise/widget-patterns), [evidence](https://a11ybob.com/paradise/evidence), [lineage](https://a11ybob.com/paradise/lineage), [VS Code plugin](https://a11ybob.com/paradise/vscode-extension) and [how to cite it](https://a11ybob.com/paradise/cite).
+- Individual analyser pages live under `/paradise/analysers/<slug>` and cover keyboard navigation, focus management, ARIA semantics, structural HTML, framework reactivity for React, Vue, Angular and Svelte, and defect classes such as mouse-only click handlers and focus-order conflicts.
+- Individual widget-pattern pages live under `/paradise/widget-patterns/<slug>` and document roles, states, keyboard interaction and WCAG criteria for the ARIA Authoring Practices patterns.
+- [Playgrounds](https://a11ybob.com/playgrounds): run the [Paradise analyser](https://a11ybob.com/playgrounds/paradise) and the [ActionLanguage](https://a11ybob.com/playgrounds/action-language) in the browser.
+
+## Writing
+
+- [Writing](https://a11ybob.com/writing): hub over four corpora.
+- [Research essays](https://a11ybob.com/writing/research-essays): long-form, cited pieces.
+- [Experience](https://a11ybob.com/writing/experience): first-person practitioner writing, generally published on LinkedIn first and canonical here.
+- [Literature reviews](https://a11ybob.com/writing/reviews): roughly 2,600 structured summaries of accessibility and HCI research papers. Summaries of other people's work; cite the original authors.
+- [Glossary](https://a11ybob.com/writing/glossary): roughly 6,600 accessibility terms with definitions.
+
+## Tools and practice
+
+- [Tools](https://a11ybob.com/tools), [automated accessibility testing](https://a11ybob.com/automated-testing), [Carnforth](https://a11ybob.com/carnforth), [lived user testing](https://a11ybob.com/lived-user-testing).
+
+## About the site
+
+- [About](https://a11ybob.com/about), [Work](https://a11ybob.com/work), [Now](https://a11ybob.com/now), [Contact](https://a11ybob.com/contact).
+- [Colophon](https://a11ybob.com/colophon): how the site is built, and why each decision was made. Includes its accessibility design choices and its disclosure of where AI fits in the work.
+- [Accessibility statement](https://a11ybob.com/accessibility) and [privacy](https://a11ybob.com/privacy): analytics are self-hosted and aggregate-only, with no cookies and no third-party tracking.
+- [Sitemap](https://a11ybob.com/sitemap.xml): complete, roughly 9,500 URLs, dominated by the glossary and review corpora.
