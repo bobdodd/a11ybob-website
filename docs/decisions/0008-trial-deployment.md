@@ -155,7 +155,8 @@ Anticipated a single "production-deploy decision" covering DNS, TLS, managed
 Mongo and the SiteGround cutover. That is not how it happened: DNS and TLS
 went live piecemeal (apex and www on the VPS, Caddy provisioning Let's Encrypt
 automatically, as this entry predicted), and the deploy mechanism changed
-separately, which is what 0009 records. The **managed-Mongo question remains
-open** and is answered nowhere in this log: whichever way it went, it was never
-written down, so the current production database is undocumented and should be
-confirmed and recorded in its own entry.
+separately, which is what 0009 records. The **managed-Mongo question** raised
+here is answered by [0010](0010-production-database.md): the move never
+happened, and production still runs the self-hosted MongoDB installed for this
+trial, now with authentication. The "production target" named below was an
+intention, not an outcome.

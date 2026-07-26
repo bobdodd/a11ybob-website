@@ -103,6 +103,7 @@ until something supersedes them in turn.
 
 Supersedes 0008 on the deploy mechanism. The hosting, firewall, Node,
 MongoDB, OpenSearch, Caddy and pm2 choices in 0008 are untouched here, as is
-its record of what broke during the trial. A future entry should record the
-production database decision, which 0008 left as "managed Mongo for
-production" and which this entry does not verify either way.
+its record of what broke during the trial. The production database question
+this entry declined to answer is now recorded in
+[0010](0010-production-database.md): self-hosted MongoDB with authentication,
+the managed tier having never been adopted.
