@@ -427,6 +427,90 @@ export default function Colophon() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
+            <h2>Every page carries its own title</h2>
+            <p>
+              Each page&rsquo;s browser title is that page&rsquo;s own
+              heading, followed by the site name:{" "}
+              <code>The sonic design space - a11ybob.com</code>,{" "}
+              <code>Colophon - a11ybob.com</code>. Two rules hold it
+              together. The distinguishing words come{" "}
+              <em>first</em>, and the title always matches the{" "}
+              <code>&lt;h1&gt;</code>{" "}at the top of that page.
+            </p>
+            <p>
+              The ordering carries more weight than it looks. A browser
+              tab shows the first few characters of a title and
+              discards the rest; bookmark lists, history search, and
+              the window switcher all truncate from the same end. Lead
+              with the site name and every entry a reader has open
+              reads &ldquo;a11ybob.com&hellip;&rdquo;, which is
+              precisely the part they already know &mdash; the
+              information that would tell them which of their fifteen
+              tabs is the one they want has been cut off. Lead with the
+              page and the truncation costs them nothing.
+            </p>
+            <p>
+              The same ordering decides what a screen-reader user hears.
+              The title is announced on load, before the page content,
+              so it is the first thing spoken after a navigation. Words
+              that identify the page should arrive before boilerplate
+              that never changes; putting the site name first means
+              hearing the same syllables at the start of every
+              announcement and waiting through them for the part that
+              differs. That is a small cost paid on every single page
+              load, which is exactly the kind of cost worth designing
+              out.
+            </p>
+            <p>
+              Matching the title to the <code>&lt;h1&gt;</code>{" "}is the
+              other half, and it is a continuity decision rather than a
+              tidiness one. A screen-reader user hears the title
+              announced, then moves to the first heading; if those two
+              disagree, they have to work out whether the page changed
+              under them, whether they followed the wrong link, or
+              whether the site simply names things inconsistently.
+              Keeping them identical means the answer never has to be
+              worked out at all.
+            </p>
+            <p>
+              This is WCAG 2.4.2 Page Titled, a Level&nbsp;A criterion
+              &mdash; the least demanding tier there is &mdash; and
+              this site failed it outright until recently. Three pages
+              in seventy-six set a title of their own: the two article
+              readers, and one playground. Every other page rendered
+              the bare string <code>a11ybob.com</code>, so every tab,
+              bookmark, and history entry the site produced was
+              indistinguishable from every other. I record that here
+              rather than quietly fixing it, because a site about
+              accessibility earns no exemption from the basics, and
+              because it is a good illustration of how a defect that is
+              invisible while you build a page one at a time becomes
+              obvious the moment you look at the whole site at once.
+            </p>
+            <p>
+              The mechanics keep it from drifting back. The root layout
+              carries a title template &mdash;{" "}
+              <code>%s - a11ybob.com</code>{" "}&mdash; and each page
+              supplies only its own half, so the site name can never be
+              forgotten, misspelled, or separated differently on one
+              page than another. Pages whose content comes from the
+              database resolve their titles from the record itself:
+              glossary terms, literature reviews, research essays,
+              experience pieces, analysers, and widget patterns all
+              take the title from the thing being displayed, so a newly
+              published entry is correctly titled without anyone having
+              to remember. Two pages sit outside the scheme on purpose:
+              the legacy essay URLs, which are redirects and render
+              nothing, and the global error page, which the framework
+              renders from a minimal document the template cannot
+              reach.
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
             <h2>Colour</h2>
             <p>
               Three motivations layered. First, body text on pure white
