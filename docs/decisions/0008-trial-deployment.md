@@ -1,7 +1,16 @@
 # 0008 — Trial deployment
 
 **Date:** 2026-05-15
-**Status:** Accepted
+**Status:** Accepted; **partly superseded** by
+[0009](0009-production-deployment.md) (deploy mechanism only)
+
+> **Read this as history, not as instructions.** The deploy mechanism below
+> (`git pull`, `npm ci`, `npm run build`, `pm2 restart`) is no longer how the
+> site is deployed: see [0009](0009-production-deployment.md), which records
+> the rsync-from-source flow. The trial URL below is also historical, as the
+> site has been live at `https://a11ybob.com` since the DNS cutover. Everything
+> else here (hosting, firewall, Node, MongoDB, OpenSearch, Caddy, pm2, and the
+> account of what broke) still stands.
 
 ## What this is
 
@@ -138,5 +147,15 @@ both here and in `/colophon`:
 
 ## Supersedes / superseded by
 
-Will be superseded by the production-deploy decision (DNS, TLS,
-managed Mongo, content cutover from SiteGround).
+Partly superseded by [0009 — Production deployment: rsync from
+source](0009-production-deployment.md), which records the deploy mechanism as
+it actually is. The rest of this entry stands.
+
+Anticipated a single "production-deploy decision" covering DNS, TLS, managed
+Mongo and the SiteGround cutover. That is not how it happened: DNS and TLS
+went live piecemeal (apex and www on the VPS, Caddy provisioning Let's Encrypt
+automatically, as this entry predicted), and the deploy mechanism changed
+separately, which is what 0009 records. The **managed-Mongo question remains
+open** and is answered nowhere in this log: whichever way it went, it was never
+written down, so the current production database is undocumented and should be
+confirmed and recorded in its own entry.
