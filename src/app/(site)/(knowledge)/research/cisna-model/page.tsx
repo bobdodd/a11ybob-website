@@ -138,6 +138,25 @@ export default function CisnaModel() {
                 ). Published version of the five-layer model with
                 formal definitions. This is what the literature cites.
               </li>
+              <li>
+                <strong>2009</strong> — &ldquo;User Capability in an
+                Adaptive World,&rdquo; MSIADU 2009, with Steve Green and
+                Elaine Pearson (
+                <a href="https://doi.org/10.1145/1631097.1631110">
+                  doi:10.1145/1631097.1631110
+                </a>
+                ). The user side of the same project: separate models of{" "}
+                <em>capability</em>{" "}(what a person can perceive and do,
+                scoped by design space),{" "}
+                <em>capacity</em>{" "}(their settings across contexts, with
+                functional dependencies expressed as actions), and{" "}
+                <em>preference</em>{" "}(their arbitrary choices, held apart
+                from capability on purpose). It re-uses CISNA&rsquo;s
+                adaptation model to version and merge profiles, which is
+                what makes &ldquo;Fred is like Jim except&hellip;&rdquo;
+                expressible. Where CISNA says how content adapts, this says
+                what it adapts to.
+              </li>
             </ul>
           </section>
 
