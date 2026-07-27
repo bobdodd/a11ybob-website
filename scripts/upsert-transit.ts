@@ -14,6 +14,7 @@ import fs from "node:fs";
 import readline from "node:readline";
 import { Client } from "@opensearch-project/opensearch";
 
+import { redactUri } from "./redact.js";
 const OPENSEARCH_URL = process.env.OPENSEARCH_URL ?? "http://localhost:9200";
 const INDEX = "transit-stops";
 const BATCH = 2000;
@@ -56,7 +57,7 @@ async function main() {
     await os.indices.create({ index: INDEX, body: MAPPING as unknown as Record<string, unknown> });
   }
 
-  console.log(`OpenSearch: ${OPENSEARCH_URL}`);
+  console.log(`OpenSearch: ${redactUri(OPENSEARCH_URL)}`);
   console.log(`Source:     ${useStdin ? "<stdin>" : file}`);
   const before = (await os.count({ index: INDEX })).body.count;
   console.log(`Index "${INDEX}" holds ${before} docs — appending (no drop).`);

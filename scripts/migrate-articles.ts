@@ -2,6 +2,7 @@ import { readFile, stat } from "node:fs/promises";
 import { join } from "node:path";
 import { MongoClient, ObjectId } from "mongodb";
 
+import { redactUri } from "./redact.js";
 const MONGODB_URI = process.env.MONGODB_URI ?? "mongodb://localhost:27017";
 const MONGODB_DB = process.env.MONGODB_DB ?? "a11y_paradise";
 const SOURCE_DIR = process.env.ARTICLES_SOURCE_DIR ?? "./articles";
@@ -57,7 +58,7 @@ async function main() {
   const articles = db.collection("articles");
   const versions = db.collection("article_versions");
 
-  console.log(`Mongo:    ${MONGODB_URI} / ${MONGODB_DB}`);
+  console.log(`Mongo:    ${redactUri(MONGODB_URI)} / ${MONGODB_DB}`);
   console.log(`Sources:  ${SOURCE_DIR}`);
   console.log();
   console.log("Wiping articles + article_versions for clean reimport.");

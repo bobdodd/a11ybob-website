@@ -14,6 +14,7 @@ import readline from "node:readline";
 import { Client } from "@opensearch-project/opensearch";
 import { phoneticKeys } from "../src/lib/phonetic";
 
+import { redactUri } from "./redact.js";
 const OPENSEARCH_URL = process.env.OPENSEARCH_URL ?? "http://localhost:9200";
 const INDEX = "map-features";
 const BATCH = 2000; // docs per bulk request (2 lines each)
@@ -121,7 +122,7 @@ async function main() {
     console.error(`no such file: ${file}`);
     process.exit(1);
   }
-  console.log(`OpenSearch: ${OPENSEARCH_URL}`);
+  console.log(`OpenSearch: ${redactUri(OPENSEARCH_URL)}`);
   console.log(`Source:     ${file}`);
 
   if ((await os.indices.exists({ index: INDEX })).body) {

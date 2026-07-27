@@ -1,6 +1,7 @@
 import { MongoClient, ObjectId, type Db } from "mongodb";
 import { Client } from "@opensearch-project/opensearch";
 
+import { redactUri } from "./redact.js";
 const MONGODB_URI = process.env.MONGODB_URI ?? "mongodb://localhost:27017";
 const MONGODB_DB = process.env.MONGODB_DB ?? "a11y_paradise";
 const OPENSEARCH_URL = process.env.OPENSEARCH_URL ?? "http://localhost:9200";
@@ -226,8 +227,8 @@ async function main() {
   const os = new Client({ node: OPENSEARCH_URL });
   await os.info();
 
-  console.log(`Mongo:      ${MONGODB_URI} / ${MONGODB_DB}`);
-  console.log(`OpenSearch: ${OPENSEARCH_URL}`);
+  console.log(`Mongo:      ${redactUri(MONGODB_URI)} / ${MONGODB_DB}`);
+  console.log(`OpenSearch: ${redactUri(OPENSEARCH_URL)}`);
   console.log();
 
   for (const { name, mapping, build } of corpora) {
