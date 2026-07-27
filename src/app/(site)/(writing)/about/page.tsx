@@ -362,8 +362,16 @@ export default function About() {
                   W4A 2008
                 </a>{" "}
                 paper{" "}
-                <em>The CISNA Model of Accessible Adaptive Hypermedia</em>{" "}(with
-                Steve Green and Elaine Pearson). The viva was never taken &mdash;
+                <em>The CISNA Model of Accessible Adaptive Hypermedia</em>{" "}and
+                the{" "}
+                <a href="https://doi.org/10.1145/1631097.1631110">
+                  MSIADU 2009
+                </a>{" "}
+                paper{" "}
+                <em>User Capability in an Adaptive World</em>, which sets out the
+                capability, capacity and preference models beneath the adaptation
+                (both with Steve Green and Elaine Pearson). The viva was never
+                taken &mdash;
                 largely because of a family move to Canada, and CNIB and CELA
                 happening. Two pieces of original
                 conceptual work survived from the period and are still
