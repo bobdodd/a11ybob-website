@@ -880,6 +880,217 @@ export default function DescribingPeople() {
               loud speech in a quiet room, and that is the method my
               own percentages need.
             </p>
+
+            <h3>References</h3>
+
+            <h4>This work</h4>
+            <ul>
+              <li>
+                Dodd, R., Green, S. and Pearson, E. (2009).{" "}
+                <em>User Capability in an Adaptive World</em>.
+                Proceedings of the 1st International Workshop on
+                Multimodal Interfaces in Semantic Interaction, MSIADU
+                &rsquo;09, Beijing.{" "}
+                <a href="https://doi.org/10.1145/1631097.1631110">
+                  doi:10.1145/1631097.1631110
+                </a>
+              </li>
+              <li>
+                Dodd, R., Green, S. and Pearson, E. (2008).{" "}
+                <em>
+                  The CISNA Model of Accessible Adaptive Hypermedia
+                </em>
+                . Proceedings of the International Cross-Disciplinary
+                Conference on Web Accessibility, W4A 2008.{" "}
+                <a href="https://doi.org/10.1145/1368044.1368052">
+                  doi:10.1145/1368044.1368052
+                </a>
+              </li>
+              <li>
+                Dodd, R. (2008).{" "}
+                <em>
+                  20 Years On: the Dexter Model of Hypertext and its
+                  impact on web accessibility
+                </em>
+                . ACM SIGACCESS Accessibility and Computing.
+              </li>
+            </ul>
+
+            <h4>Standards and classifications</h4>
+            <ul>
+              <li>
+                ISO/IEC 24751-1:2008.{" "}
+                <em>
+                  Information technology. Individualized adaptability
+                  and accessibility in e-learning, education and
+                  training. Part 1: Framework and reference model
+                </em>
+                . International Organization for Standardization.
+                Confirmed as current on periodic review in 2020.{" "}
+                <a href="https://www.iso.org/standard/41521.html">
+                  iso.org/standard/41521.html
+                </a>
+              </li>
+              <li>
+                ISO/IEC 24751-2:2008.{" "}
+                <em>
+                  Part 2: &ldquo;Access for all&rdquo; personal needs
+                  and preferences for digital delivery
+                </em>
+                .{" "}
+                <a href="https://www.iso.org/standard/43603.html">
+                  iso.org/standard/43603.html
+                </a>
+              </li>
+              <li>
+                ISO/IEC 24751-3:2008.{" "}
+                <em>
+                  Part 3: &ldquo;Access for all&rdquo; digital resource
+                  description
+                </em>
+                .{" "}
+                <a href="https://www.iso.org/standard/43604.html">
+                  iso.org/standard/43604.html
+                </a>
+              </li>
+              <li>
+                ISO/IEC 24751-4:2023.{" "}
+                <em>
+                  Part 4: &ldquo;Access for all&rdquo; framework for
+                  individualized accessibility and registry server
+                  application programming interface
+                </em>
+                .{" "}
+                <a href="https://www.iso.org/standard/82901.html">
+                  iso.org/standard/82901.html
+                </a>
+              </li>
+              <li>
+                World Health Organization (2001).{" "}
+                <em>
+                  International Classification of Functioning,
+                  Disability and Health
+                </em>
+                . Geneva: WHO.{" "}
+                <a href="https://www.who.int/standards/classifications/international-classification-of-functioning-disability-and-health">
+                  who.int
+                </a>
+              </li>
+              <li>
+                World Wide Web Consortium.{" "}
+                <em>WAI-Adapt</em>, formerly Personalization Semantics.
+                Web Accessibility Initiative.{" "}
+                <a href="https://www.w3.org/WAI/adapt/">
+                  w3.org/WAI/adapt
+                </a>
+              </li>
+            </ul>
+
+            <h4>Ability-based design</h4>
+            <ul>
+              <li>
+                Wobbrock, J.O., Kane, S.K., Gajos, K.Z., Harada, S. and
+                Froehlich, J. (2011).{" "}
+                <em>
+                  Ability-Based Design: Concept, Principles and
+                  Examples
+                </em>
+                . ACM Transactions on Accessible Computing 3(3),
+                article 9.{" "}
+                <a href="https://doi.org/10.1145/1952383.1952384">
+                  doi:10.1145/1952383.1952384
+                </a>
+              </li>
+              <li>
+                Wobbrock, J.O., Gajos, K.Z., Kane, S.K. and
+                Vanderheiden, G.C. (2018).{" "}
+                <em>Ability-Based Design</em>. Communications of the
+                ACM 61(6).{" "}
+                <a href="https://doi.org/10.1145/3148051">
+                  doi:10.1145/3148051
+                </a>
+              </li>
+              <li>
+                Nolte, A., Wobbrock, J.O., Volkmann, T. and Jochems, N.
+                (2022).{" "}
+                <em>
+                  Implementing Ability-Based Design: A Systematic
+                  Approach to Conceptual User Modeling
+                </em>
+                . ACM Transactions on Accessible Computing 15(4).{" "}
+                <a href="https://doi.org/10.1145/3551646">
+                  doi:10.1145/3551646
+                </a>
+              </li>
+            </ul>
+
+            <h4>Adaptive interface generation</h4>
+            <ul>
+              <li>
+                Gajos, K.Z., Weld, D.S. and Wobbrock, J.O. (2010).{" "}
+                <em>
+                  Automatically generating personalized user interfaces
+                  with SUPPLE
+                </em>
+                . Artificial Intelligence 174(12&ndash;13), 910&ndash;950.{" "}
+                <a href="https://doi.org/10.1016/j.artint.2010.05.005">
+                  doi:10.1016/j.artint.2010.05.005
+                </a>
+              </li>
+              <li>
+                Gajos, K.Z., Wobbrock, J.O. and Weld, D.S. (2007).{" "}
+                <em>
+                  Automatically generating user interfaces adapted to
+                  users&rsquo; motor and vision capabilities
+                </em>
+                . Proceedings of the ACM Symposium on User Interface
+                Software and Technology, UIST &rsquo;07.
+              </li>
+            </ul>
+
+            <h4>Inclusive design and population data</h4>
+            <ul>
+              <li>
+                Engineering Design Centre, University of Cambridge.{" "}
+                <em>Inclusive Design Toolkit</em>. Capability scales,
+                capability loss simulation and exclusion calculation.{" "}
+                <a href="https://www.inclusivedesigntoolkit.com/">
+                  inclusivedesigntoolkit.com
+                </a>
+              </li>
+              <li>
+                Engineering Design Centre, University of Cambridge.{" "}
+                <em>Exclusion Calculator</em>.{" "}
+                <a href="https://calc.inclusivedesigntoolkit.com/">
+                  calc.inclusivedesigntoolkit.com
+                </a>
+              </li>
+            </ul>
+
+            <h4>Deployment of AccessForAll</h4>
+            <ul>
+              <li>
+                Raising the Floor.{" "}
+                <em>AccessForAll</em>, and the Global Public Inclusive
+                Infrastructure. Includes the Cloud4All project.{" "}
+                <a href="https://raisingthefloor.org/our-approach-accessforall/">
+                  raisingthefloor.org
+                </a>
+              </li>
+            </ul>
+
+            <h4>Design spaces</h4>
+            <ul>
+              <li>
+                Nesbitt, K.V. (2003).{" "}
+                <em>
+                  Designing Multi-sensory Displays for Abstract Data
+                </em>
+                . PhD thesis, University of Sydney. The source of the
+                visual, auditory and haptic design spaces the subject
+                ontologies are scoped to.
+              </li>
+            </ul>
           </section>
 
           <section
