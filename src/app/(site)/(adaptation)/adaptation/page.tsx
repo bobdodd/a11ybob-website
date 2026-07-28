@@ -36,9 +36,12 @@ export default function Adaptation() {
           >
             <h2>Describing people to computers</h2>
             <p>
-              Software that adapts to a person has to be told what to
-              adapt to, and that description is the part the field has
-              mostly avoided. A companion to my 2009 paper{" "}
+              Software that adapts to a person has to understand the
+              capacity of the user to interact with it, and the
+              specific capabilities of that user together with any
+              preferences they may have. That description is the part
+              the field has mostly avoided. A companion to my 2009
+              paper{" "}
               <em>User Capability in an Adaptive World</em>, rebuilt
               against eighteen worked profiles and surveyed against
               what else now exists: why a preference is not a

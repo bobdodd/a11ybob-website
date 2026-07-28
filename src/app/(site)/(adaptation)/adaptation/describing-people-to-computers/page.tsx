@@ -21,10 +21,12 @@ export default function DescribingPeople() {
           >
             <h1>Describing people to computers</h1>
             <p className="lede">
-              Software that adapts to a person has to be told what to
-              adapt to. That description is the hard part, and it is
-              the part the field has mostly avoided. This is a
-              companion to my 2009 paper{" "}
+              Software that adapts to a person has to understand the
+              capacity of the user to interact with it, and the
+              specific capabilities of that user together with any
+              preferences they may have. That description is the hard
+              part, and it is the part the field has mostly avoided.
+              This is a companion to my 2009 paper{" "}
               <em>User Capability in an Adaptive World</em>, rebuilt
               in 2026 against eighteen worked profiles, with a survey
               of what else now exists.
