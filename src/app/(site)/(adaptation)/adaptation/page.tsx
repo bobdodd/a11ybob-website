@@ -34,6 +34,28 @@ export default function Adaptation() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
+            <h2>Describing people to computers</h2>
+            <p>
+              Software that adapts to a person has to be told what to
+              adapt to, and that description is the part the field has
+              mostly avoided. A companion to my 2009 paper{" "}
+              <em>User Capability in an Adaptive World</em>, rebuilt
+              against eighteen worked profiles and surveyed against
+              what else now exists: why a preference is not a
+              capability, what a system actually needs to know, and
+              what the model still cannot say.
+            </p>
+            <p>
+              <Link href="/adaptation/describing-people-to-computers">
+                Read the capability model
+              </Link>
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
             <h2>Accessible Tetris</h2>
             <p>
               A case study from my doctoral research, revisited: what
