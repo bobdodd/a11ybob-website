@@ -823,11 +823,11 @@ export default function DescribingPeople() {
                       calculator.
                     </td>
                     <td>
-                      Better scales than mine, anchored to concrete
-                      reference points. Different purpose: it assesses
-                      a design&rsquo;s exclusion across a population,
-                      where mine drives one person&rsquo;s runtime
-                      adaptation.
+                      Not a rival model of the person. It rates what a
+                      design demands, which is the other side of the
+                      join, and it is the most developed
+                      population-backed example of that side I have
+                      found.
                     </td>
                   </tr>
                   <tr>
@@ -874,11 +874,13 @@ export default function DescribingPeople() {
               grounding, and deployment.
             </p>
             <p>
-              The most useful thing I take from the survey is
-              practical. The Cambridge scales are anchored to
-              statements a person can recognise, such as understanding
-              loud speech in a quiet room, and that is the method my
-              own percentages need.
+              The survey does not hand me a scale. Cambridge solves
+              the scaling problem on the demand side, where a task can
+              be rated against a population, and that is a different
+              question from asking a person what they can do. The
+              anchored ordinal values my percentages need have to come
+              from people describing themselves, which is interview
+              work rather than borrowed apparatus.
             </p>
 
             <h3>References</h3>
@@ -1149,7 +1151,7 @@ export default function DescribingPeople() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
-            <h2>Where this goes next</h2>
+            <h2>Looking at the larger picture</h2>
             <p>
               A model of the user is half of an adaptive system. The
               other half is a model of the application, abstract
@@ -1159,6 +1161,14 @@ export default function DescribingPeople() {
                 the CISNA model of accessible adaptive hypermedia
               </Link>
               .
+            </p>
+            <p>
+              Modelling capability and capacity helps define user
+              need. Interaction modalities and the metaphors they use
+              have to be considered alongside it, to establish what
+              capabilities a modality requires of the user before it
+              can be used effectively. That is part of an Interaction
+              Model, which matches possible modalities to user need.
             </p>
             <p>
               The two meet in a demonstrator. The{" "}
