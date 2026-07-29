@@ -268,6 +268,86 @@ export default function DescribingPeople() {
               value: full means indefinitely, none means not at all,
               and the minutes exist only in between.
             </p>
+
+            <h3>What a measurement looks like</h3>
+            <p>
+              Minutes are easy, because a person can answer in them.
+              Ten other properties used to carry a percentage instead,
+              and nobody can answer in those. The replacements are
+              ordered scales whose every point is a sentence someone
+              can be asked. The one below is shared by all six colour
+              and intensity channels, because those six decide the
+              same thing between them: which hues and tones may carry
+              meaning.
+            </p>
+
+            <div
+              className="scroll-region"
+              role="region"
+              aria-label="The scale shared by the colour and intensity channels"
+              tabIndex={0}
+            >
+              <table className="comparison-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Point</th>
+                    <th scope="col">What the person is saying</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row">unreliable</th>
+                    <td>
+                      I see something there, but I cannot trust it to
+                      tell things apart.
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">with-support</th>
+                    <td>
+                      Fine for reinforcing something already shown
+                      another way. Never the only cue.
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">when-emphasised</th>
+                    <td>
+                      Works on its own if the difference is large or
+                      strongly saturated.
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">reliably</th>
+                    <td>
+                      Works on its own at ordinary size and
+                      saturation.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p>
+              The other four read the same way. Contrast need runs
+              maximum, strong, raised, typical. Vibration runs
+              strong-only, typical, subtle. Position sense runs
+              needs-watching, needs-landing-check, reliable-unseen.
+              Steadiness runs large-only, unsteady, mostly-steady,
+              steady. They are different lengths on purpose: a scale
+              should be as long as its subject has distinct states,
+              not as long as a house style says.
+            </p>
+            <p>
+              One point on that first scale is worth dwelling on,
+              because it is the one a percentage could never express.
+              A person whose channel is <em>unreliable</em> is not the
+              same as one whose channel is absent. Absent is NONE, and
+              no measurement arises. Unreliable is somebody who
+              perceives the light perfectly well and still cannot
+              discriminate with it, which is what red-green colour
+              blindness actually is. Writing that as a low percentage
+              would suggest dimness, and dimness is not the problem.
+            </p>
           </section>
 
           <section
