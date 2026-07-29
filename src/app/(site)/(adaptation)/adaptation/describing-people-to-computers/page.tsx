@@ -614,6 +614,134 @@ export default function DescribingPeople() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
+            <h2>Templates are views, not compartments</h2>
+            <p>
+              Fifty-nine properties is too many to hand anyone at
+              once, so the model groups them. The paper calls these
+              Capability Templates and defines them as{" "}
+              <q>
+                views of Properties that reflect grouping such as
+                those of Tables 1 to 4
+              </q>
+              , with the crucial rider that{" "}
+              <q>the same Property may exist in many templates</q>.
+            </p>
+            <p>
+              That rider is the whole point, and it is why a template
+              is not a category. Sight appears in both the vision
+              template and the colour one, which is the paper&rsquo;s
+              own example. Key control appears in both input and
+              alternative access, because a key is a key whether it is
+              pressed by a finger or by a head switch. Kinaesthesia
+              appears in both input and touch, because knowing where
+              your hand is belongs to the haptic sense and to the act
+              of aiming equally. Force those overlaps into a single
+              tree and you have to pick a winner, and every pick
+              throws away a real relationship.
+            </p>
+
+            <div
+              className="scroll-region"
+              role="region"
+              aria-label="The seven capability templates"
+              tabIndex={0}
+            >
+              <table className="comparison-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Template</th>
+                    <th scope="col">What it gathers</th>
+                    <th scope="col">Origin</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row">Vision</th>
+                    <td>
+                      Sight, stereo, focus and its duration, tracking
+                      and its duration, and the viewing rectangles.
+                    </td>
+                    <td>Table 3 of the paper.</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Colour</th>
+                    <td>
+                      Sight again, the three colour channels, the three
+                      intensity channels, contrast sensitivity.
+                    </td>
+                    <td>Table 2 of the paper.</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Listening</th>
+                    <td>
+                      Hearing, binaural hearing, usable frequency
+                      range, azimuth and elevation resolution,
+                      concurrent streams, duration.
+                    </td>
+                    <td>Mine.</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Touch</th>
+                    <td>
+                      Touch, vibration detection, kinaesthesia. Both
+                      halves of the haptic space, receiving and
+                      knowing.
+                    </td>
+                    <td>Mine.</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Input</th>
+                    <td>
+                      Pointer and key control, steadiness, minimum
+                      target size, sustained press, repeat delay,
+                      kinaesthesia, speech, head control, duration.
+                    </td>
+                    <td>Mine.</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Alternative access</th>
+                    <td>
+                      Switch sites, activation timing, breath control,
+                      gaze control and accuracy, dwell tolerance, text
+                      entry rate, simultaneous contacts.
+                    </td>
+                    <td>
+                      Mine. Overlaps input on purpose.
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Reading</th>
+                    <td>
+                      Language, the sign and tactile language sets,
+                      reading by sign, touch, print and audio, writing
+                      in each, and the two speech-intelligibility
+                      properties.
+                    </td>
+                    <td>Table 4 of the paper.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p>
+              The templates then group once more, into the four that
+              follow Nesbitt&rsquo;s sensory design spaces and the
+              three that do not. Input, alternative access and reading
+              are not senses. They are things a person does, and the
+              paper explicitly leaves room for them:{" "}
+              <q>
+                it is possible to imagine other groupings, not related
+                to specific design spaces, with use of language one
+                obvious candidate
+              </q>
+              .
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
             <h2>The unit of use is not always one person</h2>
             <p>
               Working through profiles for switch, breath and gaze
@@ -695,6 +823,52 @@ export default function DescribingPeople() {
               not personas: no name, no age, no occupation and no
               narrative, because those invite generalising from a
               character to a population.
+            </p>
+
+            <h3>Fred is like Jim except</h3>
+            <p>
+              None of the eighteen is written out in full. Each is
+              expressed as its difference from a single reference
+              profile, which is the paper&rsquo;s own mechanism:{" "}
+              <q>
+                it is possible to say &lsquo;Fred is like Jim
+                except&hellip;&rsquo;, and starting with Jim&rsquo;s
+                profile, to create Fred&rsquo;s profile describing only
+                the differences between the users
+              </q>
+              . An Instance{" "}
+              <q>adds, modifies, or deletes rows in the Tables</q>, and
+              that is exactly the transaction the code performs.
+            </p>
+            <p>
+              Writing profiles this way is not a storage optimisation.
+              It is what makes them readable. The blind-since-birth
+              exemplar is one changed line, and being one line is the
+              finding: everything else about that person is unremarkable
+              and the model should not pretend otherwise. The reference
+              profile itself is seven lines, because a property only
+              becomes worth recording when its parent is partial.
+              Absent under a NONE and absent under a FULL both mean
+              there is no question left to ask.
+            </p>
+            <p>
+              Three rules in the implementation earn their keep. An add
+              that collides with something already present is refused,
+              and so is a modify of something absent, because both are
+              usually a typo rather than an intention. And a modify
+              replaces the whole row instead of merging into it, so a
+              capability can fall to NONE without a stale measurement
+              surviving underneath it. That last one is the same error
+              as writing nought per cent, arriving by a different route.
+            </p>
+            <p>
+              What is not built is the rest of it. The paper&rsquo;s
+              Adaptation Model also has Event Triggers, Instance
+              Sequences and a sequence number, which together let
+              profiles be composed in a declared order in response to
+              something happening. Without them a profile cannot yet be
+              versioned through time, which is the same gap that makes
+              progressive conditions snapshots rather than histories.
             </p>
 
             <div
