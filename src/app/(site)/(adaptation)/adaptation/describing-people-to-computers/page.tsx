@@ -652,7 +652,7 @@ export default function DescribingPeople() {
                     <th scope="row">Deafened, asymmetric loss</th>
                     <td>
                       Binaural hearing carries a frequency band rather
-                      than a percentage, because an ear that has lost
+                      than a single value, because an ear that has lost
                       only its lower register keeps contributing above
                       the crossover.
                     </td>
@@ -870,17 +870,36 @@ export default function DescribingPeople() {
               functional dependency on external influences, the
               separation of capability from capacity from preference,
               and a formal executable information model underneath it
-              all. What is behind is the scales, the empirical
-              grounding, and deployment.
+              all. What is behind is the empirical grounding and
+              deployment.
             </p>
             <p>
               The survey does not hand me a scale. Cambridge solves
               the scaling problem on the demand side, where a task can
               be rated against a population, and that is a different
-              question from asking a person what they can do. The
-              anchored ordinal values my percentages need have to come
-              from people describing themselves, which is interview
-              work rather than borrowed apparatus.
+              question from asking a person what they can do. So the
+              scales here are built rather than borrowed. The ten
+              percentages are now five ordered scales, each sized to
+              its own subject rather than to a house style, and every
+              point of each one is a sentence somebody can be asked
+              and can answer: a colour channel carries meaning
+              reliably, or only when emphasised, or only as support,
+              or not at all.
+            </p>
+            <p>
+              Replacing them had a consequence beyond tidiness. An
+              ordinal value is not an interval one, so the distance
+              between two neighbouring points is not a quantity and
+              nothing may compute with it. One derived setting had
+              been doing exactly that, scaling a font size by a
+              formula over the stability percentage. That formula
+              asserted a straight line between how steadily someone
+              holds a device and how large text must be, which nobody
+              established and which I invented along with the
+              percentage it multiplied. It is now a declared table of
+              four numbers with names on them, which someone who has
+              watched a person work with a shaking hand can argue
+              with.
             </p>
 
             <h3>References</h3>
@@ -1107,20 +1126,21 @@ export default function DescribingPeople() {
             </p>
             <p>
               <strong>
-                Ten properties still carry percentages nobody can
-                source.
+                The scale points are mine, not anybody&rsquo;s lived
+                experience.
               </strong>{" "}
-              Nobody can report their contrast sensitivity as thirty
-              per cent or their kinaesthesia as twenty-five. Those
-              numbers are pseudo-precision: they look like measurement
-              and are not. The replacement is an anchored ordinal
-              scale of the kind a Likert instrument produces, which
-              the model already supports and which I have not yet
-              applied. It has a consequence worth naming, because a
-              Likert response is ordinal rather than interval:
-              arithmetic on those values has to become a declared
-              lookup, which makes visible an assumption of linearity
-              that the arithmetic was hiding.
+              The percentages are gone and the scales that replaced
+              them ask answerable questions, but where each of the
+              eighteen profiles sits on those scales is still a
+              judgement I made. In thirteen of the fourteen cases I
+              made it by mechanically banding the percentage I had
+              invented in the first place. That is a better shape
+              carrying the same provenance, and it is what
+              interviewing people replaces. The fourteenth is the
+              interesting one: banding put the colour exemplar&rsquo;s
+              red and green channels on the same point, flattening the
+              precise thing that profile exists to show, and I had to
+              overrule it by hand.
             </p>
             <p>
               <strong>Vision has no laterality.</strong> Hemiplegia
