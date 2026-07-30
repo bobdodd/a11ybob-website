@@ -66,10 +66,10 @@ export default function Adaptation() {
               and conflating the two is how adaptive systems come to be
               resented. Four kinds of preference, the rules that decide
               when each applies, and the reason the model advises while
-              the person decides: a handset chosen during my
-              master&rsquo;s research had neither the largest keys nor
-              the largest text, and every model I could have built
-              would have got it wrong.
+              the person decides: a cellphone selected by a test
+              subject during my master&rsquo;s research had neither the
+              largest keys nor the largest text, and was not predicted
+              by my capability model.
             </p>
             <p>
               <Link href="/adaptation/describing-what-people-want">

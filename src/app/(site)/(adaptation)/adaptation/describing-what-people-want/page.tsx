@@ -49,23 +49,27 @@ export default function DescribingWhatPeopleWant() {
               My master&rsquo;s work looked at the accessibility of
               mobile devices, back when they still had physical
               keyboards. Working with a person who has Multiple
-              Sclerosis, I went through a large number of handsets
-              looking for one that suited them. The one they chose was
-              not the one with the largest keys, and not the one with
-              the largest text. It was a handset with blue backlit keys
-              and clear audio confirmation of each press. The
-              illuminated characters were easier for them to read given
-              how the light changed through their own home.
+              Sclerosis as a test subject, I went through a large
+              number of cellphones looking for one that suited them.
+              The one they selected had neither the largest keys nor
+              the largest text. It had blue backlit keys and clear
+              audio confirmation of each press, and they reported that
+              the illuminated characters were easier to read given how
+              the light changed through their own home.
             </p>
             <p>
-              Any model I could have built would have recommended the
-              large keys. What actually decided it was an interaction
-              between the device, the room and the person, and no
-              schema was going to hold that. It is not a gap to be
-              closed by modelling harder. It is the ordinary condition
-              of describing somebody from outside, and the reason a
-              profile has to be treated as a description rather than a
-              finding.
+              My capability model did not predict that choice. It would
+              have pointed at the largest keys and the largest text.
+              What decided it was the backlighting, and how that met
+              the light in one particular home, and my model held
+              neither of those things.
+            </p>
+            <p>
+              I read that as a limit rather than an oversight. A
+              profile describes somebody from outside, and some of what
+              determines whether a thing works for them sits in the
+              room with them. That is the reason I would treat a
+              profile as a description rather than a finding.
             </p>
             <p>
               So the profile advises and the person decides. If someone
@@ -82,13 +86,12 @@ export default function DescribingWhatPeopleWant() {
             </p>
             <p>
               Holding both halves is what makes the disagreement worth
-              something. When a person consistently chooses against
-              what the profile predicts, the likeliest explanation is
-              that the profile is wrong, or that something it never
-              captured is doing the work. An override is the best
-              evidence a model of this kind ever gets, and a system
-              that treated it as user error would be throwing away its
-              only real source of correction.
+              something. When somebody consistently chooses against
+              what the profile predicts, that is worth reading as a
+              question about the profile: whether it is wrong, or
+              whether something it never captured is doing the work. A
+              system that recorded the override as user error would be
+              discarding something it could have learned from.
             </p>
           </section>
 
@@ -112,9 +115,9 @@ export default function DescribingWhatPeopleWant() {
               the mistake myself. Saying capability permits does not
               mean capability constrains. It describes what is likely
               to work and it informs a sensible default, and that is
-              the whole of its authority. A preference that runs
+              as far as I would let its authority run. A preference that runs
               against it is not invalid, and treating it as invalid is
-              exactly the failure the handset case warns about.
+              exactly the failure the cellphone case warns about.
             </p>
           </section>
 
