@@ -229,18 +229,14 @@ export default function DescribingPeople() {
               only which input device is in use.
             </p>
             <p>
-              A note on what follows, for anyone reading with the
-              paper open. It carries four models. The Capability Model
-              in Figure 2 is the schema, the properties themselves and
-              what may be known about a person. The Capacity Model in
-              Figure 3 is one person&rsquo;s values against that
-              schema, gathered into contexts. The Preference Model in
-              Figure 4 covers what they would rather, and the
-              Adaptation Model in Figure 5 covers changing a profile in
-              response to something happening. Most of what is below
-              concerns the first two, which are the ones I rebuilt. The
-              fourth is partly built and the third is not built at all,
-              and both say so in their place.
+              What follows separates into four concerns. There is the
+              schema, meaning the properties themselves and what may be
+              known about anyone. There is one person&rsquo;s values
+              against that schema, gathered into the contexts they are
+              used in. There is what that person would rather, which is
+              a different question from what they can do. And there is
+              changing a profile in response to something happening.
+              Most of what is below is the first two.
             </p>
           </section>
 
@@ -301,13 +297,13 @@ export default function DescribingPeople() {
               a number, and numbers get computed with.
             </p>
             <p>
-              The original tables in the paper obscure this, which is
-              how I misread my own work. Their Values column shows the
-              three-part scale on some rows and the measurement on
-              others. Focus reads &ldquo;FULL PARTIAL NONE&rdquo;.
-              Focus duration reads &ldquo;Time in minutes&rdquo;. The
-              second is not a different kind of property. It is the
-              same kind, with the minutes attached to its middle
+              This is easy to lose, and I lost it in my own work for
+              years, because a property and its measurement sit so
+              naturally in the same column. Focus is full, partial or
+              absent. Focus duration is a number of minutes. Those look
+              like two different kinds of property and they are not.
+              They are the same kind, with the minutes attached to its
+              middle
               value: full means indefinitely, none means not at all,
               and the minutes exist only in between.
             </p>
@@ -436,8 +432,7 @@ export default function DescribingPeople() {
             </p>
             <p>
               The clearest case came from a profile for a person with
-              Multiple Sclerosis, which is the paper&rsquo;s own
-              worked example. Hearing is FULL and listening duration
+              Multiple Sclerosis. Hearing is FULL and listening duration
               is PARTIAL at fifteen minutes, because fatigue in
               Multiple Sclerosis is central rather than sensory. Under
               a ceiling rule that combination is incoherent. It is not
@@ -535,8 +530,8 @@ export default function DescribingPeople() {
               always separate. I had collapsed them.
             </p>
             <p>
-              Production is a third axis, and the paper has only one
-              production property. Someone with tremor or absent touch
+              Production is a third axis, and it had only one property
+              to itself. Someone with tremor or absent touch
               may read the two-handed manual alphabet on their own
               hand without difficulty and be quite unable to spell it
               onto someone else&rsquo;s. The rule that emerged is
@@ -672,8 +667,7 @@ export default function DescribingPeople() {
             <p>
               That rider is the whole point, and it is why a template
               is not a category. Sight appears in both the vision
-              template and the colour one, which is the paper&rsquo;s
-              own example. Key control appears in both input and
+              template and the colour one. Key control appears in both
               alternative access, because a key is a key whether it is
               pressed by a finger or by a head switch. Kinaesthesia
               appears in both input and touch, because knowing where
@@ -704,7 +698,7 @@ export default function DescribingPeople() {
                       Sight, stereo, focus and its duration, tracking
                       and its duration, and the viewing rectangles.
                     </td>
-                    <td>Table 3 of the paper.</td>
+                    <td>From the paper.</td>
                   </tr>
                   <tr>
                     <th scope="row">Colour</th>
@@ -712,7 +706,7 @@ export default function DescribingPeople() {
                       Sight again, the three colour channels, the three
                       intensity channels, contrast sensitivity.
                     </td>
-                    <td>Table 2 of the paper.</td>
+                    <td>From the paper.</td>
                   </tr>
                   <tr>
                     <th scope="row">Listening</th>
@@ -760,7 +754,7 @@ export default function DescribingPeople() {
                       in each, and the two speech-intelligibility
                       properties.
                     </td>
-                    <td>Table 4 of the paper.</td>
+                    <td>From the paper.</td>
                   </tr>
                 </tbody>
               </table>
@@ -770,8 +764,8 @@ export default function DescribingPeople() {
               The templates then group once more, into the four that
               follow Nesbitt&rsquo;s sensory design spaces and the
               three that do not. Input, alternative access and reading
-              are not senses. They are things a person does, and the
-              paper explicitly leaves room for them:{" "}
+              are not senses. They are things a person does, and that
+              extension was anticipated from the start:{" "}
               <q>
                 it is possible to imagine other groupings, not related
                 to specific design spaces, with use of language one
@@ -860,10 +854,9 @@ export default function DescribingPeople() {
             <p>
               My own model had the structure and I had never asked
               what it was for. Its Entity is defined as either a user
-              or a group of users, and the paper describes building
-              group settings as functionally dependent on member
-              settings. What it does not anticipate is this
-              resolution. A classroom sharing one screen needs the
+              or a group of users, and a group&rsquo;s settings are
+              functionally dependent on its members&rsquo;. What that
+              did not anticipate is this resolution. A classroom sharing one screen needs the
               most accommodating setting, so if one student needs
               eighteen point type, everyone gets eighteen point type.
               A co-pilot pair is the opposite: capability is divided,
@@ -939,7 +932,7 @@ export default function DescribingPeople() {
             <p>
               None of the eighteen is written out in full. Each is
               expressed as its difference from a single reference
-              profile, which is the paper&rsquo;s own mechanism:{" "}
+              profile. The idea is as old as the model itself:{" "}
               <q>
                 it is possible to say &lsquo;Fred is like Jim
                 except&hellip;&rsquo;, and starting with Jim&rsquo;s
@@ -1525,8 +1518,8 @@ export default function DescribingPeople() {
               <strong>The preference model is not built.</strong> This
               piece argues at some length that a preference is not a
               capability and that conflating them is how adaptive
-              systems come to be resented. The paper has a model for
-              the other half, Figure 4, and I have not implemented it.
+              systems come to be resented. The other half, a model of
+              what a person would rather, I have not built.
               So the work can currently say what a person is able to
               do and cannot yet say what they would rather, which is
               an odd position for an argument that leans on the
