@@ -78,8 +78,9 @@ export default function DescribingWhatPeopleWant() {
               wants lower contrast than the profile would suggest, or
               smaller text, or an audio metaphor that looks unlikely to
               serve them, that is their choice and the system&rsquo;s
-              work is to honour it. A tool may reasonably say that a setting
-              looks unlikely to suit them, and it probably should. A
+              work is to honour it. A tool may reasonably warn that a
+              setting is an unusual one for that profile, and it
+              probably should. A
               tool that refuses has put its own judgement above the
               judgement of the person living the life, which is the
               medical model arriving by a side door: a system deciding
@@ -89,8 +90,8 @@ export default function DescribingWhatPeopleWant() {
             <p>
               Holding both halves is what makes the disagreement worth
               something. When somebody consistently chooses against
-              what the profile predicts, that is worth reading as a
-              question about the profile: whether it is wrong, or
+              what the profile would suggest, that is worth reading as
+              a question about the profile: whether it is wrong, or
               whether something it never captured is doing the work. A
               system that recorded the override as user error would be
               discarding something it could have learned from.
