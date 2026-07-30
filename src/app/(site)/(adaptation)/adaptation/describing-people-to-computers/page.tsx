@@ -146,6 +146,16 @@ export default function DescribingPeople() {
               Not the diagnosis, not the equipment, and not the
               accommodation. The capability.
             </p>
+            <p>
+              None of which abolishes preference. What a person wants
+              survives, and it should override whatever a system works
+              out for itself. But it has to be recorded as preference,
+              and keeping the two apart is exactly what the 2009 models
+              did: one for what a person is able to do, another for what
+              they would rather. Separating them is what allows the
+              second to overrule the first without anyone having to
+              dress it up as the first.
+            </p>
           </section>
 
           <section
