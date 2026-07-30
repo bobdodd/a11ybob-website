@@ -80,8 +80,8 @@ export default function DescribingWhatPeopleWant() {
               serve them, that is their choice and the system&rsquo;s
               work is to honour it. A tool may reasonably warn that a
               setting is an unusual one for that profile, and it
-              probably should. A
-              tool that refuses has put its own judgement above the
+              probably should. A tool that refuses has put its own
+              judgement above the
               judgement of the person living the life, which is the
               medical model arriving by a side door: a system deciding
               what somebody ought to want on the strength of what it
@@ -113,14 +113,16 @@ export default function DescribingWhatPeopleWant() {
             <p>
               Worth saying plainly, because the language invites the
               opposite reading and I fell for it myself while writing
-              this. Capability properties are phrased in terms of what{" "}
-              <em>may</em> happen: which channels may carry text to the
-              user, which hues and tones may carry meaning, the
+              this. Capability properties <em>drive</em> decisions
+              about what may happen: which channels may carry text to
+              the user, which hues and tones may carry meaning, the
               smallest type that may be set, which input channels are
-              available. That sounds like permission being granted. It
-              is not. It is somebody&rsquo;s account of what a person
-              appears able to do, and an account permits nothing and
-              forbids nothing.
+              available. Written out like that it sounds like
+              permission being granted. It is not. The property is
+              somebody&rsquo;s account of what a person appears able to
+              do, and an account permits nothing and forbids nothing.
+              What may happen is downstream of it, decided by whatever
+              reads it.
             </p>
             <p>
               Choosing happens in preference, and that is what
@@ -241,6 +243,32 @@ export default function DescribingWhatPeopleWant() {
               was that the context was baked into the copy. Qualify the
               preference by context instead, and the person is written
               down once.
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
+            <h2>Accessibility in the subjunctive</h2>
+            <p>
+              Almost none of this work is written in the indicative.
+              Guidance says what a page should have. A capability
+              record is an attempt at what somebody appears able to do.
+              A preference says what they would rather. Not one of
+              those describes a state of affairs that exists, and the
+              grammar is not incidental to the subject.
+            </p>
+            <p>
+              What follows is that an adapted interface has no single
+              actual form. It has a space of forms, and which one
+              appears depends on who arrives, what they have asked for
+              and where they are standing. Capability and preference
+              modelling is how that space gets described. Subjunctive
+              interaction experiences seems to me a fair name for what
+              comes out of it, and a more honest one than talking about
+              the interface as though there were only ever going to be
+              one.
             </p>
           </section>
 
