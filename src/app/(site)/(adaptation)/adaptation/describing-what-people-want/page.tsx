@@ -102,25 +102,32 @@ export default function DescribingWhatPeopleWant() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
-            <h2>Capability permits, preference chooses</h2>
+            <h2>Capability describes, preference chooses</h2>
             <p>
-              The two models turn out not to overlap at all, and the
-              giveaway is the verb. Every capability property decides
-              something about what <em>may</em> happen: which channels
-              may carry text to the user, which hues and tones may
-              carry meaning, the smallest type that may be set, which
-              input channels are available. Not one of them chooses.
-              Preference is where choosing lives, and its verb is{" "}
-              <em>rather</em>.
+              Capability describes, and that is the whole of it. A
+              capability model is an attempt to describe one person,
+              or generically the typical capabilities of an identified
+              group of people, and it has no authority beyond that
+              attempt.
             </p>
             <p>
-              One warning about reading that too neatly, because I made
-              the mistake myself. Saying capability permits does not
-              mean capability constrains. It describes what is likely
-              to work and it informs a sensible default, and that is
-              as far as I would let its authority run. A preference that runs
-              against it is not invalid, and treating it as invalid is
-              exactly the failure the cellphone case warns about.
+              Worth saying plainly, because the language invites the
+              opposite reading and I fell for it myself while writing
+              this. Capability properties are phrased in terms of what{" "}
+              <em>may</em> happen: which channels may carry text to the
+              user, which hues and tones may carry meaning, the
+              smallest type that may be set, which input channels are
+              available. That sounds like permission being granted. It
+              is not. It is somebody&rsquo;s account of what a person
+              appears able to do, and an account permits nothing and
+              forbids nothing.
+            </p>
+            <p>
+              Choosing happens in preference, and that is what
+              separates the two. Neither is a subset of the other and
+              neither bounds the other. One is an attempt at describing
+              what somebody appears able to do. The other is what they
+              want done.
             </p>
           </section>
 
