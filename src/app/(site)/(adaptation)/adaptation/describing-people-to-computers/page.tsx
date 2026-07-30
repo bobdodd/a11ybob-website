@@ -85,54 +85,56 @@ export default function DescribingPeople() {
               display options.
             </p>
             <p>
-              My 2009 paper made an objection to it, and seventeen
-              years later I would make the same one. Consider a
-              profile that says the user requires a screen reader.
-              Does that person need a screen reader, or do they simply
-              wish to use one? The profile cannot tell you, and the
-              difference decides everything. A blind user has no
-              alternative. A sighted user who prefers audio has
-              several. A system that treats those two the same will be
-              wrong about one of them, and it will never find out
-              which.
+              I raised two objections to it in 2009, and seventeen
+              years later I would raise both again.
             </p>
             <p>
-              The deeper problem is that a preference records a
-              solution rather than a requirement. It says which
-              technology the person settled on, not what made them
-              settle on it. When the technology changes, or the
-              context changes, or the application offers something
-              better, the profile is stale and nothing in it explains
-              why.
+              The first is that a profile saying the user requires a
+              screen reader does not say what it is about the user that
+              requires one. Are they totally blind? Do they have
+              residual vision that is still useful to them? Are they
+              sighted and using a screen reader for some other reason
+              altogether? Those are different people, and the
+              difference governs what an interface can attempt beyond
+              handing its text to speech synthesis. Where there is
+              usable vision, size and contrast and layout still do
+              work and can still be adapted. Where there is none, they
+              are effort spent on nothing and something else has to
+              carry the information. The profile records the
+              accommodation and discards the reason for it, and the
+              reason was the part a system could have acted on.
             </p>
             <p>
-              That was not my only objection then and it is not now.
-              The second one is structural. A preference set describes
-              a person in a situation, so a second situation needs a
-              second set: one for home, one for school, one for the
-              cinema. Nothing about the person has changed, and yet
-              there are now three of them in the system.
+              The second is how context of use was expressed. It
+              required a complete standalone profile for each context.
+              A low-vision reader who magnifies on a large desktop
+              display and switches to a screen reader on a phone has
+              to describe themselves twice, and more than twice once
+              environmental factors come into it. Collaborative
+              settings were barely considered at all.
             </p>
             <p>
-              Duplication of that kind decays. Every copy has to be
-              revised when a capability changes, nothing enforces that
-              they agree, and they drift apart quietly because no
-              system can tell a deliberate difference between contexts
-              from a stale one that nobody got round to. It also
-              throws away the distinction that matters most, which is
-              between what is true of the person and what is merely
-              true of where they happen to be standing. A person is
-              not a different person in a cinema.
+              Nothing about that information is wrong. The problem is
+              what the duplication does to it. Each profile is a record
+              of what that person does in that situation, which makes
+              it a statement of preference rather than of need, and it
+              is bounded by the technology the person or whoever
+              profiled them happens to know about. A capability that
+              some other arrangement might have used never gets written
+              down, because the profile only has room for the
+              arrangement already arrived at.
             </p>
             <p>
-              Separating those two is what the external influences and
-              setting groups further down this piece are for. A
-              capability is a fact about the person and is recorded
-              once. The situation is declared separately and can change
-              without anyone touching the profile. A setting group is a
-              view of that single profile for a named context. Home,
-              school and cinema are three views of one person rather
-              than three people.
+              Both objections come to the same thing. A description of
+              the person would have survived a change of device, a
+              change of surroundings and the arrival of a technique
+              nobody had thought of. A description of their current
+              arrangement survives none of those. The external
+              influences and setting groups later in this piece are
+              what separate the two: the capability is recorded once,
+              the situation is declared apart from it, and a context is
+              a view of the one profile rather than another copy of the
+              person.
             </p>
             <p>
               So the model I proposed records what a person can do,
