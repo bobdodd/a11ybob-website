@@ -81,8 +81,8 @@ export default function DescribingWhatPeopleWant() {
               work is to honour it. A tool may reasonably warn that a
               setting is an unusual one for that profile, and it
               probably should. A tool that refuses has put its own
-              judgement above the
-              judgement of the person living the life, which is the
+              judgement above the judgement of the person living the
+              life, which is the
               medical model arriving by a side door: a system deciding
               what somebody ought to want on the strength of what it
               believes about their body.
@@ -114,9 +114,8 @@ export default function DescribingWhatPeopleWant() {
               Capability properties <em>drive</em>{" "}
               decisions about what may happen: which channels may carry
               text to the user, which hues and tones may carry meaning,
-              the
-              smallest type that may be set, which input channels are
-              available. Written out like that it sounds like
+              the smallest type that may be set, which input channels
+              are available. Written out like that it sounds like
               permission being granted. It is not. The property is
               somebody&rsquo;s account of what a person appears able to
               do, and an account permits nothing and forbids nothing.
@@ -124,11 +123,12 @@ export default function DescribingWhatPeopleWant() {
               reads it.
             </p>
             <p>
-              Choosing happens in preference, and that is what
-              separates the two. Neither is a subset of the other and
-              neither bounds the other. One is an attempt at describing
-              what somebody appears able to do. The other is what they
-              want done.
+              Choosing happens through preference, or through the
+              application of selection rules where no preference has
+              been stated. Either way it is not capability doing it.
+              Neither model is a subset of the other and neither bounds
+              the other. One is an attempt at describing what somebody
+              appears able to do. The other is what they want done.
             </p>
           </section>
 
@@ -303,10 +303,10 @@ export default function DescribingWhatPeopleWant() {
                 chosen?
               </strong>{" "}
               It has to, if an override is going to be readable as
-              evidence rather than noise. That means holding the
-              inferred default and the actual choice as two separate
-              facts, which is more machinery than a preference store
-              would otherwise need.
+              evidence rather than noise. What the selection rules
+              arrived at and what the person actually chose have to be
+              two separate facts, which is more machinery than a
+              preference store would otherwise need.
             </p>
           </section>
         </div>
