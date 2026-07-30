@@ -199,6 +199,20 @@ export default function DescribingPeople() {
               tenfold difference, invisible to any model that records
               only which input device is in use.
             </p>
+            <p>
+              A note on what follows, for anyone reading with the
+              paper open. It carries four models. The Capability Model
+              in Figure 2 is the schema, the properties themselves and
+              what may be known about a person. The Capacity Model in
+              Figure 3 is one person&rsquo;s values against that
+              schema, gathered into contexts. The Preference Model in
+              Figure 4 covers what they would rather, and the
+              Adaptation Model in Figure 5 covers changing a profile in
+              response to something happening. Most of what is below
+              concerns the first two, which are the ones I rebuilt. The
+              fourth is partly built and the third is not built at all,
+              and both say so in their place.
+            </p>
           </section>
 
           <section
@@ -742,6 +756,61 @@ export default function DescribingPeople() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
+            <h2>The same person, a different situation</h2>
+            <p>
+              A profile is not a fixed answer, because some of what a
+              system needs to know is not a fact about the person at
+              all. The paper makes the point with the tremor case:{" "}
+              <q>
+                the physical stability of the screen also plays a
+                part, so that a person with hand tremors may find that
+                the readable size of text depends on whether the
+                screen is placed on a Table, or is held in their hand
+              </q>
+              . Same person, same tremor, different answer.
+            </p>
+            <p>
+              So an External Influence is a first-class thing in the
+              model rather than a variable someone reads from the
+              environment. It is declared, its permitted values are
+              declared, and both an undeclared influence and an
+              out-of-range value are refused rather than quietly
+              defaulted. A system cannot invent a situation it was
+              never told about, which matters because the failure
+              would otherwise be silent and would look like the
+              profile being wrong.
+            </p>
+            <p>
+              A setting whose value comes from other settings plus an
+              influence is a derived one, which is what Shlaer-Mellor
+              calls mathematical dependence. Two rules keep it honest.
+              A derived value must cite the formula or algorithm that
+              produced it, and that citation travels with the resolved
+              value, so a font size of twenty-four points can be
+              traced back to the rule and the inputs that produced it
+              rather than appearing as a number the system asserts.
+              And the dependencies must not form a loop: a cycle
+              between derived settings is refused, because a value
+              defined in terms of itself has no value.
+            </p>
+            <p>
+              Settings then gather into Setting Groups, which are the
+              same idea as a template one layer down. A template is a
+              view over properties in the schema. A Setting Group is a
+              view over one person&rsquo;s settings for a named
+              situation, and it can declare which influences bear on
+              it. The reference profile has one called seeing,
+              described simply as at a desk with a mounted display,
+              and another for audio-first play. The person does not
+              change between them. What the system should ask about
+              them does.
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
             <h2>The unit of use is not always one person</h2>
             <p>
               Working through profiles for switch, breath and gaze
@@ -805,6 +874,18 @@ export default function DescribingPeople() {
               of claim that softens into &ldquo;assistive partnership
               helps&rdquo; and stops meaning anything unless it is
               stated precisely.
+            </p>
+            <p>
+              Lending a capability has a consequence that is easy to
+              miss and would break a renderer. Once the assistant
+              supplies a capability, the settings hanging beneath it
+              describe the primary alone and no longer describe the
+              pair, so the model marks them superseded and a renderer
+              must not act on them. Sizing a control for the primary
+              player&rsquo;s unsteady hand is exactly wrong when it is
+              the buddy&rsquo;s hand on the button. The pair is a
+              third thing, and reading either person&rsquo;s profile
+              on its own gets it wrong in a different direction.
             </p>
           </section>
 
@@ -1410,6 +1491,17 @@ export default function DescribingPeople() {
               on the day it was taken. Versioning a profile through
               time is what the adaptation model&rsquo;s instance
               sequences are for, and they are not built.
+            </p>
+            <p>
+              <strong>The preference model is not built.</strong> This
+              piece argues at some length that a preference is not a
+              capability and that conflating them is how adaptive
+              systems come to be resented. The paper has a model for
+              the other half, Figure 4, and I have not implemented it.
+              So the work can currently say what a person is able to
+              do and cannot yet say what they would rather, which is
+              an odd position for an argument that leans on the
+              distinction.
             </p>
             <p>
               <strong>
