@@ -92,6 +92,27 @@ async function main() {
       );
       errors += failed.length;
       if (failed[0]) console.error(JSON.stringify(failed[0], null, 2));
+
+      // A CLUSTER BLOCK REJECTS EVERY SUBSEQUENT WRITE, so carrying on is
+      // pointless and actively harmful: it spends hours producing millions of
+      // identical rejects against a disk that is already full, and then exits
+      // as though it worked. That is what happened on 2026-07-30, when the
+      // flood-stage watermark tripped mid-upload and nunavut lost 4.26M of
+      // 9.03M docs and ireland 3.00M of 7.64M, both marked done, both with
+      // their source NDJSON deleted on the way out. Stop at the first one.
+      const first = (
+        failed[0] as { index?: { error?: { type?: string; reason?: string } } }
+      )?.index?.error;
+      if (first?.type === "cluster_block_exception") {
+        throw new Error(
+          `OpenSearch is refusing writes to "${INDEX}": ${first.reason ?? first.type}\n\n` +
+            "This is almost always the disk flood-stage watermark. Free space, then " +
+            "clear the block:\n" +
+            `  curl -X PUT "localhost:9200/${INDEX}/_settings" -H 'Content-Type: application/json' \\\n` +
+            `    -d '{"index.blocks.read_only_allow_delete": null}'\n\n` +
+            "Then re-run this upsert. Nothing has been marked done.",
+        );
+      }
     }
     body = [];
   };
@@ -123,6 +144,17 @@ async function main() {
       strippedKeys ? `, ${strippedKeys} empty-name keys dropped` : ""
     }. Index ${before} -> ${after}.`,
   );
+
+  // REJECTED DOCUMENTS ARE A FAILED UPSERT, not a warning. Exiting 0 here is
+  // what let a half-indexed region be marked done and its source NDJSON
+  // deleted, with nothing to re-upload from. Callers chain on this exit code.
+  if (errors > 0) {
+    console.error(
+      `\nFAILED: ${errors} of ${read} documents were rejected. This region is ` +
+        "PARTIALLY indexed and must not be recorded as complete.",
+    );
+    process.exit(1);
+  }
 }
 
 main().catch((e) => {
