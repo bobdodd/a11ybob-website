@@ -1527,10 +1527,10 @@ export default function DescribingPeople() {
               sequences are for, and those are designed but not coded.
             </p>
             <p>
-              The complementary 2009 Preference Model is not described
-              here as we are dealing only with capacity and capability.
-              It is described elsewhere in the Adaptation section of the
-              site.
+              <strong>Preference model.</strong> The complementary 2009
+              Preference Model is not described here as we are dealing
+              only with capacity and capability. It is described
+              elsewhere in the Adaptation section of the site.
             </p>
             <p>
               <strong>
