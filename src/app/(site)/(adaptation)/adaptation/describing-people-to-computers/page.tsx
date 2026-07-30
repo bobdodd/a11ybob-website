@@ -1527,16 +1527,10 @@ export default function DescribingPeople() {
               sequences are for, and those are designed but not coded.
             </p>
             <p>
-              <strong>
-                The preference model is not implemented here.
-              </strong>{" "}
-              It is not missing. It was modelled alongside the
-              capability and capacity models and this piece simply does
-              not go into it. What is absent is the implementation: the
-              rebuilt code records what a person is able to do and has
-              nothing yet to hold what they would rather, so the
-              override described earlier in this piece has a design
-              behind it but no working parts.
+              The complementary 2009 Preference Model is not described
+              here as we are dealing only with capacity and capability.
+              It is described elsewhere in the Adaptation section of the
+              site.
             </p>
             <p>
               <strong>
