@@ -170,8 +170,9 @@ export default function DescribingPeople() {
               sometimes. It describes what is likely to work and it
               informs a sensible default, and that is the whole of its
               authority. It does not decide. If a person wants lower
-              contrast than this model expects, or smaller text, or a
-              channel it doubts will serve them, that is their choice
+              contrast than this model would suggest, or smaller text,
+              or a channel that looks unlikely to serve them, that is
+              their choice
               and a system&rsquo;s work is to honour it.
             </p>
             <p>

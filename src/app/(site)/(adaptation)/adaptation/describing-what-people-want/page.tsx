@@ -58,11 +58,13 @@ export default function DescribingWhatPeopleWant() {
               the light changed through their own home.
             </p>
             <p>
-              My capability model did not predict that choice. It would
-              have pointed at the largest keys and the largest text.
-              What decided it was the backlighting, and how that met
-              the light in one particular home, and my model held
-              neither of those things.
+              A capability model does not predict anything. People do.
+              Given the profile I had recorded for that person using
+              mine, I would not have predicted that choice: I would
+              have expected the largest keys and the largest text. What
+              decided it was the backlighting, and how that met the
+              light in one particular home, and the model gave me
+              nowhere to record either.
             </p>
             <p>
               I read that as a limit rather than an oversight. A
@@ -73,10 +75,10 @@ export default function DescribingWhatPeopleWant() {
             </p>
             <p>
               So the profile advises and the person decides. If someone
-              wants lower contrast than the model expects, or smaller
-              text, or an audio metaphor the model doubts they will
-              follow, that is their choice and the system&rsquo;s work
-              is to honour it. A tool may reasonably say that a setting
+              wants lower contrast than the profile would suggest, or
+              smaller text, or an audio metaphor that looks unlikely to
+              serve them, that is their choice and the system&rsquo;s
+              work is to honour it. A tool may reasonably say that a setting
               looks unlikely to suit them, and it probably should. A
               tool that refuses has put its own judgement above the
               judgement of the person living the life, which is the
