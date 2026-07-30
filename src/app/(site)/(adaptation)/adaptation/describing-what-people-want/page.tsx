@@ -1,0 +1,276 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import type { CSSProperties } from "react";
+
+export const metadata: Metadata = {
+  title: "Describing what people want",
+};
+
+export default function DescribingWhatPeopleWant() {
+  return (
+    <main id="main" className="site-main">
+      <div className="center">
+        <div
+          className="stack"
+          style={{ "--space": "var(--s3)" } as CSSProperties}
+        >
+          <header
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
+            <h1>Describing what people want</h1>
+            <p className="lede">
+              A capability model says what a person is able to do. It
+              says nothing about what they would rather, and those are
+              different questions with different answers. This is the
+              other half, and the half where the person, not the
+              model, has the last word. A companion to{" "}
+              <Link href="/adaptation/describing-people-to-computers">
+                describing people to computers
+              </Link>
+              .
+            </p>
+          </header>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
+            <h2>The user, the profile, and the preference</h2>
+            <p>
+              Three things are in play whenever a system adapts: the
+              person, what the profile says about them, and what they
+              have asked for. Only the first of those has any
+              authority. A capability profile is an inference about
+              somebody, assembled from whatever could be observed or
+              asked, and inferences are wrong sometimes.
+            </p>
+            <p>
+              My master&rsquo;s work looked at the accessibility of
+              mobile devices, back when they still had physical
+              keyboards. Working with a person who has Multiple
+              Sclerosis, I went through a large number of handsets
+              looking for one that suited them. The one they chose was
+              not the one with the largest keys, and not the one with
+              the largest text. It was a handset with blue backlit keys
+              and clear audio confirmation of each press. The
+              illuminated characters were easier for them to read given
+              how the light changed through their own home.
+            </p>
+            <p>
+              Any model I could have built would have recommended the
+              large keys. What actually decided it was an interaction
+              between the device, the room and the person, and no
+              schema was going to hold that. It is not a gap to be
+              closed by modelling harder. It is the ordinary condition
+              of describing somebody from outside, and the reason a
+              profile has to be treated as a description rather than a
+              finding.
+            </p>
+            <p>
+              So the profile advises and the person decides. If someone
+              wants lower contrast than the model expects, or smaller
+              text, or an audio metaphor the model doubts they will
+              follow, that is their choice and the system&rsquo;s work
+              is to honour it. A tool may reasonably say that a setting
+              looks unlikely to suit them, and it probably should. A
+              tool that refuses has put its own judgement above the
+              judgement of the person living the life, which is the
+              medical model arriving by a side door: a system deciding
+              what somebody ought to want on the strength of what it
+              believes about their body.
+            </p>
+            <p>
+              Holding both halves is what makes the disagreement worth
+              something. When a person consistently chooses against
+              what the profile predicts, the likeliest explanation is
+              that the profile is wrong, or that something it never
+              captured is doing the work. An override is the best
+              evidence a model of this kind ever gets, and a system
+              that treated it as user error would be throwing away its
+              only real source of correction.
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
+            <h2>Capability permits, preference chooses</h2>
+            <p>
+              The two models turn out not to overlap at all, and the
+              giveaway is the verb. Every capability property decides
+              something about what <em>may</em> happen: which channels
+              may carry text to the user, which hues and tones may
+              carry meaning, the smallest type that may be set, which
+              input channels are available. Not one of them chooses.
+              Preference is where choosing lives, and its verb is{" "}
+              <em>rather</em>.
+            </p>
+            <p>
+              One warning about reading that too neatly, because I made
+              the mistake myself. Saying capability permits does not
+              mean capability constrains. It describes what is likely
+              to work and it informs a sensible default, and that is
+              the whole of its authority. A preference that runs
+              against it is not invalid, and treating it as invalid is
+              exactly the failure the handset case warns about.
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
+            <h2>Four kinds of preference</h2>
+            <p>
+              The 2009 model treats preference generically. Working
+              through it again in 2026, I think there are four distinct
+              kinds, and they sit at different levels of abstraction.
+              That layering is the structure rather than untidiness:
+              the first choice is which sense to use at all, and the
+              last is which piece of software, configured how.
+            </p>
+
+            <div
+              className="scroll-region"
+              role="region"
+              aria-label="Four kinds of preference"
+              tabIndex={0}
+            >
+              <table className="comparison-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Kind</th>
+                    <th scope="col">Example</th>
+                    <th scope="col">What capability already says</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row">Design space</th>
+                    <td>
+                      Audio ahead of vision. Tactile wherever it is
+                      available.
+                    </td>
+                    <td>
+                      Which channels can carry text to this person at
+                      all.
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Modality</th>
+                    <td>Keyboard ahead of mouse.</td>
+                    <td>
+                      Which input channels are available, and from
+                      which part of the body.
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Properties of perception</th>
+                    <td>
+                      Blue text on a cream background. A particular
+                      typeface. A minimum size.
+                    </td>
+                    <td>
+                      Which hues and tones can carry meaning, and the
+                      smallest type that resolves.
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Tools and settings</th>
+                    <td>
+                      This screen reader, at this speech rate, in this
+                      context.
+                    </td>
+                    <td>
+                      <strong>Nothing.</strong>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p>
+              That last row is the interesting one. A tool is a
+              solution, and a capability model has nowhere to put a
+              solution, which is exactly why AccessForAll&rsquo;s
+              personal needs and preferences jarred when they were
+              recorded as need. The information was never wrong. It was
+              filed in the wrong place. Give preference a model of its
+              own and the same data goes in without distortion, which
+              is the resolution of an objection I have been making
+              since 2009.
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
+            <h2>A preference is not unconditional</h2>
+            <p>
+              Preferences come with rules about when they apply. A
+              screen reader on a phone and a magnifier on a desktop is
+              one person with two preferences, each holding under
+              different conditions, and neither of them wrong.
+            </p>
+            <p>
+              That is the same shape as the external influences and
+              setting groups on the capability side, so I would use the
+              machinery that is already there rather than invent a
+              second one. A preference names the conditions it applies
+              under, in the same vocabulary a setting group uses.
+            </p>
+            <p>
+              It also settles the objection about duplication properly.
+              The reason a preference set had to be copied per context
+              was that the context was baked into the copy. Qualify the
+              preference by context instead, and the person is written
+              down once.
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
+            <h2>Open questions</h2>
+            <p>
+              None of this is built. These are the decisions I can see
+              from here, recorded before they get made by accident.
+            </p>
+            <p>
+              <strong>Ranking, or strength?</strong> Audio ahead of
+              vision is naturally an ordered list rather than a number.
+              Asking somebody to put three channels in order is
+              answerable. Asking how strongly they prefer audio, on a
+              scale, walks straight back into the pseudo-precision the
+              capability model has just been dug out of.
+            </p>
+            <p>
+              <strong>How open should tools and settings be?</strong>{" "}
+              They are unbounded, and always trailing whatever
+              technology the person or whoever profiled them happens to
+              know about. I think that is tolerable here and was only
+              intolerable in a capability model, so I would hold them
+              as opaque names and values and deliberately not model
+              them. That is a decision rather than an obvious default.
+            </p>
+            <p>
+              <strong>
+                Does the model record what the system would have
+                chosen?
+              </strong>{" "}
+              It has to, if an override is going to be readable as
+              evidence rather than noise. That means holding the
+              inferred default and the actual choice as two separate
+              facts, which is more machinery than a preference store
+              would otherwise need.
+            </p>
+          </section>
+        </div>
+      </div>
+    </main>
+  );
+}

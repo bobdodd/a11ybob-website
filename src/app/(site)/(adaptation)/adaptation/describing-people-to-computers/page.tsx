@@ -162,59 +162,27 @@ export default function DescribingPeople() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
-            <h2>The user, the profile, and the preference</h2>
+            <h2>The profile advises, the person decides</h2>
             <p>
-              Three things are in play whenever a system adapts: the
-              person, what the profile says about them, and what they
-              have asked for. Only the first of those has any
-              authority. A capability profile is an inference about
-              somebody, assembled from whatever could be observed or
-              asked, and inferences are wrong sometimes.
+              One thing has to be said here, because it governs how
+              everything below should be read. A capability profile is
+              an inference about somebody, and inferences are wrong
+              sometimes. It describes what is likely to work and it
+              informs a sensible default, and that is the whole of its
+              authority. It does not decide. If a person wants lower
+              contrast than this model expects, or smaller text, or a
+              channel it doubts will serve them, that is their choice
+              and a system&rsquo;s work is to honour it.
             </p>
             <p>
-              My master&rsquo;s work looked at the accessibility of
-              mobile devices, back when they still had physical
-              keyboards. Working with a person who has Multiple
-              Sclerosis, I went through a large number of handsets
-              looking for one that suited them. The one they chose was
-              not the one with the largest keys, and not the one with
-              the largest text. It was a handset with blue backlit keys
-              and clear audio confirmation of each press. The
-              illuminated characters were easier for them to read given
-              how the light changed through their own home.
-            </p>
-            <p>
-              Any model I could have built would have recommended the
-              large keys. What actually decided it was an interaction
-              between the device, the room and the person, and no
-              schema was going to hold that. It is not a gap to be
-              closed by modelling harder. It is the ordinary condition
-              of describing somebody from outside, and the reason the
-              profile has to be treated as a description rather than a
-              finding.
-            </p>
-            <p>
-              So the profile advises and the person decides. If someone
-              wants lower contrast than the model expects, or smaller
-              text, or an audio metaphor the model doubts they will
-              follow, that is their choice and the system&rsquo;s work
-              is to honour it. A tool may reasonably say that a setting
-              looks unlikely to suit them, and it probably should. A
-              tool that refuses has put its own judgement above the
-              judgement of the person living the life, which is the
-              medical model arriving by a side door: a system deciding
-              what somebody ought to want on the strength of what it
-              believes about their body.
-            </p>
-            <p>
-              Holding both halves is what makes the disagreement worth
-              something. When a person consistently chooses against
-              what the profile predicts, the likeliest explanation is
-              that the profile is wrong, or that something it never
-              captured is doing the work. An override is the best
-              evidence a model of this kind ever gets, and a system
-              that treated it as user error would be throwing away its
-              only real source of correction.
+              I have watched a model of mine be wrong about exactly
+              this, and the case is worth reading before trusting any
+              profile too far. It is set out in{" "}
+              <Link href="/adaptation/describing-what-people-want">
+                describing what people want
+              </Link>
+              , along with what preference is and how it might be
+              recorded.
             </p>
           </section>
 

@@ -59,6 +59,29 @@ export default function Adaptation() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
+            <h2>Describing what people want</h2>
+            <p>
+              The other half. A capability model says what a person is
+              able to do and says nothing about what they would rather,
+              and conflating the two is how adaptive systems come to be
+              resented. Four kinds of preference, the rules that decide
+              when each applies, and the reason the model advises while
+              the person decides: a handset chosen during my
+              master&rsquo;s research had neither the largest keys nor
+              the largest text, and every model I could have built
+              would have got it wrong.
+            </p>
+            <p>
+              <Link href="/adaptation/describing-what-people-want">
+                Read the preference model
+              </Link>
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
             <h2>Accessible Tetris</h2>
             <p>
               A case study from my doctoral research, revisited: what
