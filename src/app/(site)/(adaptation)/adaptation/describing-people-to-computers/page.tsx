@@ -977,11 +977,11 @@ export default function DescribingPeople() {
               as writing nought per cent, arriving by a different route.
             </p>
             <p>
-              What is not built is the rest of it. The paper&rsquo;s
-              Adaptation Model also has Event Triggers, Instance
-              Sequences and a sequence number, which together let
-              profiles be composed in a declared order in response to
-              something happening. Without them a profile cannot yet be
+              What is not implemented is the rest of it. The adaptation
+              model also carries event triggers, instance sequences and a
+              sequence number, which together let profiles be composed in
+              a declared order in response to something happening. Those
+              are designed and not coded, so a profile cannot yet be
               versioned through time, which is the same gap that makes
               progressive conditions snapshots rather than histories.
             </p>
@@ -1524,18 +1524,19 @@ export default function DescribingPeople() {
               A profile for late-stage motor neurone disease is true
               on the day it was taken. Versioning a profile through
               time is what the adaptation model&rsquo;s instance
-              sequences are for, and they are not built.
+              sequences are for, and those are designed but not coded.
             </p>
             <p>
-              <strong>The preference model is not built.</strong> This
-              piece argues at some length that a preference is not a
-              capability and that conflating them is how adaptive
-              systems come to be resented. The other half, a model of
-              what a person would rather, I have not built.
-              So the work can currently say what a person is able to
-              do and cannot yet say what they would rather, which is
-              an odd position for an argument that leans on the
-              distinction.
+              <strong>
+                The preference model is not implemented here.
+              </strong>{" "}
+              It is not missing. It was modelled alongside the
+              capability and capacity models and this piece simply does
+              not go into it. What is absent is the implementation: the
+              rebuilt code records what a person is able to do and has
+              nothing yet to hold what they would rather, so the
+              override described earlier in this piece has a design
+              behind it but no working parts.
             </p>
             <p>
               <strong>
