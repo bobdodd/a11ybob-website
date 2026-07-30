@@ -111,11 +111,10 @@ export default function DescribingWhatPeopleWant() {
               attempt.
             </p>
             <p>
-              Worth saying plainly, because the language invites the
-              opposite reading and I fell for it myself while writing
-              this. Capability properties <em>drive</em> decisions
-              about what may happen: which channels may carry text to
-              the user, which hues and tones may carry meaning, the
+              Capability properties <em>drive</em>{" "}
+              decisions about what may happen: which channels may carry
+              text to the user, which hues and tones may carry meaning,
+              the
               smallest type that may be set, which input channels are
               available. Written out like that it sounds like
               permission being granted. It is not. The property is
