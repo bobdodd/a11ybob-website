@@ -68,8 +68,8 @@ export default function Adaptation() {
               when each applies, and the reason the model advises while
               the person decides: a cellphone selected by a test
               subject during my master&rsquo;s research had neither the
-              largest keys nor the largest text, and was not predicted
-              by my capability model.
+              largest keys nor the largest text, and I would not have
+              predicted it from the profile I had recorded for them.
             </p>
             <p>
               <Link href="/adaptation/describing-what-people-want">
