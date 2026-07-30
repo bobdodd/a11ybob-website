@@ -141,7 +141,7 @@ export default function DescribingPeople() {
               not what they have chosen. Its governing sentence has
               not changed:{" "}
               <strong>
-                it is what the user can do, not why she cannot.
+                it is what the user can do, not why they cannot.
               </strong>{" "}
               Not the diagnosis, not the equipment, and not the
               accommodation. The capability.
