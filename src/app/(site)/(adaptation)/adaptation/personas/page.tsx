@@ -59,8 +59,8 @@ export default function Personas() {
               anything; it is about what the technique licenses people to claim.
             </p>
             <p>
-              It is worth separating three jobs personas are asked to do,
-              because they succeed at them unequally. The first is{" "}
+              Personas are asked to do three jobs and succeed at them
+              unequally. The first is{" "}
               <strong>communication</strong>, giving a team a shared referent
               that is harder to bend than a category. The second is{" "}
               <strong>empathy</strong>, making designers care about somebody who
@@ -93,8 +93,8 @@ export default function Personas() {
               a persona vivid is exactly what makes it unrepresentative.
             </p>
             <p>
-              Two years later the same group made the third point numerically,
-              and this is the finding worth carrying away. Working across six
+              Two years later the same group made the third point numerically.
+              Working across six
               survey datasets ranging from 268 to 10,307 respondents, they
               measured how many real people match a persona-like description as
               attributes are added to it. The expected prevalence falls away
@@ -109,8 +109,8 @@ export default function Personas() {
               trouble is asserting that Sarah is the users.
             </p>
             <p>
-              Chapman and Milham draw a further consequence that anyone who has
-              sat in the meeting will recognise. Because personas cannot be
+              Chapman and Milham draw a further consequence. Because personas
+              cannot be
               settled with data, disagreements about them get settled by
               seniority instead. A method meant to end arguments about the
               elastic user becomes a new thing to argue about, with no
@@ -218,8 +218,7 @@ export default function Personas() {
             </p>
             <p>
               It has done a great deal of good in getting the subject taken
-              seriously, and it draws three criticisms worth taking seriously in
-              return.
+              seriously, and it draws three criticisms.
             </p>
             <p>
               <strong>It flattens.</strong> Disability arrives as one bullet on
@@ -335,7 +334,7 @@ export default function Personas() {
             </div>
 
             <p>
-              Two of those deserve more than a table cell.
+              Two of those need more than a table cell.
             </p>
             <p>
               <strong>
@@ -441,10 +440,6 @@ export default function Personas() {
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
             <h2>The risk in doing this</h2>
-            <p>
-              There is one way this makes matters worse, and it should be said
-              by me rather than found by somebody else.
-            </p>
             <p>
               A table of properties looks more authoritative than a sketch of a
               person. The essentialising criticism bites hardest where a
