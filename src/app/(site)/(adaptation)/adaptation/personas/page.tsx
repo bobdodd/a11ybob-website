@@ -124,18 +124,15 @@ export default function Personas() {
           >
             <h2>The case in favour</h2>
             <p>
-              The case for personas was made before the criticism was, and was
-              the thing the criticism was aimed at. It is worth saying in that
-              order, because it means the position below is not a reply to
-              anything: it is what Chapman and Milham were arguing with.
-            </p>
-            <p>
-              Pruitt and Grudin were promoting personas from Microsoft in 2003,
-              and Pruitt and Adlin set the practice out at book length in 2006.
-              They ground it in a documented process: real research feeding
-              persona creation, explicit assumptions written down, and ongoing
-              use throughout a project rather than a poster made once and
-              forgotten. Their position is that a persona is a{" "}
+              Personas were established practice long before anyone asked
+              whether they were valid. Pruitt and Grudin were promoting them
+              from Microsoft in 2003, and Pruitt and Adlin set the method out at
+              book length in 2006, the same year as the criticism rather than in
+              answer to it. They ground the practice in a documented process:
+              real research feeding persona creation, explicit assumptions
+              written down, and ongoing use throughout a project rather than a
+              poster made once and forgotten. Their position is that a persona
+              is a{" "}
               <strong>communication artefact</strong> whose value lies in being
               used, and that judging it as though it were a statistical estimate
               is a category error.
