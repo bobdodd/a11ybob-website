@@ -124,11 +124,10 @@ export default function Personas() {
           >
             <h2>The case in favour</h2>
             <p>
-              Personas were established practice long before anyone asked
-              whether they were valid. Pruitt and Grudin were promoting them
-              from Microsoft in 2003, and Pruitt and Adlin set the method out at
-              book length in 2006, the same year as the criticism rather than in
-              answer to it. They ground the practice in a documented process:
+              Pruitt and Grudin (at Microsoft) were promoting use of personas
+              back in 2003, with Pruitt and Adlin setting the method out at book
+              length in 2006, the same year as the above criticism rather than
+              in answer to it. They ground the practice in a documented process:
               real research feeding persona creation, explicit assumptions
               written down, and ongoing use throughout a project rather than a
               poster made once and forgotten. Their position is that a persona
