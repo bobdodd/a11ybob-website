@@ -423,10 +423,10 @@ export default function Personas() {
             </p>
             <p>
               That gives the practice something it has lacked since 1999. A
-              designer can still say Sarah would struggle here, and somebody can
-              still ask what Sarah is, and now the answer is a set of properties
-              somebody could go and check with a real person rather than a
-              paragraph nobody can argue with.
+              designer can still say Sarah would struggle here, somebody can
+              still ask what that claim rests on, and the answer is now a set of
+              properties that could be taken to a real person and checked,
+              rather than a paragraph nobody can argue with.
             </p>
             <p>
               It also makes the invented parts visible as invented. A persona
