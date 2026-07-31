@@ -122,29 +122,34 @@ export default function Personas() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
-            <h2>What the defence says</h2>
+            <h2>The case in favour</h2>
             <p>
-              The defence does not really contest the falsifiability point. It
-              relocates the claim.
+              The case for personas was made before the criticism was, and was
+              the thing the criticism was aimed at. It is worth saying in that
+              order, because it means the position below is not a reply to
+              anything: it is what Chapman and Milham were arguing with.
             </p>
             <p>
-              Pruitt and Grudin, writing from Microsoft in 2003 and later at
-              book length, ground personas in a documented process: real
-              research feeding persona creation, explicit assumptions, and
-              ongoing use throughout a project rather than a poster made once
-              and forgotten. Their position is that a persona is a{" "}
+              Pruitt and Grudin were promoting personas from Microsoft in 2003,
+              and Pruitt and Adlin set the practice out at book length in 2006.
+              They ground it in a documented process: real research feeding
+              persona creation, explicit assumptions written down, and ongoing
+              use throughout a project rather than a poster made once and
+              forgotten. Their position is that a persona is a{" "}
               <strong>communication artefact</strong> whose value lies in being
               used, and that judging it as though it were a statistical estimate
               is a category error.
             </p>
             <p>
-              Nielsen and Storgaard Hansen tested the practice empirically at
-              scale in 2014 and found personas genuinely in use and considered
-              applicable by the teams using them, which is evidence about
-              adoption rather than about validity, and is offered as such.
+              The one piece of evidence that does come after the criticism is
+              Nielsen and Storgaard Hansen&rsquo;s 2014 study, which tested the
+              practice empirically at scale and found personas genuinely in use
+              and considered applicable by the teams using them. That is
+              evidence about adoption rather than about validity, and is offered
+              as such.
             </p>
             <p>
-              Both defences are reasonable and neither closes the hole. If a
+              Both positions are reasonable and neither closes the hole. If a
               persona is a communication artefact, then it must not be used to
               decide anything that ought to be decided by evidence, and in
               practice it constantly is. The literature has been at this impasse
