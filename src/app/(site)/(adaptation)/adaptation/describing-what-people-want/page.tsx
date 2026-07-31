@@ -216,6 +216,44 @@ export default function DescribingWhatPeopleWant() {
               is the resolution of an objection I have been making
               since 2009.
             </p>
+
+            <h3>Two shapes, four categories</h3>
+            <p>
+              The four have to be reachable in one consistent way or
+              the model has four sub-models rather than one. What makes
+              that work is that only two shapes are needed. Some
+              preferences are an <em>order</em>: sonic before visual,
+              keyboard before pointer. Others are a{" "}
+              <em>value</em>: a size, a typeface requirement, a named
+              tool with its settings. Everything in all four categories
+              is one or the other.
+            </p>
+            <p>
+              An order is deliberately partial. Saying sonic comes
+              before visual says nothing whatever about touch, and
+              nobody should have to rank everything in order to state a
+              view about something. So an unranked entry reads as{" "}
+              <em>no view</em>, which is not the same as last. A system
+              that treated the two alike would be inventing an opinion
+              nobody expressed.
+            </p>
+            <p>
+              One case forced a distinction I had missed. Reading along
+              with speech wants text and audio{" "}
+              <em>at the same time</em>, carrying the same content, and
+              no ordering can say that. An order means one as a
+              fallback for the other. That is a set, not a ranking, and
+              the two are different statements about how somebody wants
+              to work.
+            </p>
+            <p>
+              Tools take the value shape, and a tool is a named thing
+              with typed properties: the tool is the key, its settings
+              are the parts, and each part carries its own type. A
+              speech rate is checked as strictly as anything else in
+              the model. Naming a tool without setting all of its
+              controls is the ordinary case and is not an omission.
+            </p>
           </section>
 
           <section
@@ -249,6 +287,137 @@ export default function DescribingWhatPeopleWant() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
+            <h2>One choice, several consequences</h2>
+            <p>
+              The four categories descend from the widest choice to the
+              narrowest, and that ordering earns its keep because a
+              choice near the top implies choices below it. Somebody
+              who asks for help with text perception has, in effect,
+              said things about letterforms and spacing they never
+              enumerated, and would not thank anyone for making them
+              enumerate.
+            </p>
+            <p>
+              That is one preference stated, and these follow from it:
+            </p>
+
+            <div
+              className="scroll-region"
+              role="region"
+              aria-label="What one stated preference implies"
+              tabIndex={0}
+            >
+              <table className="comparison-table">
+                <thead>
+                  <tr>
+                    <th scope="col">What follows</th>
+                    <th scope="col">Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row">Senses used together</th>
+                    <td>Visual and sonic, reading along.</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">What the typeface must manage</th>
+                    <td>
+                      b and d, p and q not reflections of each other.
+                      1, l and I told apart. Open apertures. No
+                      decorative forms.
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Contrast</th>
+                    <td>Softened.</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Spacing</th>
+                    <td>
+                      More air between letters, between words, and
+                      between lines.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p>
+              Two of those are worth stopping on. The typeface entry is
+              not a font. It is what a font has to do, which means the
+              requirement outlives any particular face not being
+              installed, and choosing an actual one becomes a decision
+              a renderer makes against what it has.
+            </p>
+            <p>
+              And the contrast entry is <em>softened</em>. A capability
+              record showing unimpaired contrast sensitivity would
+              suggest strong contrast is perfectly fine, and for a
+              great many people strong contrast is exactly what makes
+              text swim. The preference asks for less, the model knows
+              which capability it sits beside, and it is bounded by it
+              in neither direction. That is the same argument as the
+              cellphone, small enough to fit in a table row.
+            </p>
+
+            <h3>Following through is not deciding</h3>
+            <p>
+              Working a choice out on somebody&rsquo;s behalf is a step
+              away from deciding for them, so two rules hold it apart.
+            </p>
+            <p>
+              <strong>Nothing inferred overwrites anything stated.</strong>{" "}
+              Where a person has said what they want, their answer
+              stands and the rule&rsquo;s answer is kept beside it
+              rather than thrown away. Somebody who asked for help with
+              text perception and separately asked for maximum contrast
+              gets maximum contrast, and the record still shows that a
+              rule would have softened it. That disagreement is
+              information about the rule.
+            </p>
+            <p>
+              <strong>Everything records where it came from.</strong>{" "}
+              A value is either something the person said or something
+              worked out from something they said, and the two are
+              never merged. That matters beyond bookkeeping: when the
+              high-level choice changes, everything drawn from it is
+              stale and has to be drawn again, and nothing could tell
+              which values those were unless it had been written down
+              at the time.
+            </p>
+            <p>
+              There is a third rule that is really about restraint. The
+              cascade only ever runs downward, from something a person
+              chose. Nothing infers a high-level preference from a
+              capability record. A system that decided somebody wanted
+              help with text perception on the strength of what it
+              believed about them would be labelling them, and that is
+              the practice this whole model exists to avoid.
+            </p>
+            <p>
+              So a value in a resolved profile arrived in one of three
+              ways: the person stated it, a rule inferred it from
+              something they stated, or nothing was stated at all and a
+              selection rule decided. All three are legible, and only
+              the first two belong to the person.
+            </p>
+            <p>
+              One naming decision sits underneath all of it. The
+              preference is called help with text perception rather
+              than anything about dyslexia, because a preference is
+              something a person chooses and its name should be a
+              phrase they would use. A condition name labels whoever
+              picks it. My own first suggestions, high-legibility
+              reading and letter-shape clarity, were no better: they
+              are this profession&rsquo;s vocabulary wearing a
+              user-facing disguise.
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
             <h2>Accessibility in the subjunctive</h2>
             <p>
               Almost none of this work is written in the indicative.
@@ -275,38 +444,58 @@ export default function DescribingWhatPeopleWant() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
-            <h2>Open questions</h2>
+            <h2>What is built, and what is not</h2>
             <p>
-              None of this is built. These are the decisions I can see
-              from here, recorded before they get made by accident.
+              The schema exists, with the four categories in one key
+              space, the two shapes, and validation that refuses a
+              wrong type while accepting an unwelcome choice. The
+              inference above runs. Rules are written in the same
+              executable language the capability model uses for its
+              derived values, so an inference is a declared, traceable
+              expression rather than something happening to people out
+              of sight.
             </p>
             <p>
-              <strong>Ranking, or strength?</strong> Audio ahead of
-              vision is naturally an ordered list rather than a number.
-              Asking somebody to put three channels in order is
-              answerable. Asking how strongly they prefer audio, on a
-              scale, walks straight back into the pseudo-precision the
-              capability model has just been dug out of.
+              Three questions I recorded before building are now
+              answered, and the answers were not all the ones I
+              expected.
             </p>
             <p>
-              <strong>How open should tools and settings be?</strong>{" "}
-              They are unbounded, and always trailing whatever
-              technology the person or whoever profiled them happens to
-              know about. I think that is tolerable here and was only
-              intolerable in a capability model, so I would hold them
-              as opaque names and values and deliberately not model
-              them. That is a decision rather than an obvious default.
+              <strong>Ranking rather than strength.</strong> Ordering
+              three channels is answerable; rating how strongly you
+              prefer audio, on a scale, walks straight back into the
+              pseudo-precision the capability model was just dug out
+              of. Orders it is, and partial ones.
+            </p>
+            <p>
+              <strong>Tools are modelled, not opaque.</strong> I
+              expected to hold them as unstructured names and values,
+              on the grounds that any list of tools trails whatever
+              technology somebody happens to know about. A named tool
+              with typed properties turned out to cost nothing and to
+              catch real mistakes, and the openness I was worried about
+              is about which tools exist, not about whether a speech
+              rate should be a number.
             </p>
             <p>
               <strong>
-                Does the model record what the system would have
-                chosen?
+                Provenance, rather than a parallel record of what the
+                system would have chosen.
               </strong>{" "}
-              It has to, if an override is going to be readable as
-              evidence rather than noise. What the selection rules
-              arrived at and what the person actually chose have to be
-              two separate facts, which is more machinery than a
-              preference store would otherwise need.
+              I had thought the model would need to store the rule
+              output alongside the actual choice as two separate
+              facts. Recording where each value came from does the same
+              work more cheaply, and keeping the overruled inference
+              beside it covers the case I actually cared about.
+            </p>
+            <p>
+              What is not built: nothing yet enforces at run time that
+              a rule only writes the preferences it declared, which the
+              capability side already does for its actions and which
+              wants doing before there are many rules. Conditions on
+              preferences are designed and not written. And no rule yet
+              infers anything in the modality category, so that one is
+              populated but untested by use.
             </p>
           </section>
         </div>
