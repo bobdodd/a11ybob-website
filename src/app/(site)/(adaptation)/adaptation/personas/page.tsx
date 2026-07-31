@@ -169,15 +169,36 @@ export default function Personas() {
               does this represent&rdquo; has an answer.
             </p>
             <p>
-              This is a real advance and it inherits a real problem. Clustering
-              tells you about the people in the dataset, and the people who
-              could not use the product well enough to generate data are the
-              ones an accessibility argument is about. A method that derives its
-              users from engagement logs will systematically under-represent
-              anybody the current design excludes. The same group has since
-              worked on transparency, on explaining to practitioners where a
-              generated persona came from, which suggests they know the
-              inference is doing more work than it looks.
+              This is a real advance and it inherits two problems, of which
+              the better known is the milder. Clustering tells you about the
+              people in the dataset, and the people who could not use the
+              product well enough to generate data are the ones an accessibility
+              argument is about. A method that derives its users from engagement
+              logs will under-represent anybody the current design already
+              excludes.
+            </p>
+            <p>
+              The second problem is not an accident of collection, which is what
+              makes it the harder one. These methods work by reduction. They
+              look for the few profiles that account for the most variance and
+              treat what is left as residual, and how many profiles to produce
+              is a number somebody picks. Picking a small one is the entire
+              point, because a hundred personas would be no more usable than the
+              raw data was.
+            </p>
+            <p>
+              A minority is exactly what that arithmetic absorbs into a
+              neighbouring cluster or discards. So disabled users are not merely
+              under-collected in large datasets, they are pushed out by an
+              analysis whose purpose is to find what most people have in common.
+              The two problems compound: the data holds fewer of them than it
+              should, and then the method is built to look past the ones it
+              holds.
+            </p>
+            <p>
+              The same group has since worked on transparency, on explaining to
+              practitioners where a generated persona came from, which suggests
+              they know the inference is doing more work than it looks.
             </p>
           </section>
 
