@@ -96,7 +96,7 @@ export default function Adaptation() {
               There are fundamental objections to the method. A persona is a
               fiction, so no observation can show it to be wrong, and the more
               richly it is described the fewer real people it turns out to
-              match. The capability and preference models offer personas a
+              match. My capability and preference models offer personas a
               substrate that can be checked against an actual person, and that
               answers a good deal of what has been objected to.
             </p>

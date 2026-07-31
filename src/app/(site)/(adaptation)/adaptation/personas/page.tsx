@@ -22,8 +22,8 @@ export default function Personas() {
             <p className="lede">
               Personas are how most design teams talk about users, and they
               have been under a serious methodological objection for twenty
-              years: a persona cannot be checked against anything. A capability
-              model can. What follows is what personas are, what the research
+              years: a persona cannot be checked against anything. My
+              capability model can. What follows is what personas are, what the research
               actually says about them, and where a formal description of a
               person does and does not help.
             </p>
@@ -258,7 +258,7 @@ export default function Personas() {
                 <thead>
                   <tr>
                     <th scope="col">The criticism</th>
-                    <th scope="col">What a capability model does</th>
+                    <th scope="col">What my capability model does</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -318,7 +318,7 @@ export default function Personas() {
               <strong>
                 The narrative I left out was left out for this reason.
               </strong>{" "}
-              The eighteen worked profiles behind the capability model have no
+              The eighteen worked profiles behind my capability model have no
               name, no age, no occupation and no story, because those invite
               generalising from a character to a population. I wrote that before
               reading Chapman and Milham, and it is their third objection
@@ -359,8 +359,8 @@ export default function Personas() {
             <p>
               <strong>Goals are missing entirely.</strong> What somebody is
               trying to achieve, what they know about the domain, how often they
-              use the thing, what they are afraid of: none of that is in a
-              capability model or a preference model, and a great deal of what
+              use the thing, what they are afraid of: none of that is in my
+              capability model or my preference model, and a great deal of what
               personas are for lives there. A model of what a person can do and
               would rather says nothing about what they came to do.
             </p>
