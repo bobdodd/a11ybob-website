@@ -21,9 +21,9 @@ export default function Personas() {
             <h1>Personas, and what they are missing</h1>
             <p className="lede">
               Personas are how most design teams talk about users, and they
-              have been under a serious methodological objection for twenty
-              years: a persona cannot be checked against anything. My
-              capability model can. What follows is what personas are, what the research
+              have been under a methodological objection for twenty years
+              that has not been answered on its own terms: a persona cannot be
+              checked against anything. My capability model can. What follows is what personas are, what the research
               actually says about them, and where a formal description of a
               person does and does not help.
             </p>
@@ -74,7 +74,7 @@ export default function Personas() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
-            <h2>The objection that has never been answered</h2>
+            <h2>The methodological objection</h2>
             <p>
               The standing critique is Chapman and Milham&rsquo;s, from 2006,
               and its title tells you the tone: <em>The Personas&rsquo; New
@@ -146,10 +146,11 @@ export default function Personas() {
             </p>
             <p>
               Both positions are reasonable and neither closes the hole. If a
-              persona is a communication artefact, then it must not be used to
-              decide anything that ought to be decided by evidence, and in
-              practice it constantly is. The literature has been at this impasse
-              for two decades.
+              persona is a communication artefact rather than an estimate, then
+              it cannot settle a question that needs evidence, and nothing in
+              the method marks where the one use ends and the other begins.
+              Twenty years on, the objection has not been answered on its own
+              terms.
             </p>
           </section>
 
