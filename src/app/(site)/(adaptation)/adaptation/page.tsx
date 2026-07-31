@@ -84,15 +84,21 @@ export default function Adaptation() {
           >
             <h2>Personas, and what they are missing</h2>
             <p>
-              Personas are how most teams talk about users, in accessibility
-              work and well beyond it, and they have carried an unanswered
-              objection since 2006: a persona is a fiction, so nothing can show
-              it to be wrong. A study two years later put numbers on the
-              consequence, finding that the more richly a persona is described,
-              the fewer real people it matches. What personas are, what the
-              research says, and where a capability model helps: it supplies
-              the checkable substrate the method has always lacked, and it does
-              nothing at all for the two things personas are genuinely good at.
+              A persona is an invented person who stands in for a group of
+              users, given a name, a background, a level of skill and a set of
+              goals. They are used across all of user experience work and not
+              only in accessibility: teams design against them, and test
+              against them too, recruiting participants who match one or
+              walking a design through as though that character were the one
+              using it.
+            </p>
+            <p>
+              There are fundamental objections to the method. A persona is a
+              fiction, so no observation can show it to be wrong, and the more
+              richly it is described the fewer real people it turns out to
+              match. The capability and preference models offer personas a
+              substrate that can be checked against an actual person, and that
+              answers a good deal of what has been objected to.
             </p>
             <p>
               <Link href="/adaptation/personas">Read the analysis</Link>
