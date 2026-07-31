@@ -291,14 +291,26 @@ export default function DescribingWhatPeopleWant() {
             <p>
               The four categories descend from the widest choice to the
               narrowest, and that ordering earns its keep because a
-              choice near the top implies choices below it. Somebody
-              who asks for help with text perception has, in effect,
-              said things about letterforms and spacing they never
-              enumerated, and would not thank anyone for making them
-              enumerate.
+              choice near the top implies choices below it.
             </p>
             <p>
-              That is one preference stated, and these follow from it:
+              The worked example is a preference called{" "}
+              <strong>help with text perception</strong>. It is one
+              thing a person turns on, and it serves readers whose
+              difficulty is with taking text in rather than with seeing
+              it: dyslexic and dyscalculic readers most obviously,
+              though nothing about it is restricted to them and anyone
+              may choose it. Somebody who turns it on has, in effect,
+              said a good deal about letterforms and spacing that they
+              never enumerated and would not thank anyone for making
+              them enumerate.
+            </p>
+            <p>
+              So turning it on is a single stated preference, and these
+              follow from it. None of them overrides anything the
+              person has set for themselves: where they have already
+              chosen a contrast or a size, that choice stands and the
+              inference gives way.
             </p>
 
             <div
@@ -323,7 +335,8 @@ export default function DescribingWhatPeopleWant() {
                     <th scope="row">What the typeface must manage</th>
                     <td>
                       b and d, p and q not reflections of each other.
-                      1, l and I told apart. Open apertures. No
+                      1, l and I told apart, which is as much about
+                      reading numbers as letters. Open apertures. No
                       decorative forms.
                     </td>
                   </tr>
@@ -404,13 +417,21 @@ export default function DescribingWhatPeopleWant() {
             <p>
               One naming decision sits underneath all of it. The
               preference is called help with text perception rather
-              than anything about dyslexia, because a preference is
-              something a person chooses and its name should be a
-              phrase they would use. A condition name labels whoever
-              picks it. My own first suggestions, high-legibility
-              reading and letter-shape clarity, were no better: they
-              are this profession&rsquo;s vocabulary wearing a
-              user-facing disguise.
+              than anything about dyslexia or dyscalculia, because a
+              preference is something a person chooses and its name
+              should be a phrase they would use. A condition name
+              labels whoever picks it. My own first suggestions,
+              high-legibility reading and letter-shape clarity, were no
+              better: they are this profession&rsquo;s vocabulary
+              wearing a user-facing disguise.
+            </p>
+            <p>
+              Naming it that way costs nothing here, on a page written
+              for people who build these systems, where naming who it
+              tends to serve is useful. The name has to work in
+              the other place, in front of somebody deciding whether to
+              switch it on, and there it has to describe what they will
+              get rather than what anybody thinks they are.
             </p>
           </section>
 
