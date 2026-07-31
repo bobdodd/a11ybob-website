@@ -82,6 +82,27 @@ export default function Adaptation() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
+            <h2>Personas, and what they are missing</h2>
+            <p>
+              Personas are how most teams talk about users, in accessibility
+              work and well beyond it, and they have carried an unanswered
+              objection since 2006: a persona is a fiction, so nothing can show
+              it to be wrong. A study two years later put numbers on the
+              consequence, finding that the more richly a persona is described,
+              the fewer real people it matches. What personas are, what the
+              research says, and where a capability model helps: it supplies
+              the checkable substrate the method has always lacked, and it does
+              nothing at all for the two things personas are genuinely good at.
+            </p>
+            <p>
+              <Link href="/adaptation/personas">Read the analysis</Link>
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
             <h2>Accessible Tetris</h2>
             <p>
               A case study from my doctoral research, revisited: what
