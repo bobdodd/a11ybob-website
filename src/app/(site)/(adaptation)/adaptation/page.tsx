@@ -85,24 +85,31 @@ export default function Adaptation() {
             <h2>Describing interfaces and modalities</h2>
             <p>
               A capability model says what a person can do and a
-              preference model says what they would rather. Neither
-              says anything about the thing on the other side of the
-              conversation. An adaptive interface has to be described
-              too, in enough detail that a rendering can be chosen
-              against a profile and later checked against evidence.
-              That description is what I call an Accessibility
-              Focused Design System, or AFDS: a portable bundle in
-              which components declare what they guarantee, what they
-              do not guarantee, what the assistive-technology record
-              says about them, and what remains uncertain.
+              preference model says what they would rather, and those,
+              together with the needs of the application, drive design
+              decisions for the user interface. The outcomes of those
+              decisions are described by a design system that sets
+              rendering and interaction rules, often building a
+              hierarchy of components and layout strategies. Those
+              design systems are Accessibility Focused Design Systems,
+              or AFDS, and they cover multiple forms of user
+              interaction.
+            </p>
+            <p>
+              Written down so it can be carried, an AFDS is a portable
+              bundle in which components declare what they guarantee,
+              what they do not guarantee, what the
+              assistive-technology record says about them, and what
+              remains uncertain.
             </p>
             <p>
               The section holds the argument for the design system as
-              the unit of remediation, the shape of a component
-              contract, the treatment of evidence and uncertainty as
-              first-class records, and the portable package format
-              that carries all of it. It also hosts the user guide
-              and the version 1.0.0 specification.
+              the place where accessibility decisions are made and
+              recorded, the shape of a component contract, the
+              treatment of evidence and uncertainty as first-class
+              records, and the portable package format that carries
+              all of it. It also hosts the user guide and the version
+              1.0.0 specification.
             </p>
             <p>
               <Link href="/adaptation/afds">Read the design system</Link>
