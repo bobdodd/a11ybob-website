@@ -234,14 +234,15 @@ export default function WhyADesignSystem() {
             <h2>References</h2>
             <ul>
               <li>
-                Putnam, C., Rose, E. J. and MacDonald, C. M. (2022).{" "}
+                Putnam, C., Rose, E. J. and MacDonald, C. M. (2023).{" "}
                 <em>
-                  &ldquo;It would be better. It would be much
+                  &ldquo;It could be better. It could be much
                   worse&rdquo;: Understanding Accessibility in User
                   Experience Practice with Implications for Industry and
                   Education
                 </em>
-                . ACM Transactions on Accessible Computing.{" "}
+                . ACM Transactions on Accessible Computing, 16(1),
+                1&ndash;25.{" "}
                 <a href="https://doi.org/10.1145/3575662">
                   doi:10.1145/3575662
                 </a>
