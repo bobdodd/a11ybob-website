@@ -88,7 +88,7 @@ Answer ONLY using the tools. They query a real map database (OpenStreetMap data 
 
 Hard rules:
 - Never invent a feature, name, distance, direction, or detail. If nothing is mapped there, say so plainly: "I don't find anything mapped there."
-- The tools are yours, not the user's. NEVER name one — place_knowledge, find_place, whats_nearby, area_summary, nearest_intersections, path_between, transit_nearby. And never make the lookup the SUBJECT of a sentence: not "the search returned…", "the search found…", "the results show…", "the data shows…", "the knowledge base…", "my sources didn't surface…", nor ANY paraphrase of those. Do not mention searching, looking up, querying, results, or a database, in any wording. The subject of every sentence is the place, or you — "Nothing is recorded about the building itself. It stands in the Financial District, which…". Crediting a SOURCE is the opposite of this, and required: Wikipedia, Wikivoyage, Wikidata and their freshness are the one thing a blind user cannot glance-check, and "Wikipedia describes it as…" is always welcome.
+- The tools are yours, not the user's. NEVER name one — place_knowledge, find_place, whats_nearby, area_summary, nearest_intersections, path_between, transit_nearby, depth_context. And never make the lookup the SUBJECT of a sentence: not "the search returned…", "the search found…", "the results show…", "the data shows…", "the knowledge base…", "my sources didn't surface…", nor ANY paraphrase of those. Do not mention searching, looking up, querying, results, or a database, in any wording. The subject of every sentence is the place, or you — "Nothing is recorded about the building itself. It stands in the Financial District, which…". Crediting a SOURCE is the opposite of this, and required: Wikipedia, Wikivoyage, Wikidata and their freshness are the one thing a blind user cannot glance-check, and "Wikipedia describes it as…" is always welcome.
 - NEVER invent coordinates. A latitude/longitude you pass to a tool must be one a tool GAVE you this turn, or the user's own location — never one you recall or estimate. For a place the user names, call find_place ALONE and WAIT for it, then call the other tool with the lat/lng from its result. Guessing a point and querying transit or knowledge there produces real distances measured from the wrong place, which is far worse than a slower answer. Calls at coordinates you were not given are refused.
 - Never estimate distances or directions yourself — always take them from the tools (find_place, whats_nearby and path_between return them computed). Your job is choosing what to ask and how to say it, not doing geometry.
 - Give distance in METRES, straight-line. NEVER convert it to a walking time or say how long something takes — people move at very different speeds and the app cannot know theirs — and never give route or turn-by-turn directions. Just the distance and the direction. Directions: when a tool gives a clock direction (the user's heading is known) PREFER it and lead with it — "about 30 metres, at 2 o'clock" — because it is relative to the way they are facing, which is what a walker needs. Use the compass bearing (north, south-east…) ONLY when no clock is given. This is ORIENTATION, not a route — never imply it is safe to cross or proceed.
@@ -170,6 +170,27 @@ Sets ("show me ...") and filters — two DIFFERENT things:
 - Highlighting happens ONLY through these tools — the same hard rule as show_on_map: saying results are on the map without the call is a failure.
 - To clear, the user presses Escape or says "clear results" directly to the map; tell them so if they ask.`;
 
+/* The depth addendum — appended only when the client declared canSenseDepth (the
+ * Android app with ARCore). The web viewer has no capture path at all: its only
+ * device API is getUserMedia for the microphone. Offering it the tool made the
+ * model lead with "start depth sensing on your phone" to someone at a desktop,
+ * and demote the map answer it used to give to a follow-up offer. Gating the
+ * TOOL alone would still leave these ten bullets in every web user's cached
+ * prompt, so the prompt text moves with the capability. Four cached prefix
+ * variants now (map x depth); each caches independently, as the two did. */
+const DEPTH_PROMPT = `
+
+Live phone depth — the user's immediate physical surroundings:
+- You have depth_context: a live snapshot from the phone depth sensor of what is physically around the user RIGHT NOW — how far away surfaces are, whether the path ahead is open, if something is close on one side. It is NOT a map tool — it measures the real world in front of the phone.
+- Use it for questions like "what do you see?", "what's ahead?", "what's in front of me?", "is the path clear?", "anything in the way?", "how much room is there?", or any question about the user's immediate physical space rather than a mapped place.
+- Use map tools (find_place, whats_nearby, area_summary, etc.) for mapped places, streets, intersections, transit, cafés, and "where am I?" — those are about the MAP, not the physical space.
+- For a broad "what's around me?" you may use BOTH: depth_context for the immediate physical space, then map tools for the mapped surroundings.
+- Depth is approximate and confidence-limited. NEVER say a path or route is safe. Say "appears open", "I measure", "there seems to be", "about" — not "is" or "exactly".
+- Depth directions are coarse and relative to the user's facing: left, center-left, center, center-right, right. Do NOT convert them to compass or clock directions — they are not precise enough for that.
+- If the tool returns available: false, depth sensing isn't running — say so plainly and suggest the user start depth sensing.
+- If the snapshot has low confidence or insufficient data, say that and suggest moving the device slowly to build a depth picture.
+- The snapshot's facts are structured: each has a kind (center_path_open, near_surface, very_near_surface, left_more_open, right_more_open, low_confidence, reprojected_depth, insufficient_depth_data), a direction, a distance in millimeters, and a confidence. Phrase them naturally — "There's something very close on your right, about half a meter away" or "The path ahead appears open to about 2.8 meters" — not as a data readout.`;
+
 /* The filter/rotor vocabulary — read once from the tiled demo's taxonomy.json
  * (the single source of truth the client builds its checkboxes from), so
  * set_filters speaks exactly the feature ids the client understands. If the
@@ -245,6 +266,42 @@ const SHOW_ON_MAP_SCHEMA = {
   },
 };
 
+/* The depth_context tool — returns the live phone depth snapshot the mobile client
+ * sent in the request body. The LLM calls this for questions about the user's
+ * immediate physical surroundings ("what do you see?", "what's ahead?",
+ * "is the path clear?", etc.). The tool takes no input — it just returns
+ * whatever depth data the client supplied. */
+const DEPTH_CONTEXT_SCHEMA = {
+  name: "depth_context",
+  description:
+    "Return the live phone depth snapshot for the user's immediate physical surroundings — what the phone depth sensor measures right now. Use for questions about what is ahead, visible, in the way, clear, open, or physically nearby. Do NOT use for mapped places, streets, intersections, transit, or location identity — those are map tools.",
+  input_schema: {
+    type: "object",
+    properties: {},
+  },
+};
+
+function runDepthContextTool(raw: unknown) {
+  if (!raw || typeof raw !== "object") {
+    return {
+      available: false,
+      reason:
+        "No live depth snapshot was supplied by the client. Depth sensing may not be running — suggest the user start depth sensing.",
+    };
+  }
+  return {
+    available: true,
+    snapshot: raw,
+    interpretation_rules: [
+      "Distances are approximate phone depth measurements, not exact.",
+      "Never say a path or route is safe.",
+      "Mention low confidence or insufficient data when present.",
+      "Directions are relative to the user's facing and coarse: left, center-left, center, center-right, right.",
+      "Do not convert depth directions to compass or clock directions.",
+    ],
+  };
+}
+
 type Turn = { role: "user" | "assistant"; content: string };
 
 export async function POST(req: NextRequest) {
@@ -259,6 +316,7 @@ export async function POST(req: NextRequest) {
     message?: string; location?: { lat: number; lon: number; heading?: number };
     history?: Turn[]; memory?: unknown; canShowMap?: boolean; modality?: string;
     viewport?: { north: number; south: number; east: number; west: number };
+    depthContext?: unknown; depth_context?: unknown; canSenseDepth?: boolean;
   };
   try {
     body = await req.json();
@@ -271,6 +329,8 @@ export async function POST(req: NextRequest) {
 
   const loc = body.location;
   const heading = typeof loc?.heading === "number" ? loc.heading : undefined;
+  // Live phone depth snapshot from the mobile client (if depth sensing is running).
+  const rawDepthContext = body.depthContext ?? body.depth_context ?? null;
   // The visual client's current view — the default frame for "show me" sets.
   const vpRaw = body.viewport;
   const viewport =
@@ -294,6 +354,10 @@ export async function POST(req: NextRequest) {
     ? `, facing ${facingWord}. Their facing is KNOWN, and the app states it for them at the very start of the reply — so do NOT state their compass facing yourself. Give EVERY direction to a place or feature as the EXACT clock number the tool returns — always say the o'clock value, e.g. "at 3 o'clock", "at 9 o'clock", "at 12 o'clock". Do NOT soften or replace it with "to your left", "to your right", "ahead", "behind" or similar vague words, and NEVER use a compass point — not even for a distant place you happen to know. The clock value is precise; the vague words throw that precision away`
     : "";
   const canShowMap = body.canShowMap === true;
+  // The client HAS a depth sensor this chat can read (the Android app). Distinct from
+  // whether it is RUNNING: with the tool offered, "available: false" can honestly mean
+  // "switch it on"; without the capability the map tools answer, as they did before.
+  const canSenseDepth = body.canSenseDepth === true;
   const modality = body.modality === "voice" ? "SPOKEN" : body.modality === "typed" ? "TYPED" : null;
   // The confirm-before-moving rule lives HERE, at the point of decision, not
   // only in the system prompt — buried there, the model moved the map on a
@@ -332,12 +396,17 @@ export async function POST(req: NextRequest) {
   // Cache the (large, stable) system prompt + tools so every turn after the first is cheap.
   // The canShowMap variant appends the visual-map addendum — each variant caches on its own.
   const system: Anthropic.Messages.TextBlockParam[] = [
-    { type: "text", text: canShowMap ? SYSTEM + SHOW_ON_MAP_PROMPT : SYSTEM, cache_control: { type: "ephemeral" } },
+    {
+      type: "text",
+      text: SYSTEM + (canShowMap ? SHOW_ON_MAP_PROMPT : "") + (canSenseDepth ? DEPTH_PROMPT : ""),
+      cache_control: { type: "ephemeral" },
+    },
   ];
   // Map tools + the knowledge & transit tools. Cache the last entry so the whole tool block is cached.
   const allTools = [
     ...TOOL_SCHEMAS, PLACE_KNOWLEDGE_SCHEMA, TRANSIT_NEARBY_SCHEMA, ...MEMORY_TOOL_SCHEMAS,
     ...(canShowMap ? [SHOW_ON_MAP_SCHEMA, HIGHLIGHT_PLACES_SCHEMA, SET_FILTERS_SCHEMA] : []),
+    ...(canSenseDepth ? [DEPTH_CONTEXT_SCHEMA] : []),
   ];
   const tools = allTools.map((t, i) =>
     i === allTools.length - 1 ? { ...t, cache_control: { type: "ephemeral" as const } } : t,
@@ -472,6 +541,8 @@ export async function POST(req: NextRequest) {
                   mapAction.current = { kind: "filters", features: valid, labels, on };
                   out = { ok: true, switched: labels, on, ...(unknown.length ? { unknown } : {}) };
                 }
+              } else if (tu.name === "depth_context") {
+                out = runDepthContextTool(rawDepthContext);
               } else if (tu.name === "remember" || tu.name === "recall" || tu.name === "forget") {
                 out = runMemoryTool(
                   memory, tu.name, tu.input as Record<string, unknown>,
