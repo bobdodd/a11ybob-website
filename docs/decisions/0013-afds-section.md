@@ -120,7 +120,7 @@ The cluster grows to nine links, matching the Tetris sub-nav's nine, so wrapping
 at 320 CSS px should behave as it already does there. Worth confirming on the
 narrow viewport rather than assuming.
 
-## Note: two sitemap gaps found while doing this
+## Note: two record gaps found while doing this
 
 `src/lib/sitemap-data.ts` was missing three pages that have been live for some
 time: `adaptation/describing-people-to-computers`,
@@ -132,9 +132,20 @@ before. Fixed alongside the eight new AFDS paths, in its own commit.
 `src/app/(site)/`: 79 on disk, 79 listed, nothing missing and nothing stale.
 Those three were the only gap.
 
-Separately, and **not** fixed here because it is a judgement call rather than a
-defect: the colophon's public decision list stops at 0008, while this file is
-0013. Entries 0009 to 0012 cover production deployment, the production database,
-push-before-deploy, and content-files-in-the-repo. Some of that may be
-deliberately withheld as infrastructure detail. Whether 0009 to 0013 should be
-surfaced publicly needs deciding rather than assuming.
+Separately, the colophon's public decision list had stopped at 0008 while this
+file is 0013, so entries 0009 to 0012 had been written and never surfaced. That
+was raised as a judgement call rather than a defect, because 0009 to 0011 cover
+production deployment, the production database, and push-before-deploy, any of
+which might reasonably be withheld as infrastructure detail. Bob's ruling was to
+publish all of them, so 0009 to 0013 were added to the `decisions` array in
+`colophon/page.tsx`.
+
+0010 states in its own text that it is source material for a public page and
+deliberately omits the account name. Its summary keeps that discipline: the shape
+of the arrangement, loopback binding, authentication on, a scoped non-superuser
+account, and none of the specifics.
+
+The array and the directory now agree: thirteen entries, every `file:` reference
+resolving under `docs/decisions/`, nothing on disk unlisted, ids ascending with
+no gaps. Worth keeping checked, since this is the second list in the same repo
+found drifting from the same directory it describes.

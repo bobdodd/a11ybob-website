@@ -63,6 +63,41 @@ const decisions = [
     summary:
       "First end-to-end deploy: a single OVHcloud VPS at Gravelines running self-hosted MongoDB, OpenSearch, Next.js under pm2, and Caddy as the reverse proxy. IP-only trial — DNS, TLS, and managed-Mongo cutover deferred. Three things that broke and how they resolved are recorded for next time.",
   },
+  {
+    id: "0009",
+    file: "0009-production-deployment.md",
+    title: "Production deployment: rsync from source",
+    summary:
+      "Supersedes 0008 on the deploy mechanism only. Deployment is an rsync of the local working tree, not a git pull, so a deploy reflects local edits whether or not they are committed. Every remote step multiplexes over one SSH connection, because bursting port 22 from home trips the gateway block and recovery needs a physical power-cycle. The build runs on the server and pm2 restarts only on a green build.",
+  },
+  {
+    id: "0010",
+    file: "0010-production-database.md",
+    title: "Production database: self-hosted MongoDB with authentication",
+    summary:
+      "Answers the open question 0008 left. Nothing moved: production runs on the self-hosted MongoDB installed for the trial, bound to loopback, with authentication on and the application connecting as a scoped non-superuser account. The managed tier was never adopted. Recorded as a fact rather than a fresh choice, because an intention stated in a decision log and never revisited reads, months later, exactly like a decision.",
+  },
+  {
+    id: "0011",
+    file: "0011-push-before-deploy.md",
+    title: "Push before deploy",
+    summary:
+      "Amends 0009 on one point. Because a deploy rsyncs the working tree, the repo quietly stopped describing the site: an audit found four months of live-but-uncommitted work, including a cover image that existed only on the server, so a rebuild from main would have published a broken figure. A deploy must now be preceded by a push, with a clean tree and HEAD equal to origin/main.",
+  },
+  {
+    id: "0012",
+    file: "0012-content-files-in-the-repo.md",
+    title: "Long-form content lives in the repo as files",
+    summary:
+      "One file per piece under content/experience/ or content/article/, YAML front matter plus markdown, filename as the slug so a slug cannot disagree with the record of it. Replaces sixteen gitignored insert scripts, one of which carried an entire article body inline. Validation refuses before it writes, and its error list is an accessibility checklist in disguise: missing images, empty alt text, and tables that silently do not render.",
+  },
+  {
+    id: "0013",
+    file: "0013-afds-section.md",
+    title: "The AFDS section lives under Adaptation",
+    summary:
+      "The Accessibility Focused Design System work is recorded at /adaptation/afds as a hub with sub-pages, inside the existing Adaptation zone rather than as a tenth nav item, because it is what the capability and preference models feed into. The specification is hosted here as an HTML page rather than as a Word file, which could not meet the AAA contrast floor that holds everywhere else and could not be linked to by section.",
+  },
 ];
 
 export default function Colophon() {
