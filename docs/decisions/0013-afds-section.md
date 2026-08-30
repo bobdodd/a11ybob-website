@@ -70,18 +70,48 @@ Both live in the section rather than only in the other repository. The
 specification is an **HTML page**, at `/adaptation/afds/specification`, and that
 page is canonical.
 
-The draft exists as `AFDS-Draft-Specification-v1.0.0.docx`. A Word file cannot
-meet this site's AAA contrast floor, cannot be linked to by section, and cannot
-be read without an application. A specification that is hard to quote is a
-specification that will not be quoted.
+An earlier draft of this record said the specification existed as
+`AFDS-Draft-Specification-v1.0.0.docx` and argued against Word on contrast and
+linkability grounds. That was wrong about the source. `docs/AFDS-PACKAGE-FORMAT.md`
+is canonical and `tools/docx/build.js` generates the `.docx` from it, so there
+was never a Word-only original to argue against.
+
+The real argument is simpler. The canonical text is already markdown, so the
+site should render it as a page rather than link to a generated binary. That
+gives it the AAA contrast floor, section anchors, and readability without an
+application. A specification that is hard to quote is a specification that will
+not be quoted.
 
 ### One specification page for now
 
-Thirteen headings: a status note plus twelve numbered clauses. Splitting a
-specification across pages commits to stable per-section URLs, and those should
-not be fixed before the specification itself has settled. It will be split if it
-outgrows a single page, which is the depth-split practice the colophon already
-describes.
+Seventeen headings: a status note plus the source document's sixteen numbered
+clauses. An earlier draft of this record said twelve, written before the source
+had been read. Splitting a specification across pages commits to stable
+per-section URLs, and those should not be fixed before the specification itself
+has settled. It will be split if it outgrows a single page, which is the
+depth-split practice the colophon already describes.
+
+### Published at its current scope, not held back
+
+The standard is intended to be a full definition of an Accessibility Focused
+Design System. It is not one yet. Clause 1.2 of the source disclaims the
+substance in its own words: it does not specify the internal schema of a
+design-token file, and does not specify the internal schema of a component
+specification beyond requiring that one exists and is machine-readable. What is
+specified is the container.
+
+That gap is already on the record in `docs/OPEN-QUESTIONS.md` in the other
+repository, as A1 what the system contains, A2 component inventory, A3
+composition conformance, and H1 the component-contract schema.
+
+The page is published anyway, scoped honestly as the package format, carrying a
+status note that says the container is specified and the component, token and
+evidence schemas are still open. Holding the page until the standard is
+substantial was considered and rejected: the source already states plainly that
+it is a project draft, not a W3C standard and not on any standards track, so
+publishing a draft as a draft is consistent, and a visible open-questions list
+is truer to the project's own position that uncertainty is a first-class record
+type than a hidden one would be.
 
 ## Rejected
 
@@ -90,10 +120,17 @@ describes.
 - **`describing-interfaces-and-modalities` as the slug.** More legible cold, but
   long, and it duplicates what the `h1` already says. See the `nowrap` hazard
   above.
-- **The `.docx` as the canonical specification.** Fails AAA, unquotable, and
-  unlinkable by section.
+- **Linking to the generated `.docx` instead of rendering the markdown.** Fails
+  AAA, unquotable, unlinkable by section, and one step removed from the source.
 - **Splitting the specification into numbered sub-pages now.** Premature; it
   would fix section URLs before the content is stable.
+- **Holding the specification page until the standard is a full definition.** The
+  source already declares itself a project draft, so publishing a draft as a
+  draft is consistent. Deferred publication would also hide the open questions
+  rather than surface them.
+- **Expanding the standard first, before writing the section.** The definition
+  work is real and has a written agenda, but it is research with no settled end
+  date, and the teaching material does not depend on its outcome.
 - **Publishing the section as content files** under `content/article/`, per 0012.
   Rejected because these are structural pages with a persistent sub-nav and a
   hub index, not long-form pieces in a searchable corpus. 0012 governs the
