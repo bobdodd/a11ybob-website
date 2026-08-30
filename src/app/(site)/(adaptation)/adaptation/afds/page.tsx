@@ -50,8 +50,8 @@ export default function Afds() {
               interaction.
             </p>
             <p>
-              The order in that sentence matters, and it is the part
-              most often got backwards. A design system is not the
+              The order in that sentence matters, and it is the part I
+              most often see got backwards. A design system is not the
               starting point, and it is not a standard handed down from
               outside to be complied with. It is an artefact of a
               selection process. Something was chosen, for a particular
@@ -103,23 +103,21 @@ export default function Afds() {
           >
             <h2>Why this is a design system problem</h2>
             <p>
-              Almost all accessibility work happens after the fact and
-              one page at a time. A page is audited, the findings are
+              The arrangement I see most often is after the fact and one
+              page at a time. A page is audited, the findings are
               written up, a developer fixes what the report lists, the
               page passes, and the next page is audited. It is orderly,
-              it is billable, and it is close to the least effective
-              arrangement anyone could have arrived at.
+              it is billable, and I think it is close to the least
+              effective arrangement available.
             </p>
             <p>
               The difficulty is that the page is usually not where the
               problem lives. A finding on a page is a symptom of a
-              component, and that component is used in a hundred other
+              component, and that component may be used in many other
               places, most of which were never in the audit. Fixing the
               instance leaves the rule untouched, so the same finding
-              returns in the next release, and the one after that, and
-              the cost of the work never falls. Anyone who has run a
-              remediation programme for more than a year has seen the
-              same finding paid for several times.
+              can return in the next release, and in the one after
+              that, and the cost of the work does not fall.
             </p>
             <p>
               The decisions that produced that finding were made much
@@ -249,8 +247,8 @@ export default function Afds() {
               GPL-3.0-only.
             </p>
             <p>
-              The two models this design system acts on are described
-              in{" "}
+              The two models this design system is driven by are
+              described in{" "}
               <Link href="/adaptation/describing-people-to-computers">
                 the capability model
               </Link>{" "}
