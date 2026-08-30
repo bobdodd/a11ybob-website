@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { AfdsSubNav } from "@/components/AfdsSubNav";
+import { NewTabLink } from "@/components/NewTabLink";
 
 export const metadata: Metadata = {
   title: "Describing interfaces and modalities",
@@ -23,12 +24,11 @@ export default function Afds() {
           >
             <h1>Describing interfaces and modalities</h1>
             <p className="lede">
-              [Lede to come. A capability model and a preference model,
-              together with the needs of the application, drive design
-              decisions for the user interface. A design system
-              describes the outcomes of those decisions. This section
-              is about the accessibility-focused form of that
-              artefact.]
+              A capability model says what a person can do. A preference
+              model says what they would rather. Those two, with the
+              needs of the application itself, are what interface design
+              decisions are actually made from, and a design system is
+              where the outcome of those decisions gets written down.
             </p>
           </header>
 
@@ -37,7 +37,64 @@ export default function Afds() {
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
             <h2>What an AFDS is</h2>
-            <p>[To come.]</p>
+            <p>
+              A capability model says what a person can do and a
+              preference model says what they would rather, and those,
+              together with the needs of the application, drive design
+              decisions for the user interface. The outcomes of those
+              decisions are described by a design system that sets
+              rendering and interaction rules, often building a
+              hierarchy of components and layout strategies. Those
+              design systems are Accessibility Focused Design Systems,
+              or AFDS, and they cover multiple forms of user
+              interaction.
+            </p>
+            <p>
+              The order in that sentence matters, and it is the part
+              most often got backwards. A design system is not the
+              starting point, and it is not a standard handed down from
+              outside to be complied with. It is an artefact of a
+              selection process. Something was chosen, for a particular
+              set of capabilities, a particular set of preferences, and
+              a particular job the application has to do, and the design
+              system is the record of what was chosen together with the
+              rules that follow from it. Change the people, or the
+              preferences, or the job, and a different design system is
+              the right answer.
+            </p>
+            <p>
+              That is also why accessibility focused is not a label
+              stuck onto a design system that already existed. It
+              describes where the pressure came from at the moment the
+              choices were made. A system whose rules were settled on
+              other grounds and then checked for accessibility
+              afterwards is a different kind of object, however
+              respectable its contrast ratios turn out to be.
+            </p>
+            <p>
+              The word rules is doing real work too. A design system
+              that only shows what things look like has not said enough
+              to be useful. Rendering rules say how a component is drawn
+              across the whole range of conditions it has to survive,
+              which includes zoom, reflow, forced colours, reduced
+              motion, and whatever the person has already told the
+              platform they need. Interaction rules say what happens
+              when someone operates it, and operating it covers
+              keyboard, pointer, touch, speech, and switch. That is what
+              multiple forms of user interaction means once it stops
+              being a phrase and starts being a specification.
+            </p>
+            <p>
+              Written down so it can be carried, an AFDS is a portable
+              bundle. The components in it declare what they guarantee,
+              what they do not guarantee, what the
+              assistive-technology record actually says about them, and
+              what remains uncertain. The non-guarantees and the
+              uncertainty are not there for modesty. A component that
+              advertises only its promises cannot be assessed at all,
+              because a reader has no way to separate a claim that was
+              tested from a claim nobody has examined yet.
+            </p>
           </section>
 
           <section
@@ -45,7 +102,56 @@ export default function Afds() {
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
             <h2>Why this is a design system problem</h2>
-            <p>[To come.]</p>
+            <p>
+              Almost all accessibility work happens after the fact and
+              one page at a time. A page is audited, the findings are
+              written up, a developer fixes what the report lists, the
+              page passes, and the next page is audited. It is orderly,
+              it is billable, and it is close to the least effective
+              arrangement anyone could have arrived at.
+            </p>
+            <p>
+              The difficulty is that the page is usually not where the
+              problem lives. A finding on a page is a symptom of a
+              component, and that component is used in a hundred other
+              places, most of which were never in the audit. Fixing the
+              instance leaves the rule untouched, so the same finding
+              returns in the next release, and the one after that, and
+              the cost of the work never falls. Anyone who has run a
+              remediation programme for more than a year has seen the
+              same finding paid for several times.
+            </p>
+            <p>
+              The decisions that produced that finding were made much
+              earlier, by somebody settling how a control would be drawn
+              and how it would behave when operated. That is a design
+              system, whether or not anyone wrote one down. If the rule
+              is where the problem lives then the rule is where the fix
+              belongs, and remediating a page is at best a way of buying
+              time until the rule changes.
+            </p>
+            <p>
+              There is a second reason, less obvious than the first. A
+              remediated page carries no reasoning. It records that
+              something was changed, not why the change was correct,
+              what was tested, on which assistive technology, at which
+              version, or what is still unknown. A design system can
+              carry all of that, attached to the component the claim is
+              about, which means the next person to touch it inherits
+              the evidence instead of starting the investigation again.
+              This is the difference between a system that has been
+              tested and a system that can show its testing.
+            </p>
+            <p>
+              None of which fixes content. A design system can
+              guarantee that a heading is marked up as a heading and
+              that its contrast holds at every zoom level it claims to
+              support. It cannot make the heading say anything useful,
+              it cannot write the alternative text for an image it has
+              never seen, and it cannot rescue a page whose reading
+              order makes no sense. Those stay editorial problems, and a
+              system claiming otherwise would be overselling itself.
+            </p>
           </section>
 
           <section
@@ -132,7 +238,35 @@ export default function Afds() {
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
             <h2>Materials</h2>
-            <p>[To come.]</p>
+            <p>
+              The research notes, the drafts, the tooling, and a
+              complete worked sample package live in the project
+              repository:{" "}
+              <NewTabLink href="https://github.com/bobdodd/accessible-by-design">
+                accessible-by-design on GitHub
+              </NewTabLink>
+              . Documentation there is licensed CC BY-SA 4.0 and code is
+              GPL-3.0-only.
+            </p>
+            <p>
+              The two models this design system acts on are described
+              in{" "}
+              <Link href="/adaptation/describing-people-to-computers">
+                the capability model
+              </Link>{" "}
+              and{" "}
+              <Link href="/adaptation/describing-what-people-want">
+                the preference model
+              </Link>
+              .
+            </p>
+            <p>
+              AFDS 1.0.0 is a project draft. It is not a W3C standard,
+              not a published industry specification, and not on any
+              standards track. Every field name and identifier in it
+              should be read as stable within this project and unstable
+              outside it.
+            </p>
           </section>
         </div>
       </div>
