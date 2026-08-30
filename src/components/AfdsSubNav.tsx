@@ -15,8 +15,11 @@ const SUB_PAGES = [
   { href: `${BASE}/why-a-design-system`, label: "Why a design system" },
   { href: `${BASE}/what-a-component-declares`, label: "What a component declares" },
   { href: `${BASE}/evidence-and-uncertainty`, label: "Evidence and uncertainty" },
+  { href: `${BASE}/apg-support`, label: "APG support" },
+  { href: `${BASE}/portable-representations`, label: "Portable representations" },
   { href: `${BASE}/the-package-format`, label: "The package format" },
   { href: `${BASE}/adapters`, label: "Adapters" },
+  { href: `${BASE}/open-questions`, label: "Open questions" },
   { href: `${BASE}/user-guide`, label: "User guide" },
   { href: `${BASE}/specification`, label: "Specification" },
 ] as const;

@@ -77,6 +77,22 @@ export default function Afds() {
                 right.
               </li>
               <li>
+                <Link href="/adaptation/afds/apg-support">
+                  Supporting the APG
+                </Link>
+                : adopting the authoring practices by reference rather
+                than restating them, and reaching for native HTML
+                before reaching for ARIA.
+              </li>
+              <li>
+                <Link href="/adaptation/afds/portable-representations">
+                  Portable representations
+                </Link>
+                : what the industry has already built to carry a design
+                system between tools, and the things none of it can yet
+                express.
+              </li>
+              <li>
                 <Link href="/adaptation/afds/the-package-format">
                   The package format
                 </Link>
@@ -89,6 +105,14 @@ export default function Afds() {
                 adapter is canonical.
               </li>
               <li>
+                <Link href="/adaptation/afds/open-questions">
+                  Open questions
+                </Link>
+                : what is unresolved, kept in the open, because a
+                system that records uncertainty owes the same of
+                itself.
+              </li>
+              <li>
                 <Link href="/adaptation/afds/user-guide">User guide</Link>
                 : how to read, author, package, and validate an AFDS.
               </li>
@@ -96,7 +120,9 @@ export default function Afds() {
                 <Link href="/adaptation/afds/specification">
                   Specification
                 </Link>
-                : the normative definition, version 1.0.0.
+                : the formal text, version 1.0.0, which specifies the
+                package today and is intended to grow into a full
+                definition.
               </li>
             </ol>
           </section>
