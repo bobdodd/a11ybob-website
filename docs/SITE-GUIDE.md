@@ -256,6 +256,26 @@ house style, and you cannot always tell whose network you are on.*
 **Answer read-only questions over HTTPS (443) instead.** Public pages, demos,
 search, the chat APIs — all answerable without SSH.
 
+### Push first — this is a precondition, not a nicety
+
+The deploy rsyncs the **working tree**, so anything uncommitted is live but
+unrecorded. Before starting: clean tree, and `HEAD` == `origin/main`.
+
+```bash
+git fetch --quiet origin main
+[ -z "$(git status --porcelain)" ] \
+  && [ "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)" ] \
+  && echo "SAFE TO DEPLOY" || echo "STOP — commit and push first"
+```
+
+It matters for two reasons. It keeps `origin` describing the running site, which
+is what lets a second machine or a sandbox be trusted at all. And it makes the
+`pre-push` hook — which runs `npm run build` and refuses the push on failure —
+gate every deploy, which it never did before, because deploys did not involve
+git. See [decision 0011](decisions/0011-push-before-deploy.md).
+
+Content changes are exempt: they live in Mongo and need no deploy.
+
 ### The deploy itself
 
 Per decision 0009: **rsync from the local working tree**, then build on the box.
