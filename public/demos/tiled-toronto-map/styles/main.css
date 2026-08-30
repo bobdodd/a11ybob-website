@@ -611,18 +611,27 @@ main {
 /* In-road street names. Bob: a thin minor-road casing isn't wide enough to back the
    name, so it spilled onto the terrain as unreadable dark-on-green. Give the label a
    WHITE HALO so it stays legible wherever it sits — on the road OR off it. The halo
-   is non-scaling (constant screen width) and painted BEHIND the fill; the text size
-   is the constant-screen --label-size. The dark-map + high-contrast blocks flip the
-   colours (light text, dark halo) and inherit the rest. (Halo + text invert together
-   under macOS Invert, so legibility survives.) */
+   is painted BEHIND the fill; the text size is the constant-screen --label-size. The
+   dark-map + high-contrast blocks flip the colours (light text, dark halo) and inherit
+   the rest. (Halo + text invert together under macOS Invert, so legibility survives.)
+
+   The halo is sized as a FRACTION of --label-size rather than a fixed px width with
+   vector-effect:non-scaling-stroke. That earlier form assumed the stroke would stay a
+   constant 3.5 SCREEN px, which WebKit does not honour: vector-effect is not applied
+   to <text> in Safari, so the 3.5 was read as 3.5 USER units and multiplied by the
+   viewBox scale. --label-size is 13 * 2^(18 - zoom), so the scale is 2^(zoom - 18):
+   at zoom 21 the halo became 28 screen px around 13 px glyphs and at zoom 22 it was
+   56 px — the dark halo closed over the letterforms completely and a street name
+   rendered as a solid blob (seen on Mutual Street, Toronto). Expressed as a ratio the
+   halo tracks the glyphs at every zoom, needs no vector-effect support, and cannot
+   swallow the text again. /4 keeps the ~3.25 px the fixed 3.5 px was aiming at. */
 #map-tiles text.road-label {
     font-size: var(--label-size);
     font-weight: 600;
     fill: #1a1a1a;
     stroke: #ffffff;
-    stroke-width: 3.5px;
+    stroke-width: calc(var(--label-size, 13px) / 4);
     stroke-linejoin: round;
-    vector-effect: non-scaling-stroke;
     paint-order: stroke;
 }
 
@@ -2676,10 +2685,29 @@ body.chat-split .location-info {
    (the donut gotcha), circles (POI dots keep their category colour — points
    are marked by the focus outline + tooltip), and text (in-road labels stay
    legible on the amber). Cleared by the next go-to or Escape. */
-#map-tiles .goto-highlight [stroke]:not([stroke="none"]):not(.road-hit):not(text) {
+/* .road-highlight shares this exact amber: selecting any section of a named
+   road highlights EVERY visible section of it (all groups sharing its
+   data-name). :is() keeps the specificity of a single class, so the !important
+   still governs as before. */
+/* .road-hover is the HOVER twin: pointing at any section of a named road lights
+   every visible section of it, in the same blue the focus outline uses (#0066ff)
+   rather than the selection amber — so a road under the pointer and a road you
+   have actually selected stay tellable apart. Declared BEFORE the amber rule on
+   purpose: the two carry equal specificity, so source order decides, and a road
+   that is both hovered and selected stays amber. The deliberate selection
+   outranks the transient pointer. */
+#map-tiles .road-hover [stroke]:not([stroke="none"]):not(.road-hit):not(text) {
+    stroke: #0066ff !important;
+}
+#map-tiles .road-hover [fill]:not([fill="none"]):not(circle):not(text) {
+    fill: #0066ff !important;
+    fill-opacity: 0.28;
+}
+
+#map-tiles :is(.goto-highlight, .road-highlight) [stroke]:not([stroke="none"]):not(.road-hit):not(text) {
     stroke: #ffb300 !important;
 }
-#map-tiles .goto-highlight [fill]:not([fill="none"]):not(circle):not(text) {
+#map-tiles :is(.goto-highlight, .road-highlight) [fill]:not([fill="none"]):not(circle):not(text) {
     fill: #ffb300 !important;
     fill-opacity: 0.28;
 }

@@ -192,6 +192,44 @@ class MapApplication {
             }
         });
 
+        // Selecting any section of a named road highlights EVERY visible section
+        // of that road (data-name is baked onto street groups). Hooked off focus,
+        // so it fires for every selection path — mouse, keyboard Tab, and search
+        // arrival all end in focus. Scoped to #map-svg so focus leaving the map
+        // (e.g. a control) leaves the highlight sticky; selecting another map
+        // feature that isn't a named road clears it.
+        document.getElementById('map-svg').addEventListener('focusin', (e) => {
+            const g = e.target && e.target.closest
+                ? e.target.closest('#map-tiles [role="img"]') : null;
+            if (!g) return;
+            const name = g.getAttribute('data-name');
+            if (name) this._setRoadHighlight(name);
+            else if (this._roadHighlightName) this._setRoadHighlight(null);
+        });
+
+        // HOVER does the same thing in the hover blue: pointing at any section
+        // of a named road lights every visible section of it, so the road reads
+        // as one object under the pointer just as it does under focus. Kept as
+        // its own class rather than reusing the selection amber, so a hovered
+        // road and a SELECTED road stay tellable apart, and moving the pointer
+        // away restores the selection untouched. Deliberately NOT gated on the
+        // pointer-pace tracker the announcements use: speech has to wait for
+        // the pointer to settle, but a colour change is cheap and should track
+        // the pointer immediately or it reads as lag. The name check makes
+        // re-entering the same road free — the DOM work only happens when the
+        // road under the pointer actually changes.
+        const mapSvgEl = document.getElementById('map-svg');
+        mapSvgEl.addEventListener('mouseover', (e) => {
+            const g = e.target && e.target.closest
+                ? e.target.closest('#map-tiles [role="img"]') : null;
+            const name = g ? g.getAttribute('data-name') : null;
+            if ((name || null) !== (this._roadHoverName || null)) this._setRoadHover(name);
+        });
+        // Leaving the map entirely drops the hover; the selection stays put.
+        mapSvgEl.addEventListener('mouseleave', () => {
+            if (this._roadHoverName) this._setRoadHover(null);
+        });
+
         // The chat panel's housing: floating (moveable/resizable/closeable)
         // on desktop, split-screen with a draggable divider on mobile. The
         // divider changes the map's height without a window resize, so it
@@ -481,6 +519,7 @@ class MapApplication {
         document.addEventListener('keydown', (e) => {
             if (e.key !== 'Escape') return;
             if (this._gotoHighlightId) this._setGotoHighlight(null);
+            if (this._roadHighlightName) this._setRoadHighlight(null);
             if (this._results) {
                 this.clearResults();
                 this.announceStatus('Results cleared.');
@@ -1540,6 +1579,41 @@ class MapApplication {
         return els;
     }
 
+    // Road-name HIGHLIGHT: selecting any section of a named street lights up
+    // EVERY visible section of that road. A street is many OSM ways (split at
+    // intersections) plus per-tile clips — each a separate group carrying the
+    // same data-name (baked onto street highways by build-tiles.py). Sticky
+    // like the go-to highlight — cleared by selecting another map feature or
+    // Escape — and re-applied to matching geometry in freshly inserted tiles
+    // (see renderSVGTiles).
+    _setRoadHighlight(name) {
+        document.querySelectorAll('#map-tiles .road-highlight')
+            .forEach((el) => el.classList.remove('road-highlight'));
+        this._roadHighlightName = name ? String(name) : null;
+        if (!this._roadHighlightName) return [];
+        const els = [...document.querySelectorAll(
+            `#map-tiles [data-name="${this._cssEscape(this._roadHighlightName)}"]`)];
+        els.forEach((el) => el.classList.add('road-highlight'));
+        return els;
+    }
+
+    // The HOVER twin of _setRoadHighlight — same road-wide grouping by
+    // data-name, but transient and in the hover blue. Independent of the
+    // selection: hovering never disturbs _roadHighlightName, so pointing at one
+    // road and away again leaves the selected road lit exactly as it was. Where
+    // a road is both selected and hovered the amber wins, which the stylesheet
+    // settles by source order.
+    _setRoadHover(name) {
+        document.querySelectorAll('#map-tiles .road-hover')
+            .forEach((el) => el.classList.remove('road-hover'));
+        this._roadHoverName = name ? String(name) : null;
+        if (!this._roadHoverName) return [];
+        const els = [...document.querySelectorAll(
+            `#map-tiles [data-name="${this._cssEscape(this._roadHoverName)}"]`)];
+        els.forEach((el) => el.classList.add('road-hover'));
+        return els;
+    }
+
     // ── Conversational result sets ─────────────────────────────────────────
     // "Show me accessible restaurants near me" → the LLM's highlight_places →
     // mapAction {kind:'results', label, items (nearest first, with osm_ids)}.
@@ -2549,6 +2623,19 @@ class MapApplication {
                 if (this._gotoHighlightId) {
                     tileGroup.querySelectorAll(`[data-osm-id="${this._cssEscape(this._gotoHighlightId)}"]`)
                         .forEach((el) => el.classList.add('goto-highlight'));
+                }
+                // A live road highlight carries over too: as new tiles reveal
+                // more of a selected road, its fresh sections light up.
+                if (this._roadHighlightName) {
+                    tileGroup.querySelectorAll(`[data-name="${this._cssEscape(this._roadHighlightName)}"]`)
+                        .forEach((el) => el.classList.add('road-highlight'));
+                }
+                // A live road HOVER carries over the same way, so panning with
+                // the pointer resting on a road keeps the whole road lit as
+                // fresh tiles arrive rather than leaving gaps behind.
+                if (this._roadHoverName) {
+                    tileGroup.querySelectorAll(`[data-name="${this._cssEscape(this._roadHoverName)}"]`)
+                        .forEach((el) => el.classList.add('road-hover'));
                 }
                 // Same for a live result SET: fresh tiles light up their
                 // matching results (and stay exempt from the spotlight).
