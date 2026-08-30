@@ -123,8 +123,11 @@ redeploy. The tiled map's viewer is manually synced from the map repo's
 
 ## 5. Content model — what lives where
 
-**Mongo is the source of truth for content.** Pages are thin; they read from it
-at request time (`export const dynamic = "force-dynamic"`).
+**The repo is the source; Mongo is the deployed copy** — the same relationship
+code has with the server (decision 0012). Long-form writing lives in `content/`
+and is published into Mongo; pages are thin and read from Mongo at request time
+(`export const dynamic = "force-dynamic"`). Reviews and the glossary are bulk
+data with no repo files and remain Mongo-only.
 
 | Collection | Feeds | Notes |
 |---|---|---|
@@ -137,21 +140,57 @@ at request time (`export const dynamic = "force-dynamic"`).
 **Never run `scripts/seed-mongo.sh`.** It drops and reloads. The database is
 authoritative; the seed files are stale.
 
-### Adding an Experience piece
+### Adding an Experience piece or a research essay
 
-The established pattern, end to end:
+One file per piece, in the repo. The filename is the slug.
 
-1. Draft as `experience-<slug>.draft.md` in the Market Bob folder; Bob edits.
-2. Final content to `experience-<slug>-content.md`. It begins with the cover
-   image and has **no `<h1>`** — the page supplies the title. `##` for sections,
-   `###` for sub-sections.
-3. Cover image to `public/images/experience/<slug>/cover.png`, referenced as
-   `![alt](/images/experience/<slug>/cover.png)`.
-4. Copy `scripts/tmp-insert-experience-*.ts`, change the slug, title, tags,
-   `publishedAt`, and `originUrl` (the LinkedIn URL, when it exists). The script
-   is idempotent — re-running updates in place.
-5. Run it on the VPS against production Mongo, then `npm run index` to reindex
-   OpenSearch.
+```
+content/experience/<slug>.md
+content/article/<slug>.md
+```
+
+1. Draft privately as `experience-<slug>.draft.md` in the Market Bob folder;
+   Bob edits. **The repo is public, so drafts stay out of it.**
+2. When it publishes, move the final markdown to `content/<kind>/<slug>.md` and
+   put YAML front matter on top:
+
+   ```yaml
+   ---
+   title: 'How steep is this path? Adding gradient data accessibly to digital maps'
+   publishedAt: '2026-08-06'
+   originUrl: 'https://www.linkedin.com/pulse/…'
+   originLabel: 'LinkedIn'
+   tags:
+     - 'accessibility'
+     - 'maps'
+   ---
+   ```
+
+   Articles may also carry `domains`. A body `# heading` is fine — both readers
+   detect it and suppress their own `<h1>`.
+3. Cover image to `public/images/experience/<slug>/cover.png`, referenced from
+   the body as `![alt](/images/experience/<slug>/cover.png)`. The publisher
+   refuses if it is missing.
+4. `npx tsx scripts/publish-content.ts content/experience/<slug>.md`
+   (or `--all`, which is idempotent). Add `--check` to validate and write
+   nothing.
+5. `npm run index` to reindex OpenSearch.
+
+Content needs **no deploy** — it lives in Mongo and the pages read it at request
+time. See [decision 0012](decisions/0012-content-files-in-the-repo.md).
+
+**The publisher validates every file before writing any**, and one error stops
+the run. It refuses on: a bad slug, missing `publishedAt`, an unknown
+front-matter key, a markdown table (they do not render — see below), an image
+that is not in `public/`, empty alt text, and mojibake. It warns on missing
+tags, em-dashes, and first-person plural.
+
+`allowMojibake: '<reason>'` exempts one file, and is a string so the reason gets
+written down. Exactly one file uses it: a piece that quotes a language-detection
+model verbatim, where the mangled characters are the subject.
+
+`scripts/export-content.ts` goes the other way (Mongo to files, published only,
+read-only) and is how you check the repo still agrees with the database.
 
 **Markdown gotcha:** the renderer is `react-markdown` with `rehypeRaw` and
 **no `remark-gfm`**. Markdown tables therefore do **not** render. Use a raw HTML

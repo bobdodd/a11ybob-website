@@ -1,0 +1,111 @@
+---
+title: 'Making Multimedia Accessible: What Researchers Are Learning About Audio, Video, Images, and Data'
+publishedAt: '2026-05-06'
+tags: []
+---
+
+# Making Multimedia Accessible: What Researchers Are Learning About Audio, Video, Images, and Data
+
+## From AI-generated audio descriptions to customisable captions, the research on accessible multimedia content is revealing how much the one-size-fits-all model fails
+
+Multimedia content — video, audio, images, data visualisations, documents, music, social media — has become the default way information is communicated. And for the most part, it remains built around the assumption that users can see and hear. Accessibility research has been working on this problem for decades. What is changing is the sophistication of the questions being asked, the involvement of disabled people in asking them, and the arrival of AI as both a tool and a complication.
+
+This article examines what researchers have found across approximately 150 peer-reviewed papers on multimedia content accessibility published between 2020 and 2025. The work covers audio description, captioning, image descriptions, data visualisation, sign language, music, documents, and the creative production of media by disabled people. Across all of these, a consistent finding emerges: the people who use these technologies want control, customisation, and agency — not standardised solutions imposed on their behalf.
+
+## Audio Description Is Being Reinvented
+
+Traditional audio description — a monaural narration track inserted into pauses in dialogue, describing visual elements for blind and low-vision users — was developed for film and television. It assumes a fixed viewing perspective, a linear timeline, and a passive audience. Recent research is challenging all three assumptions.
+
+Jiang et al. [2023] investigated how to make 360-degree videos accessible to blind and low-vision users and found that traditional AD techniques are fundamentally insufficient for immersive content. Participants overwhelmingly preferred first- and second-person perspective AD ("you are standing in...") over traditional third-person narration ("the camera shows..."), as pronouns like "I," "we," and "you" conveyed embodiment and immersion. One workshop group experimented with a "character-as-narrator" approach where AD was delivered as in-character dialogue. Haptic and tactile feedback was enthusiastically received by all interview participants as a way to increase engagement. BLV AD creators — professionals whose perspectives the authors note are underrepresented in prior research — contributed insights that sighted creators had not considered.
+
+Dang et al. [2024] developed a conceptual framework for omnidirectional audio description in VR musical performances, proposing three complementary approaches: Spatial AD (positioning descriptions in 3D space to match visual locations), View-dependent AD (adapting content based on where the user is looking), and Explorative AD (activating when the user pauses playback to explore freely without competing with the performance audio). The framework addresses three challenges that participants identified with current AD in musical settings: conflicts between music and narration, limited time for detailed descriptions during performance, and lack of spatial information about where things are happening on stage.
+
+Natalie et al. [2024] built CustomAD, a system that lets blind and low-vision users adjust audio descriptions — controlling detail level, pacing, and what categories of information are conveyed. CustomAD significantly improved video understanding compared to both traditional AD and no-AD conditions (p<.001) and significantly enhanced immersion compared to no AD (p=.004). Detail level was the most frequently adjusted feature, with users preferring lower detail for casual viewing and higher detail for important or complex scenes. The finding that users want different levels of description at different moments challenges the standard practice of producing a single fixed AD track.
+
+Cheema et al. [2025] built DescribePro, a platform that pairs human audio describers with AI assistance. The system received an average SUS usability score of 72.6. A key feature called "forking" — allowing describers to create alternative versions of descriptions and compare them — was rated the most useful capability. Novice describers found AI-generated baseline descriptions more helpful than professionals did, suggesting AI is most valuable for lowering the barrier to entry rather than replacing expert judgment.
+
+## Captioning Is More Than a Technical Problem
+
+Research on captioning has produced a striking meta-finding. McDonnell and Findlater [2024] reviewed a decade of HCI captioning research (2013-2023) and found that over 90% targeted technical infrastructure — improving ASR accuracy, caption display design, latency reduction, and speaker identification. Only a small fraction addressed the social conditions that make communication inaccessible: hearing people's unwillingness to modify their speech, the stigma of requesting captions, or environments where background noise is not managed. Most research, the authors observed, positions the deaf or hard-of-hearing individual as the sole agent of access, rarely engaging hearing conversation partners as co-responsible for making communication work.
+
+This framing — captioning as a collective responsibility rather than an individual accommodation — connects to practical systems being built.
+
+Wu et al. [2025] developed CARTGPT, a system that enhances human CART captioning by combining stenographic transcripts with ASR output and using GPT-4 to detect and correct errors in real time. Evaluated on a 39.7-hour dataset spanning medical interviews, computer science lectures, phone conversations, and talks with environmental noise, CARTGPT achieved 89.0% word accuracy compared to 83.4% for standard CART and 71.7% for Whisper ASR alone — a statistically significant 5.6% improvement. Improvements were more pronounced for technical content, where specialised terminology is hardest for both human captioners and ASR systems.
+
+Huang et al. [2025] built CapTune, a system for customising non-speech captions — descriptions of environmental sounds, music, and other audio cues. Current captioning follows standardised guidelines that fail to account for diverse DHH preferences. CapTune uses an "anchored generative model" where caption creators define safe transformation boundaries and AI generates variations within those bounds. DHH viewers responded positively, with 9 of 12 reporting that customisation deepened their emotional connection to content. But participants flagged risks: AI outputs that "flatten" emotional nuance or mislead viewers about sound characteristics needed careful human oversight.
+
+Al-khazraji et al. [2021] challenged a foundational assumption in sign language animation: that replicating human signing speed is the ideal goal. DHH participants significantly preferred animations with faster sign durations (0.81 seconds versus the human-typical 1.28 seconds) and slower transitions between signs (0.5 seconds versus 0.23 seconds). The authors speculate that these preferences improve viewers' ability to distinguish when a sign is being performed versus when the avatar is transitioning — a distinction that matters more for animated signers than for human ones.
+
+Liu et al. [2025] developed CoSignPlay, a collaborative approach to learning non-manual signs in ASL for hearing families with deaf children. Over 90% of DHH children are born to hearing families, and without accessible sign language environments, these children face risks of language deprivation — a phenomenon known as "Dinner Table Syndrome." The system is inspired by "group narrative," a collaborative storytelling activity in Deaf communities, allowing two players to jointly control a 3D avatar — one handling facial expressions while the other performs manual signs — reducing the cognitive load of learning visual-spatial language.
+
+## Image Descriptions Are Getting Smarter — and Less Trustworthy
+
+AI-generated image descriptions have become widespread through tools like Be My AI, Seeing AI, and built-in features across platforms. The research is documenting both their utility and their risks.
+
+Mohanbabu and Pavel [2024] addressed a fundamental limitation: current AI describes images in isolation without considering the surrounding context. The same photograph of a person might need a name and role on a company page, a description of their clothing on a fashion site, or a focus on their expression in a news article. BLV participants significantly preferred context-aware descriptions across all quality measures: relevance, plausibility, quality, and imaginability.
+
+Chen et al. [2025] tackled the trust problem directly. MLLMs like GPT-4o, Gemini, and Claude produce fluent, confident image descriptions that can contain fabricated content, misinterpretations, and omissions that are extremely difficult for BLV users to detect without sight. The researchers asked the same model to describe the same image multiple times and surfaced the variations to users. The results were dramatic: users' ability to identify unreliable claims increased by 4.9 times compared to reading a single description (mean 2.62 unreliable claims identified versus 0.53, p < 0.001). Presenting variations also decreased perceived reliability from 5.78/7 for single descriptions to 4.01/7 — a healthy recalibration. The variation summary was the most preferred presentation style, ranked first by 11 of 15 participants.
+
+The implication is clear: single AI-generated descriptions should not be treated as authoritative, particularly for users who cannot independently verify the visual content. The research suggests that surfacing uncertainty — rather than hiding it behind confident-sounding prose — is a design choice that serves users better.
+
+## Data Visualisation: Beyond Making Charts Readable
+
+Data visualisation accessibility has moved beyond the question of whether blind users can read a chart to how they can engage with data as active analysts.
+
+Hsueh et al. [2023] applied crip technoscience as a critical framework and argued that current approaches to visualisation accessibility treat access as a technical problem to be solved by specialists, positioning blind and low-vision people as passive recipients. The paper proposes four qualities of accessible data visualisation: access should be collective (created and maintained by communities, not imposed by experts), accessible (welcoming participation rather than gatekeeping), interdependent (relying on networks of people and technologies rather than individual tools), and crip (centring disabled creativity rather than assimilating disabled users into non-disabled norms). The authors developed four speculative design concepts, including a Participatory Screen Reader where BLV users and their networks collaboratively create, tag, and vote on visualisation descriptions.
+
+Alonzo and Hassan [2025] reviewed 25 years of reading support technologies in the ACM Digital Library (101 papers, 2000-2024) and found that most contributions were artifacts accompanied by short-term lab evaluations, with very limited use of participatory design (only 3 studies out of 101) or longitudinal methods (1 study). Web was the dominant platform, with minimal attention to mobile, social media, or emerging formats — a gap the authors note is increasingly misaligned with how people actually consume content.
+
+## Music Accessibility: From Consumption to Creation
+
+Research on music and disabled people has shifted from making music listenable to making it creatable and performable.
+
+Payne et al. [2020] interviewed 11 blind and visually impaired composers, producers, and songwriters and found that accessible music software options are severely limited — only 3 of 83 reviewed accessible digital musical instruments target visual impairments. Participants demonstrated remarkable ingenuity in bending inaccessible tools to their needs, but sighted assistance remained a near-universal requirement, creating ongoing dependency that many found frustrating. Participants wanted accessibility features built into mainstream music tools (Logic Pro, Ableton, Pro Tools), not relegated to specialised, often-outdated alternatives.
+
+Lu et al. [2023] explored vibrotactile feedback for music learning with 10 BLV participants at the Filomen M. D'Agostino Greenberg Music School in New York, including two participants who were deafblind. Vibrotactile alerts could signal when to start and stop playing, indicate whose turn it is during improvisation, and allow teachers to discreetly correct students without interrupting the music. Material aesthetics mattered: sound dampening was critical because vibration motors produce buzzing noise that interferes with music, and breathability and malleability affected willingness to wear the devices.
+
+Cavdir et al. [2025] documented 15 months of technology-mediated music performance by a mixed-hearing team at CymaSpace, a Deaf-owned music and culture institution in Portland, Oregon. The team — comprising Deaf, Hard of Hearing, Deaf/Blind, and hearing members — developed custom technologies including audio-reactive visual displays embedded in instruments, vibrotactile vests that let musicians feel individual instrument signals on their bodies, and a glove-based controller designed to complement rather than interfere with sign language. They define "sonic agency" as the right and ability to shape sound regardless of whether one can hear it. The team advocated for prioritising Deaf-composed music to centre Deaf creative agency, and for returning to the body through somatic approaches like heartbeat-based rhythms that can be physically internalised.
+
+Anken et al. [2025] built XRMusic4VIP, an extended reality system for visually impaired musicians using Meta Quest 3 in AR passthrough mode. Virtual sheet music appears as a continuous scrolling band above a real keyboard, eliminating the need to memorise small sections before playing. One participant said: "It could make playing the piano fun again. Honestly, I had given up because you had to learn everything by heart." Customisability of the display — size, position, colour, contrast — was the highest-rated feature (M=4.63/5).
+
+## Video Accessibility Beyond Captions
+
+Making video content accessible involves challenges that go beyond adding captions or audio descriptions.
+
+Mack et al. [2024] challenged the assumption that a single "accessible" slide deck can serve all audience members. Their research found that access needs related to presentations are bespoke — varying greatly between individuals — and fluctuating — changing for one person throughout the day. One participant described needing different contrast levels depending on menstrual cycle, fatigue, ambient lighting, and how much reading they had already done: "it's a little more like Goldilocks, where I need that sweet spot more and more." The paper demonstrates a system that generates multiple versions of slides simultaneously, with users choosing from a gallery of options.
+
+Zhu et al. [2025] built FocusView, an AI-powered video customisation interface for viewers with ADHD. The system allows users to remove, blur, or de-emphasise distracting visual elements. FocusView significantly improved perceived video viewability (F = 165.4, p < 0.001, effect size 0.75). Participants wanted backgrounds blurred and secondary speakers removed, but wanted to retain captions, presentation screens, and the primary speaker's face — demonstrating that the goal is not reducing visual complexity uniformly but giving users control over what matters to them.
+
+Anderer et al. [2025] developed LectureAssistant, an AI-powered prototype making lecture videos accessible for blind and low-vision students. The system uses vision-language models to enable students to ask questions about visual content in the current video frame and navigate to specific topics by querying a chatbot. All seven participants in the evaluation found it useful and accessible, particularly valuing the ability to ask about visual content that would otherwise be completely inaccessible. However, participants noted that AI-generated answers sometimes lacked the specificity needed for technical content and did not always align with how sighted students interpret the same visuals.
+
+South et al. [2024] investigated photosensitivity warnings in visual media — a topic with almost no prior research despite affecting people with photosensitive epilepsy. Participants unanimously preferred warnings with specific, actionable information — precise timestamps of flashing sequences, duration and severity estimates, descriptions of visual characteristics — over vague general disclaimers. They wanted the ability to make their own risk decisions rather than having content blocked entirely. An automated detection prototype using the Harding Flash and Pattern Analyser was perceived as more reliable than crowdsourced warnings because it provided consistent, quantifiable data.
+
+## Creative Production by Disabled People
+
+Several studies examine how disabled people create rather than merely consume multimedia content.
+
+Park [2020] investigated selfie editing by people with visual impairments and found that 60% of 47 surveyed participants were aware of popular editing trends and wanted to use these tools. Voice-command-based sticker placement outperformed drag-and-drop by a factor of five in speed, and participants valued both voice input and voice feedback about placement. The finding that visually impaired people want to participate in visual social media trends challenges assumptions that creative visual tools are irrelevant to blind users.
+
+Bennett et al. [2024] explored how disabled creatives use generative AI and found a rich ecosystem of access hacks developed long before AI existed — a blind photographer using camera sounds and tactile feedback to compose shots, a leatherworker adapting tools for one-handed use, a musician developing keyboard macros for limited dexterity. When adopting AI, participants used it in targeted ways: image generation for visual reference materials, text-to-image for rapid prototyping. But they drew firm boundaries, describing AI-generated work that bypassed their embodied process as "not really mine." The paper describes disabled creative AI use as neither wholehearted adoption nor rejection, but a deliberate navigation of what serves the work and what undermines it.
+
+Mok et al. [2023] found that autistic Twitch livestreamers experienced the platform as an organically accessible social space — not designed for accessibility, but whose affordances (text-based audience interaction, streamer control over the social environment, asynchronous engagement options) aligned well with autistic communication preferences. One participant called the relationships formed there "easily the most meaningful and impactful" of their life.
+
+## Documents Remain a Persistent Problem
+
+Despite decades of standards work, documents — particularly PDFs — continue to create accessibility barriers.
+
+Alonzo and Hassan's [2025] 25-year review found that web was the dominant platform in reading support research, with minimal attention to document formats, mobile contexts, or emerging media. Hollier et al. [2025] documented how a single inaccessible Australian government PDF form required an entire accessibility-specialist organisation to develop a parallel workflow: creating a bespoke accessible Word document, having both employer and employee complete it, then having a sighted administrator manually transcribe the information into the official form. The paper notes that this mandatory form is the only route to tax compliance for every new employee in Australia, creating a systemic barrier that no individual accommodation can solve.
+
+## What Runs Through All of This
+
+Across audio description, captioning, image descriptions, data visualisation, music, video, documents, and creative production, the research consistently demonstrates several things.
+
+**One-size-fits-all fails.** Users want to adjust AD detail levels [Natalie et al., 2024], customise non-speech captions [Huang et al., 2025], choose their preferred locomotion in VR [Mack et al., 2024], control which visual elements are visible in videos [Zhu et al., 2025], and configure sheet music displays to their individual vision [Anken et al., 2025]. Clinical diagnosis is a poor predictor of individual preference. The most valued feature, across nearly every system, is customisability.
+
+**AI helps and harms in specific, documentable ways.** AI improves CART captioning accuracy by 5.6% [Wu et al., 2025], enables real-time audio description at scale [Cheema et al., 2025], and makes image editing accessible through natural language [Bennett et al., 2024]. But it fabricates content in image descriptions that users cannot verify [Chen et al., 2025], flattens emotional nuance in captions [Huang et al., 2025], and homogenises personalised tools [Bennett et al., 2024]. The pattern is consistent: AI works best when paired with human judgment and when its uncertainty is surfaced rather than hidden.
+
+**Access is social, not just technical.** Captioning is a collective communication responsibility, not just a DHH individual's accommodation need [McDonnell & Findlater, 2024]. Music performance by DHH musicians requires custom technologies designed by the community, not generic tools imposed from outside [Cavdir et al., 2025]. Audio description benefits from BLV creators' expertise, not just sighted describers' observations [Jiang et al., 2023]. The people who use accessible multimedia are not passive consumers waiting for access to be delivered — they are active agents whose knowledge, preferences, and creative practices should inform how access is designed.
+
+---
+
+*This article draws on approximately 150 peer-reviewed papers reviewed at A11y Paradise (a11ybob.com). All research cited was published at ACM conferences and venues between 2020 and 2025.*
