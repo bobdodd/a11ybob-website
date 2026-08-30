@@ -248,8 +248,9 @@ export default function WhyADesignSystem() {
                 </a>
               </li>
               <li>
+                GOV.UK Design System, maintained by a team at the
                 Government Digital Service.{" "}
-                <em>GOV.UK Design System: accessibility</em>.{" "}
+                <em>Accessibility</em>.{" "}
                 <a href="https://design-system.service.gov.uk/accessibility/">
                   design-system.service.gov.uk
                 </a>
