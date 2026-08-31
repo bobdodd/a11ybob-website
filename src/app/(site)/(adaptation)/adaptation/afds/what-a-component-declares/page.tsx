@@ -41,9 +41,11 @@ export default function WhatAComponentDeclares() {
               something goes wrong, at which point it is the only thing
               that matters. Documentation that says a component is
               accessible cannot be violated, because it does not say
-              what would count as a violation. A contract that says the
-              element exposes no ARIA role, no accessible name and no
-              state can be violated, and a test can catch it.
+              what would count as a violation. A contract that says no
+              content clips at 320 CSS pixels of available inline size,
+              and none at 400% zoom, can be violated, and a test can
+              catch it. A horizontal scrollbar either appears or it does
+              not.
             </p>
             <p>
               So each claim in the contract is written as a statement
