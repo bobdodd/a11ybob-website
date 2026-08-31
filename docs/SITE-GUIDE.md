@@ -439,6 +439,18 @@ layer (`tokens.css`), an axiom layer, and per-component CSS in
   local unit test instead.
 - Present full detail. When Bob hands over detailed reasoning, it is to be used,
   not summarised. For teaching content, go deeper rather than shorter.
+- **Apply the design-tool annotation preset.** Whenever a component is specified,
+  documented, or prepared for design-to-engineering handoff, carry the eleven
+  annotation fields defined under "Design-tool annotation requirements" in
+  `accessible-by-design/docs/APG-SUPPORT.md`: pattern identity, semantic model,
+  accessible-name source, relationship model, focus order and initial focus,
+  internal keyboard navigation, close and restore-focus behaviour, hidden versus
+  removed from the DOM, required visible states, responsive and Reflow
+  behaviour, and the assistive-technology uncertainty marker. The relationship
+  model is the field most often lost, because it is invisible in a mock-up and
+  expensive to reverse-engineer. Obey the annotation economy rule with it: do
+  not annotate what the coded component already guarantees — annotate the
+  selected component and the product-level choices or deviations only.
 
 ---
 
