@@ -75,7 +75,7 @@ export default function EvidenceAndUncertainty() {
           >
             <h2>What a record has to say</h2>
             <p>
-              Each record in the sample matrix carries fifteen fields,
+              Each record in the sample matrix carries eighteen fields,
               and they fall into four groups. Identity is{" "}
               <code>id</code>, <code>componentId</code> and{" "}
               <code>claim</code>, so a record states which component and
@@ -83,15 +83,17 @@ export default function EvidenceAndUncertainty() {
               impression. The environment is <code>engine</code>,{" "}
               <code>engineVersion</code>, <code>browser</code>,{" "}
               <code>browserVersion</code>, <code>at</code>,{" "}
-              <code>atVersion</code> and <code>platform</code>. The
-              observation is <code>date</code>, <code>result</code>,{" "}
-              <code>observation</code> and <code>tester</code>. The last
-              field, <code>uncertaintyRef</code>, points back at the
-              question the record was made to settle.
+              <code>atVersion</code>, <code>platform</code>,{" "}
+              <code>device</code>, <code>startingViewport</code> and{" "}
+              <code>zoom</code>. The observation is <code>date</code>,{" "}
+              <code>result</code>, <code>observation</code> and{" "}
+              <code>tester</code>. The last field,{" "}
+              <code>uncertaintyRef</code>, points back at the question
+              the record was made to settle.
             </p>
             <p>
-              Seven fields for the environment looks excessive until the
-              records are read against each other. Two of the five
+              Ten fields for the environment looks excessive until the
+              records are read against each other. Two of the nine
               describe NVDA and JAWS on identical ground: Blink, Chrome,
               Windows. They differ in one field, and that field can
               change the result. So a claim qualified only by browser
@@ -101,16 +103,36 @@ export default function EvidenceAndUncertainty() {
               independent axes, which is why neither can stand alone.
             </p>
             <p>
-              The other records vary those axes together, because that
+              Two more records use the same device in the other
+              direction. Both describe reflow, both hold engine,
+              browser, platform and device constant, and apart from the
+              identifier the only fields that differ are{" "}
+              <code>startingViewport</code> and{" "}
+              <code>zoom</code>: one sits at a 320 CSS pixel viewport,
+              the other at 1280 by 1024 with 400% zoom applied. Those
+              two fields exist because a reflow claim without them says
+              nothing. No content is clipped is a different statement
+              under each condition, and a matrix that recorded only the
+              claim would collapse them into one.
+            </p>
+            <p>
+              The remaining records vary the axes together, because that
               is how the combinations occur in use. VoiceOver appears on
               WebKit, Safari and macOS. Orca appears on Gecko, Firefox
-              and Linux. The fifth record has no assistive technology at
-              all, carrying <code>none</code> in the <code>at</code>{" "}
-              field, because its claim is that rem-anchored gaps grow
-              with operating-system font scaling inside an Electron
-              shell. That is a rendering question rather than an
-              announcement question, and the record shape holds for
-              both.
+              and Linux. Two records name a speech recognition tool
+              rather than a screen reader, which is a different kind of
+              question again: the claim is that the container introduces
+              no element receiving pointer or voice-driven activation,
+              so voice targeting of its children is unaffected. For a
+              layout primitive that is the only honest form the claim
+              can take, because the primitive exposes no operable target
+              of its own to be addressed by voice. Another record has no
+              assistive technology at all, carrying <code>none</code> in
+              the <code>at</code> field, because its claim is that
+              rem-anchored gaps grow with operating-system font scaling
+              inside an Electron shell. Announcement, rendering,
+              geometry and voice targeting are four different questions,
+              and the record shape holds for all of them.
             </p>
             <p>
               The <code>tester</code> field deserves its place. An
@@ -196,6 +218,17 @@ export default function EvidenceAndUncertainty() {
               collapsing the two would manufacture defects and then
               invite somebody to fix them.
             </p>
+            <p>
+              <code>not-applicable</code> also does a second job, and
+              the file now says so rather than leaving it to be
+              inferred. As a result it means the combination cannot
+              exhibit the behaviour. In any other field it means that
+              field does not apply to this record, which is why a zoom
+              level reads <code>not-applicable</code> on a record about
+              screen-reader announcement. Those are different
+              statements, and one value doing two jobs silently is the
+              kind of thing that later gets misread as a finding.
+            </p>
           </section>
 
           <section
@@ -208,8 +241,8 @@ export default function EvidenceAndUncertainty() {
               <code>not-yet-tested</code>, as is every date, every
               observation and every tester. The version fields carry the
               same placeholder, with one exception that shows the
-              vocabulary working as intended: the record with no
-              assistive technology carries <code>not-applicable</code>{" "}
+              vocabulary working as intended: the records with no
+              assistive technology carry <code>not-applicable</code>{" "}
               for the assistive-technology version, because there is no
               version to state. No record in that file describes an
               observation that took place. The sample ships a fully
@@ -262,8 +295,9 @@ export default function EvidenceAndUncertainty() {
             <p>
               The cost of this is worth naming. The sample is useless as
               a support reference, and it will stay useless until
-              somebody sits down with four screen readers on three
-              operating systems. What it does instead is demonstrate the
+              somebody sits down with four screen readers and two speech
+              recognition tools across three operating systems, at two
+              viewport conditions. What it does instead is demonstrate the
               shape of the record and the discipline of the placeholder,
               and I would rather ship a package that is honestly empty
               than one that is plausibly furnished.
@@ -285,14 +319,30 @@ export default function EvidenceAndUncertainty() {
               <code>evidenceRef</code>.
             </p>
             <p>
-              The layout primitive in the sample carries two. The first
+              The layout primitive in the sample carries four. The first
               records that whether any shipping screen reader announces
               or otherwise exposes the container element itself has not
               been tested. The second records that the behaviour of
               rem-anchored gaps under operating-system font scaling
-              inside an Electron shell has not been tested. Both sit at
-              status <code>not-yet-tested</code>, and both point at the
+              inside an Electron shell has not been tested. The third
+              covers reflow at 320 CSS pixels of available inline size
+              and at 400% zoom. The fourth covers whether the container
+              interferes with pointer or voice-driven activation of its
+              children. All four sit at status{" "}
+              <code>not-yet-tested</code>, and all four point at the
               matrix through <code>evidenceRef</code>.
+            </p>
+            <p>
+              The third is worth dwelling on, because it was not there
+              until I expanded the sample and it exposes something the
+              package had been getting wrong. Reflow was already claimed,
+              as a manual assertion saying no content is clipped at 320
+              CSS pixels and none at 400% zoom. No observation had been
+              recorded against it. Under the propagation rule that makes
+              it uncertainty, yet it was sitting in the contract as an
+              assertion, so the package was claiming something it held
+              no evidence for. Adding the reflow records forced the
+              question, and the uncertainty entry is the answer.
             </p>
             <p>
               That pointer is the mechanism, and it is what separates an
@@ -382,16 +432,18 @@ export default function EvidenceAndUncertainty() {
               the author rather than a property of the format.
             </p>
             <p>
-              The sample also falls short of what the research agenda
-              already asks for. That item requires the matrix to include
-              speech recognition, and Reflow environment details covering
-              device, browser, starting viewport and zoom. The sample
-              matrix has neither. Its five records cover four screen
-              readers and one font-scaling question, with no speech
-              recognition record and no viewport or zoom fields on the
-              record shape at all. So the fifteen fields described above
-              are not the finished shape, and a matrix meeting the
-              agenda item in full would be wider than the one shipped.
+              And the propagation rule has not been applied evenly, even
+              inside the sample that exists to demonstrate it. Two
+              manual assertions still carry no evidence record and no
+              uncertainty entry: one covers text-spacing overrides with
+              a doubled root font size, the other covers visual order
+              matching DOM order. Both are stated as assertions, neither
+              has been observed, and by the project&rsquo;s own rule both
+              should read as uncertainty until they have been. Widening
+              the matrix closed that gap for reflow and left it open for
+              these two, which is a fair illustration of how the rule
+              fails in practice: not by being rejected, but by being
+              applied wherever attention happened to fall.
             </p>
             <p>
               None of this is comfortable to publish on the page that
