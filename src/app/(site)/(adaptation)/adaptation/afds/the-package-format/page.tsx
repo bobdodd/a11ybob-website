@@ -262,11 +262,21 @@ export default function ThePackageFormat() {
             <p>
               One thing does need saying here, because it is easy to
               misread the tree above as a repository layout. It is
-              not. The working format for this project is a Git
-              repository, and the package is a distribution artefact
-              built from it. The two are deliberately different
-              objects with different economics: a repository is good
-              at line-by-line collaboration and bad at being handed to
+              not. The design-system repository is the original
+              source, and a package is the finished work built from it.
+              That is why the two do not share a root manifest name.
+              The repository carries a{" "}
+              <code>design-system.manifest.json</code> that indexes
+              sources under active edit, and a package carries an{" "}
+              <code>afds-manifest.json</code> that describes a built
+              artefact sealed against a matching inventory. A file
+              whose contents are still moving cannot be the same kind
+              of object as one whose digests must hold.
+            </p>
+            <p>
+              The two are deliberately different objects with
+              different economics: a repository is good at
+              line-by-line collaboration and bad at being handed to
               someone as one verifiable thing, and a package is the
               reverse. Whether the project should build tooling that
               lets a person edit a package directly, rather than
