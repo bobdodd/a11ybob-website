@@ -403,6 +403,25 @@ layer (`tokens.css`), an axiom layer, and per-component CSS in
 - **Do not attribute work to AI anywhere public.** No `Co-Authored-By` trailers.
   The one scoped exception is the Accessible Tetris research project, where
   working with AI is part of what is being demonstrated.
+- **Every statement of fact needs a source.** A claim either carries a real
+  source with a URL, or it is recast as first-person observation ("the
+  arrangement I see most often…", "I think…") or as argument. No wild
+  generalizations. If a figure or a practice cannot be traced to a page that
+  states it, it comes out. Attributing your own principle to an outside body is
+  the same fault as inventing a number: two of four "practices to adopt" once
+  credited to the GOV.UK Design System were not on the page cited, and one of
+  them was this project's own idea, which also made the note contradict itself.
+- **Verify citation metadata separately from the content.** Reading a source
+  confirms what it says, not how to cite it. Check title, year, volume and pages
+  against the DOI record (`https://api.crossref.org/works/<DOI>`, with a
+  User-Agent header; note that `created` is the deposit date, not publication),
+  never the front matter of a hosted copy — an author-accepted PDF reproduces
+  the text faithfully while carrying the acceptance year, which is how a 2023
+  paper came to be cited as 2022 with the wrong title. Take the author from the
+  byline as printed, and cite it as printed when the name structure is unclear
+  rather than inverting it to surname-first. **Never write a byline you have not
+  read on the page.** An invented author name is the worst of these faults,
+  because unlike the others there was no source to misread.
 
 ---
 
