@@ -21,6 +21,10 @@ const URL_CONTAIN =
   "https://www.w3.org/TR/" + "css-contain-3/";
 const URL_ATKINSON =
   "https://www.brailleinstitute.org/" + "freefont/";
+const URL_ATKINSON_NEXT =
+  "https://www.brailleinstitute.org/about-us/news/" +
+  "braille-institute-launches-enhanced-atkinson-" +
+  "hyperlegible-font-to-make-reading-easier/";
 const URL_PRIMER =
   "https://primer.style/accessibility/" +
   "tools-and-resources/annotation-toolkit/";
@@ -543,34 +547,61 @@ export default function OpenQuestions() {
               use.
             </p>
             <p>
-              One part of this question has narrowed since I wrote it.
-              I recorded a need for a monospace companion, and the
-              publisher now offers a monospaced member of the family,
-              described as having{" "}
+              Two parts of this question have moved since I wrote it,
+              and checking them changed the item more than I expected.
+              I recorded a need for a monospace companion. One exists:
+              the family now ships in three versions, and the
+              monospaced one is described as having{" "}
               <em>
                 characters that each occupy the same amount of
                 horizontal space, allowing for them to be scanned
                 quickly in table-based and coding environments
               </em>
-              . That is the use I had in mind, so the question is no
-              longer whether a companion exists.
+              . The release announcement calls the same face
+              Monospace rather than Mono, so the name to use is
+              whichever the download page carries at the time of
+              adoption.
             </p>
             <p>
-              What remains is unaffected by that. I have not tested
-              the typeface at the small sizes a dense report actually
+              The second change is the one that matters. I had treated
+              the variable font as a hypothetical, and it is not. The
+              announcement for the newer version says it builds on
+              the original typeface{" "}
+              <em>that was introduced in 2019</em>, supports{" "}
+              <em>over 150 languages (up from 27)</em>, and offers{" "}
+              <em>
+                seven font weights (up from two), as well as new
+                variable and monospace versions
+              </em>
+              .
+            </p>
+            <p>
+              Seven weights and a continuous axis are a different
+              proposition from two weights. The type scale here is
+              specified as discrete steps, which was an easy
+              commitment when the typeface offered two weights and is
+              a real decision when it offers a continuum. A scale that
+              admits intermediate weights has to say which weights
+              carry meaning, because a weight difference too small to
+              perceive is a distinction that exists in the
+              specification and not on the screen.
+            </p>
+            <p>
+              Choosing between the original and the newer version is
+              therefore a question about which set of letterform
+              decisions the scale is built on, rather than a matter of
+              taking the newest. And the oldest part of this item is
+              untouched by any of it: I still have not tested the
+              typeface at the small sizes a dense report actually
               uses, and letterform distinction is a claim about
-              character shapes rather than about behaviour at eight
-              or nine points. Nor have I worked out what the variable
-              font implies for the type scale, which is currently
-              expressed as discrete steps: a variable axis makes
-              intermediate weights available, and a scale that admits
-              intermediate values is a different thing to specify from
-              one that does not.
+              character shapes rather than about behaviour at eight or
+              nine points.
             </p>
             <p>
-              <strong>To settle:</strong> its performance at small
-              data-dense sizes, and what the variable font implies
-              for the scale.
+              <strong>To settle:</strong> which of the three versions
+              is the candidate, its performance at small data-dense
+              sizes, and how seven weights and a continuous axis
+              affect a scale specified as discrete steps.
             </p>
             <h3>C3. Conformance target</h3>
             <p>
@@ -1380,9 +1411,20 @@ export default function OpenQuestions() {
               <li>
                 Braille Institute. <em>Atkinson Hyperlegible</em>.
                 Quoted for the design purpose, letterform
-                distinction, licence terms, and the monospaced member
-                of the family.{" "}
+                distinction, licence terms, and the three versions
+                the family now ships in.{" "}
                 <a href={URL_ATKINSON}>brailleinstitute.org</a>
+              </li>
+              <li>
+                Braille Institute.{" "}
+                <em>
+                  Braille Institute launches enhanced Atkinson
+                  Hyperlegible font
+                </em>
+                , 10 February 2025. Quoted for the language and
+                weight counts, the variable and monospace versions,
+                and the 2019 date of the original.{" "}
+                <a href={URL_ATKINSON_NEXT}>Braille Institute news</a>
               </li>
               <li>
                 Department of Veterans Affairs.{" "}
