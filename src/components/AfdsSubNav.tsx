@@ -35,7 +35,13 @@ export function AfdsSubNav() {
         style={{ "--space": "var(--s0)" } as CSSProperties}
       >
         {SUB_PAGES.map(({ href, label }) => {
-          const active = pathname === href;
+          /* The specification is a set of pages under one route, so its
+           * entry stays current while the reader is inside it. The
+           * section root is matched exactly, or it would be current
+           * everywhere. */
+          const active =
+            pathname === href ||
+            (href !== BASE && pathname.startsWith(`${href}/`));
           return (
             <li key={href}>
               <Link href={href} aria-current={active ? "page" : undefined}>

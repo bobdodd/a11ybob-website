@@ -1,0 +1,221 @@
+{
+  "version": "1.0.0",
+  "source": "docs/AFDS-SPECIFICATION.md",
+  "pages": [
+    {
+      "slug": "status",
+      "heading": "Status of this document",
+      "label": "Status",
+      "clauses": []
+    },
+    {
+      "slug": "part-1",
+      "heading": "Part I. Purpose and model",
+      "label": "Part I",
+      "clauses": [
+        {
+          "number": "1",
+          "title": "Scope",
+          "anchor": "c1"
+        },
+        {
+          "number": "2",
+          "title": "Purpose",
+          "anchor": "c2"
+        },
+        {
+          "number": "3",
+          "title": "The design-system model",
+          "anchor": "c3"
+        },
+        {
+          "number": "4",
+          "title": "Conformance",
+          "anchor": "c4"
+        },
+        {
+          "number": "5",
+          "title": "Terms and definitions",
+          "anchor": "c5"
+        },
+        {
+          "number": "6",
+          "title": "References",
+          "anchor": "c6"
+        }
+      ]
+    },
+    {
+      "slug": "part-2",
+      "heading": "Part II. The component contract",
+      "label": "Part II",
+      "clauses": [
+        {
+          "number": "7",
+          "title": "The component specification",
+          "anchor": "c7"
+        },
+        {
+          "number": "8",
+          "title": "The semantic model",
+          "anchor": "c8"
+        },
+        {
+          "number": "9",
+          "title": "Derivation and the pattern registry",
+          "anchor": "c9"
+        },
+        {
+          "number": "10",
+          "title": "The keyboard contract",
+          "anchor": "c10"
+        },
+        {
+          "number": "11",
+          "title": "Reflow and layout behaviour",
+          "anchor": "c11"
+        },
+        {
+          "number": "12",
+          "title": "WCAG mapping",
+          "anchor": "c12"
+        },
+        {
+          "number": "13",
+          "title": "Kinds of requirement",
+          "anchor": "c13"
+        },
+        {
+          "number": "14",
+          "title": "Guarantees and non-guarantees",
+          "anchor": "c14"
+        },
+        {
+          "number": "15",
+          "title": "Assertions",
+          "anchor": "c15"
+        },
+        {
+          "number": "16",
+          "title": "Evidence records",
+          "anchor": "c16"
+        },
+        {
+          "number": "17",
+          "title": "Uncertainty records",
+          "anchor": "c17"
+        },
+        {
+          "number": "18",
+          "title": "Testing levels and fixtures",
+          "anchor": "c18"
+        },
+        {
+          "number": "19",
+          "title": "Design-tool annotation",
+          "anchor": "c19"
+        }
+      ]
+    },
+    {
+      "slug": "part-3",
+      "heading": "Part III. The method profiles",
+      "label": "Part III",
+      "clauses": [
+        {
+          "number": "20",
+          "title": "Method profiles",
+          "anchor": "c20"
+        },
+        {
+          "number": "21",
+          "title": "The intrinsic layout profile",
+          "anchor": "c21"
+        },
+        {
+          "number": "22",
+          "title": "The scoped reflow profile",
+          "anchor": "c22"
+        },
+        {
+          "number": "23",
+          "title": "The typography and colour profile",
+          "anchor": "c23"
+        },
+        {
+          "number": "24",
+          "title": "The native-first pattern profile",
+          "anchor": "c24"
+        }
+      ]
+    },
+    {
+      "slug": "part-4",
+      "heading": "Part IV. Serialisation",
+      "label": "Part IV",
+      "clauses": [
+        {
+          "number": "25",
+          "title": "Container rules",
+          "anchor": "c25"
+        },
+        {
+          "number": "26",
+          "title": "Media type",
+          "anchor": "c26"
+        },
+        {
+          "number": "27",
+          "title": "Declared package hierarchy",
+          "anchor": "c27"
+        },
+        {
+          "number": "28",
+          "title": "Artefact roles",
+          "anchor": "c28"
+        },
+        {
+          "number": "29",
+          "title": "`afds-manifest.json`",
+          "anchor": "c29"
+        },
+        {
+          "number": "30",
+          "title": "`afds-inventory.json`",
+          "anchor": "c30"
+        },
+        {
+          "number": "31",
+          "title": "Verification algorithm",
+          "anchor": "c31"
+        },
+        {
+          "number": "32",
+          "title": "Security requirements",
+          "anchor": "c32"
+        },
+        {
+          "number": "33",
+          "title": "Adapters",
+          "anchor": "c33"
+        },
+        {
+          "number": "34",
+          "title": "Completeness profiles",
+          "anchor": "c34"
+        },
+        {
+          "number": "35",
+          "title": "Versioning",
+          "anchor": "c35"
+        }
+      ]
+    },
+    {
+      "slug": "annex-a",
+      "heading": "Annex A (informative). Relationship to Open Packaging Conventions",
+      "label": "Annex A",
+      "clauses": []
+    }
+  ]
+}
