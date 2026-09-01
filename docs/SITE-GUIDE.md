@@ -411,6 +411,16 @@ layer (`tokens.css`), an axiom layer, and per-component CSS in
   the same fault as inventing a number: two of four "practices to adopt" once
   credited to the GOV.UK Design System were not on the page cited, and one of
   them was this project's own idea, which also made the note contradict itself.
+- **The site is the public face. Never defer content to the repository.** No page
+  may make a reader visit a GitHub repo to find substance. "The full list is in
+  the repository" is not an acceptable design for a page: nobody goes there.
+  Where a repo document is the source of truth for maintenance, the page still
+  states its content in full and links the repo as provenance, not as the
+  destination. This applies with most force to registers, lists, and tables of
+  anything — an open-questions register, a decision log, a catalogue. Nor should
+  a reader have to hop between pages on this site to assemble one list; a page
+  that owns a subject states it completely and cross-links for depth rather than
+  for the missing parts. Bob has had to say this twice.
 - **Verify citation metadata separately from the content.** Reading a source
   confirms what it says, not how to cite it. Check title, year, volume and pages
   against the DOI record (`https://api.crossref.org/works/<DOI>`, with a
