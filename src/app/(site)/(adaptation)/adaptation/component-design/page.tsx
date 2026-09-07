@@ -25,12 +25,13 @@ export default function ComponentDesign() {
           >
             <h1>Components and component design</h1>
             <p className="lede">
-              A component framework supplies reusable possibilities. It
-              does not supply an accessible page. Accessibility is not
-              closed under composition: two accessible components need
-              not compose into an accessible compound, and a page
-              assembled entirely from accessible components need not be
-              an accessible page.
+              Interfaces are built from components, and how a component
+              is designed decides most of what a person can do with the
+              interface it appears in. Components stand on their own as
+              a subject: what they are, what designing one involves,
+              what each one can honestly promise, and what happens when
+              they are put together. Design systems come after that, as
+              the answer to the last of those questions.
             </p>
           </header>
 
@@ -38,31 +39,44 @@ export default function ComponentDesign() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
-            <h2>Why this is its own section</h2>
+            <h2>What a component is</h2>
             <p>
-              Component design does not require a design system. Teams
-              build components, and assemble them, whether or not
-              anybody has written down the rules they are working to.
-              The problems on these pages are therefore not problems
-              with design systems. They are problems with assembly, and
-              they arrive the moment two components sit inside one
-              page.
+              A component is a bounded piece of interface that can be
+              used more than once: a button, a field with its label, a
+              tab set, a card, a navigation bar, a whole search results
+              region. It bundles four things behind a single name —
+              markup and the semantics that markup carries, presentation,
+              behaviour, and whatever state it keeps — and it exposes a
+              small interface through which the rest of the application
+              configures it, usually some combination of properties,
+              slots for content, and events it emits back.
             </p>
             <p>
-              A design system is one answer to them, and the one I am
-              building; my design system uses components, so the AFDS
-              pages refer back here rather than restating the argument.
-              But the argument stands on its own, and anybody working
-              with a component library and no design system at all still
-              has every failure described here to contend with.
+              The idea is older than the frameworks that made it
+              fashionable. An HTML <code>select</code> element is a
+              component: it has semantics, presentation, keyboard
+              behaviour, an open and closed state, and a small
+              configuration surface, and it was written once and reused
+              by everybody. What frameworks added was the ability for
+              anybody to define new ones, which is both the reason
+              component libraries exist and the reason accessibility
+              became something each team has to re-establish rather than
+              inherit.
             </p>
             <p>
-              I have kept the two apart for a second reason. If the
-              assembly problem only appeared inside a discussion of my
-              own design system it would read as an argument for the
-              design system, which invites the reader to discount it.
-              The failures are observable without reference to any
-              particular system, and that is how they are set out.
+              Components nest, and that is the point of them. A field is
+              a label and an input and a message; a form is fields and a
+              submit button; a page is regions of forms and lists and
+              navigation. So a component is always simultaneously a
+              whole, from the inside, and a part, from the outside, and
+              the two views disagree about what it is responsible for.
+              Almost everything in this section follows from that
+              disagreement, and the levels at which it plays out are set
+              out in{" "}
+              <Link href={`${BASE}/the-assembly-hierarchy`}>
+                the assembly hierarchy
+              </Link>
+              .
             </p>
           </section>
 
@@ -70,13 +84,95 @@ export default function ComponentDesign() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
-            <h2>The claim</h2>
+            <h2>What component design is</h2>
             <p>
-              The central finding of this work is a negative one, and it
-              is worth stating plainly before the detail. Accessibility
-              is not a property that survives being added together. A
-              combobox that is correct on its own and a modal dialog
-              that is correct on its own do not produce a correct
+              Component design is the practice of deciding those
+              boundaries and behaviours. Not drawing the button:
+              deciding what the button is, what it does when operated by
+              a keyboard, a pointer, a screen reader, a voice, or a
+              switch, what it does when its label is four words long in
+              English and eleven in German, what it does when it has no
+              room, what it does while it waits, and what it does when
+              the thing it triggers fails.
+            </p>
+            <p>
+              Put concretely, designing a component means settling at
+              least the following, and settling them as decisions rather
+              than as whatever the implementation happened to do.
+            </p>
+            <ul>
+              <li>
+                <strong>Its boundary.</strong> What is inside it, what is
+                passed into it, and what is deliberately left outside.
+              </li>
+              <li>
+                <strong>Its semantics.</strong> What it is, in terms a
+                machine can read: which element or role, what name, what
+                relationships to the things around it.
+              </li>
+              <li>
+                <strong>Its states.</strong> Every state it can be in —
+                empty, loading, partial, invalid, disabled, stale,
+                selected, expanded — and how each state is expressed to
+                a person who cannot see it.
+              </li>
+              <li>
+                <strong>Its interaction.</strong> Which keys do what,
+                where focus goes on each transition, what is announced
+                and when, and what the touch and pointer behaviour is.
+              </li>
+              <li>
+                <strong>Its adaptation.</strong> How it behaves as space,
+                text size, spacing, language, colour scheme and motion
+                preference change, since those are user decisions and not
+                device categories.
+              </li>
+              <li>
+                <strong>Its variants.</strong> Which alternative forms of
+                the same thing exist, and what selects between them.
+              </li>
+              <li>
+                <strong>Its obligations.</strong> What the component
+                guarantees, what it explicitly does not, and what it
+                requires the author or the surrounding page to supply.
+              </li>
+            </ul>
+            <p>
+              That last item is the one most often left implicit, and it
+              is the one that makes the rest usable by somebody else. A
+              component that guarantees the association between a label
+              and a field, and states plainly that it cannot guarantee
+              the label says anything meaningful, has told the truth. A
+              component described only as accessible has not: it has
+              omitted the conditions under which the description holds.
+              What a well-made declaration contains is worked through in{" "}
+              <Link href={`${BASE}/the-landscape`}>
+                the framework landscape
+              </Link>
+              , which is also where the survey of what current libraries
+              do and do not publish sits.
+            </p>
+            <p>
+              Component design is also where accessibility is cheapest.
+              A decision taken once inside a component is inherited by
+              every place it is used, and a decision not taken becomes a
+              defect repeated at the same rate. This is why remediating
+              pages is such poor value: the page is the symptom and the
+              component is the cause.
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
+            <h2>Good components are not enough</h2>
+            <p>
+              Here is the finding that motivates the rest of these
+              pages, and it is a negative one. Accessibility is not a
+              property that survives being added together. A combobox
+              that is correct on its own and a modal dialog that is
+              correct on its own do not produce a correct
               dialog-with-a-combobox, because both of them want the
               Escape key and neither of them knows the other exists.
               Nothing in either component is broken. The composition is
@@ -107,7 +203,68 @@ export default function ComponentDesign() {
               library does not tell you: what may be assembled with
               what, who owns which accessibility responsibility, which
               guarantees survive assembly, and what has to be evidenced
-              again at each boundary.
+              again at each boundary. The failures themselves are
+              enumerated in{" "}
+              <Link href={`${BASE}/failure-modes`}>
+                how composition fails
+              </Link>{" "}
+              and shown at work in{" "}
+              <Link href={`${BASE}/worked-examples`}>worked examples</Link>
+              .
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
+            <h2>Managing rendering and interaction between components</h2>
+            <p>
+              If the gap is between components rather than inside them,
+              it cannot be closed by better components. It needs
+              somewhere to record the rules that govern how a set of
+              components render and interact together: which of them may
+              be used at all, which may contain which, which variant is
+              selected for whom, which one owns focus in a given state,
+              how the keyboard grammar resolves when two of them want
+              the same key, which one is allowed to speak when several
+              have something to announce, and how they reflow when there
+              is not enough room for all of them.
+            </p>
+            <p>
+              That record is a design system. It is worth being precise
+              about the distinction, because the two words are used
+              interchangeably and they are not the same thing. A
+              component library is a set of parts. A design system is
+              the set of decisions about which parts are used here, in
+              what form, in what combinations, with which
+              responsibilities assigned where — and, if it is honest,
+              with the evidence for each decision and the record of what
+              is still unknown attached to it.
+            </p>
+            <p>
+              So the dependency runs in one direction only. Component
+              design does not require a design system: teams design
+              components, and assemble them, whether or not anybody has
+              written the rules down. A design system does require
+              components, because components are what it is making
+              decisions about. That is why this section sits before the
+              design system pages rather than inside them, and why those
+              pages refer back here instead of restating the argument.
+            </p>
+            <p>
+              I have kept them apart for a second reason. If the
+              assembly problem only appeared inside a discussion of my
+              own design system it would read as an argument for that
+              design system, which invites the reader to discount it.
+              The failures are observable without reference to any
+              particular system, and that is how they are set out here.
+              What follows from them for a design system, including the
+              rule that guarantees do not union, is in{" "}
+              <Link href={`${BASE}/what-this-means`}>
+                what this means for a design system
+              </Link>
+              .
             </p>
           </section>
 
@@ -183,7 +340,7 @@ export default function ComponentDesign() {
           >
             <h2>Where this connects</h2>
             <p>
-              The design system that acts on all of this is{" "}
+              The design system I am building on top of all of this is{" "}
               <Link href="/adaptation/afds">
                 described in the next section
               </Link>
