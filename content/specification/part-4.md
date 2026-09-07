@@ -124,7 +124,7 @@ At the archive root sit exactly two required files.
 
 Beneath the root sit up to nine directories.
 `tokens/` holds design-token files.
-`components/` holds one subdirectory per component, each containing a machine-readable contract and a human-readable specification.
+`components/` holds one subdirectory per component, each containing a component specification and its component documentation.
 `patterns/` holds multi-component flow documentation.
 `manifests/` holds generated interface manifests such as a Custom Elements Manifest.
 `evidence/` holds assistive-technology evidence records and known-limitations prose.
@@ -563,13 +563,13 @@ A **component object** replaces `path` with two paths, because a component alway
 <th scope="row"><code>specification</code></th>
 <td>String</td>
 <td><em>REQUIRED</em></td>
-<td>Path to the machine-readable contract.</td>
+<td>Path to the component specification.</td>
 </tr>
 <tr>
 <th scope="row"><code>documentation</code></th>
 <td>String</td>
 <td><em>REQUIRED</em></td>
-<td>Path to the human-readable specification.</td>
+<td>Path to the component documentation.</td>
 </tr>
 <tr>
 <th scope="row"><code>role</code></th>
@@ -585,7 +585,8 @@ An **adapter object** is specified in [clause 33](/adaptation/afds/specification
 
 <h3 id="c29-2">29.2 Worked example</h3>
 
-The example below is the complete manifest of the sample package that accompanies this specification, with the `adapters` array shown empty because that package ships no adapters.
+The example below is the manifest of the sample package that accompanies this specification, reproduced verbatim.
+It is generated from `afds-sample/afds-manifest.json` rather than transcribed, so that it cannot drift from the file it describes.
 Read it alongside the field table: every *REQUIRED* field appears, and every optional array that is absent from the payload is present as an empty array rather than omitted.
 
 <div class="scroll-region" tabindex="0">
@@ -596,10 +597,12 @@ Read it alongside the field table: every *REQUIRED* field appears, and every opt
   "packageId": "com.a11ybob.abd.afds-sample",
   "packageVersion": "1.0.0",
   "title": "AFDS Sample",
-  "description": "A minimal but complete Accessibility Focused Design System package.",
+  "description": "A minimal but complete Accessibility Focused Design System package demonstrating the declared hierarchy, canonical source declarations, a DTCG token sample, one layout-primitive component contract, structured assistive-technology evidence, adapter guidance, and dual licensing.",
   "created": "2026-08-29",
   "conformanceProfile": "afds-components",
-  "methodProfiles": ["afds-patterns-native-first"],
+  "methodProfiles": [
+    "afds-patterns-native-first"
+  ],
   "targetConformanceLevel": "AA",
   "licences": {
     "code": "GPL-3.0-only",
@@ -617,7 +620,7 @@ Read it alongside the field table: every *REQUIRED* field appears, and every opt
         "id": "core",
         "path": "tokens/core.tokens.json",
         "role": "canonical",
-        "description": "Core spacing, typography, measure, and colour tokens."
+        "description": "Core spacing, typography, measure, and colour tokens for the sample."
       }
     ]
   },
@@ -639,7 +642,7 @@ Read it alongside the field table: every *REQUIRED* field appears, and every opt
         "id": "pattern-registry",
         "path": "patterns/registry.json",
         "role": "canonical",
-        "description": "Package-level pattern registry required of a package claiming afds-patterns-native-first, at specification clause 24.2."
+        "description": "Package-level pattern registry required of a package claiming afds-patterns-native-first, at specification clause 24.2. Records the status of every component and every pattern this package has declined."
       }
     ]
   },
@@ -649,25 +652,62 @@ Read it alongside the field table: every *REQUIRED* field appears, and every opt
         "id": "at-matrix",
         "path": "evidence/at-matrix.json",
         "role": "evidence",
-        "description": "Engine-qualified evidence records. All results are placeholders."
+        "description": "Engine-qualified assistive-technology evidence records. All results in this sample are placeholders."
       }
     ]
   },
-  "schemas": { "canonicalSources": [] },
+  "schemas": {
+    "canonicalSources": []
+  },
+  "documentation": {
+    "sources": [
+      {
+        "id": "package-doc",
+        "path": "docs/PACKAGE.md",
+        "role": "documentation",
+        "description": "What this sample package demonstrates."
+      },
+      {
+        "id": "licences-doc",
+        "path": "LICENSES.md",
+        "role": "documentation",
+        "description": "Dual licensing arrangement for code and documentation."
+      },
+      {
+        "id": "adapters-readme",
+        "path": "adapters/README.md",
+        "role": "documentation",
+        "description": "Adapter guidance and the no-adapter-is-canonical rule."
+      },
+      {
+        "id": "known-limitations",
+        "path": "evidence/known-limitations.md",
+        "role": "documentation",
+        "description": "Narrative account of known limitations, non-guarantees, and uncertainty. Explanatory only; the records it discusses are canonical."
+      }
+    ]
+  },
   "adapters": [],
   "stories": [],
   "notes": [
     "AFDS 1.0.0 is a project draft, not a W3C standard.",
-    "Inventory integrity is not a digital signature and does not prove provenance."
+    "Inventory integrity is not a digital signature and does not prove provenance.",
+    "No assistive-technology test results in this package are real; every result field is marked not-yet-tested."
   ]
 }
 </code></pre>
 </div>
 
-Three details in the example are worth naming.
+Four details in the example are worth naming.
+
 The `dtcgVersion` field is what makes token validation possible at all, because a validator otherwise has to guess which version of the token format applies.
-The `notes` array carries the two statements a consumer most needs before trusting the package.
-The empty `adapters` array is a positive declaration, not an oversight, and [clause 27.3](/adaptation/afds/specification/part-4#c27-3) requires it in preference to omitting the field.
+
+Every source object throughout the manifest carries an `id`, including the four in `documentation.sources`.
+That field is *REQUIRED* of every source object and it is the field most often omitted, because a path already looks like an identifier; it is not one, because a path can change without the artefact changing role.
+
+The `notes` array carries the three statements a consumer most needs before trusting the package, and the third is the one that matters most here: no assistive-technology result in the sample is real, and every `result` field is `not-yet-tested`.
+
+The empty `adapters` and `stories` arrays are positive declarations, not oversights, and [clause 27.3](/adaptation/afds/specification/part-4#c27-3) requires them in preference to omitting the fields.
 
 <h3 id="c29-3">29.3 Local profile declarations</h3>
 
@@ -725,14 +765,14 @@ A **local profile object** has the following fields.
 </table>
 </div>
 
-<h4 id="c29-3-1">29.3.1 The serialized provenance object</h4>
+<h4 id="c29-3-1">29.3.1 The serialised provenance object</h4>
 
 [Clause 20.6](/adaptation/afds/specification/part-3#c20-6) defines the provenance object and its four members.
-This subclause fixes their serialized form.
+This subclause fixes their serialised form.
 
 A **provenance object** has the following members.
 
-<div class="scroll-region" role="region" aria-label="29.3.1 The serialized provenance object" tabindex="0">
+<div class="scroll-region" role="region" aria-label="29.3.1 The serialised provenance object" tabindex="0">
 <table class="comparison-table">
 <thead>
 <tr>
@@ -773,7 +813,7 @@ A **provenance object** has the following members.
 
 An **adopted entry** has the following fields.
 
-<div class="scroll-region" role="region" aria-label="29.3.1 The serialized provenance object, table 2" tabindex="0">
+<div class="scroll-region" role="region" aria-label="29.3.1 The serialised provenance object, table 2" tabindex="0">
 <table class="comparison-table">
 <thead>
 <tr>
@@ -820,7 +860,7 @@ An **adopted entry** has the following fields.
 
 A **changed entry** has the following fields.
 
-<div class="scroll-region" role="region" aria-label="29.3.1 The serialized provenance object, table 3" tabindex="0">
+<div class="scroll-region" role="region" aria-label="29.3.1 The serialised provenance object, table 3" tabindex="0">
 <table class="comparison-table">
 <thead>
 <tr>
@@ -855,7 +895,7 @@ A **changed entry** has the following fields.
 
 An **originates entry** has the following fields.
 
-<div class="scroll-region" role="region" aria-label="29.3.1 The serialized provenance object, table 4" tabindex="0">
+<div class="scroll-region" role="region" aria-label="29.3.1 The serialised provenance object, table 4" tabindex="0">
 <table class="comparison-table">
 <thead>
 <tr>
@@ -1053,7 +1093,8 @@ Sorting is a review convenience: a rebuilt inventory then produces a diff that s
 <h3 id="c30-3">30.3 Worked example</h3>
 
 The example below is an abridged inventory from the sample package.
-Two of the nine records are shown; the omitted records have the same shape.
+Two of the ten records are shown, taken verbatim from `afds-sample/afds-inventory.json`; the omitted records have the same shape.
+Only the `records` array is abridged, and every other field is reproduced as it stands, so the example cannot drift from the file it describes.
 
 <div class="scroll-region" tabindex="0">
 <pre><code>
@@ -1065,30 +1106,33 @@ Two of the nine records are shown; the omitted records have the same shape.
   "digestAlgorithm": "SHA-256",
   "digestEncoding": "lowercase-hex",
   "excludesSelf": true,
-  "entryCount": 9,
-  "description": "Inventory of every entry except this inventory itself. These digests detect transfer changes; they are not a digital signature.",
+  "entryCount": 10,
+  "description": "Inventory of every entry in this package except this inventory itself. A consumer must verify every record before relying on package content. These digests detect transfer changes; they are not a digital signature and do not identify a signer or prove provenance.",
   "records": [
     {
       "path": "afds-manifest.json",
       "mediaType": "application/json",
-      "byteLength": 2767,
+      "byteLength": 3371,
       "role": "canonical",
-      "sha256": "b480866e44ae0d66..."
+      "sha256": "dcd3ecea101d5df12f535db4906599449096c7dd069bbcff783a2308dacbed45"
     },
     {
       "path": "tokens/core.tokens.json",
       "mediaType": "application/json",
       "byteLength": 3055,
       "role": "canonical",
-      "sha256": "b45bb732e28f4c3f..."
+      "sha256": "b45bb732e28f4c3f906bb37231442e7051fb2ffe34ef6b57753b29dc68c7a29b"
     }
   ]
 }
 </code></pre>
 </div>
 
-The digests in the example are truncated for readability.
-In a real inventory a `sha256` value *MUST* be the full 64 lowercase hexadecimal characters, and a consumer *MUST* reject a truncated, uppercase, or base-64 digest rather than attempting to interpret it.
+A `sha256` value *MUST* be the full 64 lowercase hexadecimal characters, and a consumer *MUST* reject a truncated, uppercase, or base-64 digest rather than attempting to interpret it.
+The two digests above are shown in full for that reason: an example that shortened them would put a non-conforming value in front of a reader who is likely to copy it.
+
+Note also that `entryCount` is 10 while the packed archive holds 11 entries.
+The difference is the inventory itself, which [clause 30.1](/adaptation/afds/specification/part-4#c30-1) requires the inventory to exclude from its own records.
 
 <h2 id="c31">31. Verification algorithm</h2>
 
@@ -1554,7 +1598,7 @@ None of the three may be inferred from either of the others: a package may be `a
 <tr>
 <th scope="row">Components</th>
 <td><code>afds-components</code></td>
-<td>Everything in <code>afds-tokens</code>, plus at least one component with both a machine-readable contract and a human-readable specification</td>
+<td>Everything in <code>afds-tokens</code>, plus at least one component with both a component specification and component documentation</td>
 </tr>
 <tr>
 <th scope="row">Full</th>

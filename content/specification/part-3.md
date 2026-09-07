@@ -218,7 +218,7 @@ This follows from [clause 20.1](/adaptation/afds/specification/part-3#c20-1), wh
 A profile with nothing in `originates` is asserting that it adopts everything and adds nothing, and the two statements cannot both be true of a conforming profile.
 A validator can therefore treat an empty `originates` as a defect without reading a word of the content.
 
-An entry *MUST NOT* name a source in `adopted` that does not support the thing adopted from it, which is the [clause 20.5](/adaptation/afds/specification/part-3#c20-5) prohibition applied to the serialized form.
+An entry *MUST NOT* name a source in `adopted` that does not support the thing adopted from it, which is the [clause 20.5](/adaptation/afds/specification/part-3#c20-5) prohibition applied to the serialised form.
 
 The structure exists so that provenance can be checked mechanically for completeness, which prose cannot be.
 A validator can determine that every `changed` entry references a real `adopted` entry and that `originates` is non-empty.

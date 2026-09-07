@@ -379,9 +379,14 @@ Where a term defined here is used in a normative clause, it carries this meaning
 
 **Pattern.** Several components co-operating through a task, together with the guidance governing that co-operation.
 
-**Component contract.** The machine-readable declaration of what a component guarantees, what it does not guarantee, and the assertions that make those statements checkable.
+**Component contract.** The whole set of commitments a component makes about itself: what it guarantees, what it does not guarantee, and the assertions that make those statements checkable.
+[Part II](/adaptation/afds/specification/part-2) defines it, and it is carried by a component specification rather than being a separate artefact.
 
-**Component specification.** The human-readable counterpart to a component contract, carrying the reasoning a contract cannot express.
+**Component specification.** The machine-readable record carrying a component contract, whose form and required fields [clause 7](/adaptation/afds/specification/part-2#c7) defines.
+It is a JSON document, and it is the authoritative source of every fact it carries.
+
+**Component documentation.** The human-readable counterpart to a component specification, carrying the reasoning the specification's fields cannot express.
+It is explanatory and introduces no fact of its own, and where it and the specification disagree the specification governs.
 
 **Guarantee.** A statement of behaviour or property that a component commits to, expressed so that it can be tested.
 

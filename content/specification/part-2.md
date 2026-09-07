@@ -216,14 +216,14 @@ A component version is independent of the package version and of `afdsSpecVersio
 
 A `deprecated` or `withdrawn` specification *MUST* state the reason and, where one exists, the replacement `id`.
 
-<h3 id="c7-5">7.5 The human-readable counterpart</h3>
+<h3 id="c7-5">7.5 Component documentation</h3>
 
-Every component specification *SHOULD* have a human-readable counterpart carrying the reasoning the JSON cannot express.
+Every component specification *SHOULD* have component documentation: a human-readable counterpart carrying the reasoning the JSON cannot express.
 
-The counterpart *MUST NOT* contradict the specification.
+Component documentation *MUST NOT* contradict the specification.
 Where the two disagree, the specification governs, and the disagreement is a defect in the package rather than a matter for interpretation.
 
-The counterpart exists because a machine-readable contract records decisions without recording why they were taken, and a decision whose reasoning is lost cannot be safely revisited.
+Component documentation exists because a component specification records decisions without recording why they were taken, and a decision whose reasoning is lost cannot be safely revisited.
 
 <h2 id="c8">8. The semantic model</h2>
 
