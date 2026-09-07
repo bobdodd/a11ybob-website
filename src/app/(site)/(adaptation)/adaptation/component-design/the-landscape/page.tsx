@@ -99,13 +99,15 @@ export default function TheLandscape() {
               This is the same philosophy as Bryan Garaventa&rsquo;s
               AccDC and its claim of automatically accessible
               technologies: accessibility as a byproduct of the
-              framework rather than the finding of a later audit. That work
-              is reviewed among the{" "}
-              <Link href="/writing/reviews">literature reviews</Link> on
-              this site, and the ambition is the right one. The limit is the
-              subject of this section: a framework can make a component
-              correct by construction and still leave every assembly
-              question open.
+              framework rather than the finding of a later audit. My
+              review of{" "}
+              <Link href="/writing/reviews/69c2a32f4611a589f2ce95f7">
+                The AccDC Enterprise API for Advanced UI Automation
+              </Link>{" "}
+              goes through the claim in detail, and the ambition is the
+              right one. The limit is the subject of this section: a
+              framework can make a component correct by construction
+              and still leave every assembly question open.
             </p>
           </section>
 
@@ -195,6 +197,16 @@ export default function TheLandscape() {
           >
             <h2>References</h2>
             <ul>
+              <li>
+                Garaventa, B.{" "}
+                <em>
+                  The AccDC Enterprise API for Advanced UI Automation
+                </em>
+                . WhatSock.com, 2011.{" "}
+                <Link href="/writing/reviews/69c2a32f4611a589f2ce95f7">
+                  Review of the AccDC Enterprise API
+                </Link>
+              </li>
               <li>
                 Design Tokens Community Group.{" "}
                 <em>Design Tokens Format Module</em>.{" "}
