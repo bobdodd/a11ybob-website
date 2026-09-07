@@ -408,13 +408,18 @@ export default function WhatAComponentDeclares() {
               declared.
             </p>
             <p>
-              The reason composition needs its own machinery, rather
-              than better components, is set out separately in{" "}
+              Components and component design are treated on their own
+              terms in{" "}
               <Link href="/adaptation/component-design">
-                components and component design
+                the preceding section
               </Link>
-              , which enumerates the classes of failure that appear only
-              on assembly and the rule that{" "}
+              , which is where the reason composition needs its own
+              machinery, rather than better components, is set out: the
+              classes of failure that{" "}
+              <Link href="/adaptation/component-design/failure-modes">
+                appear only on assembly
+              </Link>{" "}
+              and the rule that{" "}
               <Link href="/adaptation/component-design/what-this-means">
                 guarantees do not union
               </Link>
