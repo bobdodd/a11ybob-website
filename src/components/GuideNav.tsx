@@ -8,10 +8,10 @@
  *
  * Each entry carries the part's full heading rather than its number,
  * because a reader choosing where to go is choosing a subject, and
- * "Part 5" does not say what Part 5 is about. The links are set as a
- * stack rather than a cluster for the same reason: at this length a
- * cluster reflows into a run of wrapped phrases with no clear
- * boundary between one entry and the next. */
+ * "Part 5" does not say what Part 5 is about. The list is a cluster,
+ * exactly as AfdsSubNav and SpecNav are: the entries flow along each
+ * line and wrap onto the next, so the nav takes the width it is given
+ * rather than a fixed column of one entry per row. */
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -28,8 +28,8 @@ export function GuideNav({ pages }: { pages: Entry[] }) {
     <nav aria-label="User guide parts" className="section-nav">
       <p className="section-nav__label">In this guide</p>
       <ul
-        className="nav-list stack"
-        style={{ "--space": "var(--s-2)" } as CSSProperties}
+        className="nav-list cluster"
+        style={{ "--space": "var(--s0)" } as CSSProperties}
       >
         <li>
           <Link
