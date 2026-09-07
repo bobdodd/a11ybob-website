@@ -19,10 +19,13 @@ export type GuideSection = {
   anchor: string;
 };
 
+/* There is no short label beside the heading, as there is for the
+ * specification's parts. The guide is entered at whichever part answers
+ * the reader's question, so its navigation names the subject rather
+ * than the number. */
 export type GuidePage = {
   slug: string;
   heading: string;
-  label: string;
   sections: GuideSection[];
 };
 

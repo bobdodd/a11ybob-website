@@ -37,7 +37,7 @@ export default async function UserGuidePart({
   const contents = await getGuideContents();
   const navPages = contents.pages.map((p) => ({
     href: `${BASE}/${p.slug}`,
-    label: p.label,
+    label: p.heading,
   }));
 
   return (

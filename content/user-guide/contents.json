@@ -5,13 +5,11 @@
     {
       "slug": "status",
       "heading": "Status of this guide",
-      "label": "Status",
       "sections": []
     },
     {
       "slug": "part-1",
       "heading": "Part 1. Before you start",
-      "label": "Part 1",
       "sections": [
         {
           "title": "Who this guide is for",
@@ -30,7 +28,6 @@
     {
       "slug": "part-2",
       "heading": "Part 2. What a design system is, and why accessibility drives this one",
-      "label": "Part 2",
       "sections": [
         {
           "title": "What a design system is",
@@ -65,7 +62,6 @@
     {
       "slug": "part-3",
       "heading": "Part 3. Conformance, claims, and the three axes",
-      "label": "Part 3",
       "sections": [
         {
           "title": "Conformance: what conforms, what a claim means, and the words behind it",
@@ -76,7 +72,6 @@
     {
       "slug": "part-4",
       "heading": "Part 4. The component contract",
-      "label": "Part 4",
       "sections": [
         {
           "title": "What a component declares about itself",
@@ -143,7 +138,6 @@
     {
       "slug": "part-5",
       "heading": "Part 5. The method profiles",
-      "label": "Part 5",
       "sections": [
         {
           "title": "The method profiles: choosing a way of building, or not",
@@ -174,7 +168,6 @@
     {
       "slug": "part-6",
       "heading": "Part 6. The package",
-      "label": "Part 6",
       "sections": [
         {
           "title": "Packaging a design system so that it arrives intact",
@@ -185,7 +178,6 @@
     {
       "slug": "part-7",
       "heading": "Part 7. Reading paths, mistakes, and what is open",
-      "label": "Part 7",
       "sections": [
         {
           "title": "Reading paths by role",
@@ -208,7 +200,6 @@
     {
       "slug": "appendix-a",
       "heading": "Appendix A. Glossary",
-      "label": "Appendix A",
       "sections": [
         {
           "title": "A note on \"component specification\"",
@@ -219,7 +210,6 @@
     {
       "slug": "references",
       "heading": "References",
-      "label": "References",
       "sections": [
         {
           "title": "Normative references",
