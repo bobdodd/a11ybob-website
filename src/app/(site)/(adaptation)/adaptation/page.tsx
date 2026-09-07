@@ -110,14 +110,18 @@ export default function Adaptation() {
               want the same thing.
             </p>
             <p>
-              A survey of the current component landscape, a six-level
-              hierarchy from primitive to complete process, eight
-              classes of failure that appear only on assembly, six
-              worked examples any team would recognise, the state model
-              through which most of those failures actually occur, and
-              what can and cannot be tested at each level. Component
-              guarantees turn out to be conditional: they hold only
-              while their preconditions survive assembly.
+              The section surveys the component landscape as it stands,
+              sets out a hierarchy of six levels running from a single
+              primitive up to a complete multi-page process, and
+              enumerates eight classes of failure that are invisible in
+              isolation and appear only once components are put
+              together. Six worked examples then take ordinary
+              compositions apart, and two further pages examine the
+              state model through which most of those failures actually
+              occur and what can and cannot be tested at each level.
+              What comes out of it is that a component guarantee is
+              conditional: it holds only while its preconditions
+              survive assembly.
             </p>
             <p>
               <Link href="/adaptation/component-design">
