@@ -1,0 +1,239 @@
+{
+  "version": "1.0.0",
+  "source": "docs/AFDS-USER-GUIDE.md",
+  "pages": [
+    {
+      "slug": "status",
+      "heading": "Status of this guide",
+      "label": "Status",
+      "sections": []
+    },
+    {
+      "slug": "part-1",
+      "heading": "Part 1. Before you start",
+      "label": "Part 1",
+      "sections": [
+        {
+          "title": "Who this guide is for",
+          "anchor": "who-this-guide-is-for"
+        },
+        {
+          "title": "How to read this guide alongside the specification",
+          "anchor": "how-to-read-this-guide-alongside-the-specification"
+        },
+        {
+          "title": "What the specification defines, and what it leaves to others (clauses 1.1, 1.2)",
+          "anchor": "what-the-specification-defines-and-what-it-leaves-to-others-clauses-1-1-1-2"
+        }
+      ]
+    },
+    {
+      "slug": "part-2",
+      "heading": "Part 2. What a design system is, and why accessibility drives this one",
+      "label": "Part 2",
+      "sections": [
+        {
+          "title": "What a design system is",
+          "anchor": "what-a-design-system-is"
+        },
+        {
+          "title": "The five layers",
+          "anchor": "the-five-layers"
+        },
+        {
+          "title": "Why accessibility is the reason this system exists",
+          "anchor": "why-accessibility-is-the-reason-this-system-exists"
+        },
+        {
+          "title": "What the survey evidence supports, and what it does not",
+          "anchor": "what-the-survey-evidence-supports-and-what-it-does-not"
+        },
+        {
+          "title": "The five gaps the project recorded",
+          "anchor": "the-five-gaps-the-project-recorded"
+        },
+        {
+          "title": "What the specification adds",
+          "anchor": "what-the-specification-adds"
+        },
+        {
+          "title": "What a design system cannot do",
+          "anchor": "what-a-design-system-cannot-do"
+        }
+      ]
+    },
+    {
+      "slug": "part-3",
+      "heading": "Part 3. Conformance, claims, and the three axes",
+      "label": "Part 3",
+      "sections": [
+        {
+          "title": "Conformance: what conforms, what a claim means, and the words behind it",
+          "anchor": "conformance-what-conforms-what-a-claim-means-and-the-words-behind-it"
+        }
+      ]
+    },
+    {
+      "slug": "part-4",
+      "heading": "Part 4. The component contract",
+      "label": "Part 4",
+      "sections": [
+        {
+          "title": "What a component declares about itself",
+          "anchor": "what-a-component-declares-about-itself"
+        },
+        {
+          "title": "Declaring a component",
+          "anchor": "declaring-a-component"
+        },
+        {
+          "title": "The semantic model",
+          "anchor": "the-semantic-model"
+        },
+        {
+          "title": "Native HTML first, and deriving from published patterns",
+          "anchor": "native-html-first-and-deriving-from-published-patterns"
+        },
+        {
+          "title": "The keyboard contract",
+          "anchor": "the-keyboard-contract"
+        },
+        {
+          "title": "Reflow and layout behaviour",
+          "anchor": "reflow-and-layout-behaviour"
+        },
+        {
+          "title": "Recording WCAG criteria against a component",
+          "anchor": "recording-wcag-criteria-against-a-component"
+        },
+        {
+          "title": "Kinds of requirement",
+          "anchor": "kinds-of-requirement"
+        },
+        {
+          "title": "Guarantees, and what a component refuses to promise",
+          "anchor": "guarantees-and-what-a-component-refuses-to-promise"
+        },
+        {
+          "title": "Assertions",
+          "anchor": "assertions"
+        },
+        {
+          "title": "Evidence records",
+          "anchor": "evidence-records"
+        },
+        {
+          "title": "Uncertainty records",
+          "anchor": "uncertainty-records"
+        },
+        {
+          "title": "Testing levels, and testing in composition",
+          "anchor": "testing-levels-and-testing-in-composition"
+        },
+        {
+          "title": "Annotating a design",
+          "anchor": "annotating-a-design"
+        },
+        {
+          "title": "A worked component: Dialog",
+          "anchor": "a-worked-component-dialog"
+        }
+      ]
+    },
+    {
+      "slug": "part-5",
+      "heading": "Part 5. The method profiles",
+      "label": "Part 5",
+      "sections": [
+        {
+          "title": "The method profiles: choosing a way of building, or not",
+          "anchor": "the-method-profiles-choosing-a-way-of-building-or-not"
+        },
+        {
+          "title": "The intrinsic layout profile — afds-layout-intrinsic",
+          "anchor": "the-intrinsic-layout-profile-afds-layout-intrinsic"
+        },
+        {
+          "title": "The scoped reflow profile — afds-reflow-scoped",
+          "anchor": "the-scoped-reflow-profile-afds-reflow-scoped"
+        },
+        {
+          "title": "The typography and colour profile — afds-typography-colour",
+          "anchor": "the-typography-and-colour-profile-afds-typography-colour"
+        },
+        {
+          "title": "The native-first pattern profile — afds-patterns-native-first",
+          "anchor": "the-native-first-pattern-profile-afds-patterns-native-first"
+        },
+        {
+          "title": "Deciding which profiles to claim",
+          "anchor": "deciding-which-profiles-to-claim"
+        }
+      ]
+    },
+    {
+      "slug": "part-6",
+      "heading": "Part 6. The package",
+      "label": "Part 6",
+      "sections": [
+        {
+          "title": "Packaging a design system so that it arrives intact",
+          "anchor": "packaging-a-design-system-so-that-it-arrives-intact"
+        }
+      ]
+    },
+    {
+      "slug": "part-7",
+      "heading": "Part 7. Reading paths, mistakes, and what is open",
+      "label": "Part 7",
+      "sections": [
+        {
+          "title": "Reading paths by role",
+          "anchor": "reading-paths-by-role"
+        },
+        {
+          "title": "Common mistakes",
+          "anchor": "common-mistakes"
+        },
+        {
+          "title": "What this guide does not settle",
+          "anchor": "what-this-guide-does-not-settle"
+        },
+        {
+          "title": "Where the rest of the material lives",
+          "anchor": "where-the-rest-of-the-material-lives"
+        }
+      ]
+    },
+    {
+      "slug": "appendix-a",
+      "heading": "Appendix A. Glossary",
+      "label": "Appendix A",
+      "sections": [
+        {
+          "title": "A note on \"component specification\"",
+          "anchor": "a-note-on-component-specification"
+        }
+      ]
+    },
+    {
+      "slug": "references",
+      "heading": "References",
+      "label": "References",
+      "sections": [
+        {
+          "title": "Normative references",
+          "anchor": "normative-references"
+        },
+        {
+          "title": "Informative references",
+          "anchor": "informative-references"
+        },
+        {
+          "title": "Project documents",
+          "anchor": "project-documents"
+        }
+      ]
+    }
+  ]
+}

@@ -22,6 +22,7 @@ import { listExperiencesForSitemap } from "@/lib/experiences";
 import { listGlossaryForSitemap } from "@/lib/glossary";
 import { ANALYSERS } from "@/lib/analysers";
 import { WIDGET_PATTERNS } from "@/lib/widget-patterns";
+import { getGuideContents } from "@/lib/user-guide";
 
 export const BASE = "https://a11ybob.com";
 
@@ -142,6 +143,16 @@ async function buildGroups(): Promise<SitemapGroup[]> {
   }
   for (const p of WIDGET_PATTERNS) {
     core.push({ url: `${BASE}/paradise/widget-patterns/${p.slug}` });
+  }
+  /* The user guide's pages are derived from the same contents index that
+   * prerenders them, for the reason the analysers are: a hand-kept list of
+   * generated pages drifts from the generator. */
+  try {
+    for (const page of (await getGuideContents()).pages) {
+      core.push({ url: `${BASE}/adaptation/afds/user-guide/${page.slug}` });
+    }
+  } catch {
+    /* skip the guide's parts on error; its landing page is listed above */
   }
 
   /* Each corpus degrades independently: a database problem costs that child
