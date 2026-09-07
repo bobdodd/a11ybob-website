@@ -84,18 +84,18 @@ export default function Adaptation() {
           >
             <h2>Components and component design</h2>
             <p>
-              Interfaces are built from components: bounded, reusable
-              pieces that carry their own semantics, presentation,
-              behaviour and state, from a field with its label up to a
-              whole search results region. Component design is the
-              practice of settling what each one is — its boundary, its
-              semantics, its states, its keyboard and focus behaviour,
-              how it adapts when space, text size or language change,
-              and what it guarantees as against what it requires of the
-              page around it. It is the cheapest place in the whole
-              stack to make an accessibility decision, because a
-              decision taken once inside a component is inherited
-              everywhere it is used.
+              Interfaces are built from components, which are bounded,
+              reusable pieces carrying their own semantics,
+              presentation, behaviour and state, from a field with its
+              label up to a whole search results region. Component
+              design is the practice of settling what each one is: its
+              boundary, its semantics, its states, its keyboard and
+              focus behaviour, how it adapts when space, text size or
+              language change, and what it guarantees as against what
+              it requires of the page around it. It is the cheapest
+              place in the whole stack to make an accessibility
+              decision, because a decision taken once inside a
+              component is inherited everywhere it is used.
             </p>
             <p>
               Good components are not sufficient, though. Accessibility
@@ -104,7 +104,7 @@ export default function Adaptation() {
               automated check, can produce an inaccessible result
               together, and neither one is at fault. The gap is between
               components rather than inside them, which is what design
-              systems exist to manage — the rules governing how a set of
+              systems exist to manage: the rules governing how a set of
               components render and interact together, and who owns
               focus, keys, announcements and space when several of them
               want the same thing.

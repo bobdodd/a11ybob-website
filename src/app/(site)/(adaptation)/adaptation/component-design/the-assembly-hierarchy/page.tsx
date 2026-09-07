@@ -130,8 +130,8 @@ export default function TheAssemblyHierarchy() {
               reusable artefact can honestly be delivered: a combobox
               can be built once and used everywhere. Most automated
               tooling operates at level 4, because a rendered page is
-              what a rule engine can be pointed at. Levels 3 and 5 —
-              regions and processes — are the least served by either,
+              what a rule engine can be pointed at. Levels 3 and 5,
+              regions and processes, are the least served by either,
               and they are exactly where composition failures
               concentrate. A landmark collision is a level 3 event. A
               lost form state after a session timeout is a level 5

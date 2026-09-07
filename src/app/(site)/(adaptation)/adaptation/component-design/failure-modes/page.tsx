@@ -371,7 +371,7 @@ export default function FailureModes() {
               card can guarantee the association between its label and
               its control. It cannot guarantee that the author supplied
               a meaningful heading. Both facts belong in the contract,
-              and the second is the one usually left out — which is why
+              and the second is the one usually left out, which is why
               GOV.UK requires components to be tested inside realistic
               pages with representative content rather than in isolated
               demonstrations.

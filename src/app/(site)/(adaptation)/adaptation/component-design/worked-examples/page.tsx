@@ -101,8 +101,8 @@ export default function WorkedExamples() {
               That last point is the general shape of the problem. The
               library is not wrong to offer a clickable card. It is
               missing a statement that an interactive card excludes
-              interactive descendants — a statement about composition,
-              which no field in a conventional component API can hold.
+              interactive descendants, a statement about composition
+              that no field in a conventional component API can hold.
             </p>
           </section>
 
@@ -185,7 +185,7 @@ export default function WorkedExamples() {
               <li>
                 Step three validates and returns errors. Focus must move
                 to the error summary, and the summary must link to the
-                fields — a relationship spanning two components.
+                fields, a relationship spanning two components.
               </li>
               <li>
                 Back-navigation must retain entered data.
@@ -240,7 +240,7 @@ export default function WorkedExamples() {
               navigation&rdquo; sounds like one component with two
               appearances. It is two components with two interaction
               models, selected by available space, and the selection is
-              itself a design decision that has to be recorded — which
+              itself a design decision that has to be recorded, which
               is exactly the kind of decision a{" "}
               <Link href="/adaptation/afds">design system</Link> exists
               to hold.

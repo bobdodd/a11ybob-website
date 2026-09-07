@@ -44,12 +44,13 @@ export default function ComponentDesign() {
               A component is a bounded piece of interface that can be
               used more than once: a button, a field with its label, a
               tab set, a card, a navigation bar, a whole search results
-              region. It bundles four things behind a single name —
-              markup and the semantics that markup carries, presentation,
-              behaviour, and whatever state it keeps — and it exposes a
-              small interface through which the rest of the application
-              configures it, usually some combination of properties,
-              slots for content, and events it emits back.
+              region. It bundles four things behind a single name:
+              markup and the semantics that markup carries,
+              presentation, behaviour, and whatever state it keeps. It
+              also exposes a small interface through which the rest of
+              the application configures it, usually some combination
+              of properties, slots for content, and events it emits
+              back.
             </p>
             <p>
               The idea is older than the frameworks that made it
@@ -111,10 +112,10 @@ export default function ComponentDesign() {
                 relationships to the things around it.
               </li>
               <li>
-                <strong>Its states.</strong> Every state it can be in —
-                empty, loading, partial, invalid, disabled, stale,
-                selected, expanded — and how each state is expressed to
-                a person who cannot see it.
+                <strong>Its states.</strong> Every state it can be in
+                (empty, loading, partial, invalid, disabled, stale,
+                selected, expanded), and how each of those states is
+                expressed to a person who cannot see it.
               </li>
               <li>
                 <strong>Its interaction.</strong> Which keys do what,
@@ -238,9 +239,9 @@ export default function ComponentDesign() {
               component library is a set of parts. A design system is
               the set of decisions about which parts are used here, in
               what form, in what combinations, with which
-              responsibilities assigned where — and, if it is honest,
-              with the evidence for each decision and the record of what
-              is still unknown attached to it.
+              responsibilities assigned where, and, if it is honest,
+              with the evidence for each decision and the record of
+              what is still unknown attached to it.
             </p>
             <p>
               So the dependency runs in one direction only. Component

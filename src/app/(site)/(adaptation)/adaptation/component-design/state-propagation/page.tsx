@@ -147,9 +147,9 @@ export default function StatePropagation() {
                 the input that selects variants in the first place.
               </li>
               <li>
-                <strong>Derived state</strong> is computed from others —
-                &ldquo;the form is submittable&rdquo; — which no single
-                component can determine.
+                <strong>Derived state</strong> is computed from others,
+                as in &ldquo;the form is submittable&rdquo;, which no
+                single component can determine.
               </li>
             </ul>
             <p>
