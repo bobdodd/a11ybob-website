@@ -82,6 +82,39 @@ export default function Adaptation() {
             className="stack"
             style={{ "--space": "var(--s0)" } as CSSProperties}
           >
+            <h2>Components and component design</h2>
+            <p>
+              Component design does not require a design system. A
+              design system uses components, which makes the way
+              components behave when they are assembled a prior
+              question rather than an internal detail. The answer is
+              uncomfortable: accessibility is not closed under
+              composition. Two components, each individually correct
+              and each individually passing every automated check, can
+              produce an inaccessible result together, and neither one
+              is at fault.
+            </p>
+            <p>
+              A survey of the current component landscape, a six-level
+              hierarchy from primitive to complete process, eight
+              classes of failure that appear only on assembly, six
+              worked examples any team would recognise, the state model
+              through which most of those failures actually occur, and
+              what can and cannot be tested at each level. Component
+              guarantees turn out to be conditional: they hold only
+              while their preconditions survive assembly.
+            </p>
+            <p>
+              <Link href="/adaptation/component-design">
+                Read about components and component design
+              </Link>
+            </p>
+          </section>
+
+          <section
+            className="stack"
+            style={{ "--space": "var(--s0)" } as CSSProperties}
+          >
             <h2>Describing interfaces and modalities</h2>
             <p>
               A capability model says what a person can do and a

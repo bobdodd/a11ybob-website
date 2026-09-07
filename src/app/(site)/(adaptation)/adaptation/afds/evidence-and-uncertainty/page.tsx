@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import type { CSSProperties } from "react";
 import { AfdsSubNav } from "@/components/AfdsSubNav";
 
@@ -449,6 +450,22 @@ export default function EvidenceAndUncertainty() {
               None of this is comfortable to publish on the page that
               argues for recorded uncertainty. It is also the only
               version of the page that practises what it describes.
+            </p>
+            <p>
+              There is a fifth gap that belongs to composition rather
+              than to evidence, which is that a record scoped to a
+              component in isolation is not evidence for the page it
+              ends up in.{" "}
+              <Link href="/adaptation/component-design/testing">
+                Testing across the hierarchy
+              </Link>{" "}
+              sets out what has to be evidenced again at each level of
+              assembly, and{" "}
+              <Link href="/adaptation/component-design/state-propagation">
+                the propagation rules
+              </Link>{" "}
+              set out how child uncertainty rises unless a parent bounds
+              it.
             </p>
           </section>
 

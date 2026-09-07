@@ -350,6 +350,18 @@ export default function OpenQuestions() {
               many fixtures are enough, and the rule that attributes
               a failure to a component or to its composition.
             </p>
+            <p>
+              The failure classes this has to cover, and the reason
+              attribution is hard in the first place, are set out in{" "}
+              <Link href="/adaptation/component-design/failure-modes">
+                how composition fails
+              </Link>{" "}
+              and{" "}
+              <Link href="/adaptation/component-design/testing">
+                testing across the hierarchy
+              </Link>
+              .
+            </p>
           </section>
 
           <section

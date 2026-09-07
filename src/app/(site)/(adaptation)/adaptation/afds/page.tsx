@@ -150,6 +150,17 @@ export default function Afds() {
               order makes no sense. Those stay editorial problems, and a
               system claiming otherwise would be overselling itself.
             </p>
+            <p>
+              Nor does a rule recorded per component settle what happens
+              when components are assembled, which is a prior question
+              this section depends on rather than answers.{" "}
+              <Link href="/adaptation/component-design">
+                Components and component design
+              </Link>{" "}
+              covers it: accessibility is not closed under composition,
+              so a component&rsquo;s guarantees hold only while their
+              preconditions survive the assembly it is placed in.
+            </p>
           </section>
 
           <section

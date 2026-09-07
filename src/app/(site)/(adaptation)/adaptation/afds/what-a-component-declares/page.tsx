@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import type { CSSProperties } from "react";
 import { AfdsSubNav } from "@/components/AfdsSubNav";
 
@@ -405,6 +406,19 @@ export default function WhatAComponentDeclares() {
               conformance is in the same position: I am confident about
               what it needs to cover and I have not fixed how it is
               declared.
+            </p>
+            <p>
+              The reason composition needs its own machinery, rather
+              than better components, is set out separately in{" "}
+              <Link href="/adaptation/component-design">
+                components and component design
+              </Link>
+              , which enumerates the classes of failure that appear only
+              on assembly and the rule that{" "}
+              <Link href="/adaptation/component-design/what-this-means">
+                guarantees do not union
+              </Link>
+              .
             </p>
           </section>
 
