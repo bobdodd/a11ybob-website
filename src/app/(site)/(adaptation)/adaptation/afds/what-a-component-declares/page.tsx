@@ -408,14 +408,13 @@ export default function WhatAComponentDeclares() {
               declared.
             </p>
             <p>
-              Components and component design are treated on their own
-              terms in{" "}
               <Link href="/adaptation/component-design">
-                the preceding section
-              </Link>
-              , which is where the reason composition needs its own
-              machinery, rather than better components, is set out: the
-              classes of failure that{" "}
+                Components and component design
+              </Link>{" "}
+              are treated on their own terms, and that is where the
+              reason composition needs its own machinery, rather than
+              better components, is set out: the classes of failure
+              that{" "}
               <Link href="/adaptation/component-design/failure-modes">
                 appear only on assembly
               </Link>{" "}

@@ -340,12 +340,13 @@ export default function ComponentDesign() {
           >
             <h2>Where this connects</h2>
             <p>
-              The design system I am building on top of all of this is{" "}
               <Link href="/adaptation/afds">
-                described in the next section
-              </Link>
-              . Its component contracts are the mechanism by which a
-              guarantee carries its preconditions, its{" "}
+                The accessibility-focused design system
+              </Link>{" "}
+              I am building on top of all of this is described in the
+              section that follows. Its component contracts are the
+              mechanism by which a guarantee carries its
+              preconditions, its{" "}
               <Link href="/adaptation/afds/evidence-and-uncertainty">
                 evidence and uncertainty records
               </Link>{" "}
