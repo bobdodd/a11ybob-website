@@ -1190,7 +1190,7 @@ export default function PortableRepresentations() {
               <li>
                 <strong>Role separated from naming mechanism.</strong>{" "}
                 &ldquo;Has an accessible name&rdquo; and &ldquo;gets its
-                name from <code>aria-labelledby</code> pointing at the
+                name from <code>aria-labelledby</code>{" "}pointing at the
                 visible heading&rdquo; are different claims, and only
                 the second one is testable.
               </li>

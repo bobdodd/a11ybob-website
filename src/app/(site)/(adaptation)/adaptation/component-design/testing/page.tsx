@@ -136,7 +136,7 @@ export default function Testing() {
             </p>
             <ol>
               <li>
-                <strong>Component in isolation.</strong> Automated
+                <strong>Component in isolation.</strong>{" "}Automated
                 checks, keyboard walk, name and role verification,
                 against the component&rsquo;s declared guarantees.
               </li>

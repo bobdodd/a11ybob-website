@@ -231,7 +231,7 @@ export default function TheQuestion() {
               political property: <em>does this society make its
               goods and services available to its members
               regardless of physical capability?</em>{" "}They are not
-              the same question, and the answers do not coincide.
+              the same question, and the answers do not coincide.{" "}
               <em>It is possible to have a wonderfully elegant and
               usable interface that will score low in terms of
               intrinsic accessibility, and an accessible interface

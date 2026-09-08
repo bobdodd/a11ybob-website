@@ -780,7 +780,7 @@ export default function OpenQuestions() {
               The published advisory technique for sticky regions is
               to un-fix them with media queries when there is not
               enough room, using{" "}
-              <em>min-height, max-height, and min-width</em> queries
+              <em>min-height, max-height, and min-width</em>{" "}queries
               that adapt to the available space. The problem it
               addresses is real and the technique&rsquo;s own note
               states it plainly: with a fixed header,{" "}
@@ -1329,7 +1329,7 @@ export default function OpenQuestions() {
               consequences for anyone who publishes a package.
             </p>
             <p>
-              <strong>To settle:</strong> whether a promoted artefact
+              <strong>To settle:</strong>{" "}whether a promoted artefact
               carries a provenance field naming the import report,
               whether a promotion records a reviewer and a date, and
               whether a reviewer&rsquo;s identity belongs in a

@@ -59,7 +59,7 @@ export default function WorkedExamples() {
                 may no longer exist.
               </li>
               <li>
-                <code>aria-activedescendant</code> on the input must
+                <code>aria-activedescendant</code>{" "}on the input must
                 reference an option inside the dialog&rsquo;s
                 accessibility subtree, which portalling can break.
               </li>

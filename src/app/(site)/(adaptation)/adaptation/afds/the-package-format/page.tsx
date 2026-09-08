@@ -575,7 +575,7 @@ export default function ThePackageFormat() {
             <p>
               The first is path traversal. ZIP syntax stores a path per
               entry and does nothing to stop that path being absolute
-              or containing <code>..</code> segments, so an extractor
+              or containing <code>..</code>{" "}segments, so an extractor
               that joins the entry path onto an output directory can be
               made to write outside it and overwrite arbitrary files.
               This is catalogued as CWE-22, &ldquo;Improper Limitation
@@ -998,7 +998,7 @@ export default function ThePackageFormat() {
               rejection is a rejection of specific mechanisms rather
               than of the idea. ECMA&rsquo;s own overview sets them out.
               Content types are declared in a{" "}
-              <code>[Content_Types].xml</code> item, which
+              <code>[Content_Types].xml</code>{" "}item, which
               &ldquo;allows a consumer to determine the content type of
               every part in the package&rdquo;. Relationships live in
               separate relationship parts, where &ldquo;the
@@ -1136,7 +1136,7 @@ export default function ThePackageFormat() {
               versioning, is unresolved.
             </p>
             <p>
-              <strong>Package-aware editing.</strong> Editing one
+              <strong>Package-aware editing.</strong>{" "}Editing one
               artefact currently means unpacking, editing, rebuilding
               the inventory and repacking. Whether to build tooling
               that removes that friction, or to keep treating the

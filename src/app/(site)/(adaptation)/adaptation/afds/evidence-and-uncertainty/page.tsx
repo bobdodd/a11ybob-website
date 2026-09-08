@@ -486,7 +486,7 @@ export default function EvidenceAndUncertainty() {
                 <code>evidence/at-matrix.json</code>,{" "}
                 <code>evidence/known-limitations.md</code> and the{" "}
                 <code>uncertainty</code> block of{" "}
-                <code>stack.spec.json</code> in the sample package. The
+                <code>stack.spec.json</code>{" "}in the sample package. The
                 result vocabulary is also tabulated in the AFDS user
                 guide, which states the propagation rule as the
                 project&rsquo;s rule. The open items are E1 and G3 in the

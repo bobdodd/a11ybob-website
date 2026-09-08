@@ -124,7 +124,7 @@ export default function StatePropagation() {
             </p>
             <ul>
               <li>
-                <strong>Intrinsic state</strong> is owned wholly by the
+                <strong>Intrinsic state</strong>{" "}is owned wholly by the
                 component: expanded, checked, selected, invalid, busy,
                 current. It is expressed in ARIA on the
                 component&rsquo;s own element.
@@ -142,12 +142,12 @@ export default function StatePropagation() {
                 may read it and none may own it.
               </li>
               <li>
-                <strong>Profile state</strong> comes from the
+                <strong>Profile state</strong>{" "}comes from the
                 user&rsquo;s capability and preference model. This is
                 the input that selects variants in the first place.
               </li>
               <li>
-                <strong>Derived state</strong> is computed from others,
+                <strong>Derived state</strong>{" "}is computed from others,
                 as in &ldquo;the form is submittable&rdquo;, which no
                 single component can determine.
               </li>

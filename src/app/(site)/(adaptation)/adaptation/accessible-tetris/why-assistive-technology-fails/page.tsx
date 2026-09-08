@@ -188,7 +188,7 @@ export default function WhyAssistiveTechnologyFails() {
               <em>Semantics</em> (composition and meaning, with
               ontologies and rules), <em>Inventory</em> (the formatted
               media elements available for use), and{" "}
-              <em>External Content</em> (the raw content beneath). The
+              <em>External Content</em>{" "}(the raw content beneath). The
               Tetris work was an investigation of how DLSs for a
               real-time game could be expressed through CISNA: the
               game&rsquo;s abstract events live at the Semantics

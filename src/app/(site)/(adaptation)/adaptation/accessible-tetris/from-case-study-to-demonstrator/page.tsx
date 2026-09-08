@@ -37,7 +37,7 @@ export default function FromCaseStudyToDemonstrator() {
           >
             <h2>What the build is, and is not</h2>
             <p>
-              What comes next is deliberately <em>not</em> &ldquo;an
+              What comes next is deliberately <em>not</em>{" "}&ldquo;an
               accessible Tetris game&rdquo;.{" "}
               <Link href="/adaptation/accessible-tetris/the-record">
                 The record

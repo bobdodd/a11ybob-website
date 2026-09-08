@@ -198,7 +198,7 @@ export default function WhatThisMeans() {
                 and the retest it triggers.
               </li>
               <li>
-                <strong>Slots become typed.</strong> &ldquo;Accepts
+                <strong>Slots become typed.</strong>{" "}&ldquo;Accepts
                 children&rdquo; is not sufficient. A slot declares which
                 roles it accepts and which it forbids.
               </li>
