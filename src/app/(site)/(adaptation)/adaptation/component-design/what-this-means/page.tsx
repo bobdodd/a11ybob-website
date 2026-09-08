@@ -160,12 +160,12 @@ export default function WhatThisMeans() {
               nothing about the next one.
             </p>
             <p>
-              The practical effect is that a design system needs a
-              notion of a suspended guarantee at all. Most systems have
-              two states, pass and fail, which forces a false choice
-              when a guarantee is neither confirmed nor refuted but
-              simply out of scope of its evidence. That third state is
-              the common case in real assemblies.
+              The practical effect is that a design system has to be
+              able to record a guarantee as suspended, and most cannot.
+              They carry two states, pass and fail, which forces a
+              false choice whenever a guarantee is neither confirmed
+              nor refuted but simply outside what its evidence covers.
+              That third state is the common case in real assemblies.
             </p>
           </section>
 
