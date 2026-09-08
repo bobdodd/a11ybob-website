@@ -77,7 +77,10 @@ obligations:
     - Do not portal the filter popover outside this subtree
 
 evidence:
-  isolated:        pass        # axe plus keyboard, in isolation
+  isolated:
+    automated: { ruleset: wcag22aa-machine-testable,
+                 result: no-violations }   # any conforming rule set
+    keyboard:  pass
   realisticPage:   required
   completeProcess: required
   assistiveTech:
@@ -252,6 +255,16 @@ export default function StatePropagation() {
               has been evidenced and in which environments, and what is
               not yet known. The VoiceOver line says unverified because
               it is unverified.
+            </p>
+            <p>
+              The automated line names a level rather than a product:
+              the machine-testable subset of WCAG 2.2 AA, with no
+              violations at component scope. Which rule set produces
+              that result is deliberately left open. A contract has to
+              outlive the tools that check it, and naming one would
+              both date the record and tie the guarantee to a single
+              vendor&rsquo;s rule coverage, so that a change of tool
+              would read as a change of contract.
             </p>
             <p>
               The two uncertainty entries are the part I would defend
