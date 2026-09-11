@@ -14,6 +14,16 @@ const nextConfig: NextConfig = {
   // old URL. Permanent (308) so search engines update.
   async redirects() {
     return [
+      // Blockly for Lego is a static app in public/block-lego, so the URL
+      // has to end in a filename: Next strips the trailing slash from
+      // /block-lego/, and the app's asset paths are relative, so they would
+      // otherwise resolve against the site root. Temporary (307) because the
+      // filename is an implementation detail, not the canonical address.
+      {
+        source: "/block-lego",
+        destination: "/block-lego/index.html",
+        permanent: false,
+      },
       {
         source: "/playground",
         destination: "/playgrounds/paradise",

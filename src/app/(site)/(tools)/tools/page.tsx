@@ -28,7 +28,11 @@ export default function Tools() {
               Paradise &mdash; the source-level multi-model
               analyser &mdash; is intellectually the deepest work
               of this kind and lives at its own top-level entry.
-              The three tools here are its companions.
+              Three of the tools here are its companions. The
+              fourth is a different kind of thing: not something
+              for finding accessibility problems, but something
+              built to be used by the people the field usually
+              only tests for.
             </p>
           </header>
 
@@ -38,7 +42,7 @@ export default function Tools() {
             aria-labelledby="tools-cards-heading"
           >
             <h2 id="tools-cards-heading" className="visually-hidden">
-              The three companion tools
+              The tools
             </h2>
 
             <article
@@ -116,6 +120,53 @@ export default function Tools() {
                 <small className="muted">
                   CNIB-owned production tool; Bob-owned research
                   line in development. Described, not demoed.
+                </small>
+              </p>
+            </article>
+
+            <article
+              className="stack"
+              style={{ "--space": "var(--s0)" } as CSSProperties}
+            >
+              <h2>
+                <a href="/block-lego/index.html">Blockly for Lego</a>
+              </h2>
+              <p>
+                A block programming environment for LEGO Education
+                SPIKE&nbsp;Prime that a blind student can use on
+                their own, with a keyboard and a screen reader. The
+                official SPIKE app&rsquo;s coding canvas cannot be
+                operated without sight &mdash; it is built on a
+                2016 fork of Blockly that never received any of the
+                accessibility work &mdash; so this replaces it:
+                Blockly&nbsp;13, which ships keyboard navigation
+                and screen reader support, generating ordinary
+                SPIKE MicroPython and sending it to the hub over
+                the protocol LEGO publishes itself. No reverse
+                engineering; the protocol is Apache&nbsp;2.0.
+              </p>
+              <p>
+                Built for a university robotics club that wants
+                blind and sighted students working on the same
+                programs, in the same representation, at the same
+                time &mdash; blocks for everyone, rather than a
+                separate text track for the blind students. It
+                comes with a hub simulator that narrates what the
+                robot did in sentences meant to be heard, and a 3D
+                view built from real LEGO parts for the rest of the
+                room. Modelling the robot in three dimensions is
+                what revealed that the driving base everyone had
+                been calibrating against could not physically be
+                built.
+              </p>
+              <p>
+                <small className="muted">
+                  Bob-owned. Apache&nbsp;2.0. Runs here against a
+                  real hub over Bluetooth; the simulator and the 3D
+                  view need the project running on your own
+                  machine, because a browser will not let a website
+                  reach them. Not yet tested by anyone who uses a
+                  screen reader daily.
                 </small>
               </p>
             </article>

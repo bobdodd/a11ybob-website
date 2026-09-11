@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Blockly for Lego</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="viewer.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#workspace-heading">Skip to the blocks</a>
+
+    <header class="app-header">
+      <h1>Blockly for Lego</h1>
+      <p id="connection-summary" class="connection-summary">Not connected to a hub.</p>
+    </header>
+
+    <!--
+      Status is assertive: it changes what the student can do next, so it
+      should interrupt. The narration log below is polite.
+    -->
+    <p id="status" class="visually-hidden" role="status" aria-live="assertive"></p>
+
+    <!--
+      Two toolbars rather than one long row: what you do to your program and
+      what you do to the robot are different jobs, and a screen reader user
+      moving by landmark should be able to reach one without hearing the
+      other.
+    -->
+    <nav class="toolbar" aria-label="Program">
+      <label class="program-name" for="program-name">Program name</label>
+      <input
+        type="text"
+        id="program-name"
+        class="program-name-input"
+        maxlength="80"
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <span id="save-state" class="save-state"></span>
+
+      <button type="button" id="new-program" class="secondary">New</button>
+      <button type="button" id="open-program" class="secondary">Open…</button>
+      <button type="button" id="save-program">
+        Save <span class="shortcut" aria-hidden="true">Ctrl+S</span>
+      </button>
+      <button type="button" id="save-as-program" class="secondary">Save as…</button>
+    </nav>
+
+    <nav class="toolbar" aria-label="Robot controls">
+      <button id="connect-simulator" type="button">
+        Connect to simulator
+      </button>
+      <button id="connect-hub" type="button">
+        Connect to a hub
+      </button>
+      <button id="run" type="button" disabled>
+        Run <span class="shortcut" aria-hidden="true">Ctrl+G</span>
+      </button>
+      <button id="stop" type="button" disabled>
+        Stop <span class="shortcut" aria-hidden="true">Ctrl+Shift+G</span>
+      </button>
+      <button id="read-sensors" type="button" disabled>
+        Read the sensors aloud
+      </button>
+    </nav>
+
+    <!--
+      Shown only when this copy is served from the web. Browsers refuse a
+      connection from a public page to a program on your own machine, so the
+      simulator and the robot view need the project running locally.
+    -->
+    <p id="hosted-note" class="hosted-note" hidden>
+      <strong>Running from the web.</strong> You can build programs here and run
+      them on a real SPIKE Prime hub over Bluetooth. The simulator and the robot
+      view need the project running on your own computer —
+      <a href="https://github.com/bobdodd/Blockly-for-Lego">get it from GitHub</a>.
+    </p>
+
+    <main class="layout">
+      <section class="workspace-panel" aria-labelledby="workspace-heading">
+        <h2 id="workspace-heading">Your program</h2>
+        <p class="hint">
+          Press Tab to move into the blocks, then use the arrow keys to move
+          around. Press T to open the block menu, and Escape to leave it.
+        </p>
+        <div id="blockly" class="blockly-host"></div>
+        <p id="warnings" class="warnings" role="status" aria-live="polite"></p>
+      </section>
+
+      <aside class="side-panel">
+        <!--
+          The robot view and the Python are both things you look at one at a
+          time, so they share a tabbed panel. The narration below is the
+          primary output for a student who cannot see either, and is never
+          hidden behind a tab.
+
+          Python is selected first, so the editor is unchanged for anyone who
+          never opens the robot view: no extra canvas, no extra tab stops, and
+          none of the 3D code is even downloaded.
+        -->
+        <section class="tab-section" aria-labelledby="reference-heading">
+          <h2 id="reference-heading" class="visually-hidden">Robot view and Python</h2>
+
+          <div class="tablist" role="tablist" aria-label="Robot view and Python">
+            <button type="button" role="tab" id="tab-robot"
+                    aria-controls="panel-robot" aria-selected="false" tabindex="-1">
+              Robot view
+            </button>
+            <button type="button" role="tab" id="tab-python"
+                    aria-controls="panel-python" aria-selected="true" tabindex="0">
+              Python
+            </button>
+          </div>
+
+          <div id="panel-robot" role="tabpanel" aria-labelledby="tab-robot"
+               class="tab-panel" hidden>
+            <p class="hint">
+              Shows the simulated robot. A real hub does not report where it is,
+              so this stays empty when you are connected to one.
+            </p>
+
+            <canvas id="scene" class="scene" role="img" aria-describedby="pose"></canvas>
+            <p id="pose" class="pose">Connect to the simulator to see the robot.</p>
+
+            <div class="scene-controls">
+              <label>
+                <input type="checkbox" id="follow-robot" checked />
+                Keep the camera on the robot
+              </label>
+              <button type="button" id="reset-view" class="secondary">Reset the view</button>
+              <button type="button" id="pop-out" class="secondary">
+                Open in its own window
+              </button>
+            </div>
+            <p id="focus-label" class="focus-label" role="status" aria-live="polite"></p>
+          </div>
+
+          <div id="panel-python" role="tabpanel" aria-labelledby="tab-python"
+               class="tab-panel">
+            <p class="hint">
+              This is ordinary SPIKE Python. It runs on a real hub unchanged.
+            </p>
+            <textarea
+              id="python"
+              class="python"
+              readonly
+              spellcheck="false"
+              rows="18"
+            ></textarea>
+            <button id="copy-python" type="button" class="secondary">Copy the Python</button>
+          </div>
+        </section>
+
+        <section aria-labelledby="log-heading" class="log-section">
+          <h2 id="log-heading">What the robot is doing</h2>
+
+          <div class="log-options">
+            <label>
+              <input type="checkbox" id="speech" />
+              Read aloud with the browser voice
+            </label>
+            <label>
+              <input type="checkbox" id="quiet" />
+              Only announce printed messages and errors
+            </label>
+          </div>
+
+          <ul id="log" class="log" role="log" aria-live="polite" aria-relevant="additions"></ul>
+
+          <button id="clear-log" type="button" class="secondary">Clear this list</button>
+        </section>
+      </aside>
+
+    </main>
+
+    <script type="module" src="dist/app.js"></script>
+  </body>
+</html>
