@@ -15,5 +15,11 @@ strips the trailing slash from /block-lego/, and the app's asset paths are
 relative, so they only resolve correctly when the URL ends in a filename.
 A redirect in next.config.ts sends /block-lego to the right place.
 
+dist/simulator-worker.js runs the hub simulator inside the browser, using
+Pyodide loaded from the jsDelivr CDN on first connect (about 5MB, then
+cached). It needs no server-side support, but it does need the page served
+over HTTPS or from localhost, and no Content-Security-Policy that would
+block a module worker or cdn.jsdelivr.net.
+
 The ldraw/ directory is LEGO part geometry from the LDraw Parts Library,
 used under CC BY 4.0. Its NOTICE and CAreadme.txt travel with it.
