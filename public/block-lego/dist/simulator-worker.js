@@ -1,4 +1,4 @@
-import"./chunk-OOJM4CTU.js";var _={"__init__.py":`"""
+import"./chunk-OOJM4CTU.js";var h={"__init__.py":`"""
 A LEGO(R) Education SPIKE(TM) Prime hub simulator.
 
 Speaks the real hub protocol -- the one LEGO publishes at
@@ -38,6 +38,7 @@ from . import events as ev
 from .hub import HubSimulator
 from .robot import Robot, RobotConfig
 from .server import SimulatorServer
+from . import mats
 from .world import World, default_world
 
 KIND_PREFIX = {
@@ -65,6 +66,14 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--world", help="path to a world JSON file")
     parser.add_argument(
+        "--mat",
+        metavar="NAME",
+        help="a mat from the catalogue: " + ", ".join(mats.names()),
+    )
+    parser.add_argument(
+        "--mats", action="store_true", help="list the mats in the catalogue and exit"
+    )
+    parser.add_argument(
         "--snapshot-interval", type=float, default=0.05,
         help="seconds between robot telemetry snapshots for viewers (default 0.05)",
     )
@@ -86,7 +95,12 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def make_hub(args) -> HubSimulator:
-    world = World.load(args.world) if args.world else default_world()
+    if args.world:
+        world = World.load(args.world)
+    elif args.mat:
+        world = mats.load(args.mat)
+    else:
+        world = default_world()
     config = RobotConfig(
         noise=args.noise,
         wheel_diameter_mm=args.wheel_diameter,
@@ -177,8 +191,26 @@ async def serve(args) -> int:
     return 0
 
 
+def list_mats() -> int:
+    for entry in mats.catalogue():
+        print(f"{entry['name']:<14} {entry['title']:<18} {entry['teaches']}")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+    if args.mats:
+        return list_mats()
+
+    if args.mat and args.mat not in mats.names():
+        # Checked here rather than where the mat is built, because by then it
+        # is inside a coroutine and comes out as a traceback. A mistyped name
+        # is a typo: a traceback tells a student their program is broken, and
+        # this tells them what to type.
+        print(f"There is no mat called {args.mat!r}.")
+        print(f"Try one of: {', '.join(mats.names())}")
+        return 2
+
     coroutine = run_one(args) if args.run else serve(args)
     try:
         return asyncio.run(coroutine)
@@ -220,6 +252,7 @@ import json
 from typing import Callable
 
 from . import events as ev
+from . import mats
 from .hub import HubSimulator
 from .robot import Robot, RobotConfig
 from .telemetry import event_payload, hello_payload, snapshot_payload
@@ -231,6 +264,7 @@ class BrowserHub:
 
     :param on_frame: called with each outgoing protocol frame, as \`\`bytes\`\`
     :param on_message: called with each JSON payload, as a \`\`str\`\`
+    :param mat: a name from :mod:\`spike_sim.mats\`, when no \`\`world\`\` is given
 
     Both are handed across the JavaScript boundary, so they take plain types:
     JSON is serialized here rather than relying on an object converter.
@@ -245,7 +279,10 @@ class BrowserHub:
         snapshot_interval: float = 0.05,
         world: World | None = None,
         config: RobotConfig | None = None,
+        mat: str | None = None,
     ):
+        if world is None and mat:
+            world = mats.load(mat)
         self._on_frame = on_frame
         self._on_message = on_message
         self.snapshot_interval = snapshot_interval
@@ -323,9 +360,7 @@ class BrowserHub:
         if action == "press":
             robot.press_force_sensor(command.get("port", "E"), command.get("force", 100))
         elif action == "reset":
-            robot.x = robot.config.start_x
-            robot.y = robot.config.start_y
-            robot.heading = robot.config.start_heading
+            robot.x, robot.y, robot.heading = robot.start_pose
             robot.stop_all_motors()
             robot.reset_odometer()
             self.hub.log.emit(ev.PROGRAM, "The robot was put back at its starting place.")
@@ -918,6 +953,869 @@ class HubSimulator:
             raise TimeoutError(
                 f"The program was still running after {timeout} simulated-real seconds."
             )
+`,"mats/__init__.py":`"""
+The mat catalogue.
+
+A club has one mat on the table. A student at home has whatever this ships
+with, and that is the difference between practising the thing that was set
+this week and going and finding out what happens if.
+
+So these are a progression rather than a collection. Each one is the smallest
+mat that makes a particular thing worth trying: an empty floor to find out
+what "turn 90 degrees" actually does, a straight line before a bent one,
+corners sharp enough to lose the line on, a circuit with no end so a working
+follower can just be watched, posts to go round, colours to branch on.
+
+They are **data**, in the same format \`\`--world\`\` already accepted, so a coach
+can write another one without touching any code \u2014 and so can a student who
+wants a harder one. Nothing here is special; \`\`practice.json\`\` is the mat the
+simulator has always had, written down.
+
+Every mat carries its own starting place, which is why :class:\`World\` grew a
+\`\`start\`\`: a maze that has to begin where the practice mat begins is not a
+maze, it is the practice mat with walls.
+"""
+
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+from ..world import World
+
+HERE = Path(__file__).parent
+
+DEFAULT = "practice"
+"""The mat the simulator opens with, unchanged from before the catalogue."""
+
+
+def names() -> list[str]:
+    """Every mat, in the order a student should meet them."""
+    return [entry["name"] for entry in catalogue()]
+
+
+def catalogue() -> list[dict]:
+    """Each mat's name, title and what it is for \u2014 enough to build a menu.
+
+    Ordered by how much you need to know already, not alphabetically: the
+    menu is a path through them, and alphabetical order would open a beginner
+    on the colour-sensor mat. The order lives in each mat file rather than in
+    a list here, so the editor's menu can be generated from the same data
+    without the two drifting apart.
+    """
+    entries = []
+    for path in HERE.glob("*.json"):
+        data = json.loads(path.read_text())
+        entries.append(
+            {
+                "name": path.stem,
+                "title": data.get("title", path.stem),
+                "teaches": data.get("teaches", ""),
+                "order": data.get("order", 99),
+            }
+        )
+    entries.sort(key=lambda entry: (entry["order"], entry["name"]))
+    return [{k: v for k, v in entry.items() if k != "order"} for entry in entries]
+
+
+def describe(name: str) -> dict:
+    """One catalogue entry, or a plausible stand-in for an unknown name."""
+    for entry in catalogue():
+        if entry["name"] == name:
+            return entry
+    return {"name": name, "title": name, "teaches": ""}
+
+
+def load(name: str) -> World:
+    """Build a mat from the catalogue.
+
+    An unknown name raises rather than quietly handing back the practice mat.
+    A student who typed it wrong should be told, not left wondering why the
+    maze looks like a line.
+    """
+    path = HERE / f"{name}.json"
+    if not path.is_file():
+        raise ValueError(f"There is no mat called {name!r}. Try one of: {', '.join(names())}")
+    return World.from_dict(json.loads(path.read_text()))
+`,"mats/colour-stops.json":`{
+  "name": "colour-stops",
+  "title": "Colour stops",
+  "teaches": "Coloured squares along a line, to stop or turn on what the sensor sees.",
+  "order": 8,
+  "width_mm": 2362.0,
+  "height_mm": 1143.0,
+  "background": 10,
+  "walls": true,
+  "lines": [
+    {
+      "points": [
+        [
+          260.0,
+          840.0
+        ],
+        [
+          260.0,
+          1040.0
+        ]
+      ],
+      "width_mm": 16,
+      "color": 0,
+      "followable": false
+    },
+    {
+      "points": [
+        [
+          218.0,
+          980.0
+        ],
+        [
+          260.0,
+          1040.0
+        ],
+        [
+          302.0,
+          980.0
+        ]
+      ],
+      "width_mm": 16,
+      "color": 0,
+      "followable": false
+    },
+    {
+      "points": [
+        [
+          220,
+          571
+        ],
+        [
+          2100,
+          571
+        ]
+      ],
+      "width_mm": 20,
+      "color": 0
+    }
+  ],
+  "patches": [
+    {
+      "x": 140,
+      "y": 491,
+      "width": 160,
+      "height": 160,
+      "color": 6
+    },
+    {
+      "x": 700,
+      "y": 491,
+      "width": 160,
+      "height": 160,
+      "color": 3
+    },
+    {
+      "x": 1200,
+      "y": 491,
+      "width": 160,
+      "height": 160,
+      "color": 7
+    },
+    {
+      "x": 1700,
+      "y": 491,
+      "width": 160,
+      "height": 160,
+      "color": 9
+    }
+  ],
+  "obstacles": [],
+  "start": {
+    "x": 300,
+    "y": 571,
+    "heading": 0
+  }
+}
+`,"mats/first-line.json":`{
+  "name": "first-line",
+  "title": "First line",
+  "teaches": "Following a straight line from the green square to the red one.",
+  "order": 2,
+  "width_mm": 2362.0,
+  "height_mm": 1143.0,
+  "background": 10,
+  "walls": true,
+  "lines": [
+    {
+      "points": [
+        [
+          260.0,
+          840.0
+        ],
+        [
+          260.0,
+          1040.0
+        ]
+      ],
+      "width_mm": 16,
+      "color": 0,
+      "followable": false
+    },
+    {
+      "points": [
+        [
+          218.0,
+          980.0
+        ],
+        [
+          260.0,
+          1040.0
+        ],
+        [
+          302.0,
+          980.0
+        ]
+      ],
+      "width_mm": 16,
+      "color": 0,
+      "followable": false
+    },
+    {
+      "points": [
+        [
+          220,
+          300
+        ],
+        [
+          2000,
+          300
+        ]
+      ],
+      "width_mm": 20,
+      "color": 0
+    }
+  ],
+  "patches": [
+    {
+      "x": 140,
+      "y": 220,
+      "width": 160,
+      "height": 160,
+      "color": 6
+    },
+    {
+      "x": 1940,
+      "y": 220,
+      "width": 160,
+      "height": 160,
+      "color": 9
+    }
+  ],
+  "obstacles": [],
+  "start": {
+    "x": 300,
+    "y": 300,
+    "heading": 0
+  }
+}
+`,"mats/open-floor.json":`{
+  "name": "open-floor",
+  "title": "Open floor",
+  "teaches": "Driving and turning, with nothing to get in the way.",
+  "order": 1,
+  "width_mm": 2362.0,
+  "height_mm": 1143.0,
+  "background": 10,
+  "walls": true,
+  "lines": [
+    {
+      "points": [
+        [
+          260.0,
+          840.0
+        ],
+        [
+          260.0,
+          1040.0
+        ]
+      ],
+      "width_mm": 16,
+      "color": 0,
+      "followable": false
+    },
+    {
+      "points": [
+        [
+          218.0,
+          980.0
+        ],
+        [
+          260.0,
+          1040.0
+        ],
+        [
+          302.0,
+          980.0
+        ]
+      ],
+      "width_mm": 16,
+      "color": 0,
+      "followable": false
+    }
+  ],
+  "patches": [
+    {
+      "x": 220,
+      "y": 491,
+      "width": 160,
+      "height": 160,
+      "color": 6
+    }
+  ],
+  "obstacles": [],
+  "start": {
+    "x": 300,
+    "y": 571,
+    "heading": 0
+  }
+}
+`,"mats/practice.json":`{
+  "name": "practice",
+  "title": "Practice mat",
+  "teaches": "One line with a bend, a square to stop on, and a wall at the end.",
+  "order": 4,
+  "width_mm": 2362.0,
+  "height_mm": 1143.0,
+  "background": 10,
+  "walls": true,
+  "lines": [
+    {
+      "points": [
+        [
+          260.0,
+          840.0
+        ],
+        [
+          260.0,
+          1040.0
+        ]
+      ],
+      "width_mm": 16,
+      "color": 0,
+      "followable": false
+    },
+    {
+      "points": [
+        [
+          218.0,
+          980.0
+        ],
+        [
+          260.0,
+          1040.0
+        ],
+        [
+          302.0,
+          980.0
+        ]
+      ],
+      "width_mm": 16,
+      "color": 0,
+      "followable": false
+    },
+    {
+      "points": [
+        [
+          200,
+          300
+        ],
+        [
+          900,
+          300
+        ],
+        [
+          1400,
+          600
+        ],
+        [
+          1900,
+          600
+        ]
+      ],
+      "width_mm": 20,
+      "color": 0
+    }
+  ],
+  "patches": [
+    {
+      "x": 140,
+      "y": 220,
+      "width": 160,
+      "height": 160,
+      "color": 6
+    },
+    {
+      "x": 1850,
+      "y": 520,
+      "width": 160,
+      "height": 160,
+      "color": 9
+    }
+  ],
+  "obstacles": [
+    {
+      "x": 2100,
+      "y": 450,
+      "width": 60,
+      "height": 300,
+      "name": "end wall"
+    }
+  ],
+  "start": {
+    "x": 300,
+    "y": 300,
+    "heading": 0
+  }
+}
+`,"mats/slalom.json":`{
+  "name": "slalom",
+  "title": "Slalom",
+  "teaches": "Posts to steer around, using the distance sensor to find them.",
+  "order": 7,
+  "width_mm": 2362.0,
+  "height_mm": 1143.0,
+  "background": 10,
+  "walls": true,
+  "lines": [
+    {
+      "points": [
+        [
+          260.0,
+          840.0
+        ],
+        [
+          260.0,
+          1040.0
+        ]
+      ],
+      "width_mm": 16,
+      "color": 0,
+      "followable": false
+    },
+    {
+      "points": [
+        [
+          218.0,
+          980.0
+        ],
+        [
+          260.0,
+          1040.0
+        ],
+        [
+          302.0,
+          980.0
+        ]
+      ],
+      "width_mm": 16,
+      "color": 0,
+      "followable": false
+    }
+  ],
+  "patches": [
+    {
+      "x": 170,
+      "y": 491,
+      "width": 160,
+      "height": 160,
+      "color": 6
+    },
+    {
+      "x": 2100,
+      "y": 491,
+      "width": 160,
+      "height": 160,
+      "color": 9
+    }
+  ],
+  "obstacles": [
+    {
+      "x": 700,
+      "y": 400,
+      "width": 80,
+      "height": 340,
+      "name": "first post"
+    },
+    {
+      "x": 1150,
+      "y": 400,
+      "width": 80,
+      "height": 340,
+      "name": "second post"
+    },
+    {
+      "x": 1600,
+      "y": 400,
+      "width": 80,
+      "height": 340,
+      "name": "third post"
+    }
+  ],
+  "start": {
+    "x": 250,
+    "y": 571,
+    "heading": 0
+  }
+}
+`,"mats/the-loop.json":`{
+  "name": "the-loop",
+  "title": "The loop",
+  "teaches": "A circuit with no end: a follower that works goes round and round.",
+  "order": 6,
+  "width_mm": 2362.0,
+  "height_mm": 1143.0,
+  "background": 10,
+  "walls": true,
+  "lines": [
+    {
+      "points": [
+        [
+          260.0,
+          840.0
+        ],
+        [
+          260.0,
+          1040.0
+        ]
+      ],
+      "width_mm": 16,
+      "color": 0,
+      "followable": false
+    },
+    {
+      "points": [
+        [
+          218.0,
+          980.0
+        ],
+        [
+          260.0,
+          1040.0
+        ],
+        [
+          302.0,
+          980.0
+        ]
+      ],
+      "width_mm": 16,
+      "color": 0,
+      "followable": false
+    },
+    {
+      "points": [
+        [
+          1181.0,
+          251.0
+        ],
+        [
+          1362.2,
+          261.9
+        ],
+        [
+          1531.0,
+          293.9
+        ],
+        [
+          1676.0,
+          344.7
+        ],
+        [
+          1787.2,
+          411.0
+        ],
+        [
+          1857.1,
+          488.2
+        ],
+        [
+          1881.0,
+          571.0
+        ],
+        [
+          1857.1,
+          653.8
+        ],
+        [
+          1787.2,
+          731.0
+        ],
+        [
+          1676.0,
+          797.3
+        ],
+        [
+          1531.0,
+          848.1
+        ],
+        [
+          1362.2,
+          880.1
+        ],
+        [
+          1181.0,
+          891.0
+        ],
+        [
+          999.8,
+          880.1
+        ],
+        [
+          831.0,
+          848.1
+        ],
+        [
+          686.0,
+          797.3
+        ],
+        [
+          574.8,
+          731.0
+        ],
+        [
+          504.9,
+          653.8
+        ],
+        [
+          481.0,
+          571.0
+        ],
+        [
+          504.9,
+          488.2
+        ],
+        [
+          574.8,
+          411.0
+        ],
+        [
+          686.0,
+          344.7
+        ],
+        [
+          831.0,
+          293.9
+        ],
+        [
+          999.8,
+          261.9
+        ],
+        [
+          1181.0,
+          251.0
+        ]
+      ],
+      "width_mm": 20,
+      "color": 0
+    }
+  ],
+  "patches": [
+    {
+      "x": 1101,
+      "y": 170,
+      "width": 160,
+      "height": 160,
+      "color": 6
+    }
+  ],
+  "obstacles": [],
+  "start": {
+    "x": 1181,
+    "y": 250,
+    "heading": 0
+  }
+}
+`,"mats/the-square.json":`{
+  "name": "the-square",
+  "title": "Around the square",
+  "teaches": "Driving a square: four straights and four turns, back where you began.",
+  "order": 3,
+  "width_mm": 2362.0,
+  "height_mm": 1143.0,
+  "background": 10,
+  "walls": true,
+  "lines": [
+    {
+      "points": [
+        [
+          260.0,
+          840.0
+        ],
+        [
+          260.0,
+          1040.0
+        ]
+      ],
+      "width_mm": 16,
+      "color": 0,
+      "followable": false
+    },
+    {
+      "points": [
+        [
+          218.0,
+          980.0
+        ],
+        [
+          260.0,
+          1040.0
+        ],
+        [
+          302.0,
+          980.0
+        ]
+      ],
+      "width_mm": 16,
+      "color": 0,
+      "followable": false
+    },
+    {
+      "points": [
+        [
+          500,
+          300
+        ],
+        [
+          1500,
+          300
+        ],
+        [
+          1500,
+          900
+        ],
+        [
+          500,
+          900
+        ],
+        [
+          500,
+          300
+        ]
+      ],
+      "width_mm": 20,
+      "color": 0
+    }
+  ],
+  "patches": [
+    {
+      "x": 420,
+      "y": 220,
+      "width": 160,
+      "height": 160,
+      "color": 6
+    }
+  ],
+  "obstacles": [],
+  "start": {
+    "x": 500,
+    "y": 300,
+    "heading": 0
+  }
+}
+`,"mats/zigzag.json":`{
+  "name": "zigzag",
+  "title": "Zigzag",
+  "teaches": "Corners sharp enough to lose the line on.",
+  "order": 5,
+  "width_mm": 2362.0,
+  "height_mm": 1143.0,
+  "background": 10,
+  "walls": true,
+  "lines": [
+    {
+      "points": [
+        [
+          260.0,
+          840.0
+        ],
+        [
+          260.0,
+          1040.0
+        ]
+      ],
+      "width_mm": 16,
+      "color": 0,
+      "followable": false
+    },
+    {
+      "points": [
+        [
+          218.0,
+          980.0
+        ],
+        [
+          260.0,
+          1040.0
+        ],
+        [
+          302.0,
+          980.0
+        ]
+      ],
+      "width_mm": 16,
+      "color": 0,
+      "followable": false
+    },
+    {
+      "points": [
+        [
+          220,
+          250
+        ],
+        [
+          700,
+          250
+        ],
+        [
+          1000,
+          800
+        ],
+        [
+          1400,
+          250
+        ],
+        [
+          1800,
+          800
+        ],
+        [
+          2100,
+          800
+        ]
+      ],
+      "width_mm": 20,
+      "color": 0
+    }
+  ],
+  "patches": [
+    {
+      "x": 140,
+      "y": 170,
+      "width": 160,
+      "height": 160,
+      "color": 6
+    },
+    {
+      "x": 2020,
+      "y": 720,
+      "width": 160,
+      "height": 160,
+      "color": 9
+    }
+  ],
+  "obstacles": [],
+  "start": {
+    "x": 300,
+    "y": 250,
+    "heading": 0
+  }
+}
 `,"robot.py":`"""
 The simulated robot: motors, sensors, and differential-drive kinematics.
 
@@ -1074,9 +1972,7 @@ class Robot:
         self.time = 0.0
         self.log = log or ev.EventLog(clock=lambda: self.time)
 
-        self.x = self.config.start_x
-        self.y = self.config.start_y
-        self.heading = self.config.start_heading
+        self.x, self.y, self.heading = self.start_pose
 
         self.ports: dict[str, object] = {letter: None for letter in PORTS}
         self.ports[self.config.left_motor] = Motor(
@@ -1317,6 +2213,17 @@ class Robot:
     @property
     def odometer_mm(self) -> float:
         return self._odometer
+
+    @property
+    def start_pose(self) -> tuple[float, float, float]:
+        """Where this robot begins, as \`\`(x, y, heading)\`\`.
+
+        The mat's own starting place when it names one, because a mat knows
+        where its start square is and a robot configuration does not.
+        """
+        if self.world.start is not None:
+            return self.world.start
+        return (self.config.start_x, self.config.start_y, self.config.start_heading)
 
     # -- reporting ----------------------------------------------------------
 
@@ -2248,9 +3155,7 @@ class SimulatorServer:
         elif action == "press":
             robot.press_force_sensor(command.get("port", "E"), command.get("force", 100))
         elif action == "reset":
-            robot.x = robot.config.start_x
-            robot.y = robot.config.start_y
-            robot.heading = robot.config.start_heading
+            robot.x, robot.y, robot.heading = robot.start_pose
             robot.stop_all_motors()
             robot.reset_odometer()
             self.hub.log.emit(ev.PROGRAM, "The robot was put back at its starting place.")
@@ -3255,6 +4160,17 @@ class World:
     walls: bool = True
     """Treat the mat edge as a wall the distance sensor can see."""
 
+    start: tuple[float, float, float] | None = None
+    """Where the robot begins on this mat: \`\`(x, y, heading)\`\`.
+
+    A mat knows where its own starting square is; the robot's configuration
+    does not. Without this every mat would have to put its start in the same
+    place as the practice mat, which is a strange constraint to put on a maze.
+
+    \`\`None\`\` leaves it to :class:\`~spike_sim.robot.RobotConfig\`, so a test that
+    builds a bare world and asks for a particular start still gets it.
+    """
+
     # -- describing it ------------------------------------------------------
 
     def describe_point(self, x: float, y: float) -> str:
@@ -3416,6 +4332,7 @@ class World:
             patches=[ColorPatch(**patch) for patch in data.get("patches", [])],
             obstacles=[Obstacle(**obs) for obs in data.get("obstacles", [])],
             walls=data.get("walls", True),
+            start=_read_start(data.get("start")),
         )
 
     @staticmethod
@@ -3439,7 +4356,26 @@ class World:
             "patches": [vars(p) for p in self.patches],
             "obstacles": [vars(o) for o in self.obstacles],
             "walls": self.walls,
+            "start": (
+                None
+                if self.start is None
+                else {"x": self.start[0], "y": self.start[1], "heading": self.start[2]}
+            ),
         }
+
+
+def _read_start(value) -> tuple[float, float, float] | None:
+    """Accept \`\`{"x": .., "y": .., "heading": ..}\`\` or a bare triple."""
+    if value is None:
+        return None
+    if isinstance(value, dict):
+        return (
+            float(value.get("x", 0.0)),
+            float(value.get("y", 0.0)),
+            float(value.get("heading", 0.0)),
+        )
+    x, y, heading = value
+    return (float(x), float(y), float(heading))
 
 
 def north_arrow(x: float = 260.0, y: float = 840.0, length: float = 200.0) -> list[LinePath]:
@@ -3494,6 +4430,7 @@ def default_world() -> World:
         obstacles=[
             Obstacle(x=2100, y=450, width=60, height=300, name="end wall"),
         ],
+        start=(300.0, 300.0, 0.0),
     )
 
 
@@ -3521,13 +4458,18 @@ def _ray_segment(ox, oy, dx, dy, x1, y1, x2, y2) -> float | None:
     if t >= 0 and 0 <= u <= 1:
         return t
     return None
-`};var p="0.28.0",u=`https://cdn.jsdelivr.net/pyodide/v${p}/full/`,h=`
+`};var g="0.28.0",b=`https://cdn.jsdelivr.net/pyodide/v${g}/full/`,y=`
 import base64, sys
 sys.path.insert(0, "/simulator")
 
 from spike_sim.browser import BrowserHub
+from spike_sim import mats
 
-def _make(on_frame_js, on_message_js, speed, snapshot_interval):
+def _catalogue():
+    import json
+    return json.dumps(mats.catalogue())
+
+def _make(on_frame_js, on_message_js, speed, snapshot_interval, mat):
     def on_frame(frame):
         # base64 rather than a buffer: see the note in simulator-worker.js
         on_frame_js(base64.b64encode(frame).decode("ascii"))
@@ -3537,10 +4479,11 @@ def _make(on_frame_js, on_message_js, speed, snapshot_interval):
         on_message_js,
         speed=speed,
         snapshot_interval=snapshot_interval,
+        mat=mat or None,
     )
 
     def receive_b64(payload):
         hub.receive(base64.b64decode(payload))
 
     return hub, receive_b64
-`,l=null,s=null,d=null,a=e=>self.postMessage(e),m=(e,n)=>a({type:"progress",stage:e,detail:n});async function g({indexURL:e=u,speed:n=1,snapshotInterval:t=.05}){m("loading","Downloading Python. This happens once.");let o=`${e}pyodide.mjs`,{loadPyodide:i}=await import(o);l=await i({indexURL:e}),m("unpacking","Unpacking the simulator."),b(l),m("starting","Starting the robot."),await l.runPythonAsync(h);let r=l.globals.get("_make"),c=r(f=>a({type:"frame",data:f}),f=>a({type:"message",data:f}),n,t);s=c.get(0),d=c.get(1),c.destroy(),r.destroy(),await s.start(),a({type:"ready"})}function b(e){e.FS.mkdirTree("/simulator/spike_sim");let n=new Set(["/simulator/spike_sim"]);for(let[t,o]of Object.entries(_)){let i=`/simulator/spike_sim/${t}`,r=i.slice(0,i.lastIndexOf("/"));n.has(r)||(e.FS.mkdirTree(r),n.add(r)),e.FS.writeFile(i,o,{encoding:"utf8"})}}async function y(){try{await s?.stop()}catch{}s?.destroy?.(),d?.destroy?.(),s=null,d=null}self.onmessage=async e=>{let{type:n,...t}=e.data??{};try{switch(n){case"start":await g(t);break;case"frame":d?.(t.data);break;case"command":s?.command(t.data);break;case"stop":await y(),a({type:"stopped"});break;default:break}}catch(o){a({type:"error",stage:n,message:o?.message??String(o)})}};
+`,l=null,r=null,d=null,s=e=>self.postMessage(e),m=(e,n)=>s({type:"progress",stage:e,detail:n});async function w({indexURL:e=b,speed:n=1,snapshotInterval:t=.05,mat:o=""}){m("loading","Downloading Python. This happens once.");let a=`${e}pyodide.mjs`,{loadPyodide:i}=await import(a);l=await i({indexURL:e}),m("unpacking","Unpacking the simulator."),v(l),m("starting","Starting the robot."),await l.runPythonAsync(y);let p=l.globals.get("_make"),c=p(f=>s({type:"frame",data:f}),f=>s({type:"message",data:f}),n,t,o);r=c.get(0),d=c.get(1),c.destroy(),p.destroy();let _=l.globals.get("_catalogue"),u=JSON.parse(_());_.destroy(),await r.start(),s({type:"ready",catalogue:u})}function v(e){e.FS.mkdirTree("/simulator/spike_sim");let n=new Set(["/simulator/spike_sim"]);for(let[t,o]of Object.entries(h)){let a=`/simulator/spike_sim/${t}`,i=a.slice(0,a.lastIndexOf("/"));n.has(i)||(e.FS.mkdirTree(i),n.add(i)),e.FS.writeFile(a,o,{encoding:"utf8"})}}async function x(){try{await r?.stop()}catch{}r?.destroy?.(),d?.destroy?.(),r=null,d=null}self.onmessage=async e=>{let{type:n,...t}=e.data??{};try{switch(n){case"start":await w(t);break;case"frame":d?.(t.data);break;case"command":r?.command(t.data);break;case"stop":await x(),s({type:"stopped"});break;default:break}}catch(o){s({type:"error",stage:n,message:o?.message??String(o)})}};
