@@ -1,4 +1,4 @@
-import"./chunk-OOJM4CTU.js";var p={"__init__.py":`"""
+import"./chunk-OOJM4CTU.js";var _={"__init__.py":`"""
 A LEGO(R) Education SPIKE(TM) Prime hub simulator.
 
 Speaks the real hub protocol -- the one LEGO publishes at
@@ -39,6 +39,7 @@ from .hub import HubSimulator
 from .robot import Robot, RobotConfig
 from .server import SimulatorServer
 from . import mats
+from . import robots
 from .world import World, default_world
 
 KIND_PREFIX = {
@@ -74,6 +75,14 @@ def build_parser() -> argparse.ArgumentParser:
         "--mats", action="store_true", help="list the mats in the catalogue and exit"
     )
     parser.add_argument(
+        "--robot",
+        metavar="NAME",
+        help="a build from the catalogue: " + ", ".join(robots.names()),
+    )
+    parser.add_argument(
+        "--robots", action="store_true", help="list the robot builds and exit"
+    )
+    parser.add_argument(
         "--snapshot-interval", type=float, default=0.05,
         help="seconds between robot telemetry snapshots for viewers (default 0.05)",
     )
@@ -101,10 +110,21 @@ def make_hub(args) -> HubSimulator:
         world = mats.load(args.mat)
     else:
         world = default_world()
+    # A named build first, then any measurement given explicitly on top of it:
+    # --robot picks a chassis, --wheel-diameter adjusts one you have measured.
+    chosen = robots.load(args.robot) if args.robot else RobotConfig()
     config = RobotConfig(
         noise=args.noise,
-        wheel_diameter_mm=args.wheel_diameter,
-        axle_track_mm=args.axle_track,
+        wheel_diameter_mm=(
+            args.wheel_diameter
+            if args.wheel_diameter != RobotConfig().wheel_diameter_mm
+            else chosen.wheel_diameter_mm
+        ),
+        axle_track_mm=(
+            args.axle_track
+            if args.axle_track != RobotConfig().axle_track_mm
+            else chosen.axle_track_mm
+        ),
     )
     robot = Robot(config=config, world=world)
     return HubSimulator(robot, speed=args.speed)
@@ -202,6 +222,20 @@ def main(argv: list[str] | None = None) -> int:
     if args.mats:
         return list_mats()
 
+    if args.robots:
+        for entry in robots.catalogue():
+            print(
+                f"{entry['name']:<14} {entry['title']:<16} "
+                f"{entry['wheelDiameterMm']:>5.1f}mm wheels, "
+                f"{entry['axleTrackMm']:>5.1f}mm apart   {entry['teaches']}"
+            )
+        return 0
+
+    if args.robot and args.robot not in robots.names():
+        print(f"There is no robot called {args.robot!r}.")
+        print(f"Try one of: {', '.join(robots.names())}")
+        return 2
+
     if args.mat and args.mat not in mats.names():
         # Checked here rather than where the mat is built, because by then it
         # is inside a coroutine and comes out as a traceback. A mistyped name
@@ -253,6 +287,7 @@ from typing import Callable
 
 from . import events as ev
 from . import mats
+from . import robots
 from .hub import HubSimulator
 from .robot import Robot, RobotConfig
 from .telemetry import event_payload, hello_payload, snapshot_payload
@@ -265,6 +300,7 @@ class BrowserHub:
     :param on_frame: called with each outgoing protocol frame, as \`\`bytes\`\`
     :param on_message: called with each JSON payload, as a \`\`str\`\`
     :param mat: a name from :mod:\`spike_sim.mats\`, when no \`\`world\`\` is given
+    :param robot: a name from :mod:\`spike_sim.robots\`, when no \`\`config\`\` is given
 
     Both are handed across the JavaScript boundary, so they take plain types:
     JSON is serialized here rather than relying on an object converter.
@@ -280,9 +316,12 @@ class BrowserHub:
         world: World | None = None,
         config: RobotConfig | None = None,
         mat: str | None = None,
+        robot: str | None = None,
     ):
         if world is None and mat:
             world = mats.load(mat)
+        if config is None and robot:
+            config = robots.load(robot)
         self._on_frame = on_frame
         self._on_message = on_message
         self.snapshot_interval = snapshot_interval
@@ -2283,6 +2322,146 @@ class Robot:
             "battery": self.config.battery_percent,
             "described": self.describe_position(),
         }
+`,"robots/__init__.py":`"""
+The robot catalogue.
+
+Five builds of the same chassis. Same hub, same motors, same nine pieces \u2014
+only the two measurements that turn motor degrees into millimetres differ:
+how far apart the wheels are, and how big they are.
+
+That is deliberately the whole catalogue. Those two numbers are the ones a
+student's program is doing arithmetic with, so changing them changes what
+their blocks mean: on small wheels a rotation covers 13.6cm instead of
+17.6cm, so a program tuned on the standard base drives short; on a wide base
+a turn needs more wheel rotation for the same number of degrees. That is a
+lesson, and it is one a simulator can give at no cost and a club with one
+robot cannot give at all.
+
+**These numbers reach three places and have to agree in all of them**: the
+simulator's physics, the 3D model the view draws, and the constants baked
+into the Python a student's blocks generate. They agreed by hand before there
+was a choice to make. A catalogue turns "agreed by hand" into a bug waiting
+to happen, so all three now read from these files, and a test checks it.
+
+Nothing below 144mm is offered, because nothing below 144mm can be built: two
+large angular motors facing outwards need 60mm of body each plus a 12mm
+shaft. A 112mm track was described here once and was physically impossible,
+which is the kind of thing a simulator will happily pretend about for months.
+"""
+
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+from ..robot import RobotConfig
+
+HERE = Path(__file__).parent
+
+DEFAULT = "standard"
+"""The build the club makes, and what every example was written against."""
+
+SMALLEST_TRACK_MM = 144.0
+"""Below this, two motors would have to occupy the same space."""
+
+
+def names() -> list[str]:
+    """Every build, narrowest first."""
+    return [entry["name"] for entry in catalogue()]
+
+
+def catalogue() -> list[dict]:
+    """Each build's name, title, measurements and what it is for."""
+    entries = []
+    for path in HERE.glob("*.json"):
+        data = json.loads(path.read_text())
+        entries.append(
+            {
+                "name": path.stem,
+                "title": data.get("title", path.stem),
+                "teaches": data.get("teaches", ""),
+                "wheelDiameterMm": float(data["wheelDiameterMm"]),
+                "axleTrackMm": float(data["axleTrackMm"]),
+                "note": data.get("note", ""),
+                "order": data.get("order", 99),
+            }
+        )
+    entries.sort(key=lambda entry: (entry["order"], entry["name"]))
+    return [{k: v for k, v in entry.items() if k != "order"} for entry in entries]
+
+
+def describe(name: str) -> dict:
+    """One catalogue entry, or a stand-in for a name that is not in it."""
+    for entry in catalogue():
+        if entry["name"] == name:
+            return entry
+    return {"name": name, "title": name, "teaches": ""}
+
+
+def load(name: str, **overrides) -> RobotConfig:
+    """Build a :class:\`RobotConfig\` for one of the catalogue's robots.
+
+    An unknown name raises rather than quietly handing back the standard base:
+    a student who mistyped it should be told, not left wondering why their
+    distances are wrong.
+    """
+    path = HERE / f"{name}.json"
+    if not path.is_file():
+        raise ValueError(
+            f"There is no robot called {name!r}. Try one of: {', '.join(names())}"
+        )
+
+    data = json.loads(path.read_text())
+    return RobotConfig(
+        wheel_diameter_mm=float(data["wheelDiameterMm"]),
+        axle_track_mm=float(data["axleTrackMm"]),
+        **overrides,
+    )
+`,"robots/big-wheels.json":`{
+  "name": "big-wheels",
+  "title": "Big wheels",
+  "teaches": "62mm wheels: faster, and coarser control over how far it goes.",
+  "order": 5,
+  "wheelDiameterMm": 62.4,
+  "axleTrackMm": 160.0,
+  "note": "A common Technic wheel. A rotation covers 19.6cm, so the same program overshoots a target tuned on the standard base."
+}
+`,"robots/narrow.json":`{
+  "name": "narrow",
+  "title": "Narrow base",
+  "teaches": "Wheels as close together as they will go: turns in the smallest circle.",
+  "order": 1,
+  "wheelDiameterMm": 56.0,
+  "axleTrackMm": 144.0,
+  "note": "The tightest track that can be built at all. Two large angular motors facing outwards need 60mm of body each plus a 12mm shaft, so nothing below 144mm can actually be built."
+}
+`,"robots/small-wheels.json":`{
+  "name": "small-wheels",
+  "title": "Small wheels",
+  "teaches": "43mm wheels: slower, and finer control over how far it goes.",
+  "order": 4,
+  "wheelDiameterMm": 43.2,
+  "axleTrackMm": 160.0,
+  "note": "The smaller wheel in the SPIKE Prime set. A wheel rotation covers 13.6cm instead of 17.6cm, so the same program drives shorter."
+}
+`,"robots/standard.json":`{
+  "name": "standard",
+  "title": "Standard base",
+  "teaches": "The one the club builds: 56mm wheels, 160mm apart.",
+  "order": 2,
+  "wheelDiameterMm": 56.0,
+  "axleTrackMm": 160.0,
+  "note": "The measurements every example and every mat was written against."
+}
+`,"robots/wide.json":`{
+  "name": "wide",
+  "title": "Wide base",
+  "teaches": "Wheels far apart: steadier in a straight line, wider to turn.",
+  "order": 3,
+  "wheelDiameterMm": 56.0,
+  "axleTrackMm": 192.0,
+  "note": "Two studs wider each side than the standard base."
+}
 `,"runtime/__init__.py":`"""SPIKE Python API modules, bound to a simulated robot."""
 
 from .api import RuntimeContext, build_modules
@@ -3262,11 +3441,22 @@ from . import events as ev
 
 
 def hello_payload(robot) -> dict:
-    """Sent once, when something connects: the mat, and where the robot is."""
+    """Sent once, when something connects: the mat, the robot, and its build.
+
+    The two measurements travel with it so a viewer draws the robot that is
+    actually running rather than the one it was written against. A picture
+    with the wheels in the wrong place, beside a narration taken from the real
+    numbers, puts a sighted student and a blind student in front of two
+    different robots.
+    """
     return {
         "type": "hello",
         "world": robot.world.to_dict(),
         "robot": robot.snapshot(),
+        "chassis": {
+            "wheelDiameterMm": robot.config.wheel_diameter_mm,
+            "axleTrackMm": robot.config.axle_track_mm,
+        },
     }
 
 
@@ -4458,18 +4648,18 @@ def _ray_segment(ox, oy, dx, dy, x1, y1, x2, y2) -> float | None:
     if t >= 0 and 0 <= u <= 1:
         return t
     return None
-`};var g="0.28.0",b=`https://cdn.jsdelivr.net/pyodide/v${g}/full/`,y=`
+`};var b="0.28.0",y=`https://cdn.jsdelivr.net/pyodide/v${b}/full/`,w=`
 import base64, sys
 sys.path.insert(0, "/simulator")
 
 from spike_sim.browser import BrowserHub
-from spike_sim import mats
+from spike_sim import mats, robots
 
 def _catalogue():
     import json
-    return json.dumps(mats.catalogue())
+    return json.dumps({"mats": mats.catalogue(), "robots": robots.catalogue()})
 
-def _make(on_frame_js, on_message_js, speed, snapshot_interval, mat):
+def _make(on_frame_js, on_message_js, speed, snapshot_interval, mat, robot):
     def on_frame(frame):
         # base64 rather than a buffer: see the note in simulator-worker.js
         on_frame_js(base64.b64encode(frame).decode("ascii"))
@@ -4480,10 +4670,11 @@ def _make(on_frame_js, on_message_js, speed, snapshot_interval, mat):
         speed=speed,
         snapshot_interval=snapshot_interval,
         mat=mat or None,
+        robot=robot or None,
     )
 
     def receive_b64(payload):
         hub.receive(base64.b64decode(payload))
 
     return hub, receive_b64
-`,s=null,r=null,d=null,f={speed:1,snapshotInterval:.05},a=e=>self.postMessage(e),c=(e,n)=>a({type:"progress",stage:e,detail:n});async function w({indexURL:e=b,speed:n=1,snapshotInterval:t=.05,mat:o=""}){c("loading","Downloading Python. This happens once.");let i=`${e}pyodide.mjs`,{loadPyodide:l}=await import(i);s=await l({indexURL:e}),c("unpacking","Unpacking the simulator."),x(s),c("starting","Starting the robot."),await s.runPythonAsync(y),f={speed:n,snapshotInterval:t},_(o);let m=s.globals.get("_catalogue"),u=JSON.parse(m());m.destroy(),await r.start(),a({type:"ready",catalogue:u})}function _(e){let n=s.globals.get("_make"),t=n(o=>a({type:"frame",data:o}),o=>a({type:"message",data:o}),f.speed,f.snapshotInterval,e??"");r=t.get(0),d=t.get(1),t.destroy(),n.destroy()}async function v(e){if(!s)throw new Error("The simulator is not running yet.");await h(),_(e),await r.start(),a({type:"mat-ready",mat:e})}function x(e){e.FS.mkdirTree("/simulator/spike_sim");let n=new Set(["/simulator/spike_sim"]);for(let[t,o]of Object.entries(p)){let i=`/simulator/spike_sim/${t}`,l=i.slice(0,i.lastIndexOf("/"));n.has(l)||(e.FS.mkdirTree(l),n.add(l)),e.FS.writeFile(i,o,{encoding:"utf8"})}}async function h(){try{await r?.stop()}catch{}r?.destroy?.(),d?.destroy?.(),r=null,d=null}self.onmessage=async e=>{let{type:n,...t}=e.data??{};try{switch(n){case"start":await w(t);break;case"frame":d?.(t.data);break;case"command":r?.command(t.data);break;case"mat":await v(t.name);break;case"stop":await h(),a({type:"stopped"});break;default:break}}catch(o){a({type:"error",stage:n,message:o?.message??String(o)})}};
+`,i=null,a=null,c=null,l={speed:1,snapshotInterval:.05,robot:""},s=e=>self.postMessage(e),f=(e,n)=>s({type:"progress",stage:e,detail:n});async function v({indexURL:e=y,speed:n=1,snapshotInterval:t=.05,mat:o="",robot:r=""}){f("loading","Downloading Python. This happens once.");let d=`${e}pyodide.mjs`,{loadPyodide:u}=await import(d);i=await u({indexURL:e}),f("unpacking","Unpacking the simulator."),R(i),f("starting","Starting the robot."),await i.runPythonAsync(w),l={speed:n,snapshotInterval:t,robot:r},m(o,r);let h=i.globals.get("_catalogue"),g=JSON.parse(h());h.destroy(),await a.start(),s({type:"ready",catalogue:g})}function m(e,n=l.robot){let t=i.globals.get("_make"),o=t(r=>s({type:"frame",data:r}),r=>s({type:"message",data:r}),l.speed,l.snapshotInterval,e??"",n??"");a=o.get(0),c=o.get(1),o.destroy(),t.destroy()}async function x(e){if(!i)throw new Error("The simulator is not running yet.");await p(),m(e),await a.start(),s({type:"mat-ready",mat:e})}async function k(e,n){if(!i)throw new Error("The simulator is not running yet.");l={...l,robot:e},await p(),m(n,e),await a.start(),s({type:"robot-ready",robot:e})}function R(e){e.FS.mkdirTree("/simulator/spike_sim");let n=new Set(["/simulator/spike_sim"]);for(let[t,o]of Object.entries(_)){let r=`/simulator/spike_sim/${t}`,d=r.slice(0,r.lastIndexOf("/"));n.has(d)||(e.FS.mkdirTree(d),n.add(d)),e.FS.writeFile(r,o,{encoding:"utf8"})}}async function p(){try{await a?.stop()}catch{}a?.destroy?.(),c?.destroy?.(),a=null,c=null}self.onmessage=async e=>{let{type:n,...t}=e.data??{};try{switch(n){case"start":await v(t);break;case"frame":c?.(t.data);break;case"command":a?.command(t.data);break;case"mat":await x(t.name);break;case"robot":await k(t.name,t.mat);break;case"stop":await p(),s({type:"stopped"});break;default:break}}catch(o){s({type:"error",stage:n,message:o?.message??String(o)})}};
