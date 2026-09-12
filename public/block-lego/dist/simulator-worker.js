@@ -1,4 +1,4 @@
-import"./chunk-OOJM4CTU.js";var p={"__init__.py":`"""
+import"./chunk-OOJM4CTU.js";var _={"__init__.py":`"""
 A LEGO(R) Education SPIKE(TM) Prime hub simulator.
 
 Speaks the real hub protocol -- the one LEGO publishes at
@@ -433,12 +433,23 @@ class EventLog:
 # --------------------------------------------------------------------------
 
 def say_distance(mm: float) -> str:
-    """Render a distance the way a person would say it, plural agreement included."""
+    """Render a distance the way a person would say it, plural agreement included.
+
+    Two significant figures, never more. "One point oh four metres" takes
+    noticeably longer to hear than "one metre" and tells a student nothing
+    they can act on -- and every extra syllable in a spoken narration is time
+    the robot spends moving somewhere else.
+    """
     if abs(mm) >= 1000:
-        return _with_unit(f"{mm / 1000:.2f}", "metre")
+        return _with_unit(_two_figures(mm / 1000), "metre")
     if abs(mm) >= 10:
-        return _with_unit(f"{mm / 10:.1f}", "centimetre")
+        return _with_unit(_two_figures(mm / 10), "centimetre")
     return _with_unit(f"{mm:.0f}", "millimetre")
+
+
+def _two_figures(value: float) -> str:
+    """Whole numbers from ten up, one decimal place below."""
+    return f"{value:.0f}" if abs(value) >= 10 else f"{value:.1f}"
 
 
 def _with_unit(number: str, unit: str) -> str:
@@ -452,7 +463,11 @@ def say_angle(degrees: float) -> str:
 
 
 def say_direction(degrees: float) -> str:
-    """Turn a heading into a compass-free description a student can act on."""
+    """Turn a heading into a compass point.
+
+    Meaningful only because the mat has a north arrow printed on it. On a bare
+    mat "facing east" names nothing a student can check.
+    """
     heading = degrees % 360
     points = [
         (0, "east"), (45, "north-east"), (90, "north"), (135, "north-west"),
@@ -745,6 +760,7 @@ class HubSimulator:
             ev.PROGRAM,
             f"The program in slot {slot} started running.",
             slot=slot,
+            phase="started",
         )
         self._emit(wire.program_flow_notification(stop=False))
         self._program_task = asyncio.create_task(self._execute(source.decode("utf8")))
@@ -781,7 +797,7 @@ class HubSimulator:
             if pending:
                 await asyncio.gather(*pending)
         except asyncio.CancelledError:
-            self.log.emit(ev.PROGRAM, "The program was stopped.")
+            self.log.emit(ev.PROGRAM, "The program was stopped.", phase="stopped")
             outcome = "cancelled"
             raise
         except NotImplementedError as error:
@@ -807,9 +823,13 @@ class HubSimulator:
             self.robot.stop_all_motors()
             self._running_slot = None
             if outcome == "finished":
-                self.log.emit(ev.PROGRAM, "The program finished.")
+                self.log.emit(ev.PROGRAM, "The program finished.", phase="finished")
             elif outcome == "error":
-                self.log.emit(ev.PROGRAM, "The program stopped early because of that error.")
+                self.log.emit(
+                    ev.PROGRAM,
+                    "The program stopped early because of that error.",
+                    phase="error",
+                )
             self._emit(wire.program_flow_notification(stop=True))
 
     def _program_print(self, *args, sep=" ", end="\\n", **_kwargs) -> None:
@@ -1191,6 +1211,7 @@ class Robot:
                     "The robot bumped into something and stopped moving.",
                     x=round(self.x, 1),
                     y=round(self.y, 1),
+                    bumped=True,
                 )
             # rotation in place is still allowed while pinned against a wall
             self.heading = math.degrees(heading_rad + turn) % 360
@@ -1300,9 +1321,17 @@ class Robot:
     # -- reporting ----------------------------------------------------------
 
     def describe_position(self) -> str:
+        """Where the robot is, as someone looking down at the mat would say it.
+
+        Third person and mat-relative on purpose. Addressing the student as
+        though they *were* the robot ("you are on the line") puts them inside
+        a machine they are trying to look at, and it stops making sense the
+        moment they talk to the classmate beside them about what is on the
+        screen. Both of them are looking down at the same mat.
+        """
         return (
-            f"The robot is {ev.say_distance(self.x)} across and "
-            f"{ev.say_distance(self.y)} up the mat, facing {ev.say_direction(self.heading)}."
+            f"The robot is {self.world.describe_point(self.x, self.y)}, "
+            f"pointing {ev.say_direction(self.heading)}."
         )
 
     def snapshot(self) -> dict:
@@ -1689,6 +1718,17 @@ def build_modules(ctx: RuntimeContext) -> dict[str, types.ModuleType]:
         turned = (robot.heading - heading0 + 180) % 360 - 180
         side = "left" if turned > 0 else "right"
 
+        # Which way along its own nose the robot actually went. \`travelled\` is
+        # a distance and so always positive; without this, reversing narrates
+        # identically to driving forward, and a student chasing a motor they
+        # have mounted backwards is told the one thing that would give it away
+        # is not happening.
+        along = math.cos(math.radians(heading0)) * (robot.x - x0) + math.sin(
+            math.radians(heading0)
+        ) * (robot.y - y0)
+        reversing = travelled >= 5 and along < 0
+        way = "backwards " if reversing else ""
+
         if travelled < 5 and abs(turned) >= 3:
             message = (
                 f"The robot turned {ev.say_angle(abs(turned))} to the {side}, "
@@ -1696,17 +1736,75 @@ def build_modules(ctx: RuntimeContext) -> dict[str, types.ModuleType]:
             )
         elif abs(turned) >= 3:
             message = (
-                f"The robot drove {ev.say_distance(travelled)} in a curve to the "
+                f"The robot drove {ev.say_distance(travelled)} {way}in a curve to the "
                 f"{side}. {robot.describe_position()}"
             )
         else:
-            message = f"The robot drove {ev.say_distance(travelled)}. {robot.describe_position()}"
+            message = (
+                f"The robot drove {ev.say_distance(travelled)} {way}".rstrip()
+                + f". {robot.describe_position()}"
+            )
 
         ctx.log(
             ev.DRIVE,
             message,
             travelled_mm=round(travelled, 1),
             turned_degrees=round(turned, 1),
+            reversing=reversing,
+            **data,
+        )
+
+    def _announce_move(degrees, steering=0):
+        """Say what a move is about to do, before it does it.
+
+        A blind student needs to know what is happening *now*. Narrating a
+        move when it completes describes something that has already finished,
+        and for a long drive that is several seconds of silence followed by
+        news about the past -- the exact failure this whole narration exists
+        to avoid.
+
+        Everything needed is known up front: the block said how far to go, and
+        the wheel and axle measurements turn that into millimetres and
+        degrees. So the announcement is of the *intent*. If the robot then
+        fails to do it -- hits something, slips -- that fires its own event,
+        and the end-of-run summary measures what actually happened.
+        """
+        steering = max(-100, min(100, steering))
+        travel = (degrees / 360.0) * math.pi * robot.config.wheel_diameter_mm
+        data = {"starting": True, "degrees": degrees, "steering": steering}
+
+        if abs(steering) == 100:
+            # One wheel forward, one back: the robot turns on the spot, and
+            # each wheel cuts an arc of the circle that passes through both.
+            turn = travel * 360.0 / (math.pi * robot.config.axle_track_mm)
+            if steering > 0:
+                turn = -turn  # +100 spins right, and right lowers the heading
+            side = "right" if turn < 0 else "left"
+            data["turn_degrees"] = round(turn, 1)
+            ctx.log(
+                ev.DRIVE,
+                f"The robot is turning {ev.say_angle(abs(turn))} to the {side}.",
+                **data,
+            )
+            return
+
+        data["distance_mm"] = round(abs(travel), 1)
+        data["reversing"] = travel < 0
+        way = " backwards" if travel < 0 else ""
+
+        if steering == 0:
+            ctx.log(
+                ev.DRIVE,
+                f"The robot is driving {ev.say_distance(abs(travel))}{way}.",
+                **data,
+            )
+            return
+
+        side = "right" if steering > 0 else "left"
+        data["curving"] = side
+        ctx.log(
+            ev.DRIVE,
+            f"The robot is curving to the {side} for {ev.say_distance(abs(travel))}{way}.",
             **data,
         )
 
@@ -1714,20 +1812,33 @@ def build_modules(ctx: RuntimeContext) -> dict[str, types.ModuleType]:
         left_port, right_port = _pair_ports(pair_id)
         left_v, right_v = _steering_to_velocities(steering, velocity)
         before = (robot.x, robot.y, robot.heading)
+        _announce_move(degrees, steering)
         await _move_wheels_for_degrees(left_port, right_port, left_v, right_v, degrees)
         _narrate_move(before, degrees=degrees, steering=steering)
 
     async def pair_move_tank_for_degrees(pair_id, degrees, left_velocity, right_velocity, **_kwargs):
         left_port, right_port = _pair_ports(pair_id)
         before = (robot.x, robot.y, robot.heading)
+        # Tank steering is two wheel speeds, not a steering value; derive the
+        # equivalent so the announcement reads the same as any other move.
+        faster = max(abs(left_velocity), abs(right_velocity)) or 1
+        _announce_move(degrees, round(100 * (left_velocity - right_velocity) / (2 * faster)))
         await _move_wheels_for_degrees(
             left_port, right_port, left_velocity, right_velocity, degrees
         )
         _narrate_move(before, degrees=degrees)
 
     async def pair_move_for_time(pair_id, duration, steering=0, *, velocity=360, **_kwargs):
+        seconds = duration / 1000.0
+        ctx.log(
+            ev.DRIVE,
+            f"The robot is driving for {seconds:g} seconds.",
+            starting=True,
+            seconds=seconds,
+            steering=max(-100, min(100, steering)),
+        )
         pair_move(pair_id, steering, velocity=velocity)
-        await ctx.sleep(duration / 1000.0)
+        await ctx.sleep(seconds)
         pair_stop(pair_id)
 
     motor_pair = _module(
@@ -3076,6 +3187,14 @@ class LinePath:
     points: list[tuple[float, float]]
     width_mm: float = 20.0
     color: int = BLACK
+    followable: bool = True
+    """Whether this is a line to follow, or just ink on the mat.
+
+    The north arrow is drawn with the same primitive, because it is the same
+    thing physically: ink, which the colour sensor reads exactly as it reads
+    any other ink. But nothing should ever tell a student they are "on the
+    line" when what they are over is the arrow.
+    """
 
     def distance_to(self, x: float, y: float) -> float:
         """Shortest distance from a point to the centreline."""
@@ -3135,6 +3254,33 @@ class World:
     obstacles: list[Obstacle] = field(default_factory=list)
     walls: bool = True
     """Treat the mat edge as a wall the distance sensor can see."""
+
+    # -- describing it ------------------------------------------------------
+
+    def describe_point(self, x: float, y: float) -> str:
+        """Where a point is, as someone looking down at the mat would say it.
+
+        Measured from the *nearer* edge on each axis, so the numbers stay
+        small and mean something you could check with a ruler. "Two metres
+        across the mat" is a number a student has to hold in their head;
+        "30 centimetres from the east edge" is a place.
+
+        Edges are named by the compass, which is only meaningful because the
+        mat has a north arrow printed on it -- see :func:\`north_arrow\`.
+        """
+        from . import events as ev  # local: events imports nothing from here
+
+        if x <= self.width_mm / 2:
+            across = f"{ev.say_distance(x)} from the west edge"
+        else:
+            across = f"{ev.say_distance(self.width_mm - x)} from the east edge"
+
+        if y <= self.height_mm / 2:
+            along = f"{ev.say_distance(y)} from the south edge"
+        else:
+            along = f"{ev.say_distance(self.height_mm - y)} from the north edge"
+
+        return f"{across} and {along}"
 
     # -- surface sampling ---------------------------------------------------
 
@@ -3263,6 +3409,7 @@ class World:
                     points=[tuple(p) for p in line["points"]],
                     width_mm=line.get("width_mm", 20.0),
                     color=line.get("color", BLACK),
+                    followable=line.get("followable", True),
                 )
                 for line in data.get("lines", [])
             ],
@@ -3281,7 +3428,12 @@ class World:
             "height_mm": self.height_mm,
             "background": self.background,
             "lines": [
-                {"points": [list(p) for p in l.points], "width_mm": l.width_mm, "color": l.color}
+                {
+                    "points": [list(p) for p in l.points],
+                    "width_mm": l.width_mm,
+                    "color": l.color,
+                    "followable": l.followable,
+                }
                 for l in self.lines
             ],
             "patches": [vars(p) for p in self.patches],
@@ -3290,10 +3442,37 @@ class World:
         }
 
 
+def north_arrow(x: float = 260.0, y: float = 840.0, length: float = 200.0) -> list[LinePath]:
+    """An arrow printed on the mat, pointing north.
+
+    Without it, "the robot is facing east" is a fact about nothing: there is
+    no north on a bare mat, so a compass bearing cannot be checked against
+    anything a student can see or feel. With it, every direction in the
+    narration has something on the table to point at -- and a blind student, a
+    sighted student and a coach are all using the same one.
+
+    Drawn with LinePath because that is what it physically is: ink. The colour
+    sensor reads it like any other ink, which is the honest behaviour. It is
+    marked \`\`followable=False\`\` so nothing mistakes it for the line, and it is
+    placed in a corner well clear of the course.
+    """
+    head = length * 0.3
+    return [
+        LinePath(points=[(x, y), (x, y + length)], width_mm=16.0, followable=False),
+        LinePath(
+            points=[(x - head * 0.7, y + length - head), (x, y + length),
+                    (x + head * 0.7, y + length - head)],
+            width_mm=16.0,
+            followable=False,
+        ),
+    ]
+
+
 def default_world() -> World:
     """A practice mat: one long black line with a gentle bend, and a wall to stop at."""
     return World(
         lines=[
+            *north_arrow(),
             LinePath(
                 # Starts inside the green square and finishes inside the red
                 # one, so both ends of the line are visibly attached to
@@ -3342,7 +3521,7 @@ def _ray_segment(ox, oy, dx, dy, x1, y1, x2, y2) -> float | None:
     if t >= 0 and 0 <= u <= 1:
         return t
     return None
-`};var m="0.28.0",u=`https://cdn.jsdelivr.net/pyodide/v${m}/full/`,h=`
+`};var p="0.28.0",u=`https://cdn.jsdelivr.net/pyodide/v${p}/full/`,h=`
 import base64, sys
 sys.path.insert(0, "/simulator")
 
@@ -3364,4 +3543,4 @@ def _make(on_frame_js, on_message_js, speed, snapshot_interval):
         hub.receive(base64.b64decode(payload))
 
     return hub, receive_b64
-`,l=null,s=null,d=null,a=e=>self.postMessage(e),_=(e,n)=>a({type:"progress",stage:e,detail:n});async function g({indexURL:e=u,speed:n=1,snapshotInterval:t=.05}){_("loading","Downloading Python. This happens once.");let o=`${e}pyodide.mjs`,{loadPyodide:i}=await import(o);l=await i({indexURL:e}),_("unpacking","Unpacking the simulator."),b(l),_("starting","Starting the robot."),await l.runPythonAsync(h);let r=l.globals.get("_make"),c=r(f=>a({type:"frame",data:f}),f=>a({type:"message",data:f}),n,t);s=c.get(0),d=c.get(1),c.destroy(),r.destroy(),await s.start(),a({type:"ready"})}function b(e){e.FS.mkdirTree("/simulator/spike_sim");let n=new Set(["/simulator/spike_sim"]);for(let[t,o]of Object.entries(p)){let i=`/simulator/spike_sim/${t}`,r=i.slice(0,i.lastIndexOf("/"));n.has(r)||(e.FS.mkdirTree(r),n.add(r)),e.FS.writeFile(i,o,{encoding:"utf8"})}}async function y(){try{await s?.stop()}catch{}s?.destroy?.(),d?.destroy?.(),s=null,d=null}self.onmessage=async e=>{let{type:n,...t}=e.data??{};try{switch(n){case"start":await g(t);break;case"frame":d?.(t.data);break;case"command":s?.command(t.data);break;case"stop":await y(),a({type:"stopped"});break;default:break}}catch(o){a({type:"error",stage:n,message:o?.message??String(o)})}};
+`,l=null,s=null,d=null,a=e=>self.postMessage(e),m=(e,n)=>a({type:"progress",stage:e,detail:n});async function g({indexURL:e=u,speed:n=1,snapshotInterval:t=.05}){m("loading","Downloading Python. This happens once.");let o=`${e}pyodide.mjs`,{loadPyodide:i}=await import(o);l=await i({indexURL:e}),m("unpacking","Unpacking the simulator."),b(l),m("starting","Starting the robot."),await l.runPythonAsync(h);let r=l.globals.get("_make"),c=r(f=>a({type:"frame",data:f}),f=>a({type:"message",data:f}),n,t);s=c.get(0),d=c.get(1),c.destroy(),r.destroy(),await s.start(),a({type:"ready"})}function b(e){e.FS.mkdirTree("/simulator/spike_sim");let n=new Set(["/simulator/spike_sim"]);for(let[t,o]of Object.entries(_)){let i=`/simulator/spike_sim/${t}`,r=i.slice(0,i.lastIndexOf("/"));n.has(r)||(e.FS.mkdirTree(r),n.add(r)),e.FS.writeFile(i,o,{encoding:"utf8"})}}async function y(){try{await s?.stop()}catch{}s?.destroy?.(),d?.destroy?.(),s=null,d=null}self.onmessage=async e=>{let{type:n,...t}=e.data??{};try{switch(n){case"start":await g(t);break;case"frame":d?.(t.data);break;case"command":s?.command(t.data);break;case"stop":await y(),a({type:"stopped"});break;default:break}}catch(o){a({type:"error",stage:n,message:o?.message??String(o)})}};
